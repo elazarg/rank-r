@@ -21,9 +21,6 @@ __pycache__/
 Physics.html
 *.patch
 
-# Solver run logs: reproducible from quitting-game/exact_self_loop_z3.py
-quitting-game/runs/
-
 # Lean / Lake
 /.lake/
 # lake-manifest.json is deliberately NOT ignored: it pins the exact Mathlib

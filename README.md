@@ -7,8 +7,10 @@ A Lean 4 formalization of the main theorem of `paper/rank-r.tex`,
 > $$\|\mathrm{Tr}_U C\|_2^2 + \|\mathrm{Tr}_V C\|_2^2 \;\le\; r\|C\|_2^2 + \tfrac1r|\mathrm{Tr}\,C|^2 .$$
 
 together with the numerical pre-flight suite used to check the manuscript's
-claims before formalizing them, and a list of concrete edits the manuscript
-needs.
+claims before formalizing them.
+
+The manuscript's abstract now records that these proofs are machine-checked.
+That claim is deliberately narrow, and this README spells out its limits.
 
 ## What is proved, and what it rests on
 
@@ -22,6 +24,17 @@ theorem RankR.rank_r_partial_trace (hFGP : DoubleSkewBound U V)
 `#print axioms RankR.rank_r_partial_trace` reports only
 `propext, Classical.choice, Quot.sound`. There is no `sorry`, no `axiom`
 declaration, no `native_decide` and no `set_option` anywhere in `RankR/`.
+
+**What this does and does not certify.** Lean checks the *deduction* — that the
+conclusion follows from the hypotheses, given the formal definitions in
+`RankR/Conventions.lean`. It cannot check that those formal definitions
+faithfully render the manuscript's informal ones. That correspondence is a
+human judgement, which is why `Conventions.lean` states each convention
+explicitly (inner products conjugate-linear in the first argument;
+$\mathrm{Tr}_U$ = trace *over* $U$; $\mathrm{vec}(|x\rangle\langle y|) = x \otimes \bar y$;
+$\mathfrak{so}$ defined by $L^T = -L$, not $L^H = -L$) rather than leaving them
+implicit, and why `preflight.py` independently checks the same labelled
+equations numerically against the paper.
 
 The single hypothesis `DoubleSkewBound U V` is Lemma 2.1 of the manuscript **as
 its proof actually consumes it**: for every $K$ in the linear span of
@@ -65,10 +78,8 @@ revision.
 | --- | --- |
 | `RankR/` | the formalization (18 files, ~2.5k lines) |
 | `PLAN.md` | roadmap, ordered by *delicacy* rather than effort; Phase A is complete |
-| `MANUSCRIPT-NOTES.md` | twelve concrete edits the manuscript needs |
 | `preflight.py` | 21 numerical checks of specific labelled equations |
-| `paper/` | the manuscript (`rank-r.tex`, `rank-r-revised.tex`) |
-| `quitting-game/` | an unrelated project: exact Z3 barrier checks for four-player quitting games |
+| `paper/` | the manuscript, and `MANUSCRIPT-NOTES.md` — the concrete edits it needed |
 
 ### The formalization, bottom-up
 
