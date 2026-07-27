@@ -1,0 +1,30 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# LaTeX build artifacts.  The typeset manuscript itself is tracked, so that the
+# repository carries the paper it certifies; only the intermediates are ignored.
+*.aux
+*.log
+*.out
+*.pdf
+!paper/rank-r.pdf
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.toc
+*.bbl
+*.blg
+
+# Saved web pages and manuscript-draft diffs: local scratch, not project content
+Physics.html
+*.patch
+
+# Working notes and the numerical pre-flight harness: process, not result
+ephemeral/
+
+# Lean / Lake
+/.lake/
+# lake-manifest.json is deliberately NOT ignored: it pins the exact Mathlib
+# revision, which is what makes the build reproducible.
