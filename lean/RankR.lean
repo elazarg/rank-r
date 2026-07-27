@@ -6,3 +6,4 @@ import RankR.Factor
 import RankR.Main
 import RankR.Skew
 import RankR.Kraus
+import RankR.Sectors

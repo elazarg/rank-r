@@ -306,6 +306,15 @@ Each step ends compiling; each maps to a labeled equation.
 
   where the first bracket is PSD by A2 + A3, and the second is exactly what A6
   and A8 bound. Entrywise algebra; grindable.
+
+  **Indexing note.** The manuscript's Kraus index `a < b` needs a linear order,
+  which an arbitrary `Fintype U` has not got. Use the UNORDERED family over all
+  of `U × U`: since `L_ba = −L_ab` and `L_aa = 0`, `∑_{a,b} L_ab X L_ab* = 2 Λ_E(X)`,
+  so the double family over `(U × U) × (V × V)` realizes `Φ₄ = 4Φ`. Every
+  coefficient stays an integer; multiply the two displays above by 4.
+  (`skewUnit a a = single a a 1 - single a a 1 = 0` in Lean — but note a naive
+  numerical transcription that *assigns* `L[a,b]=1; L[b,a]=-1` gets `-1` on the
+  diagonal instead of `0`, which silently breaks the factor of 2.)
 - **A5 — `Φ(P₋) = 𝒯𝒯*`** (`eq:Phi-Pminus-TTstar`, D2 #3). Define `𝒯` as a
   matrix with columns indexed by `(edge, α, β)` — fixing the column indexing
   the paper never states (MANUSCRIPT-NOTES §4). **Budget the most debugging
