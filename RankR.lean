@@ -16,3 +16,5 @@ import RankR.Assemble
 import RankR.Restrict
 import RankR.Synthesis
 import RankR.Theorem
+import RankR.Antisym
+import RankR.FGP
