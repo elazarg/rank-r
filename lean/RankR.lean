@@ -4,3 +4,5 @@ import RankR.Elementary
 import RankR.Operator
 import RankR.Factor
 import RankR.Main
+import RankR.Skew
+import RankR.Kraus
