@@ -353,11 +353,17 @@ since `Φ₄(Ppos) ⪰ 0` already follows from `qform_Ppos_nonneg` + `qform_Phi4
 Checked by `preflight.py` ("Prop 2.2 residual"), seven `(dU,dV,s)` triples
 including `s = 1`, where `Pneg = 0` and the bracket vanishes identically.
 
-**The bracket is SINGULAR in every case tested** — min eigenvalue `0` to
-machine precision, not merely nonnegative. The inequality is saturated, so no
-step of A5–A8 may lose any slack. This is the second place in the development
-where the margin is exactly zero (the other is D2 #1), and it is the reason A6
-must go through the exact SOS identity rather than the Cauchy–Schwarz chain.
+The bracket is singular in every case tested, but that is **structural, not
+tightness**: `δ_e` is in its kernel because every column of the synthesis map is
+orthogonal to `δ_e` (A7) while `ρ₀ δ_e = s·δ_e`. On `δ_e^⊥` the bracket's
+positivity is *equivalent* to the frame bound
+
+    ‖W‖² ≤ 2(s−1),     W the matrix with columns  placeQ (L_α ⊗ M_β) ζᵢⱼ
+
+which is attained at `(dU,dV,s) = (2,2,2)` (`‖W‖² = 2.000000`) and has slack
+elsewhere — e.g. `2.70` against a target of `4` at `(3,2,3)`. So A6 does have
+room, unlike D2 #1. The SOS route is still preferable, but for grindability
+rather than because the margin is zero.
 
 A route that avoids constructing `𝒯` as a matrix at all: by `qform_krausSum`
 and `qform_rankOne`,
@@ -368,7 +374,25 @@ and `qform_rankOne`,
 so A5 becomes an adjoint-move plus `qform_rankOne`, and A7 becomes
 `⟪δ_e, placeQ N ζᵢⱼ⟫ = 0` for symmetric `N` — which follows from
 `transpose_eq_self_of_mem_doubleSkew` ∘ `kron_mem_doubleSkew`, both already
-proved in `Skew.lean`. What is left is genuinely A6.
+proved in `Skew.lean`. All four of `Φ(Pneg) = W Wᴴ`, `‖W‖² ≤ 2(s−1)`,
+`W ⊥ δ_e`, and the SOS identity below are numerically verified in exactly these
+conventions.
+
+The SOS identity, in this normalization (`ζᵢⱼ` unnormalized, `‖L_ab‖₂² = 2`),
+is the manuscript's `eq:sos-complete-graph` doubled:
+
+    2(s−1)‖c‖² − ‖𝒯c‖²
+      = (s−1) ∑_{i<j} [ ½‖K_ij‖₂² − ‖K_ij ēᵢ‖² − ‖K_ij ēⱼ‖² ]
+        + ∑_k ∑_{e<f incident to k} ‖v_{k,e} − v_{k,f}‖²
+
+with `K_ij = ∑_{α,β} c^{(ij)}_{αβ} L_α ⊗ M_β`, and `v_{k,e}` as in the
+manuscript. The edge brackets are exactly `DoubleSkewBound` applied to
+`K_ij ∈ doubleSkew` (via `sum_smul_kron_mem_doubleSkew`) with the orthonormal
+pair `ēᵢ, ēⱼ` (via `orthonormal_conj`); the vertex terms are manifestly ≥ 0.
+
+Going from `‖𝒯c‖² ≤ 2(s−1)‖c‖²` to the operator form `W Wᴴ ⪯ 2(s−1)·I` is the
+square-root-free step: `‖Wᴴy‖⁴ = |⟪W(Wᴴy), y⟫|² ≤ ‖W(Wᴴy)‖²‖y‖² ≤ 2(s−1)‖Wᴴy‖²‖y‖²`,
+then cancel.
 
 ### Phase B — shrink the trusted surface to FGP's literal statement (D3 + tractable D4)
 

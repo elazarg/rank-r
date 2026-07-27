@@ -562,8 +562,12 @@ def check_prop22_bracket():
     content of Prop 2.2 is that the bracket is PSD.  This isolates exactly what
     the complete-graph argument has to deliver.
 
-    Note the bracket is SINGULAR in every case tested -- the bound is saturated,
-    not merely satisfied.  There is no slack to lose in the proof.
+    The bracket is SINGULAR in every case tested, but that is structural rather
+    than a sign of tightness: delta_e lies in its kernel by construction, since
+    every column of the synthesis map is orthogonal to delta_e (eq:T-orthogonal)
+    and rho0 delta_e = s delta_e.  On delta_e's orthogonal complement the
+    bracket's positivity is equivalent to the frame bound ||W||^2 <= 2(s-1),
+    which is attained at (dU,dV,s) = (2,2,2) but has slack elsewhere.
     """
     bad = []
     rows = []
@@ -610,7 +614,7 @@ def check_prop22_bracket():
     report("Prop 2.2 residual  2s^2.H = s.Phi(Ppos) + bracket, bracket >= 0",
            not bad,
            f"min eigenvalue of bracket over all trials = {min(rows):.3e} "
-           f"(max {max(rows):.3e} -- saturated, the bound has no slack)"
+           f"(kernel contains delta_e by construction)"
            if not bad else str(bad[:3]))
 
 
