@@ -18,6 +18,6 @@ __pycache__/
 /*.blg
 
 # Lean / Lake
-lean/.lake/
+/.lake/
 # lake-manifest.json is deliberately NOT ignored: it pins the exact mathlib and
 # Physlib revisions, which is what makes a build reproducible.

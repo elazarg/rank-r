@@ -1,6 +1,6 @@
 # Notes on `rank-r.tex` from formalizing it
 
-Everything here survived both the numerical pre-flight (`preflight.py`, 20/20)
+Everything here survived both the numerical pre-flight (`preflight.py`, 21/21)
 and, where formalized, Lean. **Nothing below is a claim that the manuscript is
 wrong.** These are places where the write-up asserts something a reader cannot
 check at the stated level of detail, uses a convention that defeats

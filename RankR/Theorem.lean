@@ -10,7 +10,6 @@ open Matrix Finset ComplexConjugate
 
 variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] {s : ℕ}
 
-set_option maxHeartbeats 400000 in
 /-- The Bessel bound for the frame `wvec`, sharpened on the orthogonal complement
 of `δ_e`. -/
 theorem qform_Phi4_Pneg_le (hFGP : DoubleSkewBound U V) (hs : 0 < s)

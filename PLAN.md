@@ -26,19 +26,13 @@ which no amount of grinding produces.
 
 ## 1. Setup
 
-```
-lean/
-  lean-toolchain      leanprover/lean4:v4.32.0
-  lakefile.toml       mathlib @ v4.32.0, Physlib @ master
-  RankR/
-    Conventions.lean  §1 conventions + main statement + FGP interface (Milestone 0)
-```
+The repository root *is* the Lake package: `lakefile.toml`, `lean-toolchain`
+(`leanprover/lean4:v4.32.0`), `RankR.lean` and `RankR/`, alongside the
+manuscript sources and `preflight.py`.
 
 Build:
 
 ```bash
-cd /home/elazarg/workspace/quantum/lean
-lake update            # resolves mathlib + Physlib
 lake exe cache get     # Mathlib oleans (do NOT skip; source build is hours)
 lake build RankR
 ```
