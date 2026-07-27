@@ -253,14 +253,23 @@ Each ends in a checkable artifact. No `sorry` at a milestone close;
   "regardless of whether those factors are adjacent" informality entirely.
   All definitions were checked numerically before any proof was attempted.
 
-46 declarations, one `sorry`.  What remains for Theorem 1.1:
+- **Range factorization — DONE.** `RankR/Factor.lean`, no `sorry`.
+  `exists_rankFactor : ∀ C, ∃ e d, Orthonormal ℂ e ∧ C = rankFactor e d`,
+  with the index type `Fin (finrank (range (toEuclideanLin C)))`.  Built from
+  `stdOrthonormalBasis` of the range submodule plus the expansion
+  `x = ∑ᵢ ⟪eᵢ,x⟫ eᵢ` applied to each column.  Note this proves `C = ∑ᵢ|eᵢ⟩⟨dᵢ|`
+  directly, without ever forming the range projection `P` -- see
+  MANUSCRIPT-NOTES.md item 5.
 
-1. **Prop 2.2** (`H_r ⪰ 0`) -- tier D2, the real content.
-2. **Range factorization**: from `rank C ≤ r`, produce orthonormal `eᵢ` and
-   `dᵢ` with `C = rankFactor e d`.  Needs an orthonormal basis of `range C`
-   and `P_range C = C`; this is the last piece of routine infrastructure.
+**One `sorry` remains in the whole development: `rank_r_partial_trace`.**
+What it still needs:
 
-Everything between those two and the statement of Theorem 1.1 is now proved.
+1. **Prop 2.2** (`H_r ⪰ 0`) -- tier D2, the real content, gated on
+   `DoubleSkewBound`.
+2. **Bookkeeping**: `finrank (range (toEuclideanLin C)) = C.rank`, to convert
+   the factorization's index type into the manuscript's `r₀`.
+
+Every other ingredient of Theorem 1.1 is proved.
 
 **M0 — Conventions frozen.** `RankR/Conventions.lean` compiles. All D0 items are
 Lean definitions. `hsInner_self`, sharpness, and the trace–rank bound are proved.
