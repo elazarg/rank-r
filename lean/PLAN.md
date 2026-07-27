@@ -337,6 +337,39 @@ Each step ends compiling; each maps to a labeled equation.
 *Artifact: `rank_r_partial_trace (hFGP : DoubleSkewBound U V)` with no
 `sorry`; `#print axioms` clean.*
 
+### Phase A residual — the exact remaining statement
+
+A0–A4 are done (`Skew.lean`, `Kraus.lean`, `Sectors.lean`, `Phi.lean`; no
+`sorry`). Composing `HopScaled_eq`, `Ppos_sub_Pneg` and `Phi4_sub` reduces all
+of A5–A8 to a single operator inequality:
+
+    s · Φ₄(Pneg)  ⪯  8s(s−1)·I − 8(s−1)·ρ₀
+
+equivalently, in unscaled `Φ = Φ₄/4` and with `2s²H = s·Φ(Ppos) + bracket`,
+
+    bracket := 2s(s−1)·I − 2(s−1)·ρ₀ − s·Φ(Pneg)  ⪰  0
+
+since `Φ₄(Ppos) ⪰ 0` already follows from `qform_Ppos_nonneg` + `qform_Phi4_nonneg`.
+Checked by `preflight.py` ("Prop 2.2 residual"), seven `(dU,dV,s)` triples
+including `s = 1`, where `Pneg = 0` and the bracket vanishes identically.
+
+**The bracket is SINGULAR in every case tested** — min eigenvalue `0` to
+machine precision, not merely nonnegative. The inequality is saturated, so no
+step of A5–A8 may lose any slack. This is the second place in the development
+where the margin is exactly zero (the other is D2 #1), and it is the reason A6
+must go through the exact SOS identity rather than the Cauchy–Schwarz chain.
+
+A route that avoids constructing `𝒯` as a matrix at all: by `qform_krausSum`
+and `qform_rankOne`,
+
+    qform (Φ₄ Pneg) x = ∑_{a,b,c,d} ∑_{i<j} ‖⟪ζᵢⱼ, (placeQ (L⊗M))ᴴ x⟫‖²
+                      = ∑_{a,b,c,d} ∑_{i<j} ‖⟪(placeQ (L⊗M)) ζᵢⱼ, x⟫‖²
+
+so A5 becomes an adjoint-move plus `qform_rankOne`, and A7 becomes
+`⟪δ_e, placeQ N ζᵢⱼ⟫ = 0` for symmetric `N` — which follows from
+`transpose_eq_self_of_mem_doubleSkew` ∘ `kron_mem_doubleSkew`, both already
+proved in `Skew.lean`. What is left is genuinely A6.
+
 ### Phase B — shrink the trusted surface to FGP's literal statement (D3 + tractable D4)
 
 After A, everything rests on `DoubleSkewBound` — Lemma 2.1 *as consumed*,

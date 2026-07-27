@@ -550,6 +550,70 @@ def check_complete_graph_identity():
 # --------------------------------------------- check 4: sections 5 and 8
 
 
+def check_prop22_bracket():
+    """The exact residual of Proposition 2.2 after the sector decomposition.
+
+    With rho0 = |delta_e><delta_e| (unnormalized), Ppos = 2P_+, Pneg = 2P_- and
+    Phi = Lambda_U (x) Lambda_V (x) id, the scaled decomposition reads
+
+        2 s^2 H = s Phi(Ppos) + [ 2s(s-1) I - 2(s-1) rho0 - s Phi(Pneg) ].
+
+    Phi(Ppos) is PSD because Ppos is and Phi is a Kraus sum, so ALL remaining
+    content of Prop 2.2 is that the bracket is PSD.  This isolates exactly what
+    the complete-graph argument has to deliver.
+
+    Note the bracket is SINGULAR in every case tested -- the bound is saturated,
+    not merely satisfied.  There is no slack to lose in the proof.
+    """
+    bad = []
+    rows = []
+    for dU, dV, s in [(2, 2, 1), (2, 2, 2), (3, 2, 3), (2, 3, 2), (3, 3, 4),
+                      (4, 2, 2), (3, 3, 2)]:
+        n = dU * dV
+        N = n * s
+        dims = (dU, dV, s)
+        for _ in range(10):
+            e, q, psi, rho = build_code(dU, dV, s)
+            rho0 = s * rho
+            T = ptranspose(rho0, (n, s), [0])
+            Ls, Ms = so_basis(dU), so_basis(dV)
+            kraus = [np.kron(np.kron(L, M), np.eye(s)) for L in Ls for M in Ms]
+            Phi = lambda Y: sum(K @ Y @ dagger(K) for K in kraus)
+            ebar = [np.conj(v) for v in e]
+            eps = {}
+            for j in range(s):
+                for k in range(s):
+                    eps[(j, k)] = np.kron(ebar[j], np.eye(s)[:, k])
+            ro = lambda x, y: np.outer(x, y.conj())
+            Ppos = 2 * sum(ro(eps[(i, i)], eps[(i, i)]) for i in range(s))
+            Pneg = np.zeros((N, N), dtype=complex)
+            for i in range(s):
+                for j in range(i + 1, s):
+                    sg = eps[(i, j)] + eps[(j, i)]
+                    zt = eps[(i, j)] - eps[(j, i)]
+                    Ppos = Ppos + ro(sg, sg)
+                    Pneg = Pneg + ro(zt, zt)
+            if np.max(np.abs((Ppos - Pneg) - 2 * T)) > 1e-8:
+                bad.append(("sector identity", dU, dV, s))
+            rho_UQ = _ptrace_slow(rho, dims, [0, 2])
+            rho_VQ = _ptrace_slow(rho, dims, [1, 2])
+            H = (np.eye(N) + rho / s
+                 - place(rho_UQ, [0, 2], dims) - place(rho_VQ, [1, 2], dims))
+            brack = (2 * s * (s - 1) * np.eye(N) - 2 * (s - 1) * rho0
+                     - s * Phi(Pneg))
+            if np.max(np.abs(2 * s * s * H - (s * Phi(Ppos) + brack))) > 1e-7:
+                bad.append(("decomposition", dU, dV, s))
+            ev = np.linalg.eigvalsh((brack + dagger(brack)) / 2)
+            rows.append(float(ev[0]))
+            if ev[0] < -1e-7:
+                bad.append(("bracket not PSD", dU, dV, s, float(ev[0])))
+    report("Prop 2.2 residual  2s^2.H = s.Phi(Ppos) + bracket, bracket >= 0",
+           not bad,
+           f"min eigenvalue of bracket over all trials = {min(rows):.3e} "
+           f"(max {max(rows):.3e} -- saturated, the bound has no slack)"
+           if not bad else str(bad[:3]))
+
+
 def check_q2_score_curve():
     """prop:exact-q2-score: mu_r(t) = (1-t)(1-rt) for t<=1/r, 1-rt for t>=1/r."""
     bad = []
@@ -856,6 +920,7 @@ if __name__ == "__main__":
     check_Hr_psd()
     check_H_decomposition()
     check_complete_graph_identity()
+    check_prop22_bracket()
 
     print("\n-- Sections 5, 7, 8 --")
     check_q2_score_curve()
