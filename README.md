@@ -21,8 +21,10 @@ theorem RankR.rank_r_partial_trace_of_FGP_square
 ```
 
 `#print axioms RankR.rank_r_partial_trace_of_FGP_square` reports only
-`propext, Classical.choice, Quot.sound`. There is no `sorry`, no `axiom`
-declaration, no `native_decide` and no `set_option` anywhere in `RankR/`.
+`propext, Classical.choice, Quot.sound`, and no declaration uses `sorry`,
+`axiom`, `native_decide` or `set_option`. The axiom half of that claim is not
+merely asserted: `RankR/Axioms.lean` wraps `#print axioms` in `#guard_msgs`
+for each headline theorem, so the build fails if it ever stops holding.
 
 The sole hypothesis is `FGPBound (Fin d) (Fin d)`: the double-antisymmetric
 projection estimate of Fu–Gao–Park [arXiv:2607.21367] on $(\mathbb C^d)^{\otimes4}$,
@@ -53,6 +55,12 @@ The sharpness claims around Theorem 1.1 are covered too.
 `rank_r_partial_trace_of_FGP_square_strict` says the bound is *strict* for
 nonzero `C` with `rank C < r`, and `rank_eq_of_eq_rank_r_partial_trace_of_FGP_square`
 is the stated consequence: equality for nonzero `C` forces `rank C = r`.
+
+`RankR/OneSided.lean` adds the one-sided bound `‖Tr_j C‖₂² ≤ r‖C‖₂²`
+(`lem:one-sided-partial-trace`), also unconditional. The manuscript proved it by
+trace-norm duality; here a partial trace of a rank-one operator is a matrix
+product, so Hilbert–Schmidt submultiplicativity and Cauchy–Schwarz over the range
+factorization suffice, and the Schatten-1 norm appears nowhere.
 
 `RankR/Optimal.lean` closes the other half, and needs no hypothesis at all —
 not even Fu–Gao–Park. It builds the extremizer `projWit = P_r ⊗ |v⟩⟨w|`,
@@ -88,7 +96,7 @@ revision.
 
 | Path | Contents |
 | --- | --- |
-| `RankR/` | the formalization (22 files) |
+| `RankR/` | the formalization (24 files) |
 | `paper/` | the manuscript |
 
 ### The formalization, bottom-up
@@ -112,6 +120,8 @@ revision.
 | `Theorem` | Proposition 2.2 and Theorem 1.1 given the double-skew bound |
 | `Antisym`, `FGP`, `Extend` | the antisymmetrizer, **Theorem 1.1 from Fu–Gao–Park** |
 | `Optimal` | the extremizer, and optimality of the coefficients `r`, `1/r` |
+| `OneSided` | HS submultiplicativity, and `lem:one-sided-partial-trace` |
+| `Axioms` | the axiom surface, checked by the build |
 
 ## A note on provenance
 

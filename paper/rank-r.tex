@@ -236,7 +236,8 @@ forces $b\ge1/r$.
 \end{remark}
 
 The proof of \cref{thm:rank_r}, and of every result it depends on, has been
-formalized in Lean~4, as have the statements of \cref{rem:optimality}.
+formalized in Lean~4, as have the statements of \cref{rem:optimality} and
+\cref{lem:one-sided-partial-trace}.
 \Cref{app:formal} records the repository, the toolchain and Mathlib pins, the
 reported axioms, and the correspondence between the formal and informal
 statements.
@@ -772,6 +773,74 @@ This proves \cref{eq:Phi-Pminus-goal}, and therefore
 $H_r^{(0)}\succeq0$ by \cref{eq:H-decomposition}.
 \end{proof}
 
+\begin{remark}[Transpose parity, and where the trace term comes from]
+\label[remark]{rem:parity}
+The only structural input to \cref{eq:T-orthogonal} is that every $K$ in the
+span of $\{L\otimes M\}$ satisfies $K^T=K$, and that holds because a tensor
+product of an \emph{even} number of skew-symmetric factors is symmetric.  Had
+the number of factors been odd, one would have $K^T=-K$, the two terms of
+\cref{eq:T-orthogonal} would add instead of cancelling, and $\ran\mathcal T$
+would not lie in $\delta_e^\perp$.  The argument would then yield only
+$\mathcal T\mathcal T^*\preceq(r-1)I$ in place of
+$(r-1)(I-\Pi_e)$, giving $rI+\rho_0-\iota_{UQ}(\rho^0_{UQ})
+-\iota_{VQ}(\rho^0_{VQ})\succeq0$ and hence the coefficient $1$ rather than
+the sharp $1/r$ in front of $\abs{\Tr C}^2$.
+
+So the $\frac1r\abs{\Tr C}^2$ term of \cref{thm:rank_r} is exactly the
+contribution of the single protected direction $\delta_e$, and transpose
+parity is what protects it.  This also indicates which generalizations can be
+expected to keep the sharp trace coefficient: those built from an even number
+of skew factors.
+\end{remark}
+
+\begin{remark}[The marginal inequality as an $r$-positivity statement]
+\label[remark]{rem:operator-ineq-as-map}
+Write $\Delta(X):=\Tr(X)I$, let $\tau$ denote transposition, and recall
+$\mathcal R_\alpha(X)=\Tr(X)I+\alpha X$ from \cref{cor:tensor-square}.  On a
+product operator $X_U\otimes X_V$ one has
+$\tau(X_U\otimes X_V)=X_U^T\otimes X_V^T$ and therefore
+$\Lambda_U(X_U^T)=t_UI-X_U$ with $t_U:=\Tr X_U$, so
+$(\Lambda_U\otimes\Lambda_V)\circ\tau
+=\mathcal R^U_{-1}\otimes\mathcal R^V_{-1}$.  Adding
+$(r-1)\bigl(t_Ut_V I-\frac1rX_U\otimes X_V\bigr)$ gives
+\[
+    rt_Ut_V\,I
+    -t_U\,I\otimes X_V
+    -t_V\,X_U\otimes I
+    +\tfrac1r\,X_U\otimes X_V
+    =
+    r\left(t_UI-\tfrac1rX_U\right)\otimes\left(t_VI-\tfrac1rX_V\right),
+\]
+and since both sides are linear and product operators span, for every $r\ge1$
+\begin{equation}
+\label{eq:map-identity}
+    (\Lambda_U\otimes\Lambda_V)\circ\tau
+    +(r-1)\left(\Delta-\tfrac1r\id\right)
+    =
+    r\,\mathcal R^U_{-1/r}\otimes\mathcal R^V_{-1/r}.
+\end{equation}
+
+Now $\Tr_{UV}\rho_0=I_Q$ because the $e_i$ are orthonormal, and
+$\rho_0=r\Pi_e$, so
+$I-\Pi_e=\bigl[(\Delta-\tfrac1r\id)\otimes\id_Q\bigr](\rho_0)$.  Combining
+this with \cref{eq:Phi-rhoT} and \cref{eq:map-identity} rewrites \cref{eq:H_r}
+as
+\[
+    H_r^{(0)}
+    =
+    \bigl[
+      \bigl(r\,\mathcal R^U_{-1/r}\otimes\mathcal R^V_{-1/r}\bigr)
+      \otimes\id_Q
+    \bigr](\rho_0).
+\]
+Thus \cref{prop:operator_ineq} states precisely that
+$\mathcal R_{-1/r}\otimes\mathcal R_{-1/r}$ is $r$-positive; conjugating
+$\rho_0$ by a filter on the ancilla passes from orthonormal frames
+$e_1,\ldots,e_r$ to arbitrary vectors of Schmidt rank at most $r$.  Equivalently,
+it is the sufficiency half of \cref{cor:asymmetric-block-positive} at
+$a=b=1/r$, which is thus available already here, before \cref{thm:rank_r}.
+\end{remark}
+
 \section{Proof of the Rank-\texorpdfstring{$r$}{r}
 Partial-Trace Inequality}
 \label{sec:proof}
@@ -955,32 +1024,67 @@ $\Tr C=\sum_i\ip{d_i}{e_i}$,
     =r_0\norm{C}_2^2.
 \end{aligned}
 \]
-Thus
-\begin{align}
-    &
-    r\norm{C}_2^2
-    +\frac1r\abs{\Tr C}^2
-    -\left(
-      r_0\norm{C}_2^2
-      +\frac1{r_0}\abs{\Tr C}^2
-    \right)
-    \notag\\
-    &\qquad=
-    (r-r_0)\norm{C}_2^2
-    -\frac{r-r_0}{rr_0}\abs{\Tr C}^2
-    \notag\\
-    &\qquad\ge
-    (r-r_0)\norm{C}_2^2
-    -\frac{r-r_0}{r}\norm{C}_2^2
-    \notag\\
-    &\qquad\ge0.
+The passage from $r_0$ to $r$ is then a single identity: for all
+$r\ge r_0\ge1$,
+\begin{equation}
 \label{eq:rank-monotonicity}
-\end{align}
-If $r_0<r$ and $C\ne0$, the last inequality is strict. Combining
-\cref{eq:main-bound-r0} and \cref{eq:rank-monotonicity} proves
-\cref{eq:main-bound} and the exact-rank assertion in the sharpness
-paragraph.
+    r\norm{C}_2^2+\frac1r\abs{\Tr C}^2
+    -\left(
+      r_0\norm{C}_2^2+\frac1{r_0}\abs{\Tr C}^2
+    \right)
+    =
+    (r-r_0)
+    \left(
+      \norm{C}_2^2-\frac{\abs{\Tr C}^2}{rr_0}
+    \right).
+\end{equation}
+By the trace--rank bound the second factor is at least
+$\bigl(1-\frac1r\bigr)\norm{C}_2^2\ge0$, and the first is nonnegative, so the
+right-hand side is nonnegative.  Combining this with \cref{eq:main-bound-r0}
+proves \cref{eq:main-bound}.
+
+Both factors are moreover \emph{strictly} positive when $C\ne0$ and $r_0<r$:
+the first is at least $1$, and $r_0<r$ forces $r\ge2$, so
+$1-\frac1r\ge\frac12$ while $\norm{C}_2^2>0$.  Hence the inequality of
+\cref{eq:main-bound} is strict whenever $\rank C<r$ and $C\ne0$, which is the
+exact-rank assertion of \cref{rem:optimality}.
 \end{proof}
+
+\begin{remark}[Dependence on the constant of \cref{lem:double-skew}]
+\label[remark]{rem:constant-dependence}
+Every constant in \cref{sec:double-skew,sec:proof} is affine in the constant
+of \cref{eq:double-skew-action}, so what the argument proves is really a
+one-parameter family.  Suppose \cref{eq:double-skew-action} holds with
+$\frac12$ replaced by some $c$, that is,
+$\norm{Kx}^2+\norm{Ky}^2\le c\norm{K}_2^2$.  Tracking $c$ through
+\cref{eq:T-Cauchy,eq:T-operator-bound} turns \cref{eq:Phi-Pminus-goal} into
+$\Phi(P_-)\preceq2c(r-1)(I-\Pi_e)$, whence
+\[
+    H_r^{(0)}+(2c-1)(r-1)(I-\Pi_e)\succeq0,
+\]
+and contracting against $\delta_d$ as in the proof above gives, for nonzero
+$C$ with $r=\rank C$,
+\begin{equation}
+\label{eq:main-bound-parametrized}
+    \norm{\Tr_U C}_2^2+\norm{\Tr_V C}_2^2
+    \le
+    \bigl[r+(2c-1)(r-1)\bigr]\norm{C}_2^2
+    +\bigl[1-(2c-1)(r-1)\bigr]\frac1r\abs{\Tr C}^2 .
+\end{equation}
+At $c=\frac12$ this is \cref{eq:main-bound-exact-rank}.
+
+The value $\frac12$ cannot be improved: as noted after
+\cref{eq:T-operator-bound} it is already attained at $\dim U=\dim V=2$, where
+$\mathfrak{so}(2)\otimes\mathfrak{so}(2)$ is one-dimensional and every
+orthonormal pair saturates \cref{eq:double-skew-action}.  So necessarily
+$c\ge\frac12$, and \cref{eq:main-bound-parametrized} is never stronger than
+\cref{thm:rank_r}.  Its point is the opposite one.  The standing hypothesis is
+a single recent preprint; \cref{eq:main-bound-parametrized} records that the
+deduction from it is stable, in that if the estimate of
+\cite{fu2026solution2copydistillabilitywerner} should turn out to hold only
+with some larger $c$, the conclusion here degrades continuously in $c$ instead
+of failing outright.
+\end{remark}
 
 \section{Applications and Corollaries}
 \label{sec:applications}
@@ -1436,24 +1540,30 @@ If $\rank C\le r$, then
 \end{lemma}
 
 \begin{proof}
-By trace-norm duality,
+Write $C=\sum_{i=1}^{r_0}\ketbra{e_i}{d_i}$ as in
+\cref{eq:C-decomposition}, with $e_1,\ldots,e_{r_0}$ orthonormal and
+$r_0=\rank C\le r$.  Identify a vector $x$ of the bipartite space with its
+coefficient matrix $X$ relative to the chosen product basis, so that
+$\norm{X}_2=\norm{x}$.  The two partial traces of a rank-one operator are then
+matrix products,
+\begin{equation}
+\label{eq:ptrace-rank-one-product}
+    \Tr_2\ketbra{x}{y}=XY^*,
+    \qquad
+    \Tr_1\ketbra{x}{y}=\overline{X^*Y},
+\end{equation}
+both immediate from the definitions.  The Hilbert--Schmidt norm is
+submultiplicative, so each summand obeys
+$\norm{\Tr_j\ketbra{e_i}{d_i}}_2\le\norm{e_i}\norm{d_i}=\norm{d_i}$.  By the
+triangle inequality and then Cauchy--Schwarz,
 \[
-    \norm{\Tr_j C}_1
-    =
-    \sup_{\norm{Y}_\infty\le1}
-    \abs{\Tr\left[Y^*\Tr_j C\right]}
-    =
-    \sup_{\norm{Y}_\infty\le1}
-    \abs{\Tr\left[(I\otimes Y^*)C\right]}
-    \le\norm{C}_1,
+    \norm{\Tr_jC}_2^2
+    \le\Bigl(\sum_{i=1}^{r_0}\norm{d_i}\Bigr)^2
+    \le r_0\sum_{i=1}^{r_0}\norm{d_i}^2
+    =r_0\norm{C}_2^2
+    \le r\norm{C}_2^2,
 \]
-with the identity factor placed on the traced subsystem.  Hence
-\[
-    \norm{\Tr_j C}_2
-    \le\norm{\Tr_j C}_1
-    \le\norm{C}_1
-    \le\sqrt{r}\norm{C}_2.
-\]
+the equality being \cref{eq:C-decomposition}.
 \end{proof}
 
 Recall that $\Tr_1$ means the trace \emph{over} the first local
@@ -1968,7 +2078,9 @@ that manifest also pins every transitive dependency.  After \texttt{lake exe cac
 no \texttt{axiom} declaration, no \texttt{native\_decide} and no
 \texttt{set\_option}, and \texttt{\#print axioms} applied to the main theorem
 reports only \texttt{propext}, \texttt{Classical.choice} and
-\texttt{Quot.sound}.
+\texttt{Quot.sound}; the file \texttt{RankR/Axioms.lean} wraps that check in
+\texttt{\#guard\_msgs} for each headline theorem, so it is verified by the
+build rather than asserted here.
 \end{sloppypar}
 
 The formal counterpart of \cref{thm:rank_r} is
@@ -2013,6 +2125,10 @@ strictness for $\rank C<r$ & \texttt{rank\_r\_partial\_trace\_of\_FGP}\\
 equality forces $\rank C=r$ & \texttt{rank\_eq\_of\_eq\_rank\_r}\\
  & \texttt{\_partial\_trace\_of\_FGP\_square}\\
 trace--rank bound in \cref{sec:proof} & \texttt{normSq\_trace\_le}\\
+\cref{lem:one-sided-partial-trace} & \texttt{hsNormSq\_ptraceU\_le},\\
+ & \texttt{hsNormSq\_ptraceV\_le}\\
+\cref{eq:ptrace-rank-one-product} & \texttt{ptraceU\_rankOne},
+  \texttt{ptraceV\_rankOne}\\
 extremizer $P_r\otimes\ketbra{v}{w}$ & \texttt{projWit}\\
 its rank and its four norms & \texttt{rank\_projWit},
   \texttt{hsNormSq\_projWit},\\
@@ -2043,9 +2159,18 @@ except at two points, where it takes a shorter route:
 \cref{eq:Phi-Pminus-TTstar} is replaced by a Bessel-type duality that never
 forms $\mathcal T$ as a matrix, and the complete-graph identity of
 \cref{prop:sos-complete-graph} is not used, the vertex Cauchy--Schwarz estimate
-sufficing.  Those two displays are therefore not themselves covered.  Neither
-are the results of \cref{sec:applications}, of \cref{app:gram}, or of
-\cref{app:generic}.
+sufficing.  Those two displays are therefore not themselves covered.
+
+Of \cref{sec:applications}, only \cref{lem:one-sided-partial-trace} is covered,
+in the elementary form proved there rather than through trace-norm duality; the
+Schatten-$1$ norm appears nowhere in the development.  The remaining results of
+\cref{sec:applications}, and those of \cref{app:gram} and \cref{app:generic},
+are not covered.  Nor are \cref{eq:map-identity} or
+\cref{eq:main-bound-parametrized}: the former is an identity between maps, which
+the development never forms, and the latter is what the same argument yields
+from a modified hypothesis that the development does not carry.
+\Cref{rem:parity} is an observation about the mechanism of the formalized
+proof, not a further claim.
 
 % This appendix is independent of the main line of argument: nothing in
 % Sections 2-5 depends on it.  It records the algebraic defect structure

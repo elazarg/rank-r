@@ -20,3 +20,5 @@ import RankR.Antisym
 import RankR.FGP
 import RankR.Extend
 import RankR.Optimal
+import RankR.OneSided
+import RankR.Axioms
