@@ -328,38 +328,54 @@ Going from `‖𝒯c‖² ≤ 2(s−1)‖c‖²` to the operator form `W Wᴴ �
 square-root-free step: `‖Wᴴy‖⁴ = |⟪W(Wᴴy), y⟫|² ≤ ‖W(Wᴴy)‖²‖y‖² ≤ 2(s−1)‖Wᴴy‖²‖y‖²`,
 then cancel.
 
-### Phase B — shrink the trusted surface to FGP's literal statement (D3 + tractable D4)
+### Phase B — shrink the trusted surface to FGP's literal statement
 
-After A, everything rests on `DoubleSkewBound` — Lemma 2.1 *as consumed*,
-whose derivation is where this plan bets an error would hide. Phase B replaces
-that trust with FGP Thm 2.4 as literally published. Split it: the risky part
-is cheap, the expensive part is safe.
+**Revised: no SVD, no Ky Fan, no best-rank-2 approximation.** The manuscript
+routes through singular values — `s₁² + s₂² ≤ ½‖K‖₂²` via the best-rank-2
+approximation identity, then Ky Fan to get the action bound. That route needs
+complex SVD existence, which PLAN.md called "the one big rock". It can be
+skipped entirely.
 
-- **B1 — The index-matching (do first; no new library). NUMERICALLY CLEARED.**
-  `preflight.py` "Tier D3" now checks it: under
-  `1=U_out, 2=V_out, 3=U_in, 4=V_in`, `Q₋` is a projection with commuting
-  factors, `rank Q₋ = dim(so(d)⊗so(d))` exactly (d = 2,3,4 — so the range *is*
-  the vectorized double-skew space), every `vec K` is fixed by `Q₋` to machine
-  zero, and FGP's bound is attained at exactly `0.500000`. The relabeling is
-  correct; B1 in Lean is now transcription rather than investigation.
-  State `FGPBound d`
-  verbatim: antisymmetric projectors on pairs (1,3), (2,4) of `(ℂ^d)⊗⁴`,
-  Schmidt cut 12:34, overlap ≤ ½ for Schmidt rank ≤ 2. Prove the paper's
-  crossed-cut application equal to it under an explicit `Equiv` of the four
-  factors. **This is tier D3 itself — the top-risk step — and it needs only
-  reindexing.** Use the concrete model `∧²U ≅ {L : Lᵀ = −L}` with the HS
-  inner product; avoid Mathlib's inner-product-less `exteriorPower`.
-- **B2 — Zero-extension.** Coordinate-subspace inclusion preserves skewness
-  and nonzero singular values. Small.
-- **B3 — The two analytic links.** Ky Fan for `k = 2` in the easy direction
-  (`‖Kx‖² + ‖Ky‖² ≤ s₁² + s₂²`, spectral theorem on `KᴴK`; do not build
-  general Ky Fan), and the best-Schmidt-rank-2 identity
-  `eq:best-SR2-approximation`, which needs **complex SVD existence — the one
-  big rock**. SVD, Ky-Fan-2, and `∑sᵢ² = ‖·‖₂²` go in a `ForMathlib/`
-  subdirectory for upstreaming.
+With `P := |x⟩⟨x| + |y⟩⟨y|` for the orthonormal pair `x, y`:
 
-*Artifact: `rank_r_partial_trace (hFGP : FGPBound d)` — trusted surface
-exactly FGP's published statement. A legitimate stopping point.*
+    ‖Kx‖² + ‖Ky‖²  =  ‖KP‖₂²        and     rank (KP) ≤ 2
+    ⟪vec K, vec (KP)⟫  =  ⟪K, KP⟫_HS  =  ‖KP‖₂²
+    Q₋ (vec K) = vec K,  Q₋ a self-adjoint projection, so with A := ‖KP‖₂²,
+    A = ⟪vec K, Q₋ vec (KP)⟫ ≤ ‖K‖₂ · ‖Q₋ vec (KP)‖,
+    ‖Q₋ vec (KP)‖² = ⟪vec (KP), Q₋ vec (KP)⟫ ≤ ½A        [FGP, rank ≤ 2]
+    ⟹ A² ≤ ‖K‖₂² · ½A ⟹ A ≤ ½‖K‖₂².
+
+FGP is applied directly to `vec (KP)`, never to an optimizer, so no
+approximation theorem is needed; the last step is the same square-root-free
+cancellation used in `frame_le_of_synthesis_le`. Verified at `d = 2,3,4`.
+
+**The index matching (old B1) is a type-level identification, not a
+permutation.** For `K : Matrix (U × V) (U × V) ℂ` the vectorization is indexed
+by `(U × V) × (U × V)`, i.e. `(row_U, row_V, col_U, col_V)`. Reading those four
+slots as factors `1,2,3,4` puts `U_out = 1`, `V_out = 2`, `U_in = 3`,
+`V_in = 4` — so the antisymmetrized pairs *are* FGP's `(1,3)` and `(2,4)`, and
+the row:col cut *is* FGP's `12:34`, by construction of `vec`. What has to be
+proved is only that `Q₋` fixes `vec K` for `K ∈ doubleSkew`.
+
+**One definitional choice to flag.** FGP quantifies over pure states of Schmidt
+rank ≤ 2 across `12:34`. Stating it instead over matrices `M` with
+`rank M ≤ 2`, via `ψ = vec M`, avoids defining Schmidt rank at all. The
+identification `SR(vec M) = rank M` is standard, but it is a *rendering* of
+FGP's statement, not a theorem proved here — exactly the kind of thing the
+README says Lean cannot certify.
+
+Steps:
+
+- **B1 — `Antisym.lean`.** The two factor swaps, `Q₋` entrywise, `Q₋` is a
+  self-adjoint idempotent, and `Q₋ (vec K) = vec K` for `K ∈ doubleSkew`.
+- **B2 — `FGP.lean`.** State `FGPBound`, prove `FGPBound U V → DoubleSkewBound U V`
+  by the chain above.
+- **B3 — unequal dimensions.** FGP is stated on `(ℂ^d)^{⊗4}`. Zero-extension of
+  `U, V` into a common `ℂ^d` preserves skewness and Hilbert–Schmidt norm; this
+  is the only remaining piece, and it is reindexing.
+
+*Artifact: `rank_r_partial_trace (hFGP : FGPBound …)` — trusted surface exactly
+FGP's published statement.*
 
 ### Phases C–F — manuscript coverage, ordered by payoff/cost
 
