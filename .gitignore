@@ -3,21 +3,28 @@ venv/
 __pycache__/
 *.pyc
 
-# LaTeX build artifacts.  Scoped to the repo root with a leading slash: a bare
-# `*.log` also swallows support14-runs/*.log, which are Z3 run records, not
-# build output.
-/*.aux
-/*.log
-/*.out
-/*.pdf
-/*.synctex.gz
-/*.fls
-/*.fdb_latexmk
-/*.toc
-/*.bbl
-/*.blg
+# LaTeX build artifacts.  Unanchored: the manuscript lives in paper/.  The
+# earlier root-anchoring existed only to protect the Z3 run logs, which are now
+# under quitting-game/runs/ and ignored on their own line below.
+*.aux
+*.log
+*.out
+*.pdf
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.toc
+*.bbl
+*.blg
+
+# Saved web pages and manuscript-draft diffs: local scratch, not project content
+Physics.html
+*.patch
+
+# Solver run logs: reproducible from quitting-game/exact_self_loop_z3.py
+quitting-game/runs/
 
 # Lean / Lake
 /.lake/
-# lake-manifest.json is deliberately NOT ignored: it pins the exact mathlib and
-# Physlib revisions, which is what makes a build reproducible.
+# lake-manifest.json is deliberately NOT ignored: it pins the exact Mathlib
+# revision, which is what makes the build reproducible.

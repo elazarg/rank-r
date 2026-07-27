@@ -1,4 +1,4 @@
-# Changes to make in `rank-r.tex`
+# Changes to make in `paper/rank-r.tex`
 
 Every item below is a concrete edit: where, what is wrong or missing, and what
 to put instead. No mathematical error was found — these are places where the

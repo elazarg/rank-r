@@ -1,3 +1,0 @@
-exact convex-hull facets=34
-unknown boxes (10): [(0, 0, 0, 0), (0, 0, 0, 1), (0, 0, 1, 1), (0, 1, 0, 1), (0, 1, 1, 1), (1, 0, 0, 0), (1, 0, 0, 1), (1, 0, 1, 1), (1, 1, 0, 1), (1, 1, 1, 1)]
-support=14 previous=14 query=barrier result=unknown

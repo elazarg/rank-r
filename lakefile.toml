@@ -1,21 +1,11 @@
 name = "rankr"
 defaultTargets = ["RankR"]
 
-# Pinned to the same Mathlib revision that Physlib uses (v4.32.0), so that Lake
-# resolves a single consistent Mathlib for both dependencies.
+# Mathlib is the only dependency.
 [[require]]
 name = "mathlib"
 git = "https://github.com/leanprover-community/mathlib4.git"
 rev = "v4.32.0"
-
-# Physlib = the March 2026 merger of PhysLean and Timeroot/Lean-QuantumInfo.
-# We use its `QuantumInfo` library: Matrix.traceLeft/traceRight (partial trace),
-# MatrixMap + Choi/Kraus, IsPositive / IsCompletelyPositive, HermitianMat.
-# Only the transitive closure of what we `import` actually gets compiled.
-[[require]]
-name = "Physlib"
-git = "https://github.com/leanprover-community/physlib.git"
-rev = "master"
 
 [[lean_lib]]
 name = "RankR"

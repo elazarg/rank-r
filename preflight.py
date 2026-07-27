@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Pre-flight numerical checks for rank-r.tex (PLAN.md section 5).
+Pre-flight numerical checks for paper/rank-r.tex (PLAN.md section 5).
 
 Every check tests a specific labelled equation or inequality of the manuscript
 at small dimensions, before any Lean effort is spent on it.  A failure here is
 an afternoon; the same failure found at Milestone M3 is everything spent
 getting to M3.
 
-Conventions, taken from rank-r.tex section 1:
+Conventions, taken from paper/rank-r.tex section 1:
   - inner products conjugate-linear in the FIRST argument
   - vec(|x><y|) = x (x) conj(y)
   - Tr_U means the partial trace OVER the factor U

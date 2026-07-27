@@ -1,6 +1,6 @@
 # Formalization plan — rank-$r$ partial-trace inequality
 
-Target: `rank-r.tex`, "A Sharp Rank-$r$ Partial-Trace Inequality via Double-Skew
+Target: `paper/rank-r.tex`, "A Sharp Rank-$r$ Partial-Trace Inequality via Double-Skew
 Singular-Value Bounds" (July 26, 2026).
 
 ## 0. Why this is worth doing, and what that implies about ordering

@@ -14,7 +14,6 @@ included variable, so a single omnibus `variable` line silently gives `vec` a
 spurious `[DecidableEq m]` argument.
 -/
 import Mathlib
-import QuantumInfo.ForMathlib.Matrix
 
 namespace RankR
 
@@ -71,10 +70,12 @@ convention used in parts of the quantum-information literature; getting it
 backwards swaps the two sides of the main inequality, which is symmetric, so
 the error would NOT show up in Theorem 1.1 -- it surfaces only in the
 asymmetric Theorem 5.9. -/
-abbrev ptraceU (C : Matrix (U × V) (U × V) ℂ) : Matrix V V ℂ := C.traceLeft
+abbrev ptraceU (C : Matrix (U × V) (U × V) ℂ) : Matrix V V ℂ :=
+  Matrix.of fun b c => ∑ a, C (a, b) (a, c)
 
 /-- `Tr_V C`: the partial trace **over** the factor `V`, leaving an operator on `U`. -/
-abbrev ptraceV (C : Matrix (U × V) (U × V) ℂ) : Matrix U U ℂ := C.traceRight
+abbrev ptraceV (C : Matrix (U × V) (U × V) ℂ) : Matrix U U ℂ :=
+  Matrix.of fun a a' => ∑ b, C (a, b) (a', b)
 
 end Bipartite
 

@@ -26,9 +26,7 @@ from math import gcd, lcm
 import itertools
 import json
 from pathlib import Path
-import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "vendor"))
 import numpy as np
 from scipy.spatial import ConvexHull
 import sympy as sp

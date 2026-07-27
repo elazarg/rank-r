@@ -248,7 +248,7 @@ theorem hsInner_ptraceU_rankOne (x y z w : EuclideanSpace ℂ (U × V)) :
       = ∑ c, ∑ b, ∑ a, ∑ a',
           conj (x (a, b)) * z (a', b) * (y (a, c) * conj (w (a', c))) := by
     simp only [hsInner, Matrix.trace, Matrix.diag_apply, Matrix.mul_apply,
-      Matrix.conjTranspose_apply, RCLike.star_def, ptraceU_apply, rankOne,
+      Matrix.conjTranspose_apply, RCLike.star_def, rankOne,
       Matrix.of_apply, map_sum, map_mul, Complex.conj_conj]
     refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun b _ => ?_
     rw [Finset.sum_mul_sum]
@@ -271,7 +271,7 @@ theorem hsInner_ptraceV_rankOne (x y z w : EuclideanSpace ℂ (U × V)) :
       = ∑ a', ∑ a, ∑ b, ∑ b',
           conj (x (a, b)) * z (a, b') * (y (a', b) * conj (w (a', b'))) := by
     simp only [hsInner, Matrix.trace, Matrix.diag_apply, Matrix.mul_apply,
-      Matrix.conjTranspose_apply, RCLike.star_def, ptraceV_apply, rankOne,
+      Matrix.conjTranspose_apply, RCLike.star_def, rankOne,
       Matrix.of_apply, map_sum, map_mul, Complex.conj_conj]
     refine Finset.sum_congr rfl fun a' _ => Finset.sum_congr rfl fun a _ => ?_
     rw [Finset.sum_mul_sum]
