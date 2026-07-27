@@ -363,12 +363,16 @@ slots as factors `1,2,3,4` puts `U_out = 1`, `V_out = 2`, `U_in = 3`,
 the row:col cut *is* FGP's `12:34`, by construction of `vec`. What has to be
 proved is only that `Q₋` fixes `vec K` for `K ∈ doubleSkew`.
 
-**One definitional choice to flag.** FGP quantifies over pure states of Schmidt
-rank ≤ 2 across `12:34`. Stating it instead over matrices `M` with
-`rank M ≤ 2`, via `ψ = vec M`, avoids defining Schmidt rank at all. The
-identification `SR(vec M) = rank M` is standard, but it is a *rendering* of
-FGP's statement, not a theorem proved here — exactly the kind of thing the
-README says Lean cannot certify.
+**How "Schmidt rank ≤ 2" is rendered.** FGP quantifies over pure states of
+Schmidt rank ≤ 2 across `12:34`. State it instead over the explicit two-term
+form: quantify over `u₁, u₂, v₁, v₂` and take `M = |u₁⟩⟨v₁| + |u₂⟩⟨v₂|`,
+`ψ = vec M`. A vector has Schmidt rank ≤ 2 across that cut *precisely* when it
+is of this form, so this is the definition unrolled rather than a theorem about
+it — no Schmidt-rank definition and no `Matrix.rank` API is needed anywhere.
+
+It also lands exactly where the chain needs it:
+`KP = K(|x⟩⟨x| + |y⟩⟨y|) = |Kx⟩⟨x| + |Ky⟩⟨y|` is already in the two-term form,
+so `rank (KP) ≤ 2` never has to be proved.
 
 Steps:
 
