@@ -21,6 +21,9 @@ __pycache__/
 Physics.html
 *.patch
 
+# Working notes and the numerical pre-flight harness: process, not result
+ephemeral/
+
 # Lean / Lake
 /.lake/
 # lake-manifest.json is deliberately NOT ignored: it pins the exact Mathlib
