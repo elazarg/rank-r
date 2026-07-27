@@ -14,3 +14,5 @@ import RankR.Edge
 import RankR.Bessel
 import RankR.Assemble
 import RankR.Restrict
+import RankR.Synthesis
+import RankR.Theorem

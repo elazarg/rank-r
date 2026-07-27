@@ -129,31 +129,6 @@ theorem rank_r_of_operatorIneq (hOp : OperatorIneq U V)
     exact step1.trans (rank_mono (hsNormSq_nonneg _) (Complex.normSq_nonneg _)
       hpos hrank htr)
 
-/-- **Proposition 2.2** (`prop:operator_ineq`) from the double-skew bound of
-Lemma 2.1.
-
-The manuscript's argument: `ρ^{T_UV} = (1/r)(P₊ - P₋)`; the map
-`Λ_E(X) = Tr(X)I - Xᵀ` is completely positive with Choi operator `I - F`;
-`Φ = Λ_U ⊗ Λ_V ⊗ id_Q` satisfies `Φ(P₋) = 𝒯𝒯*` for the synthesis map `𝒯` of
-`eq:T-definition`; a complete-graph Cauchy-Schwarz over the edges of `K_r`,
-with the double-skew bound applied edgewise, gives `‖𝒯‖² ≤ r - 1`; and
-`ran 𝒯 ⊆ ψ^⊥` upgrades this to `𝒯𝒯* ⪯ (r-1)(I - ρ)`. -/
-theorem operatorIneq_of_doubleSkew (hFGP : DoubleSkewBound U V) :
-    OperatorIneq U V := by
-  sorry
-
-/-- **Theorem 1.1** (`thm:rank_r`).  For `C` of rank at most `r`,
-`‖Tr_U C‖₂² + ‖Tr_V C‖₂² ≤ r‖C‖₂² + (1/r)|Tr C|²`.
-
-`hFGP` is the Fu-Gao-Park import, carried as a hypothesis rather than an
-`axiom`, so `#print axioms` remains meaningful and the dependency is visible in
-the type. -/
-theorem rank_r_partial_trace (hFGP : DoubleSkewBound U V)
-    (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (hr : 0 < r) (hrank : C.rank ≤ r) :
-    hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
-      ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
-  rank_r_of_operatorIneq (operatorIneq_of_doubleSkew hFGP) C r hr hrank
-
 end Assembly
 
 end RankR

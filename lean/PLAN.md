@@ -226,116 +226,36 @@ Each phase ends in a checkable artifact. No `sorry` at a phase close;
 
 ### Status
 
-`RankR/` builds clean. **`rank_r_of_operatorIneq` — Theorem 1.1 given
-Proposition 2.2 — is fully proved**, `#print axioms` showing only
-`propext, Classical.choice, Quot.sound`.
+**Phase A is COMPLETE.** `rank_r_partial_trace` is proved with no `sorry`
+anywhere in the project; `#print axioms` on it shows only
+`propext, Classical.choice, Quot.sound`. Its sole hypothesis is
+`DoubleSkewBound U V` — Lemma 2.1 as consumed — carried in the type.
 
-| File | Content | `sorry` |
-| --- | --- | --- |
-| `Conventions.lean` | §1 conventions, `so(U)⊗so(V)`, the Fu–Gao–Park interface `DoubleSkewBound` | 0 |
-| `HS.lean` | Hilbert–Schmidt layer, transported from `EuclideanSpace` (gap A) | 0 |
-| `Elementary.lean` | `rank_mono`, the four contraction identities in Gram form, `normSq_trace_le`, sum reindexings | 0 |
-| `Operator.lean` | `qform`, `placeUQ`/`placeVQ`, `margUQ`/`margVQ`, the contraction identities in operator form | 0 |
-| `Factor.lean` | `exists_rankFactor` | 0 |
-| `Main.lean` | `qform` algebra, `finrank = rank`, `HopScaled`, `OperatorIneq`, **Theorem 1.1** | 1 |
+| File | Content |
+| --- | --- |
+| `Conventions` | §1 conventions, `doubleSkew`, the FGP interface |
+| `HS` | Hilbert–Schmidt layer, transported from `EuclideanSpace` |
+| `Elementary` | `rank_mono`, contraction identities, `normSq_trace_le` |
+| `Operator` | `qform`, `placeUQ`/`placeVQ`, `margUQ`/`margVQ` |
+| `Factor` | `exists_rankFactor` |
+| `Main` | `qform` algebra, `HopScaled`, `OperatorIneq`, Thm 1.1 given Prop 2.2 |
+| `Skew` | `skewUnit`, `Kᵀ = K` on `doubleSkew`, `orthonormal_conj` |
+| `Kraus` | `qform (A Y Aᴴ) x = qform Y (Aᴴx)`, PSD preservation |
+| `Sectors` | doubled sectors, `Ppos − Pneg = 2·ρ₀ᵀ` |
+| `Phi` | `Φ₄` kernel, `eq:Phi-expansion`, `eq:Phi-rhoT`, `HopScaled_eq` |
+| `Synth` | `Tsyn`, `eq:T-by-vertices`, the vertex bound |
+| `Frame` | adjoint move, `qform Pneg`, `eq:T-orthogonal` |
+| `Edge` | `edge_double_skew` — the *only* consumer of `DoubleSkewBound` |
+| `Assemble` | frame form of `Φ₄(Pneg)` |
+| `Bessel` | synthesis→frame duality, `‖K‖₂² ≤ 16‖c‖²` |
+| `Restrict` | Bessel bound sharpened off `δ_e` |
+| `Synthesis` | the coefficient-to-matrix map and the synthesis bound |
+| `Theorem` | **Prop 2.2 and Theorem 1.1** |
 
-**The single `sorry` is `operatorIneq_of_doubleSkew`** — Proposition 2.2 from
-the double-skew bound. That is tier D2, the manuscript's actual content.
-Everything else in §§1–3 is machine-checked.
-
-A structural note that shapes Phase A: the Lean `OperatorIneq` is deliberately
-the *post-Schmidt normal form* of the paper's Prop 2.2 — `Q = Fin s` with `qᵢ`
-the standard basis. That is all `rank_r_of_operatorIneq` consumes, so Phase A
-needs no Schmidt decomposition. (The paper's general-`ψ` form with
-`ρ_Q = I/r` would need it; nothing downstream does.)
-
-### Phase A — close `operatorIneq_of_doubleSkew` (= old M3)
-
-Highest value per effort: finishing it answers **"is the paper's own argument
-correct, granted Lemma 2.1."** No missing library theorems stand in the way;
-it is the same entrywise style as `Operator.lean`, roughly 3–4× the volume.
-Each step ends compiling; each maps to a labeled equation.
-
-- **A0 — Preflight extension. DONE.** `check_Hr_psd` now covers five
-  `(dU, dV, 1)` triples alongside the `r ≥ 2` ones, at 60 trials each; min
-  eigenvalue $-9.2\times10^{-16}$, suite still 19/19.  The `r = 1` case is
-  consumed by the assembly for every rank-one `C`, and degenerates the
-  complete-graph argument (no edges, `H = Φ(P₊)`).
-- **A1 — Skew groundwork.** Basis `L_ab = E_ab − E_ba`; membership of
-  `∑ c_αβ L_α ⊗ₖ M_β` in `doubleSkew`; `Kᵀ = K` on `doubleSkew` by span
-  induction from `(L⊗M)ᵀ = Lᵀ⊗Mᵀ = L⊗M`; conjugate of an orthonormal family
-  is orthonormal. Mechanical.
-- **A2 — `Φ` as an explicit Kraus sum**,
-  `Φ(Y) = ∑_{α,β} (L_α⊗M_β⊗I) Y (L_α⊗M_β⊗I)ᴴ`, entrywise like `placeUQ`.
-  **Skip the Choi/CP machinery entirely** — `Choi = I − F` is never needed:
-  `qform (A Y Aᴴ) x = qform Y (Aᴴx)` makes PSD-preservation two lines. This
-  drops the Physlib dependency for the phase (and retires the D1 table's
-  "`Λ_E` is CP via Choi" item).
-- **A3 — The sectors.** Exact statements, all verified numerically at
-  `(dU,dV,s)` ∈ {(2,2,2),(3,2,3),(2,3,2),(3,3,4),(2,2,1),(3,2,1)}:
-
-  With `εⱼₖ := ē_j ⊗ q_k` (so `εⱼₖ(p,m) = conj (e j p) · [m = k]`),
-  `σᵢⱼ := εᵢⱼ + εⱼᵢ`, `ζᵢⱼ := εᵢⱼ − εⱼᵢ`, define the **doubled** sectors
-
-      Ppos := 2 ∑ᵢ |εᵢᵢ⟩⟨εᵢᵢ| + ∑_{i<j} |σᵢⱼ⟩⟨σᵢⱼ|      ( = 2P₊ )
-      Pneg :=                     ∑_{i<j} |ζᵢⱼ⟩⟨ζᵢⱼ|      ( = 2P₋ )
-
-  Both are **manifestly PSD** — sums of `rankOne y y` — so no projection theory
-  is needed, and the `1/√2` of the paper's `η_ij` never appears. The identity
-  to prove is
-
-      Ppos − Pneg = 2 · ρ₀^{T_UV}                          (`eq:rho-partial-transpose`)
-
-  where `ρ₀ = rankOne (delta e) (delta e)` and the partial transpose is on the
-  `U × V` factor: `ρ₀^{T}_{(p,i),(p',i')} = ρ₀_{(p',i),(p,i')}`. Define that
-  transpose entrywise, as `placeUQ` is defined.
-- **A4 — The decomposition.** Two steps, both verified numerically on the
-  triples above. First `eq:Phi-rhoT`, which scales to something with **no
-  denominators at all**:
-
-      Φ(ρ₀^{T_UV}) = I − placeUQ (margUQ ρ₀) − placeVQ (margVQ ρ₀) + ρ₀
-
-  (the manuscript's `(1/r)I − ρ_UQ⊗I_V − I_U⊗ρ_VQ + ρ`, multiplied through by
-  `r`). Then, purely by rearranging that against the definition of `HopScaled`:
-
-      HopScaled e = s(s−1)·I − (s−1)·ρ₀ + s·Φ(ρ₀^{T_UV})
-
-  Combined with A3 this gives the target in doubled form:
-
-      2 · HopScaled = s·Φ(Ppos) + [ 2s(s−1)·I − 2(s−1)·ρ₀ − s·Φ(Pneg) ]
-
-  where the first bracket is PSD by A2 + A3, and the second is exactly what A6
-  and A8 bound. Entrywise algebra; grindable.
-
-  **Indexing note.** The manuscript's Kraus index `a < b` needs a linear order,
-  which an arbitrary `Fintype U` has not got. Use the UNORDERED family over all
-  of `U × U`: since `L_ba = −L_ab` and `L_aa = 0`, `∑_{a,b} L_ab X L_ab* = 2 Λ_E(X)`,
-  so the double family over `(U × U) × (V × V)` realizes `Φ₄ = 4Φ`. Every
-  coefficient stays an integer; multiply the two displays above by 4.
-  (`skewUnit a a = single a a 1 - single a a 1 = 0` in Lean — but note a naive
-  numerical transcription that *assigns* `L[a,b]=1; L[b,a]=-1` gets `-1` on the
-  diagonal instead of `0`, which silently breaks the factor of 2.)
-- **A5 — `Φ(P₋) = 𝒯𝒯*`** (`eq:Phi-Pminus-TTstar`, D2 #3). Define `𝒯` as a
-  matrix with columns indexed by `(edge, α, β)` — fixing the column indexing
-  the paper never states (MANUSCRIPT-NOTES §4). **Budget the most debugging
-  time here.**
-- **A6 — The bound `‖𝒯c‖² ≤ (r−1)‖c‖²`.** Design decision: **use §4's
-  `eq:sos-complete-graph` identity, not §2's Cauchy–Schwarz chain
-  (`eq:T-Cauchy`).** The SOS route turns the zero-slack constant chain (D2 #1)
-  into: one *exact algebraic identity* (preflight-exact to $1.8\times10^{-15}$)
-  + edgewise `DoubleSkewBound` on the bracket `½‖K‖² − ‖Kēᵢ‖² − ‖Kēⱼ‖²`
-  + a manifestly nonnegative vertex-variance sum. Identities grind well in
-  Lean; chained inequalities do not. Proves Prop 4.3 as a byproduct. Fallback:
-  `eq:T-by-vertices` + per-vertex Cauchy–Schwarz.
-- **A7 — `⟨δ_e, 𝒯c⟩ = 0`** (`eq:T-orthogonal`, D2 #5), from `Kᵀ = K`. Short.
-- **A8 — Assembly.** `𝒯*ψ = 0` from A7, so
-  `‖𝒯*x‖² = ‖𝒯*(x − ρx)‖² ≤ (r−1)(‖x‖² − |⟨ψ,x⟩|²)`; get
-  `𝒯𝒯* ⪯ (r−1)I` square-root-free via
-  `‖𝒯*x‖⁴ = ⟨𝒯(𝒯*x), x⟩² ≤ (r−1)‖𝒯*x‖²‖x‖²` and cancellation. Combine
-  with A4 and `Φ(P₊) ⪰ 0`.
-
-*Artifact: `rank_r_partial_trace (hFGP : DoubleSkewBound U V)` with no
-`sorry`; `#print axioms` clean.*
+Next is Phase B: replace `DoubleSkewBound` by FGP's literal published statement.
+B1 (the index matching) is already cleared numerically — `preflight.py`,
+"Tier D3" — so it is transcription, not investigation. B3's complex SVD remains
+the one big library rock.
 
 ### Phase A residual — the exact remaining statement
 
