@@ -1,180 +1,162 @@
-# Notes on `rank-r.tex` from formalizing it
+# Changes to make in `rank-r.tex`
 
-Everything here survived both the numerical pre-flight (`preflight.py`, 21/21)
-and, where formalized, Lean. **Nothing below is a claim that the manuscript is
-wrong.** These are places where the write-up asserts something a reader cannot
-check at the stated level of detail, uses a convention that defeats
-self-checking, or takes a harder route than necessary.
+Every item below is a concrete edit: where, what is wrong or missing, and what
+to put instead. No mathematical error was found — these are places where the
+manuscript asserts something a reader cannot check at the stated level of
+detail, uses a convention that defeats self-checking, or takes a longer route
+than necessary.
 
-Ordered by how much I think each matters.
+Ordered by importance.
 
 ---
 
-## 1. Lemma 2.1's derivation from Fu–Gao–Park is not checkable as written
+## 1. Display the Fu–Gao–Park relabeling — Lemma 2.1, proof
 
-**`lem:double-skew`, the proof.** The chain is: zero-extend $U,V$ into a common
-$\mathbb C^d$; identify $\operatorname{vec} K \in (\wedge^2U)\otimes(\wedge^2V)$;
-apply the best-Schmidt-rank-2 approximation identity; apply FGP Thm 2.4 "with
-antisymmetric pairs $(U_{\rm out},U_{\rm in})$ and $(V_{\rm out},V_{\rm in})$ and
-Schmidt cut $(U_{\rm out}V_{\rm out}):(U_{\rm in}V_{\rm in})$"; apply Ky Fan.
+**Now:** "applying FGP Thm 2.4 with antisymmetric pairs
+$(U_{\rm out},U_{\rm in})$ and $(V_{\rm out},V_{\rm in})$ and Schmidt cut
+$(U_{\rm out}V_{\rm out}):(U_{\rm in}V_{\rm in})$".
 
-FGP states its bound for antisymmetric pairs $(1,3)$ and $(2,4)$ on
-$(\mathbb C^d)^{\otimes2}_{12}\otimes(\mathbb C^d)^{\otimes2}_{34}$ with the cut
-$12{:}34$. That these are the same statement under relabeling is asserted, not
-exhibited.
+FGP states its bound for antisymmetric pairs $(1,3)$, $(2,4)$ with cut
+$12{:}34$. That these coincide is asserted, never exhibited — and it is the
+step on which everything else rests.
 
-**Since checked, and it holds** (`preflight.py`, "Tier D3"). Under the labeling
-$1=U_{\rm out},\,2=V_{\rm out},\,3=U_{\rm in},\,4=V_{\rm in}$: $Q_-$ is a
-projection whose two factors commute; $\operatorname{rank}Q_- = \dim(\mathfrak{so}(d)\otimes\mathfrak{so}(d))$
-exactly at $d=2,3,4$, so the range of $Q_-$ *is* the vectorized double-skew space
-rather than merely containing it; every $\operatorname{vec}K$ with
-$K\in\mathfrak{so}\otimes\mathfrak{so}$ is fixed by $Q_-$ to machine zero; and
-FGP's own bound $\max\langle z|Q_-|z\rangle = 0.500000$ over Schmidt-rank-$\le2$
-unit $z$ across the $12{:}34$ cut. The relabeling is correct.
+**Add,** immediately before the application:
 
-*Suggested change stands, and is now cheap to write:* display the relabeling —
-$1=U_{\rm out},\,2=V_{\rm out},\,3=U_{\rm in},\,4=V_{\rm in}$ — and note that
-under it the crossed cut $(U_{\rm out}V_{\rm out}):(U_{\rm in}V_{\rm in})$ *is*
-FGP's $12{:}34$ and the antisymmetric pairs *are* FGP's $(1,3),(2,4)$. Two lines,
-and it converts the paper's least checkable step into its most obvious one.
+> Label the four factors $1=U_{\rm out}$, $2=V_{\rm out}$, $3=U_{\rm in}$,
+> $4=V_{\rm in}$. Under this labeling the antisymmetric pairs
+> $(U_{\rm out},U_{\rm in})$, $(V_{\rm out},V_{\rm in})$ are FGP's $(1,3)$,
+> $(2,4)$, and the cut $(U_{\rm out}V_{\rm out}):(U_{\rm in}V_{\rm in})$ is
+> FGP's $12{:}34$.
 
-Also: the zero-extension step claims the extension "belongs to
-$\mathfrak{so}(\mathbb C^d)\otimes\mathfrak{so}(\mathbb C^d)$ and has the same
-nonzero singular values and Hilbert–Schmidt norm". True, but the first clause
-needs one word — extending a skew matrix by zero stays skew *because the
-embedding is a coordinate subspace inclusion*, which is where the choice of
-orthonormal bases in the lemma statement is actually used.
+Two lines, and they turn the paper's least checkable step into its most
+obvious one.
 
-## 2. "Placed on their labeled tensor factors" is a placeholder, not a convention
+## 2. Fix the tensor-factor placement notation — after `eq:H_r`
 
-**After `eq:H_r`:** *"Here and below, operators are placed on their labeled
-tensor factors, regardless of whether those factors are adjacent in the
-displayed tensor ordering."*
+**Now:** "operators are placed on their labeled tensor factors, regardless of
+whether those factors are adjacent in the displayed tensor ordering."
 
-This sentence is doing real work in `eq:Phi-expansion`, `eq:Phi-rhoT`, `eq:H_r`
-and throughout §7, and it is the only specification of what those displays mean.
-Formalizing it required defining the placements explicitly; there is no way to
-verify a factor-ordering claim against a sentence.
+This sentence is the only specification of what `eq:Phi-expansion`,
+`eq:Phi-rhoT`, `eq:H_r` and all of §7 mean, and a factor-ordering claim cannot
+be verified against prose.
 
-*Suggested change:* fix the notation once. Either introduce
-$\iota_{S}: \mathcal L(\mathcal H_S) \to \mathcal L(\mathcal H_{[n]})$ for
-$S\subseteq[n]$ and write $\iota_{UQ}(\rho_{UQ})$, or state the permutation
-unitary and write $\pi(\rho_{UQ}\otimes I_V)\pi^*$. Either makes §2 and §7
-mechanically checkable.
+**Replace** with fixed notation, either
 
-## 3. The tightest inequality in the paper is the least explicit
+- $\iota_S : \mathcal L(\mathcal H_S) \to \mathcal L(\mathcal H_{[n]})$ for
+  $S \subseteq [n]$, writing $\iota_{UQ}(\rho_{UQ})$ in place of
+  $\rho_{UQ}\otimes I_V$; or
+- an explicit permutation unitary $\pi$, writing
+  $\pi(\rho_{UQ}\otimes I_V)\pi^*$.
 
-**`eq:T-Cauchy` → `eq:T-operator-bound`.** The manuscript says "By Lemma 2.1,
-each parenthesized expression is at most $\frac12\|K^{(ij)}_c\|_2^2$", then
-displays the conclusion $(r-1)\|c\|_2^2$. Four constants must conspire: the
-$1/\sqrt2$ from $\eta_{ij}$, the vertex degree $r-1$, the $1/2$ from Lemma 2.1,
-and $\|K^{(ij)}\|_2^2 = 4\|c^{(ij)}\|_2^2$. The arithmetic
-$\frac{r-1}{2}\cdot\frac12\cdot4 = r-1$ is never displayed.
+## 3. Display the constant arithmetic — `eq:T-Cauchy` → `eq:T-operator-bound`
 
-I checked this numerically: the bound is **attained exactly**, ratio
-$1.000000$. At $\dim U=\dim V=2$, $\mathfrak{so}(2)\otimes\mathfrak{so}(2)$ is
-one-dimensional, so every orthonormal pair saturates Lemma 2.1. There is *zero*
-slack. Any slip in those four constants and Proposition 2.2 fails, taking the
-paper with it.
+**Now:** "By Lemma 2.1, each parenthesized expression is at most
+$\frac12\|K^{(ij)}_c\|_2^2$", then the conclusion $(r-1)\|c\|_2^2$.
 
-*Suggested change:* display the one-line arithmetic, and add a remark that the
-bound is attained — a reader who knows there is no slack will check it, and a
-reader who assumes there is margin will not.
+Four constants must conspire — the $1/\sqrt2$ from $\eta_{ij}$, the vertex
+degree $r-1$, the $1/2$ from Lemma 2.1, and
+$\|K^{(ij)}\|_2^2 = 4\|c^{(ij)}\|_2^2$ — and the arithmetic is never shown.
 
-## 4. `eq:Phi-Pminus-TTstar` asserts an index bijection
+**Add** the displayed line $\frac{r-1}{2}\cdot\frac12\cdot 4 = r-1$, **and a
+remark that the bound is attained**: at $\dim U = \dim V = 2$ the space
+$\mathfrak{so}(2)\otimes\mathfrak{so}(2)$ is one-dimensional, so every
+orthonormal pair saturates Lemma 2.1 and there is no slack anywhere in the
+chain. A reader who knows that will check it; a reader who assumes margin
+will not.
 
-*"The last equality follows because the vectors in the first line are exactly
-the columns of $\mathcal T$ indexed by $(i,j,\alpha,\beta)$."*
+## 4. State the column indexing of $\mathcal T$ — `eq:T-definition`
 
-This is $\Phi(P_-) = \mathcal T\mathcal T^*$, and it is the step that converts
-the Kraus expansion into a synthesis-map factorization. The justification is a
-claim about how $\mathcal T$'s columns are indexed, but `eq:T-definition`
-defines $\mathcal T$ as acting on coefficient arrays, without ever fixing a
-column indexing.
+`eq:Phi-Pminus-TTstar` is justified by "the vectors in the first line are
+exactly the columns of $\mathcal T$ indexed by $(i,j,\alpha,\beta)$", but
+`eq:T-definition` defines $\mathcal T$ as acting on coefficient arrays and
+never fixes a column indexing.
 
-*Suggested change:* state the column index set of $\mathcal T$ where
-$\mathcal T$ is defined.
+**Add** the column index set where $\mathcal T$ is defined.
 
-## 5. §3's trace–rank bound takes the long way round
+## 5. Say "linear span" — Lemma 2.1, statement
 
-The proof of Theorem 1.1 introduces the range projection $P$, notes $PC=C$ and
-$\|P\|_2^2 = r_0$, and applies Hilbert–Schmidt Cauchy–Schwarz to get
-$|\operatorname{Tr}C|^2 \le r_0\|C\|_2^2$.
-
-But at that point in the proof the range factorization $C=\sum_i|e_i\rangle\langle d_i|$
-is *already in hand*, and `eq:contraction-trace` already gives
-$\operatorname{Tr}C = \sum_i\langle d_i,e_i\rangle$. So
-
-$$|\operatorname{Tr}C|^2 \le \Big(\sum_i\|d_i\|\Big)^2 \le r_0\sum_i\|d_i\|^2 = r_0\|C\|_2^2$$
-
-by Cauchy–Schwarz twice, with no projection. (This is how it is proved in
-`RankR.normSq_trace_le`; introducing $P$ cost real infrastructure in Lean and
-buys nothing on paper either.)
-
-## 6. Carrying $1/\sqrt{s}$ through §3 is avoidable
-
-$\psi$ is normalized, so every one of Lemma 3.1's four identities carries a
-$1/s$, and $\psi$ itself a $1/\sqrt s$. Working with the unnormalized
-$\delta_e := \sum_i e_i\otimes q_i$ instead makes them square-root-free — e.g.
-$\langle\delta_e,\delta_d\rangle = \overline{\operatorname{Tr}C}$ exactly. The
-normalization is needed only where $\rho$ must be a state, which in §3 it need
-not be.
-
-Purely cosmetic, but it removes a factor that has to be tracked correctly four
-times.
-
-## 7. Proposition 4.2 forward-references Proposition 4.3
-
-`prop:sos-sector-gram` ends: *"The positivity of $B_E$ follows from the
-complete-graph defect certificate below together with
-$\operatorname{ran}\mathcal T_-\subseteq\psi^\perp$."* The certificate is
-`prop:sos-complete-graph`, which comes after. Harmless, but §4 would read better
-with the order reversed.
-
-## 8. `so(U) ⊗ so(V)` should be said to be the span
-
-Lemma 2.1 quantifies over $K\in\mathfrak{so}(U)\otimes\mathfrak{so}(V)$. Read as
-the tensor product *space* this is what is meant and what the proof uses (via
-$\operatorname{vec}K\in(\wedge^2U)\otimes(\wedge^2V)$). Read as the set of
-elementary tensors $L\otimes M$ it would be a strictly weaker statement — and
+$K \in \mathfrak{so}(U)\otimes\mathfrak{so}(V)$, read as the set of elementary
+tensors $L\otimes M$, would be strictly weaker than what the proof needs — and
 `eq:T-definition` immediately applies the lemma to
-$K^{(ij)}_c=\sum_{\alpha\beta}c_{\alpha\beta}L_\alpha\otimes M_\beta$, a general
-element, not an elementary tensor.
+$K^{(ij)}_c = \sum_{\alpha\beta}c_{\alpha\beta}L_\alpha\otimes M_\beta$, which
+is not elementary.
 
-One word ("the linear span of") removes the ambiguity. In Lean this had to be a
-`Submodule.span`.
+**Change** to "the linear span of $\{L \otimes M\}$".
 
-## 9. `eq:sos-complete-graph` is an identity — say so louder
+## 6. Replace the trace–rank argument — §3, proof of Theorem 1.1
 
-The display is boxed and is an exact identity, not a bound (I verified it to
-relative error $2\times10^{-15}$). The derivation — *"Adding and subtracting the
-total edge action gives exactly"* — hides the one step where an identity could
-degrade into an inequality. Since the exactness is the point of §4, the
-intermediate is worth displaying.
+**Now:** introduces the range projection $P$, notes $PC = C$ and
+$\|P\|_2^2 = r_0$, and applies Hilbert–Schmidt Cauchy–Schwarz.
 
-## 10. The $\mathrm{Tr}_U$ convention cannot be self-checked until §5
+At that point the range factorization $C = \sum_i |e_i\rangle\langle d_i|$ is
+already in hand, and `eq:contraction-trace` already gives
+$\operatorname{Tr}C = \sum_i \langle d_i, e_i\rangle$.
 
-$\mathrm{Tr}_U$ = trace *over* $U$ is stated once, in §1. Theorem 1.1 is
-symmetric in $U$ and $V$, so a reader who silently adopts the opposite
-convention will sail through §§1–4 and only go wrong at
-`thm:exact-asymmetric-score`, where $a$ and $b$ attach to different factors.
+**Replace** with two applications of Cauchy–Schwarz and no projection:
 
-*Suggested change:* one reminder at Theorem 5.9. (This is also why
-`preflight.py` tests the asymmetric score specifically: it is the only check
-that can detect the convention flip.)
+$$|\operatorname{Tr}C|^2 \le \Big(\sum_i\|d_i\|\Big)^2 \le r_0\sum_i\|d_i\|^2 = r_0\|C\|_2^2.$$
 
-## 11. Minor
+## 7. Drop the normalization through §2–§3
 
-- `SR` is used in the proof of Lemma 2.1 before `SN`/`SR` are given meanings;
-  both are only `\DeclareMathOperator`'d. A one-line definition at first use.
-- The proof of `eq:contraction-U` ends *"Expanding the right-hand side of
-  (eq:contraction-U-expansion) gives the same sum"* — this is the bulkiest
-  routine computation in the paper and is left entirely to the reader. Worth
-  either displaying the common quadruple sum or noting explicitly that the
-  expression is manifestly real because it is self-conjugate under $i\leftrightarrow j$
-  together with $a\leftrightarrow a'$ (which is what makes the two natural ways of
-  writing it agree).
-- The sharpness paragraph after Theorem 1.1 gives four quantities and concludes
-  equality. All four are correct, but it is worth saying that equality requires
+$\psi$ is normalized, so each of Lemma 3.1's four identities carries a $1/s$ and
+$\psi$ itself a $1/\sqrt s$; `eq:rho-partial-transpose`, `eq:Phi-rhoT` and
+`eq:H-decomposition` each carry a $1/r$; and $\eta_{ij}$ carries a $1/\sqrt2$.
+
+**Use** the unnormalized $\delta_e := \sum_i e_i\otimes q_i$ and
+$\rho_0 := |\delta_e\rangle\langle\delta_e| = r\rho$ instead. Then
+$\langle\delta_e,\delta_d\rangle = \overline{\operatorname{Tr}C}$ exactly,
+$\rho_0^{T_{UV}} = P_+ - P_-$, and
+
+$$\Phi(\rho_0^{T_{UV}}) = I - \rho_{UQ}\otimes I_V - I_U\otimes\rho_{VQ} + \rho_0$$
+
+with **no denominators at all**. $\rho$ must be a state only where a state is
+required, which in §§2–3 it never is. This removes a factor that otherwise has
+to be tracked correctly in six places.
+
+## 8. Reorder §4 — Propositions 4.2 and 4.3
+
+`prop:sos-sector-gram` ends "The positivity of $B_E$ follows from the
+complete-graph defect certificate below", forward-referencing
+`prop:sos-complete-graph`.
+
+**Swap** the two propositions.
+
+## 9. Display the intermediate in `eq:sos-complete-graph`
+
+The boxed display is an exact identity, not a bound, and the derivation —
+"Adding and subtracting the total edge action gives exactly" — hides the one
+step at which an identity could degrade into an inequality. Since the exactness
+is the point of §4,
+
+**add** the intermediate step.
+
+## 10. Restate the $\mathrm{Tr}_U$ convention at Theorem 5.9
+
+$\mathrm{Tr}_U$ = trace *over* $U$ appears once, in §1. Theorem 1.1 is
+symmetric in $U$ and $V$, so a reader who adopts the opposite convention passes
+through §§1–4 undetected and goes wrong only at `thm:exact-asymmetric-score`,
+where $a$ and $b$ attach to different factors.
+
+**Add** a one-line reminder there.
+
+## 11. Justify the zero-extension — Lemma 2.1, proof
+
+"the resulting extension of $K$ belongs to
+$\mathfrak{so}(\mathbb C^d)\otimes\mathfrak{so}(\mathbb C^d)$" is true, but
+
+**add** the reason: the embedding is a coordinate-subspace inclusion, which is
+where the choice of orthonormal bases in the lemma statement is actually used.
+
+## 12. Smaller edits
+
+- **`SR` and `SN`** are used from the proof of Lemma 2.1 onward but only
+  `\DeclareMathOperator`'d. Add a one-line definition at first use.
+- **Proof of `eq:contraction-U`** ends "Expanding the right-hand side of
+  (eq:contraction-U-expansion) gives the same sum" — the bulkiest routine
+  computation in the paper, left entirely to the reader. Either display the
+  common quadruple sum, or note that the expression is self-conjugate under
+  $i\leftrightarrow j$ together with $a\leftrightarrow a'$, which is what makes
+  the two natural ways of writing it agree.
+- **Sharpness paragraph after Theorem 1.1**: say that equality requires
   $\operatorname{rank}C = r$ exactly, not $\le r$ — which is why the example is
   built from a rank-$r$ projection.
