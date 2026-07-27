@@ -1,5 +1,5 @@
 /-
-Gap A of PLAN.md: the Hilbert-Schmidt layer.
+The Hilbert-Schmidt layer.
 
 Rather than building an `InnerProductSpace` on `Matrix m n ℂ` by hand, we
 transport along `vec : Matrix m n ℂ ≃ EuclideanSpace ℂ (m × n)`.  Mathlib

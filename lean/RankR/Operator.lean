@@ -1,5 +1,5 @@
 /-
-The `U ⊗ V ⊗ Q` operator layer (PLAN.md tier D2, item 2).
+The `U ⊗ V ⊗ Q` operator layer.
 
 The manuscript's caveat -- "operators are placed on their labeled tensor
 factors, regardless of whether those factors are adjacent in the displayed

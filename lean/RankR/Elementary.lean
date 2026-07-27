@@ -1,10 +1,6 @@
 /-
-Milestone M1 of PLAN.md: the routine layer (tier D1).
-
-Nothing here is delicate.  It is the voluminous index-pushing that must exist
-before the tier-D2 core can be stated, and it is exactly the layer an
-LLM-authored manuscript is most likely to have fumbled in a way that a reader
-skims past.
+The routine layer: rank monotonicity, the range-factorization identities of
+`lem:partial-trace-contractions`, and the finite-sum reindexings they need.
 -/
 import RankR.HS
 
@@ -152,7 +148,7 @@ theorem normSq_trace_le (e d : Fin s → EuclideanSpace ℂ W) (he : Orthonormal
 end Contractions
 
 /-- Swap the outer and inner index pairs of a four-fold sum.  Used to match the
-two expansions of `eq:contraction-U` / `eq:contraction-V`. -/
+two expansions of `eq:contraction-U`. -/
 theorem sum4_swap {A B C D M : Type*} [Fintype A] [Fintype B] [Fintype C] [Fintype D]
     [AddCommMonoid M] (F : A → B → C → D → M) :
     ∑ c, ∑ d, ∑ a, ∑ b, F a b c d = ∑ a, ∑ b, ∑ c, ∑ d, F a b c d := by

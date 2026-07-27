@@ -3,3 +3,4 @@ import RankR.HS
 import RankR.Elementary
 import RankR.Operator
 import RankR.Factor
+import RankR.Main

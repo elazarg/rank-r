@@ -226,50 +226,34 @@ Each ends in a checkable artifact. No `sorry` at a milestone close;
 
 ### Status
 
-- **M0 — DONE.** `RankR/Conventions.lean` compiles; all D0 items are Lean
-  definitions; `ptraceU`/`ptraceV` type-checked against the paper's direction.
-- **Gap A — DONE.** `RankR/HS.lean`, no `sorry`. Transported along
-  `vec : Matrix m n ℂ → EuclideanSpace ℂ (m × n)`, so Cauchy-Schwarz
-  (`normSq_hsInner_le`) is free from Mathlib's `norm_inner_le_norm`.
-- **M1 — DONE.** `RankR/Elementary.lean`, no `sorry`:
-  `rank_mono` (`eq:rank-monotonicity`), `contraction_norm`
-  (`eq:contraction-norm`), `contraction_trace`, `hsNormSq_ptraceU_rankFactor`
-  (`eq:contraction-U`), `hsNormSq_ptraceV_rankFactor` (`eq:contraction-V`),
-  `normSq_trace_le` (the trace-rank bound feeding `rank_mono`).
-  Supporting: `rankOne`, `hsInner_rankOne`, `hsInner_sum_sum`,
-  `hsNormSq_rankFactor` (Gram expansion), `norm_delta`, `sum4_swap`,
-  `ptraceU_sum`/`ptraceV_sum`.
-- **Remaining `sorry`s:** exactly two, both intentional — `rank_r_partial_trace`
-  and `operator_ineq` in `Conventions.lean`.
+`RankR/` builds clean. **`rank_r_of_operatorIneq` — Theorem 1.1 given
+Proposition 2.2 — is fully proved**, `#print axioms` showing only
+`propext, Classical.choice, Quot.sound`.
 
-- **Operator layer (tier D2 item 2) — DONE.** `RankR/Operator.lean`, no `sorry`.
-  `qform`, `placeUQ`/`placeVQ` (the `A ⊗ I_V` / `I_U ⊗ B` placements), the
-  marginals `margUQ`/`margVQ`, and all four of Lemma 3.1 restated in the
-  operator form the main proof consumes: `qform_rho_delta`
-  (`eq:contraction-trace`), `qform_margUQ` (`eq:contraction-U`), `qform_margVQ`
-  (`eq:contraction-V`).  Placements are defined *entrywise* rather than via
-  `kroneckerMap` plus reindexing equivalences -- entrywise is what the
-  contraction computations actually consume, and it sidesteps the manuscript's
-  "regardless of whether those factors are adjacent" informality entirely.
-  All definitions were checked numerically before any proof was attempted.
+| File | Content | `sorry` |
+| --- | --- | --- |
+| `Conventions.lean` | §1 conventions, `so(U)⊗so(V)`, the Fu–Gao–Park interface `DoubleSkewBound` | 0 |
+| `HS.lean` | Hilbert–Schmidt layer, transported from `EuclideanSpace` (gap A) | 0 |
+| `Elementary.lean` | `rank_mono`, the four contraction identities in Gram form, `normSq_trace_le`, sum reindexings | 0 |
+| `Operator.lean` | `qform`, `placeUQ`/`placeVQ`, `margUQ`/`margVQ`, the contraction identities in operator form | 0 |
+| `Factor.lean` | `exists_rankFactor` | 0 |
+| `Main.lean` | `qform` algebra, `finrank = rank`, `HopScaled`, `OperatorIneq`, **Theorem 1.1** | 1 |
 
-- **Range factorization — DONE.** `RankR/Factor.lean`, no `sorry`.
-  `exists_rankFactor : ∀ C, ∃ e d, Orthonormal ℂ e ∧ C = rankFactor e d`,
-  with the index type `Fin (finrank (range (toEuclideanLin C)))`.  Built from
-  `stdOrthonormalBasis` of the range submodule plus the expansion
-  `x = ∑ᵢ ⟪eᵢ,x⟫ eᵢ` applied to each column.  Note this proves `C = ∑ᵢ|eᵢ⟩⟨dᵢ|`
-  directly, without ever forming the range projection `P` -- see
-  MANUSCRIPT-NOTES.md item 5.
+**The single `sorry` is `operatorIneq_of_doubleSkew`** — Proposition 2.2 from
+the double-skew bound. That is tier D2, the manuscript's actual content.
+Everything else in §§1–3 is machine-checked.
 
-**One `sorry` remains in the whole development: `rank_r_partial_trace`.**
-What it still needs:
+What Proposition 2.2 still needs, none of which exists yet:
 
-1. **Prop 2.2** (`H_r ⪰ 0`) -- tier D2, the real content, gated on
-   `DoubleSkewBound`.
-2. **Bookkeeping**: `finrank (range (toEuclideanLin C)) = C.rank`, to convert
-   the factorization's index type into the manuscript's `r₀`.
+- `Λ_E(X) = Tr(X)I − Xᵀ`, its skew Kraus form, and complete positivity via
+  Choi `= I − F` (tier D1, mechanical).
+- The twisted projections `P±` on `S ⊗ Q` and `ρ^{T_UV} = (1/r)(P₊ − P₋)`.
+- `Φ = Λ_U ⊗ Λ_V ⊗ id_Q` and the four-term `eq:Phi-expansion`.
+- The synthesis map `𝒯`, `Φ(P₋) = 𝒯𝒯*`, the complete-graph Cauchy–Schwarz,
+  and `ran 𝒯 ⊆ ψ^⊥`.
 
-Every other ingredient of Theorem 1.1 is proved.
+The first is a session's work; the rest is the D2 core, and the edgewise step
+is where `DoubleSkewBound` actually enters.
 
 **M0 — Conventions frozen.** `RankR/Conventions.lean` compiles. All D0 items are
 Lean definitions. `hsInner_self`, sharpness, and the trace–rank bound are proved.
