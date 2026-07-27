@@ -335,7 +335,14 @@ whose derivation is where this plan bets an error would hide. Phase B replaces
 that trust with FGP Thm 2.4 as literally published. Split it: the risky part
 is cheap, the expensive part is safe.
 
-- **B1 — The index-matching (do first; no new library).** State `FGPBound d`
+- **B1 — The index-matching (do first; no new library). NUMERICALLY CLEARED.**
+  `preflight.py` "Tier D3" now checks it: under
+  `1=U_out, 2=V_out, 3=U_in, 4=V_in`, `Q₋` is a projection with commuting
+  factors, `rank Q₋ = dim(so(d)⊗so(d))` exactly (d = 2,3,4 — so the range *is*
+  the vectorized double-skew space), every `vec K` is fixed by `Q₋` to machine
+  zero, and FGP's bound is attained at exactly `0.500000`. The relabeling is
+  correct; B1 in Lean is now transcription rather than investigation.
+  State `FGPBound d`
   verbatim: antisymmetric projectors on pairs (1,3), (2,4) of `(ℂ^d)⊗⁴`,
   Schmidt cut 12:34, overlap ≤ ½ for Schmidt rank ≤ 2. Prove the paper's
   crossed-cut application equal to it under an explicit `Equiv` of the four

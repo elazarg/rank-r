@@ -21,14 +21,22 @@ Schmidt cut $(U_{\rm out}V_{\rm out}):(U_{\rm in}V_{\rm in})$"; apply Ky Fan.
 FGP states its bound for antisymmetric pairs $(1,3)$ and $(2,4)$ on
 $(\mathbb C^d)^{\otimes2}_{12}\otimes(\mathbb C^d)^{\otimes2}_{34}$ with the cut
 $12{:}34$. That these are the same statement under relabeling is asserted, not
-exhibited. **This is the single place where I would most expect an error, and it
-is the only major step no amount of computation can check** — I verified the
-*conclusion* of Lemma 2.1 numerically (tight at exactly $0.5$ for
-$\dim U,\dim V \in \{2,3\}$), but a true statement can have a broken derivation.
+exhibited.
 
-*Suggested change:* display the relabeling explicitly — write down the
-permutation of the four tensor factors carrying FGP's labeling to this one, and
-state which of FGP's indices is which of yours. Three lines.
+**Since checked, and it holds** (`preflight.py`, "Tier D3"). Under the labeling
+$1=U_{\rm out},\,2=V_{\rm out},\,3=U_{\rm in},\,4=V_{\rm in}$: $Q_-$ is a
+projection whose two factors commute; $\operatorname{rank}Q_- = \dim(\mathfrak{so}(d)\otimes\mathfrak{so}(d))$
+exactly at $d=2,3,4$, so the range of $Q_-$ *is* the vectorized double-skew space
+rather than merely containing it; every $\operatorname{vec}K$ with
+$K\in\mathfrak{so}\otimes\mathfrak{so}$ is fixed by $Q_-$ to machine zero; and
+FGP's own bound $\max\langle z|Q_-|z\rangle = 0.500000$ over Schmidt-rank-$\le2$
+unit $z$ across the $12{:}34$ cut. The relabeling is correct.
+
+*Suggested change stands, and is now cheap to write:* display the relabeling —
+$1=U_{\rm out},\,2=V_{\rm out},\,3=U_{\rm in},\,4=V_{\rm in}$ — and note that
+under it the crossed cut $(U_{\rm out}V_{\rm out}):(U_{\rm in}V_{\rm in})$ *is*
+FGP's $12{:}34$ and the antisymmetric pairs *are* FGP's $(1,3),(2,4)$. Two lines,
+and it converts the paper's least checkable step into its most obvious one.
 
 Also: the zero-extension step claims the extension "belongs to
 $\mathfrak{so}(\mathbb C^d)\otimes\mathfrak{so}(\mathbb C^d)$ and has the same

@@ -690,6 +690,85 @@ def check_mfold_regimes():
            not bad, str(bad[:3]))
 
 
+def check_fgp_index_matching():
+    """Tier D3: the index matching between Fu-Gao-Park Thm 2.4 as published and
+    the manuscript's application of it in lem:double-skew.
+
+    FGP states its bound for antisymmetric pairs (1,3) and (2,4) of (C^d)^{(x)4}
+    with the Schmidt cut 12:34.  The manuscript applies it to pairs
+    (U_out, U_in), (V_out, V_in) with the crossed cut
+    (U_out V_out) : (U_in V_in).  Under the labeling
+    1 = U_out, 2 = V_out, 3 = U_in, 4 = V_in these must be the same operator and
+    the same cut; the manuscript asserts this without exhibiting it.
+
+    Four things are checked:
+      (a) Q- = Pi_A^{(13)} (x) Pi_A^{(24)} is a projection and the factors commute;
+      (b) rank(Q-) equals dim(so(d) (x) so(d)) -- so the range of Q- is exactly
+          the vectorized double-skew space, not merely contains it;
+      (c) vec(K) is FIXED by Q- for K in so(x)so, with vec entrywise as fixed in
+          section 1 -- this is the labeling claim itself;
+      (d) FGP's own bound: max <z|Q-|z> over unit z of Schmidt rank <= 2 across
+          the 12:34 cut equals 1/2.
+    """
+    import itertools
+    from scipy.optimize import minimize
+    rows = []
+    bad = []
+    for d in (2, 3):
+        D = d ** 4
+
+        def swap(p, q):
+            S = np.zeros((D, D), dtype=complex)
+            for idx in itertools.product(range(d), repeat=4):
+                j = list(idx); j[p], j[q] = j[q], j[p]
+                S[np.ravel_multi_index(tuple(j), (d,) * 4),
+                  np.ravel_multi_index(idx, (d,) * 4)] = 1
+            return S
+
+        I = np.eye(D)
+        PA13 = (I - swap(0, 2)) / 2
+        PA24 = (I - swap(1, 3)) / 2
+        Qm = PA13 @ PA24
+        if np.max(np.abs(Qm @ Qm - Qm)) > 1e-10:
+            bad.append(("not a projection", d))
+        if np.max(np.abs(PA13 @ PA24 - PA24 @ PA13)) > 1e-10:
+            bad.append(("factors do not commute", d))
+        if np.linalg.matrix_rank(Qm, tol=1e-9) != (d * (d - 1) // 2) ** 2:
+            bad.append(("rank mismatch", d))
+        Ls = so_basis(d)
+        for _ in range(20):
+            c = rand_c(len(Ls), len(Ls))
+            K = sum(c[i, j] * np.kron(Ls[i], Ls[j])
+                    for i in range(len(Ls)) for j in range(len(Ls)))
+            v = K.reshape(-1)          # (a, b, a', b') = (U_out, V_out, U_in, V_in)
+            if np.max(np.abs(Qm @ v - v)) > 1e-9 * max(np.linalg.norm(v), 1.0):
+                bad.append(("vec K not fixed by Q-", d))
+                break
+        nc = 2 * d * d
+
+        def neg(par):
+            A = par[:2 * nc].reshape(nc, 2); u = (A[:, 0] + 1j * A[:, 1]).reshape(2, d * d)
+            B = par[2 * nc:].reshape(nc, 2); w = (B[:, 0] + 1j * B[:, 1]).reshape(2, d * d)
+            z = (np.outer(u[0], w[0]) + np.outer(u[1], w[1])).reshape(-1)
+            nz = np.linalg.norm(z)
+            if nz < 1e-12:
+                return 0.0
+            z = z / nz
+            return -float(np.real(np.vdot(z, Qm @ z)))
+
+        best = 0.0
+        for _ in range(20):
+            res = minimize(neg, rng.normal(size=4 * nc), method="L-BFGS-B",
+                           options={"maxiter": 3000})
+            best = max(best, -res.fun)
+        rows.append((d, best))
+        if best > 0.5 + 1e-6:
+            bad.append(("FGP bound exceeded", d, best))
+    report("Tier D3  FGP index matching + Thm 2.4 bound", not bad,
+           "max <z|Q-|z> over SR<=2: " + ", ".join(f"d={d}:{v:.6f}" for d, v in rows)
+           if not bad else str(bad[:3]))
+
+
 def check_kronecker_bound():
     """cor:kronecker, eq:kronecker-bound."""
     bad = []
@@ -764,6 +843,7 @@ if __name__ == "__main__":
     print("\n-- Lemma 2.1: the Fu-Gao-Park consequence (tier D3) --")
     check_double_skew()
     check_double_skew_symmetric()
+    check_fgp_index_matching()
 
     print("\n-- The completely positive map Lambda_E --")
     check_lambda_kraus()
