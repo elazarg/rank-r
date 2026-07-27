@@ -210,19 +210,20 @@ and every orthonormal pair $x,y\in U\otimes V$,
 If $K=0$, both assertions are immediate. Hence assume $K\ne0$. Then
 $\dim U,\dim V\ge2$. Let $d=\max\{\dim U,\dim V\}$.  Using the
 orthonormal bases fixed in the statement, identify $U$ and $V$ with
-coordinate subspaces of $\C^d$ and extend operators on a smaller
-factor by zero on the orthogonal complement.  A block-zero extension
-of a skew-symmetric matrix is again skew-symmetric, and extending a
-finite linear combination of elementary tensors extends each tensor
-factor separately.  Hence the extended operator lies in the linear
-span of
+coordinate subspaces of $\C^d$ and extend by zero on the orthogonal
+complements.  A block-zero extension of a skew-symmetric matrix is
+again skew-symmetric, and extending a finite linear combination of
+elementary tensors extends each tensor factor separately.  Hence the
+extension $K'$ of $K$ lies in the linear span of
 \[
     \{L\otimes M:
-      L,M\in\mathfrak{so}(\C^d)\}.
+      L,M\in\mathfrak{so}(\C^d)\}
 \]
-It has the same nonzero singular values and Hilbert--Schmidt norm as
-$K$.  It is therefore enough to prove the assertion when both local
-spaces have dimension $d$.
+and satisfies $\norm{K'}_2=\norm{K}_2$.  Extending $x$ and $y$ by zero
+likewise gives an orthonormal pair $x',y'$ with
+$\norm{K'x'}=\norm{Kx}$ and $\norm{K'y'}=\norm{Ky}$.  It is therefore
+enough to prove the assertion when both local spaces have dimension
+$d$.
 
 Label the four vectorization factors as
 \[
