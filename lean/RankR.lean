@@ -13,3 +13,4 @@ import RankR.Frame
 import RankR.Edge
 import RankR.Bessel
 import RankR.Assemble
+import RankR.Restrict
