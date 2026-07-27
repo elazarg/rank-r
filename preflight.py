@@ -837,6 +837,82 @@ def check_fgp_index_matching():
            if not bad else str(bad[:3]))
 
 
+def check_phaseB_chain():
+    """The SVD-free route from Fu-Gao-Park to the double-skew action bound.
+
+    The manuscript proves s_1^2 + s_2^2 <= (1/2)||K||^2 -- which needs the
+    best-rank-2 approximation identity, hence SVD -- and then descends to the
+    orthonormal-pair form by Ky Fan.  The route below skips both.  With
+    P = |x><x| + |y><y| for an orthonormal pair,
+
+        ||Kx||^2 + ||Ky||^2 = ||KP||_2^2   and   rank(KP) <= 2,
+
+    so Fu-Gao-Park applies to vec(KP) DIRECTLY -- no optimizer, no
+    approximation theorem -- and Cauchy-Schwarz against Q- vec(KP) closes it.
+
+    check_double_skew tests the conclusion and check_fgp_index_matching tests
+    FGP's bound at its own maximum via L-BFGS; neither exercises the FGP step
+    as this chain uses it, on the specific rank-<=2 matrix KP.  That is what is
+    checked here, per sample and deterministically.
+    """
+    import itertools
+    bad = []
+    rows = []
+    for d in (2, 3, 4):
+        D = d ** 4
+        worst = 0.0
+
+        def swap(p, q):
+            S = np.zeros((D, D), dtype=complex)
+            for idx in itertools.product(range(d), repeat=4):
+                j = list(idx); j[p], j[q] = j[q], j[p]
+                S[np.ravel_multi_index(tuple(j), (d,) * 4),
+                  np.ravel_multi_index(idx, (d,) * 4)] = 1
+            return S
+
+        I4 = np.eye(D)
+        Qm = ((I4 - swap(0, 2)) / 2) @ ((I4 - swap(1, 3)) / 2)
+        Ls = so_basis(d)
+        for _ in range(40):
+            c = rand_c(len(Ls), len(Ls))
+            K = sum(c[i, j] * np.kron(Ls[i], Ls[j])
+                    for i in range(len(Ls)) for j in range(len(Ls)))
+            Z, _ = np.linalg.qr(rand_c(d * d, 2))
+            x, y = Z[:, 0], Z[:, 1]
+            P = np.outer(x, x.conj()) + np.outer(y, y.conj())
+            KP = K @ P
+            A = nsq(KP)
+            # (a) the action is ||KP||^2, and KP has rank <= 2
+            act = float(np.linalg.norm(K @ x) ** 2 + np.linalg.norm(K @ y) ** 2)
+            if abs(A - act) > 1e-8:
+                bad.append(("action = ||KP||^2", d))
+            if np.linalg.matrix_rank(KP, tol=1e-9) > 2:
+                bad.append(("rank KP <= 2", d))
+            # (b) Q- fixes vec K
+            vK = K.reshape(-1)
+            if np.max(np.abs(Qm @ vK - vK)) > 1e-9:
+                bad.append(("Q- vec K = vec K", d))
+            # (c) <vec K, vec(KP)> = ||KP||^2
+            w = KP.reshape(-1)
+            if abs(np.vdot(vK, w) - A) > 1e-8:
+                bad.append(("pairing", d))
+            # (d) THE step this chain uses: FGP on the rank-<=2 matrix KP
+            qw = float(np.real(np.vdot(w, Qm @ w)))
+            if A > 0:
+                worst = max(worst, qw / (0.5 * A))
+            if qw > 0.5 * A + 1e-8:
+                bad.append(("FGP on vec(KP)", d, qw, 0.5 * A))
+            # (e) the conclusion
+            if act > 0.5 * nsq(K) + 1e-8:
+                bad.append(("action bound", d))
+        rows.append((d, worst))
+    report("Phase B chain  FGP applied to vec(KP), no SVD / Ky Fan", not bad,
+           "max <vec KP|Q-|vec KP>/(||KP||^2/2): "
+           + ", ".join(f"d={d}:{v:.6f}" for d, v in rows)
+           + "  (an identity at d=2; slack above)"
+           if not bad else str(bad[:3]))
+
+
 def check_kronecker_bound():
     """cor:kronecker, eq:kronecker-bound."""
     bad = []
@@ -912,6 +988,7 @@ if __name__ == "__main__":
     check_double_skew()
     check_double_skew_symmetric()
     check_fgp_index_matching()
+    check_phaseB_chain()
 
     print("\n-- The completely positive map Lambda_E --")
     check_lambda_kraus()

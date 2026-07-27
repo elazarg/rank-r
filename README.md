@@ -104,7 +104,7 @@ revision.
 ## Pre-flight
 
 ```bash
-python3 preflight.py     # 21/21
+python3 preflight.py     # 22/22
 ```
 
 Each check targets a specific labelled equation of the manuscript at small
@@ -118,6 +118,8 @@ dimensions. Two are worth singling out:
   search, so it corroborates FGP's own bound rather than proving it.
 - **`Prop 2.2 residual`** mirrors the Lean decomposition numerically, isolating
   exactly what the complete-graph argument must deliver.
+- **`Phase B chain`** checks the SVD-free route from Fu–Gao–Park to the
+  double-skew action bound, per sample and without an optimizer.
 
 The suite is *not* a substitute for the formalization: it runs only at
 $r \le 6$, $d \le 5$, and cannot reach anything quantifying over Schmidt number.

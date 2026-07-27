@@ -74,18 +74,23 @@ vectorization, Ky Fan, Eckart–Young, SVD, Takagi factorization.
 
 ## 2. Dependency spine
 
+The route actually taken (Ky Fan and Eckart–Young were the *manuscript's*
+route into Lemma 2.1; neither is used, see Phase B):
+
 ```
-FGP Thm 2.4  ─┐
-Ky Fan (∑s²) ─┼─> Lem 2.1 (double-skew) ─┐
-Eckart–Young ─┘                          ├─> Prop 2.2 (H_r ⪰ 0) ─> Thm 1.1
-                     Λ_E is CP ──────────┘         │
-                     Lem 3.1 (contractions) ───────┘
+FGP Thm 2.4 ──> Lem 2.1 (double-skew action bound) ─┐
+                                                    ├─> Prop 2.2 (H_r ⪰ 0) ─> Thm 1.1
+Λ_E as a Kraus sum ─────────────────────────────────┤
+Lem 3.1 (contractions) ─────────────────────────────┘
                                                     │
 Schmidt rank/number + block positivity ─────────────┼─> §5 two-copy
                                                     ├─> §6 witnesses
                                                     └─> §7 higher-copy
 Ky Fan duality ─────────────────────────────────────> Cor 8.1 (Kronecker sums)
 ```
+
+Complex SVD is needed only for the Schmidt-decomposition row, i.e. for §5–§7 —
+never for Theorem 1.1.
 
 ---
 
@@ -248,8 +253,9 @@ anywhere in the project; `#print axioms` on it shows only
 
 Next is Phase B: replace `DoubleSkewBound` by FGP's literal published statement.
 B1 (the index matching) is already cleared numerically — `preflight.py`,
-"Tier D3" — so it is transcription, not investigation. B3's complex SVD remains
-the one big library rock.
+"Tier D3" — so it is transcription, not investigation. Phase B needs no SVD:
+see the revised Phase B below. The SVD dependency does not disappear, it
+*migrates* to Phase D, where Schmidt decomposition for §5 genuinely needs it.
 
 ### Phase A residual — the exact remaining statement
 
@@ -374,14 +380,22 @@ Steps:
   `U, V` into a common `ℂ^d` preserves skewness and Hilbert–Schmidt norm; this
   is the only remaining piece, and it is reindexing.
 
-*Artifact: `rank_r_partial_trace (hFGP : FGPBound …)` — trusted surface exactly
-FGP's published statement.*
+*Artifact:* `rank_r_partial_trace (hFGP : FGPBound d)` — the hypothesis must
+carry the **square** form, `FGPBound d` on `(ℂ^d)^{⊗4}` with all four factors
+the same space, which is what Fu–Gao–Park actually publish. A `U, V`-indexed
+`FGPBound U V` is a *generalization* of their theorem; it is fine as an
+intermediate (B3 derives it from the square form by zero-extension) but must
+not be the artifact's hypothesis, or the trusted surface becomes "FGP
+generalized" rather than "FGP as published" — the distinction this project
+exists to maintain.
 
 ### Phases C–F — manuscript coverage, ordered by payoff/cost
 
 - **C — Finish §4** (cheap after A6): Prop 4.1's Lagrange SOS (D1), Prop 4.2's
   sector Gram identity. Rounds out "§§1–4 fully checked".
-- **D — §5 two-copy** (after B3, which supplies SVD): partial transpose
+- **D — §5 two-copy** (this is where complex SVD is finally unavoidable —
+  Schmidt decomposition of a bipartite vector; it is *not* needed for Phase B):
+  partial transpose
   (entrywise definition), Schmidt rank of a bipartite vector, block
   positivity; then `prop:exact-q2-score` and `thm:exact-asymmetric-score`
   (one-variable minimization, D1). The asymmetric theorem is where the
