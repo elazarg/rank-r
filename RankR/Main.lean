@@ -56,6 +56,24 @@ theorem exists_rankFactor_rank (C : Matrix W W ℂ) :
     ∃ e d : Fin C.rank → EuclideanSpace ℂ W, Orthonormal ℂ e ∧ C = rankFactor e d :=
   (finrank_range_toEuclideanLin C) ▸ exists_rankFactor C
 
+/-- Rank `0` means the empty range factorization, hence the zero matrix. -/
+theorem eq_zero_of_rank_eq_zero {C : Matrix W W ℂ} (h : C.rank = 0) : C = 0 := by
+  obtain ⟨e, d, _, hC⟩ := exists_rankFactor_rank C
+  have huniv : (Finset.univ : Finset (Fin C.rank)) = ∅ := by
+    rw [← Finset.card_eq_zero, Finset.card_univ, Fintype.card_fin]; exact h
+  rw [hC]; ext p q; simp [rankFactor_apply, huniv]
+
+theorem rank_pos_of_ne_zero {C : Matrix W W ℂ} (h : C ≠ 0) : 0 < C.rank :=
+  Nat.pos_of_ne_zero fun h0 => h (eq_zero_of_rank_eq_zero h0)
+
+/-- The trace-rank bound `|Tr C|² ≤ (rank C)‖C‖₂²`, stated for `C` itself.
+This is `normSq_trace_le` transported along the range factorization. -/
+theorem normSq_trace_le_rank (C : Matrix W W ℂ) :
+    Complex.normSq C.trace ≤ (C.rank : ℝ) * hsNormSq C := by
+  obtain ⟨e, d, he, hC⟩ := exists_rankFactor_rank C
+  have h := normSq_trace_le e d he
+  rwa [← hC] at h
+
 end Rank
 
 section Assembly
@@ -96,22 +114,19 @@ theorem qform_HopScaled (e d : Fin s → EuclideanSpace ℂ (U × V)) :
   push_cast
   ring
 
-/-- **Theorem 1.1** (`thm:rank_r`), given Proposition 2.2.
-
-`C` of rank at most `r` satisfies
-`‖Tr_U C‖₂² + ‖Tr_V C‖₂² ≤ r‖C‖₂² + (1/r)|Tr C|²`. -/
-theorem rank_r_of_operatorIneq (hOp : OperatorIneq U V)
-    (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (_hr : 0 < r) (hrank : C.rank ≤ r) :
+/-- **Theorem 1.1 at the exact rank** (`eq:main-bound-exact-rank`), given
+Proposition 2.2: the inequality with `r = rank C`, which is where the operator
+inequality is actually applied.  No hypothesis on `C` is needed — for `C = 0`
+both sides vanish, `1/0` being `0`. -/
+theorem rank_r_of_operatorIneq_exact (hOp : OperatorIneq U V)
+    (C : Matrix (U × V) (U × V) ℂ) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
-      ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace := by
-  obtain ⟨e, d, he, hC⟩ := exists_rankFactor_rank C
-  rcases Nat.eq_zero_or_pos C.rank with h0 | hpos
-  · have huniv : (Finset.univ : Finset (Fin C.rank)) = ∅ := by
-      rw [← Finset.card_eq_zero, Finset.card_univ, Fintype.card_fin]; exact h0
-    have hC0 : C = 0 := by
-      rw [hC]; ext p q; simp [rankFactor_apply, huniv]
-    rw [hC0]; simp [hsNormSq]
-  · have hnpos : (0 : ℝ) < (C.rank : ℝ) := by exact_mod_cast hpos
+      ≤ (C.rank : ℝ) * hsNormSq C + (1 / (C.rank : ℝ)) * Complex.normSq C.trace := by
+  rcases eq_or_ne C 0 with rfl | hC
+  · simp [hsNormSq]
+  · obtain ⟨e, d, he, hfac⟩ := exists_rankFactor_rank C
+    have hpos := rank_pos_of_ne_zero hC
+    have hnpos : (0 : ℝ) < (C.rank : ℝ) := by exact_mod_cast hpos
     have key := hOp C.rank hpos e he (delta d)
     rw [qform_HopScaled, Complex.ofReal_re, ← contraction_norm e d he] at key
     have htr : Complex.normSq (rankFactor e d).trace
@@ -125,9 +140,44 @@ theorem rank_r_of_operatorIneq (hOp : OperatorIneq U V)
       refine le_of_mul_le_mul_left ?_ hnpos
       rw [mul_add, mul_add, hinv2]
       nlinarith [key]
-    rw [hC]
-    exact step1.trans (rank_mono (hsNormSq_nonneg _) (Complex.normSq_nonneg _)
-      hpos hrank htr)
+    rwa [← hfac] at step1
+
+/-- **Theorem 1.1** (`thm:rank_r`), given Proposition 2.2.
+
+`C` of rank at most `r` satisfies
+`‖Tr_U C‖₂² + ‖Tr_V C‖₂² ≤ r‖C‖₂² + (1/r)|Tr C|²`. -/
+theorem rank_r_of_operatorIneq (hOp : OperatorIneq U V)
+    (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (_hr : 0 < r) (hrank : C.rank ≤ r) :
+    hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
+      ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace := by
+  rcases eq_or_ne C 0 with rfl | hC
+  · simp [hsNormSq]
+  · exact (rank_r_of_operatorIneq_exact hOp C).trans
+      (rank_mono (hsNormSq_nonneg _) (Complex.normSq_nonneg _) (rank_pos_of_ne_zero hC)
+        hrank (normSq_trace_le_rank C))
+
+/-- **Strictness below the exact rank** (`sec:proof`): for nonzero `C` of rank
+strictly less than `r`, the rank-`r` bound is strict.  This is the last step of
+the proof of `thm:rank_r`, where `eq:rank-monotonicity` is applied with
+`r₀ < r`. -/
+theorem rank_r_of_operatorIneq_strict (hOp : OperatorIneq U V)
+    (C : Matrix (U × V) (U × V) ℂ) (hC : C ≠ 0) (r : ℕ) (hrank : C.rank < r) :
+    hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
+      < r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
+  (rank_r_of_operatorIneq_exact hOp C).trans_lt
+    (rank_mono_strict (hsNormSq_pos hC) (Complex.normSq_nonneg _)
+      (rank_pos_of_ne_zero hC) hrank (normSq_trace_le_rank C))
+
+/-- **Equality forces the exact rank** (`thm:rank_r`, sharpness paragraph):
+for nonzero `C`, equality in the rank-`r` inequality requires `rank C = r`.
+The contrapositive of `rank_r_of_operatorIneq_strict`. -/
+theorem rank_eq_of_eq_rank_r_of_operatorIneq (hOp : OperatorIneq U V)
+    (C : Matrix (U × V) (U × V) ℂ) (hC : C ≠ 0) (r : ℕ) (hrank : C.rank ≤ r)
+    (heq : hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
+      = r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace) :
+    C.rank = r :=
+  le_antisymm hrank <| Nat.le_of_not_lt fun hlt =>
+    absurd heq (rank_r_of_operatorIneq_strict hOp C hC r hlt).ne
 
 end Assembly
 

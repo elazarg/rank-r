@@ -19,3 +19,4 @@ import RankR.Theorem
 import RankR.Antisym
 import RankR.FGP
 import RankR.Extend
+import RankR.Optimal

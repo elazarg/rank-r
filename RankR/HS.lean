@@ -42,4 +42,12 @@ theorem hsNormSq_eq_norm_sq (A : Matrix m n ℂ) : hsNormSq A = ‖vec A‖ ^ 2 
 theorem hsNormSq_nonneg (A : Matrix m n ℂ) : 0 ≤ hsNormSq A := by
   rw [hsNormSq_eq_norm_sq]; positivity
 
+theorem hsNormSq_pos {A : Matrix m n ℂ} (hA : A ≠ 0) : 0 < hsNormSq A := by
+  rw [hsNormSq_eq_norm_sq]
+  have hv : vec A ≠ 0 := fun h => hA (by
+    ext i j
+    have := congrFun (congrArg (WithLp.ofLp) h) (i, j)
+    simpa using this)
+  exact pow_pos (norm_pos_iff.mpr hv) 2
+
 end RankR

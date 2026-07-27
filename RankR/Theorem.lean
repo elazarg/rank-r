@@ -92,4 +92,26 @@ theorem rank_r_partial_trace (hFGP : DoubleSkewBound U V)
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
   rank_r_of_operatorIneq (operatorIneq_of_doubleSkew hFGP) C r hr hrank
 
+/-- **The exact-rank form** (`eq:main-bound-exact-rank`). -/
+theorem rank_r_partial_trace_exact (hFGP : DoubleSkewBound U V)
+    (C : Matrix (U × V) (U × V) ℂ) :
+    hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
+      ≤ (C.rank : ℝ) * hsNormSq C + (1 / (C.rank : ℝ)) * Complex.normSq C.trace :=
+  rank_r_of_operatorIneq_exact (operatorIneq_of_doubleSkew hFGP) C
+
+/-- **Strictness below the exact rank** (`sec:proof`). -/
+theorem rank_r_partial_trace_strict (hFGP : DoubleSkewBound U V)
+    (C : Matrix (U × V) (U × V) ℂ) (hC : C ≠ 0) (r : ℕ) (hrank : C.rank < r) :
+    hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
+      < r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
+  rank_r_of_operatorIneq_strict (operatorIneq_of_doubleSkew hFGP) C hC r hrank
+
+/-- **Equality forces the exact rank** (`thm:rank_r`, sharpness paragraph). -/
+theorem rank_eq_of_eq_rank_r_partial_trace (hFGP : DoubleSkewBound U V)
+    (C : Matrix (U × V) (U × V) ℂ) (hC : C ≠ 0) (r : ℕ) (hrank : C.rank ≤ r)
+    (heq : hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
+      = r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace) :
+    C.rank = r :=
+  rank_eq_of_eq_rank_r_of_operatorIneq (operatorIneq_of_doubleSkew hFGP) C hC r hrank heq
+
 end RankR

@@ -48,6 +48,21 @@ implicit. One rendering is worth singling out:
 `M = |u₁⟩⟨v₁| + |u₂⟩⟨v₂|`, which is "Schmidt rank ≤ 2 across the row:col cut"
 unrolled rather than a theorem about it.
 
+The sharpness claims around Theorem 1.1 are covered too.
+`rank_r_partial_trace_of_FGP_square_exact` is the exact-rank form (`r = rank C`),
+`rank_r_partial_trace_of_FGP_square_strict` says the bound is *strict* for
+nonzero `C` with `rank C < r`, and `rank_eq_of_eq_rank_r_partial_trace_of_FGP_square`
+is the stated consequence: equality for nonzero `C` forces `rank C = r`.
+
+`RankR/Optimal.lean` closes the other half, and needs no hypothesis at all —
+not even Fu–Gao–Park. It builds the extremizer `projWit = P_r ⊗ |v⟩⟨w|`,
+computes its rank (`rank_projWit`, exactly `r`) and its four quantities
+(`‖C‖₂² = r`, `|Tr C|² = r²|⟨w,v⟩|²`, `‖Tr_U C‖₂² = r²`, `‖Tr_V C‖₂² = r|⟨w,v⟩|²`),
+shows it attains equality (`projWit_bound_eq`), and derives the two optimality
+statements: any bound `‖Tr_U C‖₂² + ‖Tr_V C‖₂² ≤ a‖C‖₂² + b|Tr C|²` valid at
+rank `r` has `a ≥ r` (`le_coeff_hsNormSq_of_bound`), and once `a = r` is fixed,
+`b ≥ 1/r` (`inv_le_coeff_trace_of_bound`).
+
 **Not proved here:** Fu–Gao–Park's estimate itself. Nothing else.
 
 Two labelled equations of the manuscript, `eq:Phi-Pminus-TTstar` and
@@ -73,7 +88,7 @@ revision.
 
 | Path | Contents |
 | --- | --- |
-| `RankR/` | the formalization (21 files) |
+| `RankR/` | the formalization (22 files) |
 | `paper/` | the manuscript |
 
 ### The formalization, bottom-up
@@ -96,6 +111,7 @@ revision.
 | `Assemble`, `Bessel`, `Restrict`, `Synthesis` | the Bessel-duality chain |
 | `Theorem` | Proposition 2.2 and Theorem 1.1 given the double-skew bound |
 | `Antisym`, `FGP`, `Extend` | the antisymmetrizer, **Theorem 1.1 from Fu–Gao–Park** |
+| `Optimal` | the extremizer, and optimality of the coefficients `r`, `1/r` |
 
 ## A note on provenance
 

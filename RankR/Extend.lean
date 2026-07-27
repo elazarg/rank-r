@@ -244,18 +244,52 @@ theorem FGPBound_of_card_le {d : ℕ} (hU : Fintype.card U ≤ d) (hV : Fintype.
 
 end QuadraticForm
 
+section Square
+
+variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] {d : ℕ}
+  (C : Matrix (U × V) (U × V) ℂ)
+
 /-- **Theorem 1.1, from Fu–Gao–Park as published.**
 
 The hypothesis is `FGPBound (Fin d) (Fin d)`: the double-antisymmetric
 projection estimate on `(ℂ^d)^{⊗4}`, all four tensor factors the same space,
 which is the form Fu–Gao–Park state.  Nothing else is assumed. -/
-theorem rank_r_partial_trace_of_FGP_square {U V : Type*} [Fintype U] [Fintype V]
-    [DecidableEq U] [DecidableEq V] {d : ℕ}
-    (hU : Fintype.card U ≤ d) (hV : Fintype.card V ≤ d)
-    (hFGP : FGPBound (Fin d) (Fin d))
-    (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (hr : 0 < r) (hrank : C.rank ≤ r) :
+theorem rank_r_partial_trace_of_FGP_square
+    (hU : Fintype.card U ≤ d) (hV : Fintype.card V ≤ d) (hFGP : FGPBound (Fin d) (Fin d))
+    (r : ℕ) (hr : 0 < r) (hrank : C.rank ≤ r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
   rank_r_partial_trace_of_FGP (FGPBound_of_card_le hU hV hFGP) C r hr hrank
+
+/-- **Theorem 1.1 at the exact rank** (`eq:main-bound-exact-rank`), from
+Fu–Gao–Park as published. -/
+theorem rank_r_partial_trace_of_FGP_square_exact
+    (hU : Fintype.card U ≤ d) (hV : Fintype.card V ≤ d) (hFGP : FGPBound (Fin d) (Fin d)) :
+    hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
+      ≤ (C.rank : ℝ) * hsNormSq C + (1 / (C.rank : ℝ)) * Complex.normSq C.trace :=
+  rank_r_partial_trace_of_FGP_exact (FGPBound_of_card_le hU hV hFGP) C
+
+/-- **The strict form of Theorem 1.1** (`sec:proof`).  For nonzero `C` whose rank
+is strictly below `r`, the rank-`r` bound is strict: the passage from the exact
+rank to a larger rank parameter loses `(r-r₀)(1-1/r)‖C‖₂² > 0`. -/
+theorem rank_r_partial_trace_of_FGP_square_strict
+    (hU : Fintype.card U ≤ d) (hV : Fintype.card V ≤ d) (hFGP : FGPBound (Fin d) (Fin d))
+    (hC : C ≠ 0) (r : ℕ) (hrank : C.rank < r) :
+    hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
+      < r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
+  rank_r_partial_trace_of_FGP_strict (FGPBound_of_card_le hU hV hFGP) C hC r hrank
+
+/-- **Equality in Theorem 1.1 forces `rank C = r`** (`thm:rank_r`, sharpness
+paragraph).  This is why the extremizer there is built from a rank-`r`
+projection. -/
+theorem rank_eq_of_eq_rank_r_partial_trace_of_FGP_square
+    (hU : Fintype.card U ≤ d) (hV : Fintype.card V ≤ d) (hFGP : FGPBound (Fin d) (Fin d))
+    (hC : C ≠ 0) (r : ℕ) (hrank : C.rank ≤ r)
+    (heq : hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
+      = r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace) :
+    C.rank = r :=
+  rank_eq_of_eq_rank_r_partial_trace_of_FGP (FGPBound_of_card_le hU hV hFGP) C hC r hrank heq
+
+end Square
 
 end RankR

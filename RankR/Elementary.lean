@@ -8,6 +8,15 @@ namespace RankR
 
 open Matrix Finset ComplexConjugate
 
+/-- The gap of `eq:rank-monotonicity` in factored form.  Both the non-strict and
+the strict reading of that display come from this one identity: the first factor
+is the increment in the rank parameter, the second is what the trace-rank bound
+controls. -/
+theorem rank_gap {a t : ℝ} {r₀ r : ℕ} (hr₀ : (0 : ℝ) < r₀) (hr : (0 : ℝ) < r) :
+    (r : ℝ) * a + (1 / r) * t - ((r₀ : ℝ) * a + (1 / r₀) * t)
+      = ((r : ℝ) - r₀) * (a - t / ((r : ℝ) * r₀)) := by
+  field_simp; ring
+
 /-- `eq:rank-monotonicity`: the passage from the exact rank `r₀` to any `r ≥ r₀`.
 
 Stated abstractly in the two nonnegative reals `a = ‖C‖₂²` and `t = |Tr C|²`,
@@ -20,14 +29,27 @@ theorem rank_mono {a t : ℝ} (_ha : 0 ≤ a) (ht : 0 ≤ t) {r₀ r : ℕ}
   have h2 : (r₀ : ℝ) ≤ (r : ℝ) := by exact_mod_cast hle
   have hr0 : (0 : ℝ) < (r₀ : ℝ) := by linarith
   have hrr : (0 : ℝ) < (r : ℝ) := by linarith
-  rw [← sub_nonneg]
-  have key : (r : ℝ) * a + (1 / r) * t - ((r₀ : ℝ) * a + (1 / r₀) * t)
-      = ((r : ℝ) - r₀) * (a - t / ((r : ℝ) * r₀)) := by
-    field_simp; ring
-  rw [key]
+  rw [← sub_nonneg, rank_gap hr0 hrr]
   apply mul_nonneg (by linarith)
   rw [sub_nonneg, div_le_iff₀ (by positivity)]
   nlinarith
+
+/-- The strict form of `eq:rank-monotonicity`, used for the sharpness assertion
+of `thm:rank_r`: for `a > 0` the passage to a strictly larger `r` is strict.
+
+The same chain, but `r₀ < r` forces `r ≥ 2`, so the second step now loses
+`(r-r₀)(1-1/r)a > 0`. -/
+theorem rank_mono_strict {a t : ℝ} (ha : 0 < a) (_ht : 0 ≤ t) {r₀ r : ℕ}
+    (hr₀ : 0 < r₀) (hlt : r₀ < r) (htr : t ≤ r₀ * a) :
+    (r₀ : ℝ) * a + (1 / r₀) * t < (r : ℝ) * a + (1 / r) * t := by
+  have h1 : (1 : ℝ) ≤ (r₀ : ℝ) := by exact_mod_cast hr₀
+  have h2 : (r₀ : ℝ) + 1 ≤ (r : ℝ) := by exact_mod_cast hlt
+  have hr0 : (0 : ℝ) < (r₀ : ℝ) := by linarith
+  have hrr : (0 : ℝ) < (r : ℝ) := by linarith
+  rw [← sub_pos, rank_gap hr0 hrr]
+  apply mul_pos (by linarith)
+  rw [sub_pos, div_lt_iff₀ (by positivity)]
+  nlinarith [mul_pos hr0 ha]
 
 section Contractions
 
