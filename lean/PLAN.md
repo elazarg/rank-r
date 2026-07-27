@@ -378,8 +378,28 @@ proved in `Skew.lean`. All four of `Φ(Pneg) = W Wᴴ`, `‖W‖² ≤ 2(s−1)`
 `W ⊥ δ_e`, and the SOS identity below are numerically verified in exactly these
 conventions.
 
-The SOS identity, in this normalization (`ζᵢⱼ` unnormalized, `‖L_ab‖₂² = 2`),
-is the manuscript's `eq:sos-complete-graph` doubled:
+**Revision to A6: the SOS identity is not needed.** The roadmap preferred it
+over `eq:T-Cauchy` on the grounds that the constant chain is slackless. With the
+*unordered* Kraus family already used in `Phi.lean` that is no longer true: the
+step `‖K‖₂² ≤ 16‖c‖²` is lossy (max observed ratio `4.97` against the bound `16`,
+because `{L_ab ⊗ M_cd}` over all ordered pairs is not an orthogonal family). So
+the plain Cauchy–Schwarz route closes with room to spare, and it is four short
+steps instead of a large identity:
+
+    ‖𝒯c‖²  =  ∑ₖ ‖uₖ‖²                                  (eq:T-by-vertices, `norm_delta`)
+           ≤  (s−1) ∑ₖ ∑_{e ∋ k} ‖v_{k,e}‖²             (Cauchy–Schwarz, s−1 terms)
+           =  (s−1) ∑_{i<j} (‖K_ij ēᵢ‖² + ‖K_ij ēⱼ‖²)   (regroup by edge)
+           ≤  (s−1) ∑_{i<j} ½‖K_ij‖₂²                   (`DoubleSkewBound` edgewise)
+           ≤  8(s−1) ‖c‖²                               (‖K‖₂² ≤ 16‖c‖²)
+
+Note also that this route needs **no basis and no linear order** on `U` or `V`:
+the vertex regrouping is basis-free, and the edgewise step consumes
+`DoubleSkewBound` directly. Verified at six `(dU,dV,s)` triples.
+
+The manuscript's SOS identity, in this normalization (`ζᵢⱼ` unnormalized,
+`‖L_ab‖₂² = 2`), is `eq:sos-complete-graph` doubled — kept here for reference,
+and still the right thing to prove if Prop 4.3 is wanted for its own sake
+(Phase C):
 
     2(s−1)‖c‖² − ‖𝒯c‖²
       = (s−1) ∑_{i<j} [ ½‖K_ij‖₂² − ‖K_ij ēᵢ‖² − ‖K_ij ēⱼ‖² ]
