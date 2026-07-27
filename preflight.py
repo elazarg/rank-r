@@ -437,11 +437,15 @@ def check_Hr_psd():
     """Proposition 2.2 (prop:operator_ineq): H_r >= 0.  The load-bearing claim."""
     worst = np.inf
     bad = []
-    for dU, dV, r in [(2, 2, 2), (2, 2, 3), (2, 2, 4), (3, 2, 3), (3, 2, 5),
+    # r = 1 is degenerate -- the complete graph K_1 has no edges, so the
+    # T-bound is vacuous and H reduces to Phi(P_+) -- but the Lean assembly
+    # consumes it for every rank-one C, so it must be covered.
+    for dU, dV, r in [(2, 2, 1), (3, 2, 1), (2, 3, 1), (3, 3, 1), (4, 3, 1),
+                      (2, 2, 2), (2, 2, 3), (2, 2, 4), (3, 2, 3), (3, 2, 5),
                       (3, 3, 4), (3, 3, 2), (4, 2, 4), (4, 3, 6)]:
         n = dU * dV
         dims = (dU, dV, r)
-        for _ in range(30):
+        for _ in range(60):
             e, q, psi, rho = build_code(dU, dV, r)
             rho_UQ = _ptrace_slow(rho, dims, [0, 2])   # trace out V
             rho_VQ = _ptrace_slow(rho, dims, [1, 2])   # trace out U

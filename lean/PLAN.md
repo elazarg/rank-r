@@ -256,11 +256,11 @@ correct, granted Lemma 2.1."** No missing library theorems stand in the way;
 it is the same entrywise style as `Operator.lean`, roughly 3–4× the volume.
 Each step ends compiling; each maps to a labeled equation.
 
-- **A0 — Preflight extension.** Add `(dU, dV, 1)` triples to `check_Hr_psd`:
-  the `r = 1` case is consumed by the assembly (rank-1 `C`), degenerates the
-  complete-graph argument (no edges, `H = Φ(P₊)`), and is currently untested.
-  (Checked ad hoc 2026-07-27: min eigenvalue $-7\times10^{-16}$ over 1000
-  trials, five dimension pairs. Make it part of the suite.)
+- **A0 — Preflight extension. DONE.** `check_Hr_psd` now covers five
+  `(dU, dV, 1)` triples alongside the `r ≥ 2` ones, at 60 trials each; min
+  eigenvalue $-9.2\times10^{-16}$, suite still 19/19.  The `r = 1` case is
+  consumed by the assembly for every rank-one `C`, and degenerates the
+  complete-graph argument (no edges, `H = Φ(P₊)`).
 - **A1 — Skew groundwork.** Basis `L_ab = E_ab − E_ba`; membership of
   `∑ c_αβ L_α ⊗ₖ M_β` in `doubleSkew`; `Kᵀ = K` on `doubleSkew` by span
   induction from `(L⊗M)ᵀ = Lᵀ⊗Mᵀ = L⊗M`; conjugate of an orthonormal family
@@ -405,9 +405,7 @@ dimensions. **All 19 pass.** Notable:
 **What the pre-flight cannot cover**, and therefore what Lean is actually for:
 
 - Anything genuinely $r$-dependent. All checks run at $r \le 6$, $d \le 5$; an
-  argument that fails only for large $r$ would pass here.  At the other end,
-  `check_Hr_psd` starts at $r = 2$, while the Lean assembly also consumes
-  $r = 1$ — closing that gap is Phase A0.
+  argument that fails only for large $r$ would pass here.
 - Tier D3 (above).
 - §6: `thm:pcp-rank-verifier`, `cor:two-copy-trace-distance`,
   `cor:exact-schmidt-number` — all quantify over states of bounded *Schmidt
