@@ -11,4 +11,5 @@ import RankR.Phi
 import RankR.Synth
 import RankR.Frame
 import RankR.Edge
+import RankR.Bessel
 import RankR.Assemble

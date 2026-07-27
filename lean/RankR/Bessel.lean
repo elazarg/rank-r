@@ -90,17 +90,16 @@ theorem skewCombo_apply (lam : U → U → V → V → ℂ) (x y : U × V) :
       = (lam a b x.2 y.2 - lam a b y.2 x.2) * skewUnit a b x.1 y.1 := by
     intro a b
     rw [Matrix.sum_apply]
-    have : ∀ c : V, (∑ d, lam a b c d • (skewUnit a b ⊗ₖ skewUnit c d)) x y
-        = ∑ d, (lam a b c d * skewUnit c d x.2 y.2) * skewUnit a b x.1 y.1 := by
+    have hd : ∀ c : V, (∑ d, lam a b c d • (skewUnit a b ⊗ₖ skewUnit c d)) x y
+        = (∑ d, lam a b c d * skewUnit c d x.2 y.2) * skewUnit a b x.1 y.1 := by
       intro c
-      rw [Matrix.sum_apply]
+      rw [Matrix.sum_apply, Finset.sum_mul]
       refine Finset.sum_congr rfl fun d _ => ?_
       rw [Matrix.smul_apply, Matrix.kroneckerMap_apply, smul_eq_mul]
       ring
-    rw [Finset.sum_congr rfl fun c _ => this c, ← Finset.sum_mul]
+    rw [Finset.sum_congr rfl fun c _ => hd c, ← Finset.sum_mul]
     congr 1
-    rw [← sum_mul_skewUnit_apply (fun c d => lam a b c d) x.2 y.2]
-    exact Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun d _ => rfl
+    exact sum_mul_skewUnit_apply (fun c d => lam a b c d) x.2 y.2
   rw [skewCombo, Matrix.sum_apply]
   have hmid : ∀ a : U, (∑ b, ∑ c, ∑ d, lam a b c d • (skewUnit a b ⊗ₖ skewUnit c d)) x y
       = ∑ b, (lam a b x.2 y.2 - lam a b y.2 x.2) * skewUnit a b x.1 y.1 := fun a => by
@@ -109,6 +108,69 @@ theorem skewCombo_apply (lam : U → U → V → V → ℂ) (x y : U × V) :
   rw [Finset.sum_congr rfl fun a _ => hmid a,
     sum_mul_skewUnit_apply (fun a b => lam a b x.2 y.2 - lam a b y.2 x.2) x.1 y.1]
   ring
+
+/-- The alternating four-term sum obeys the Cauchy-Schwarz bound
+`|x₁ - x₂ - x₃ + x₄|² ≤ 4 (|x₁|² + |x₂|² + |x₃|² + |x₄|²)`. -/
+theorem normSq_sub_sub_add_le (x₁ x₂ x₃ x₄ : ℂ) :
+    Complex.normSq (x₁ - x₂ - x₃ + x₄)
+      ≤ 4 * (Complex.normSq x₁ + Complex.normSq x₂ + Complex.normSq x₃ + Complex.normSq x₄) := by
+  have key : ∀ a b c d : ℝ, (a - b - c + d) * (a - b - c + d)
+      ≤ 4 * (a * a + b * b + c * c + d * d) := by
+    intro a b c d
+    nlinarith [sq_nonneg (a + b), sq_nonneg (a + c), sq_nonneg (a - d), sq_nonneg (b - c),
+      sq_nonneg (b + d), sq_nonneg (c + d)]
+  simp only [Complex.normSq_apply, Complex.add_re, Complex.sub_re, Complex.add_im, Complex.sub_im]
+  have h1 := key x₁.re x₂.re x₃.re x₄.re
+  have h2 := key x₁.im x₂.im x₃.im x₄.im
+  linarith
+
+omit [DecidableEq U] [DecidableEq V] in
+/-- A double sum over `U × V` of a function of the four separated indices unfolds to
+the quadruple sum in the order `(U, U, V, V)`. -/
+theorem sum_prod_sum_prod (g : U → U → V → V → ℝ) :
+    ∑ x : U × V, ∑ y : U × V, g x.1 y.1 x.2 y.2 = ∑ a, ∑ b, ∑ c, ∑ d, g a b c d := by
+  simp only [Fintype.sum_prod_type]
+  exact Finset.sum_congr rfl fun a _ => Finset.sum_comm
+
+/-- The Hilbert-Schmidt norm of a double-skew combination is controlled by the
+squared moduli of its coefficients, with constant `16`.
+
+Each entry is an alternating sum of four coefficients, so its squared modulus is at
+most `4` times the sum of their squared moduli; each of the four resulting double
+sums is the full coefficient sum reindexed by a swap of the `U`-pair, of the
+`V`-pair, or of both. -/
+theorem hsNormSq_skewCombo_le (lam : U → U → V → V → ℂ) :
+    hsNormSq (skewCombo lam)
+      ≤ 16 * ∑ a, ∑ b, ∑ c, ∑ d, Complex.normSq (lam a b c d) := by
+  have swapU : ∀ f : U → U → V → V → ℝ,
+      ∑ a, ∑ b, ∑ c, ∑ d, f b a c d = ∑ a, ∑ b, ∑ c, ∑ d, f a b c d := fun _ => Finset.sum_comm
+  have swapV : ∀ f : U → U → V → V → ℝ,
+      ∑ a, ∑ b, ∑ c, ∑ d, f a b d c = ∑ a, ∑ b, ∑ c, ∑ d, f a b c d := fun _ =>
+    Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => Finset.sum_comm
+  calc hsNormSq (skewCombo lam)
+      ≤ ∑ x : U × V, ∑ y : U × V, 4 * (Complex.normSq (lam x.1 y.1 x.2 y.2)
+          + Complex.normSq (lam x.1 y.1 y.2 x.2) + Complex.normSq (lam y.1 x.1 x.2 y.2)
+          + Complex.normSq (lam y.1 x.1 y.2 x.2)) := by
+        refine Finset.sum_le_sum fun x _ => Finset.sum_le_sum fun y _ => ?_
+        rw [skewCombo_apply]
+        exact normSq_sub_sub_add_le _ _ _ _
+    _ = 4 * ((∑ x : U × V, ∑ y : U × V, Complex.normSq (lam x.1 y.1 x.2 y.2))
+          + (∑ x : U × V, ∑ y : U × V, Complex.normSq (lam x.1 y.1 y.2 x.2))
+          + (∑ x : U × V, ∑ y : U × V, Complex.normSq (lam y.1 x.1 x.2 y.2))
+          + (∑ x : U × V, ∑ y : U × V, Complex.normSq (lam y.1 x.1 y.2 x.2))) := by
+        simp only [mul_add, Finset.mul_sum, Finset.sum_add_distrib]
+    _ = 16 * ∑ a, ∑ b, ∑ c, ∑ d, Complex.normSq (lam a b c d) := by
+        have h4 : ∑ a, ∑ b, ∑ c, ∑ d, Complex.normSq (lam b a d c)
+            = ∑ a, ∑ b, ∑ c, ∑ d, Complex.normSq (lam a b c d) := by
+          rw [swapV (fun a b c d => Complex.normSq (lam b a c d)),
+            swapU (fun a b c d => Complex.normSq (lam a b c d))]
+        rw [sum_prod_sum_prod (fun a b c d => Complex.normSq (lam a b c d)),
+          sum_prod_sum_prod (fun a b c d => Complex.normSq (lam a b d c)),
+          sum_prod_sum_prod (fun a b c d => Complex.normSq (lam b a c d)),
+          sum_prod_sum_prod (fun a b c d => Complex.normSq (lam b a d c)),
+          swapV (fun a b c d => Complex.normSq (lam a b c d)),
+          swapU (fun a b c d => Complex.normSq (lam a b c d)), h4]
+        ring
 
 end SkewCombo
 
