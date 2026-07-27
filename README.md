@@ -15,7 +15,9 @@ That claim is deliberately narrow, and this README spells out its limits.
 ## What is proved, and what it rests on
 
 ```lean
-theorem RankR.rank_r_partial_trace (hFGP : DoubleSkewBound U V)
+theorem RankR.rank_r_partial_trace_of_FGP_square
+    (hU : Fintype.card U ≤ d) (hV : Fintype.card V ≤ d)
+    (hFGP : FGPBound (Fin d) (Fin d))
     (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (hr : 0 < r) (hrank : C.rank ≤ r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace
@@ -36,22 +38,32 @@ $\mathfrak{so}$ defined by $L^T = -L$, not $L^H = -L$) rather than leaving them
 implicit, and why `preflight.py` independently checks the same labelled
 equations numerically against the paper.
 
-The single hypothesis `DoubleSkewBound U V` is Lemma 2.1 of the manuscript **as
-its proof actually consumes it**: for every $K$ in the linear span of
-$\mathfrak{so}(U) \otimes \mathfrak{so}(V)$ and every orthonormal pair $x,y$,
-
-$$\|Kx\|^2 + \|Ky\|^2 \;\le\; \tfrac12\|K\|_2^2 .$$
-
-It is carried as a hypothesis rather than an `axiom` precisely so that
+The sole hypothesis is `FGPBound (Fin d) (Fin d)`: the double-antisymmetric
+projection estimate of Fu–Gao–Park [arXiv:2607.21367] on $(\mathbb C^d)^{\otimes4}$,
+all four tensor factors the same space, which is the form they state. It is
+carried as a hypothesis rather than an `axiom` precisely so that
 `#print axioms` stays meaningful and the dependency is visible in the type.
-`RankR/Edge.lean` is the *only* file that consumes it; everything else is
-unconditional.
 
-**Not proved here:** the manuscript's derivation of Lemma 2.1 from
-Fu–Gao–Park [arXiv:2607.21367] — the zero-extension, the
-$(\wedge^2U)\otimes(\wedge^2V)$ identification, the best-Schmidt-rank-2
-approximation identity, and Ky Fan — nor Fu–Gao–Park itself. Replacing
-`DoubleSkewBound` by FGP's literal published statement is Phase B of `PLAN.md`.
+Lemma 2.1 of the manuscript (`DoubleSkewBound`) is **derived**, not assumed —
+`RankR/FGP.lean` proves it from `FGPBound` without singular values, the
+best-rank-2 approximation identity, or Ky Fan, and `RankR/Extend.lean` reduces
+the general `U, V` case to the square one by zero-extension.
+
+**What this does and does not certify.** Lean checks the *deduction* — that the
+conclusion follows from the hypothesis, given the formal definitions in
+`RankR/Conventions.lean`. It cannot check that those formal definitions
+faithfully render the manuscript's informal ones. That correspondence is a
+human judgement, which is why `Conventions.lean` states each convention
+explicitly (inner products conjugate-linear in the first argument;
+$\mathrm{Tr}_U$ = trace *over* $U$; $\mathrm{vec}(|x\rangle\langle y|) = x \otimes \bar y$;
+$\mathfrak{so}$ defined by $L^T = -L$, not $L^H = -L$) rather than leaving them
+implicit, and why `preflight.py` independently checks the same labelled
+equations numerically against the paper. One rendering is worth singling out:
+`FGPBound` quantifies over the explicit two-term form
+`M = |u₁⟩⟨v₁| + |u₂⟩⟨v₂|`, which is "Schmidt rank ≤ 2 across the row:col cut"
+unrolled rather than a theorem about it.
+
+**Not proved here:** Fu–Gao–Park's estimate itself. Nothing else.
 
 Two labelled equations of the manuscript, `eq:Phi-Pminus-TTstar` and
 `eq:sos-complete-graph`, are **bypassed rather than proved**: the Bessel-duality
@@ -76,7 +88,7 @@ revision.
 
 | Path | Contents |
 | --- | --- |
-| `RankR/` | the formalization (18 files, ~2.5k lines) |
+| `RankR/` | the formalization (21 files) |
 | `PLAN.md` | roadmap, ordered by *delicacy* rather than effort; Phase A is complete |
 | `preflight.py` | 21 numerical checks of specific labelled equations |
 | `paper/` | the manuscript, and `MANUSCRIPT-NOTES.md` — the concrete edits it needed |
@@ -99,7 +111,8 @@ revision.
 | `Frame` | adjoint move, `eq:T-orthogonal` |
 | `Edge` | the edgewise double-skew bound — the sole consumer of `hFGP` |
 | `Assemble`, `Bessel`, `Restrict`, `Synthesis` | the Bessel-duality chain |
-| `Theorem` | **Proposition 2.2 and Theorem 1.1** |
+| `Theorem` | Proposition 2.2 and Theorem 1.1 given the double-skew bound |
+| `Antisym`, `FGP`, `Extend` | the antisymmetrizer, **Theorem 1.1 from Fu–Gao–Park** |
 
 ## Pre-flight
 

@@ -18,3 +18,4 @@ import RankR.Synthesis
 import RankR.Theorem
 import RankR.Antisym
 import RankR.FGP
+import RankR.Extend
