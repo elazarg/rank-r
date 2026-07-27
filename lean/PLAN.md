@@ -218,11 +218,11 @@ than a CAS for the §5–§7 material.
 
 ---
 
-## 4. Milestones
+## 4. Roadmap
 
-Each ends in a checkable artifact. No `sorry` at a milestone close;
-`#print axioms` on the milestone theorem must show only `propext`,
-`Classical.choice`, `Quot.sound` (plus `hFGP` as a hypothesis, never an axiom).
+Each phase ends in a checkable artifact. No `sorry` at a phase close;
+`#print axioms` on the phase's theorem must show only `propext`,
+`Classical.choice`, `Quot.sound` (plus the FGP hypothesis, never an axiom).
 
 ### Status
 
@@ -243,48 +243,119 @@ Proposition 2.2 — is fully proved**, `#print axioms` showing only
 the double-skew bound. That is tier D2, the manuscript's actual content.
 Everything else in §§1–3 is machine-checked.
 
-What Proposition 2.2 still needs, none of which exists yet:
+A structural note that shapes Phase A: the Lean `OperatorIneq` is deliberately
+the *post-Schmidt normal form* of the paper's Prop 2.2 — `Q = Fin s` with `qᵢ`
+the standard basis. That is all `rank_r_of_operatorIneq` consumes, so Phase A
+needs no Schmidt decomposition. (The paper's general-`ψ` form with
+`ρ_Q = I/r` would need it; nothing downstream does.)
 
-- `Λ_E(X) = Tr(X)I − Xᵀ`, its skew Kraus form, and complete positivity via
-  Choi `= I − F` (tier D1, mechanical).
-- The twisted projections `P±` on `S ⊗ Q` and `ρ^{T_UV} = (1/r)(P₊ − P₋)`.
-- `Φ = Λ_U ⊗ Λ_V ⊗ id_Q` and the four-term `eq:Phi-expansion`.
-- The synthesis map `𝒯`, `Φ(P₋) = 𝒯𝒯*`, the complete-graph Cauchy–Schwarz,
-  and `ran 𝒯 ⊆ ψ^⊥`.
+### Phase A — close `operatorIneq_of_doubleSkew` (= old M3)
 
-The first is a session's work; the rest is the D2 core, and the edgewise step
-is where `DoubleSkewBound` actually enters.
+Highest value per effort: finishing it answers **"is the paper's own argument
+correct, granted Lemma 2.1."** No missing library theorems stand in the way;
+it is the same entrywise style as `Operator.lean`, roughly 3–4× the volume.
+Each step ends compiling; each maps to a labeled equation.
 
-**M0 — Conventions frozen.** `RankR/Conventions.lean` compiles. All D0 items are
-Lean definitions. `hsInner_self`, sharpness, and the trace–rank bound are proved.
-*Artifact: the statement of Thm 1.1 that everything downstream must match.*
+- **A0 — Preflight extension.** Add `(dU, dV, 1)` triples to `check_Hr_psd`:
+  the `r = 1` case is consumed by the assembly (rank-1 `C`), degenerates the
+  complete-graph argument (no edges, `H = Φ(P₊)`), and is currently untested.
+  (Checked ad hoc 2026-07-27: min eigenvalue $-7\times10^{-16}$ over 1000
+  trials, five dimension pairs. Make it part of the suite.)
+- **A1 — Skew groundwork.** Basis `L_ab = E_ab − E_ba`; membership of
+  `∑ c_αβ L_α ⊗ₖ M_β` in `doubleSkew`; `Kᵀ = K` on `doubleSkew` by span
+  induction from `(L⊗M)ᵀ = Lᵀ⊗Mᵀ = L⊗M`; conjugate of an orthonormal family
+  is orthonormal. Mechanical.
+- **A2 — `Φ` as an explicit Kraus sum**,
+  `Φ(Y) = ∑_{α,β} (L_α⊗M_β⊗I) Y (L_α⊗M_β⊗I)ᴴ`, entrywise like `placeUQ`.
+  **Skip the Choi/CP machinery entirely** — `Choi = I − F` is never needed:
+  `qform (A Y Aᴴ) x = qform Y (Aᴴx)` makes PSD-preservation two lines. This
+  drops the Physlib dependency for the phase (and retires the D1 table's
+  "`Λ_E` is CP via Choi" item).
+- **A3 — The sectors.** `η_ij`, `P₋`, `P₊`, and `eq:rho-partial-transpose` in
+  unnormalized form: with `ρ₀ = |δ_e⟩⟨δ_e|` and `s = r` it reads
+  `ρ₀^{T_UV} = P₊ − P₋` — denominator-free, continuing the `HopScaled`
+  convention.
+- **A4 — The decomposition** (`eq:H-decomposition`, scaled):
+  `r·H = Φ(P₊) + (r−1)(I−ρ) − Φ(P₋)`. Entrywise algebra, preflight-exact.
+  Grindable; delegate.
+- **A5 — `Φ(P₋) = 𝒯𝒯*`** (`eq:Phi-Pminus-TTstar`, D2 #3). Define `𝒯` as a
+  matrix with columns indexed by `(edge, α, β)` — fixing the column indexing
+  the paper never states (MANUSCRIPT-NOTES §4). **Budget the most debugging
+  time here.**
+- **A6 — The bound `‖𝒯c‖² ≤ (r−1)‖c‖²`.** Design decision: **use §4's
+  `eq:sos-complete-graph` identity, not §2's Cauchy–Schwarz chain
+  (`eq:T-Cauchy`).** The SOS route turns the zero-slack constant chain (D2 #1)
+  into: one *exact algebraic identity* (preflight-exact to $1.8\times10^{-15}$)
+  + edgewise `DoubleSkewBound` on the bracket `½‖K‖² − ‖Kēᵢ‖² − ‖Kēⱼ‖²`
+  + a manifestly nonnegative vertex-variance sum. Identities grind well in
+  Lean; chained inequalities do not. Proves Prop 4.3 as a byproduct. Fallback:
+  `eq:T-by-vertices` + per-vertex Cauchy–Schwarz.
+- **A7 — `⟨δ_e, 𝒯c⟩ = 0`** (`eq:T-orthogonal`, D2 #5), from `Kᵀ = K`. Short.
+- **A8 — Assembly.** `𝒯*ψ = 0` from A7, so
+  `‖𝒯*x‖² = ‖𝒯*(x − ρx)‖² ≤ (r−1)(‖x‖² − |⟨ψ,x⟩|²)`; get
+  `𝒯𝒯* ⪯ (r−1)I` square-root-free via
+  `‖𝒯*x‖⁴ = ⟨𝒯(𝒯*x), x⟩² ≤ (r−1)‖𝒯*x‖²‖x‖²` and cancellation. Combine
+  with A4 and `Φ(P₊) ⪰ 0`.
 
-**M1 — The routine layer (D1).** Lemma 3.1, rank monotonicity, Prop 4.1,
-$\Lambda_E$ CP, Lemma 5.4. *Artifact: Thm 1.1 reduced to Prop 2.2 alone.* If M0+M1
-turn up nothing, the paper's routine layer is sound and the risk is concentrated
-in D2/D3.
+*Artifact: `rank_r_partial_trace (hFGP : DoubleSkewBound U V)` with no
+`sorry`; `#print axioms` clean.*
 
-**M2 — Linear-algebra gaps (D4, the tractable ones).** Frobenius inner product
-space; $\sum s_i^2 = \lVert C\rVert_2^2$; Ky Fan; SVD; Schmidt decomposition;
-best-rank-$k$ approximation. *Artifact: Lemma 2.1 provable from `DoubleSkewBound`
-alone.* Split off as Mathlib PRs.
+### Phase B — shrink the trusted surface to FGP's literal statement (D3 + tractable D4)
 
-**M3 — The core (D2).** Prop 2.2, in the D2 priority order above. *Artifact:
-`theorem rank_r_partial_trace (hFGP : DoubleSkewBound U V)` with no `sorry`.*
-**This is the milestone that answers "is the paper right".**
+After A, everything rests on `DoubleSkewBound` — Lemma 2.1 *as consumed*,
+whose derivation is where this plan bets an error would hide. Phase B replaces
+that trust with FGP Thm 2.4 as literally published. Split it: the risky part
+is cheap, the expensive part is safe.
 
-**M4 — Schmidt-number infrastructure.** Schmidt rank/number, block positivity,
-$r$-positivity, Choi correspondence, `vec` ↔ rank. *Artifact: §5 statements
-expressible.*
+- **B1 — The index-matching (do first; no new library).** State `FGPBound d`
+  verbatim: antisymmetric projectors on pairs (1,3), (2,4) of `(ℂ^d)⊗⁴`,
+  Schmidt cut 12:34, overlap ≤ ½ for Schmidt rank ≤ 2. Prove the paper's
+  crossed-cut application equal to it under an explicit `Equiv` of the four
+  factors. **This is tier D3 itself — the top-risk step — and it needs only
+  reindexing.** Use the concrete model `∧²U ≅ {L : Lᵀ = −L}` with the HS
+  inner product; avoid Mathlib's inner-product-less `exteriorPower`.
+- **B2 — Zero-extension.** Coordinate-subspace inclusion preserves skewness
+  and nonzero singular values. Small.
+- **B3 — The two analytic links.** Ky Fan for `k = 2` in the easy direction
+  (`‖Kx‖² + ‖Ky‖² ≤ s₁² + s₂²`, spectral theorem on `KᴴK`; do not build
+  general Ky Fan), and the best-Schmidt-rank-2 identity
+  `eq:best-SR2-approximation`, which needs **complex SVD existence — the one
+  big rock**. SVD, Ky-Fan-2, and `∑sᵢ² = ‖·‖₂²` go in a `ForMathlib/`
+  subdirectory for upstreaming.
 
-**M5 — §4/§5.** Gram identities, exact score curves, asymmetric threshold.
+*Artifact: `rank_r_partial_trace (hFGP : FGPBound d)` — trusted surface
+exactly FGP's published statement. A legitimate stopping point.*
 
-**M6 — §6/§8.** Witnesses, trace-norm separation, Kronecker-sum Ky Fan.
+### Phases C–F — manuscript coverage, ordered by payoff/cost
 
-**M7 — §7.** Higher-copy. Do last; nothing depends on it.
+- **C — Finish §4** (cheap after A6): Prop 4.1's Lagrange SOS (D1), Prop 4.2's
+  sector Gram identity. Rounds out "§§1–4 fully checked".
+- **D — §5 two-copy** (after B3, which supplies SVD): partial transpose
+  (entrywise definition), Schmidt rank of a bipartite vector, block
+  positivity; then `prop:exact-q2-score` and `thm:exact-asymmetric-score`
+  (one-variable minimization, D1). The asymmetric theorem is where the
+  `Tr_U` convention is finally exercised (D0).
+- **E — §6 + §8**: Schmidt number (infimum over decompositions), trace-norm
+  separation (Physlib's trace norm finally earns its import), Ky Fan duality
+  for Cor 8.1 (D2 #6).
+- **F — §7 higher-copy**: last — nothing depends on it — but note it has the
+  *highest unique value per theorem*: `thm:mfold-diagonal-threshold` and the
+  `ϑ_m(t)` sign analysis (D2 #7) are the only major claims the preflight
+  could not test at all, so Lean is the first check they would ever get.
 
-Stopping after M3 is a perfectly good outcome: it verifies the paper's actual
-theorem, modulo one clearly-flagged import.
+### Ordering rationale and stop points
+
+**A then B1, before anything else.** A closes the paper's own argument; B1
+attacks the one step most likely to hide a real error, and it is cheap.
+Everything after that is coverage, not risk reduction. Stopping after A
+verifies the theorem modulo Lemma 2.1; stopping after B modulo FGP's
+published statement.
+
+### Delegation
+
+A1–A4 and C are grindable — hand to the `lean4` sorry-filler/proof-repair
+agents. Keep A5, A6, and all of B1 in the main loop: they are where fidelity
+to the paper is the point, not proof search.
 
 ---
 
@@ -334,7 +405,9 @@ dimensions. **All 19 pass.** Notable:
 **What the pre-flight cannot cover**, and therefore what Lean is actually for:
 
 - Anything genuinely $r$-dependent. All checks run at $r \le 6$, $d \le 5$; an
-  argument that fails only for large $r$ would pass here.
+  argument that fails only for large $r$ would pass here.  At the other end,
+  `check_Hr_psd` starts at $r = 2$, while the Lean assembly also consumes
+  $r = 1$ — closing that gap is Phase A0.
 - Tier D3 (above).
 - §6: `thm:pcp-rank-verifier`, `cor:two-copy-trace-distance`,
   `cor:exact-schmidt-number` — all quantify over states of bounded *Schmidt
