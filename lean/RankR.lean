@@ -9,3 +9,4 @@ import RankR.Kraus
 import RankR.Sectors
 import RankR.Phi
 import RankR.Synth
+import RankR.Frame
