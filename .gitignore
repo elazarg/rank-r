@@ -1,0 +1,23 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# LaTeX build artifacts.  Scoped to the repo root with a leading slash: a bare
+# `*.log` also swallows support14-runs/*.log, which are Z3 run records, not
+# build output.
+/*.aux
+/*.log
+/*.out
+/*.pdf
+/*.synctex.gz
+/*.fls
+/*.fdb_latexmk
+/*.toc
+/*.bbl
+/*.blg
+
+# Lean / Lake
+lean/.lake/
+# lake-manifest.json is deliberately NOT ignored: it pins the exact mathlib and
+# Physlib revisions, which is what makes a build reproducible.
