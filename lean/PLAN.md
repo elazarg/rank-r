@@ -242,8 +242,25 @@ Each ends in a checkable artifact. No `sorry` at a milestone close;
 - **Remaining `sorry`s:** exactly two, both intentional — `rank_r_partial_trace`
   and `operator_ineq` in `Conventions.lean`.
 
-Theorem 1.1 is now reduced to Prop 2.2 plus the assembly step (contracting
-`H_r` against `δ`), which needs the `U ⊗ V ⊗ Q` operator layer.
+- **Operator layer (tier D2 item 2) — DONE.** `RankR/Operator.lean`, no `sorry`.
+  `qform`, `placeUQ`/`placeVQ` (the `A ⊗ I_V` / `I_U ⊗ B` placements), the
+  marginals `margUQ`/`margVQ`, and all four of Lemma 3.1 restated in the
+  operator form the main proof consumes: `qform_rho_delta`
+  (`eq:contraction-trace`), `qform_margUQ` (`eq:contraction-U`), `qform_margVQ`
+  (`eq:contraction-V`).  Placements are defined *entrywise* rather than via
+  `kroneckerMap` plus reindexing equivalences -- entrywise is what the
+  contraction computations actually consume, and it sidesteps the manuscript's
+  "regardless of whether those factors are adjacent" informality entirely.
+  All definitions were checked numerically before any proof was attempted.
+
+46 declarations, one `sorry`.  What remains for Theorem 1.1:
+
+1. **Prop 2.2** (`H_r ⪰ 0`) -- tier D2, the real content.
+2. **Range factorization**: from `rank C ≤ r`, produce orthonormal `eᵢ` and
+   `dᵢ` with `C = rankFactor e d`.  Needs an orthonormal basis of `range C`
+   and `P_range C = C`; this is the last piece of routine infrastructure.
+
+Everything between those two and the statement of Theorem 1.1 is now proved.
 
 **M0 — Conventions frozen.** `RankR/Conventions.lean` compiles. All D0 items are
 Lean definitions. `hsInner_self`, sharpness, and the trace–rank bound are proved.

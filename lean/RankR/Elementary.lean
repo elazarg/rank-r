@@ -168,6 +168,54 @@ theorem sum4_swap {A B C D M : Type*} [Fintype A] [Fintype B] [Fintype C] [Finty
       (Fintype.sum_prod_type (fun cd : C × D => F a b cd.1 cd.2)).symm
   rw [h1, h2, Finset.sum_comm]
 
+/-- Reindex a six-fold sum `(a,b,i,a',i',c) ↦ (i,i',a,a',c,b)`.  Done once via an
+explicit `Equiv` on the product type rather than as a chain of `Finset.sum_comm`
+rewrites, which at six levels is both long and brittle. -/
+theorem sum6_perm {A B I C M : Type*} [Fintype A] [Fintype B] [Fintype I] [Fintype C]
+    [AddCommMonoid M] (F : A → B → I → A → I → C → M) :
+    (∑ a, ∑ b, ∑ i, ∑ a', ∑ i', ∑ c, F a b i a' i' c)
+      = ∑ i, ∑ i', ∑ a, ∑ a', ∑ c, ∑ b, F a b i a' i' c := by
+  have hL : (∑ a, ∑ b, ∑ i, ∑ a', ∑ i', ∑ c, F a b i a' i' c)
+      = ∑ p : A × B × I × A × I × C,
+          F p.1 p.2.1 p.2.2.1 p.2.2.2.1 p.2.2.2.2.1 p.2.2.2.2.2 := by
+    simp only [Fintype.sum_prod_type]
+  have hR : (∑ i, ∑ i', ∑ a, ∑ a', ∑ c, ∑ b, F a b i a' i' c)
+      = ∑ q : I × I × A × A × C × B,
+          F q.2.2.1 q.2.2.2.2.2 q.1 q.2.2.2.1 q.2.1 q.2.2.2.2.1 := by
+    simp only [Fintype.sum_prod_type]
+  rw [hL, hR]
+  exact Fintype.sum_equiv
+    { toFun := fun p : A × B × I × A × I × C =>
+        (p.2.2.1, p.2.2.2.2.1, p.1, p.2.2.2.1, p.2.2.2.2.2, p.2.1)
+      invFun := fun q : I × I × A × A × C × B =>
+        (q.2.2.1, q.2.2.2.2.2, q.1, q.2.2.2.1, q.2.1, q.2.2.2.2.1)
+      left_inv := fun _ => rfl
+      right_inv := fun _ => rfl } _ _ (fun _ => rfl)
+
+/-- The mirrored six-fold reindexing `(a,b,i,b',i',c) ↦ (i,i',b,b',c,a)`, for the
+`V`-marginal.  A separate helper because the collapsed index sits in a different
+slot than in `sum6_perm`. -/
+theorem sum6_perm' {A B I C M : Type*} [Fintype A] [Fintype B] [Fintype I] [Fintype C]
+    [AddCommMonoid M] (F : A → B → I → B → I → C → M) :
+    (∑ a, ∑ b, ∑ i, ∑ b', ∑ i', ∑ c, F a b i b' i' c)
+      = ∑ i, ∑ i', ∑ b, ∑ b', ∑ c, ∑ a, F a b i b' i' c := by
+  have hL : (∑ a, ∑ b, ∑ i, ∑ b', ∑ i', ∑ c, F a b i b' i' c)
+      = ∑ p : A × B × I × B × I × C,
+          F p.1 p.2.1 p.2.2.1 p.2.2.2.1 p.2.2.2.2.1 p.2.2.2.2.2 := by
+    simp only [Fintype.sum_prod_type]
+  have hR : (∑ i, ∑ i', ∑ b, ∑ b', ∑ c, ∑ a, F a b i b' i' c)
+      = ∑ q : I × I × B × B × C × A,
+          F q.2.2.2.2.2 q.2.2.1 q.1 q.2.2.2.1 q.2.1 q.2.2.2.2.1 := by
+    simp only [Fintype.sum_prod_type]
+  rw [hL, hR]
+  exact Fintype.sum_equiv
+    { toFun := fun p : A × B × I × B × I × C =>
+        (p.2.2.1, p.2.2.2.2.1, p.2.1, p.2.2.2.1, p.2.2.2.2.2, p.1)
+      invFun := fun q : I × I × B × B × C × A =>
+        (q.2.2.2.2.2, q.2.2.1, q.1, q.2.2.2.1, q.2.1, q.2.2.2.2.1)
+      left_inv := fun _ => rfl
+      right_inv := fun _ => rfl } _ _ (fun _ => rfl)
+
 section Product
 
 variable {U V : Type*} [Fintype U] [Fintype V] {s : ℕ}
