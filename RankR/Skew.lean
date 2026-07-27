@@ -38,13 +38,6 @@ theorem skewUnit_isSkew (a b : W) : IsSkew (skewUnit a b) := by
   rw [IsSkew, skewUnit, Matrix.transpose_sub, Matrix.transpose_single,
     Matrix.transpose_single, neg_sub]
 
-omit [Fintype W] in
-/-- `skewUnit a b` is also skew-*Hermitian*: its entries are real, so conjugate
-transposition agrees with transposition on it. -/
-theorem skewUnit_conjTranspose (a b : W) : (skewUnit a b)ᴴ = -skewUnit a b := by
-  rw [skewUnit, Matrix.conjTranspose_sub, Matrix.conjTranspose_single,
-    Matrix.conjTranspose_single, star_one, neg_sub]
-
 omit [DecidableEq W] in
 /-- Entrywise complex conjugation preserves orthonormality.
 

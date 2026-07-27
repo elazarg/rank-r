@@ -43,14 +43,4 @@ theorem hsNormSq_eq_norm_sq (A : Matrix m n ℂ) : hsNormSq A = ‖vec A‖ ^ 2 
 theorem hsNormSq_nonneg (A : Matrix m n ℂ) : 0 ≤ hsNormSq A := by
   rw [hsNormSq_eq_norm_sq]; positivity
 
-/-- Hilbert-Schmidt Cauchy-Schwarz, `|⟪A,B⟫|² ≤ ‖A‖₂² ‖B‖₂²`.
-Used for the trace-rank bound in §3 and for `eq:kronecker-CS` in Cor 8.1. -/
-theorem normSq_hsInner_le (A B : Matrix m n ℂ) :
-    Complex.normSq (hsInner A B) ≤ hsNormSq A * hsNormSq B := by
-  rw [hsInner_eq_inner, hsNormSq_eq_norm_sq, hsNormSq_eq_norm_sq,
-    Complex.normSq_eq_norm_sq]
-  have h := norm_inner_le_norm (𝕜 := ℂ) (vec A) (vec B)
-  have h0 : (0:ℝ) ≤ ‖inner ℂ (vec A) (vec B)‖ := norm_nonneg _
-  nlinarith [norm_nonneg (vec A), norm_nonneg (vec B)]
-
 end RankR

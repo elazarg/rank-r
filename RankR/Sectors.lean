@@ -105,11 +105,6 @@ theorem qform_Ppos_nonneg (e : Fin s → EuclideanSpace ℂ (U × V))
     Finset.sum_nonneg fun p _ => qform_rankOne_nonneg _ _
   linarith
 
-theorem qform_Pneg_nonneg (e : Fin s → EuclideanSpace ℂ (U × V))
-    (x : EuclideanSpace ℂ ((U × V) × Fin s)) : 0 ≤ (qform (Pneg e) x).re := by
-  rw [Pneg, qform_sum_finset, Complex.re_sum]
-  exact Finset.sum_nonneg fun p _ => qform_rankOne_nonneg _ _
-
 omit [Fintype U] [Fintype V] in
 /-- The double sum `∑ᵢ ∑ⱼ |ε_{ij}⟩⟨ε_{ji}|` is the partial transpose of the
 rank-one operator built from `δ = ∑ᵢ eᵢ ⊗ qᵢ`.  No orthonormality of `e` is
