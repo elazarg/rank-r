@@ -180,7 +180,8 @@ forces $b\ge1/r$.
 
 \section{Double-Skew Estimates and Qudit Marginals}
 
-We first record the double-skew Ky Fan estimate used below.
+We first record the double-skew action bound used below.  It is the only
+place where the Fu--Gao--Park estimate enters.
 
 \begin{lemma}[Double-skew action bound]
 \label[lemma]{lem:double-skew}
@@ -197,11 +198,7 @@ For every $K$ in the linear span of
     \{L\otimes M:
       L\in\mathfrak{so}(U),\ M\in\mathfrak{so}(V)\},
 \]
-the two largest singular values satisfy
-\[
-    s_1(K)^2+s_2(K)^2\le\frac12\norm{K}_2^2.
-\]
-Consequently, for every orthonormal pair $x,y\in U\otimes V$,
+and every orthonormal pair $x,y\in U\otimes V$,
 \begin{equation}
 \label{eq:double-skew-action}
     \norm{Kx}^2+\norm{Ky}^2
@@ -256,28 +253,6 @@ and the two copies of $V$,
 $\operatorname{vec}(K)\in(\wedge^2U)\otimes(\wedge^2V)$, while the
 Schmidt cut remains the crossed output--input cut above.
 
-Set
-\[
-    \phi:=\frac{\operatorname{vec}(K)}{\norm{K}_2}.
-\]
-The Schmidt coefficients of $\phi$ across the output--input
-bipartition are precisely $s_i(K)/\norm{K}_2$. Hence the best
-Schmidt-rank-two approximation identity gives
-\begin{equation}
-\label{eq:best-SR2-approximation}
-    \max_{\substack{\norm{z}=1\\ \SR(z)\le2}}
-    \abs{\ip{z}{\phi}}^2
-    =
-    \frac{s_1(K)^2+s_2(K)^2}{\norm{K}_2^2};
-\end{equation}
-see, for example, \cite[Theorem 3.3]{JohnstonKribs2010}.
-For every unit vector $z$ of Schmidt rank at most $2$,
-\[
-    \abs{\ip{z}{\phi}}^2
-    =\abs{\ip{Q_-z}{\phi}}^2
-    \le \norm{Q_-z}^2
-    =\ip{z}{Q_-z}.
-\]
 Label the four factors
 \[
     1=U_{\mathrm{out}},\qquad
@@ -287,27 +262,54 @@ Label the four factors
 \]
 Under this labeling the antisymmetric pairs
 $(U_{\mathrm{out}},U_{\mathrm{in}})$ and
-$(V_{\mathrm{out}},V_{\mathrm{in}})$ are Fu--Gao--Park's $(1,3)$
-and $(2,4)$, while the cut
+$(V_{\mathrm{out}},V_{\mathrm{in}})$ are Fu--Gao--Park's $(1,3)$ and
+$(2,4)$, while the cut
 $(U_{\mathrm{out}}V_{\mathrm{out}}):(U_{\mathrm{in}}V_{\mathrm{in}})$
 is their $12{:}34$ cut.  Their sharp double-antisymmetric projection
 estimate \cite[Theorem 2.4]{fu2026solution2copydistillabilitywerner}
-therefore gives
-\[
-    \ip{z}{Q_-z}\le\frac12.
-\]
-Combining this with \cref{eq:best-SR2-approximation} yields
-\[
-    s_1(K)^2+s_2(K)^2\le\frac12\norm{K}_2^2.
-\]
+therefore reads: every unit vector $z$ of Schmidt rank at most $2$
+across that cut satisfies
+\begin{equation}
+\label{eq:fgp-bound}
+    \ip{z}{Q_-z}\le\frac12 .
+\end{equation}
 
-Finally, the Ky Fan maximum principle gives
-\[
+Let $P:=\ketbra{x}{x}+\ketbra{y}{y}$ be the orthogonal projection onto
+$\operatorname{span}\{x,y\}$, and put $A:=\norm{KP}_2^2$.  Since
+$P^2=P=P^*$,
+\begin{equation}
+\label{eq:action-as-KP}
     \norm{Kx}^2+\norm{Ky}^2
-    \le s_1(K)^2+s_2(K)^2
+    =\Tr(K^*KP)
+    =A,
+    \qquad
+    \rank(KP)\le\rank P=2 .
+\end{equation}
+So $\operatorname{vec}(KP)$ has Schmidt rank at most $2$ across the
+cut above, and
+\[
+    \ip{\operatorname{vec}K}{\operatorname{vec}(KP)}
+    =\ip{K}{KP}_{\mathrm{HS}}
+    =A .
 \]
-for every orthonormal pair $x,y$, proving
-\cref{eq:double-skew-action}.
+Now $Q_-$ is a self-adjoint projection fixing $\operatorname{vec}K$, so
+Cauchy--Schwarz gives
+\[
+    A
+    =\ip{Q_-\operatorname{vec}K}{\operatorname{vec}(KP)}
+    =\ip{\operatorname{vec}K}{Q_-\operatorname{vec}(KP)}
+    \le\norm{K}_2\,\norm{Q_-\operatorname{vec}(KP)},
+\]
+while \cref{eq:fgp-bound}, applied to $\operatorname{vec}(KP)$, gives
+\[
+    \norm{Q_-\operatorname{vec}(KP)}^2
+    =\ip{\operatorname{vec}(KP)}{Q_-\operatorname{vec}(KP)}
+    \le\frac12 A .
+\]
+Squaring the first display and substituting the second yields
+$A^2\le\frac12A\norm{K}_2^2$.  If $A=0$ the claim is trivial;
+otherwise divide by $A$ to get $A\le\frac12\norm{K}_2^2$, which by
+\cref{eq:action-as-KP} is \cref{eq:double-skew-action}.
 \end{proof}
 
 We next establish an operator inequality for pure states with a
@@ -904,205 +906,6 @@ If $r_0<r$ and $C\ne0$, the last inequality is strict. Combining
 \cref{eq:main-bound} and the exact-rank assertion in the sharpness
 paragraph.
 \end{proof}
-
-\section{Gram Structure and Defect Identities}
-
-This section records the algebraic defect structure of the rank-$r$
-proof. The main residual is represented by positive Gram operators
-once the range isometry is fixed; this is not claimed to be a uniform
-bounded-degree polynomial sum-of-squares identity in the raw Stiefel
-coordinates. The only literal polynomial SOS below is the elementary
-trace--rank residual.
-
-For an operator $C$ of rank at most $r$, define
-\begin{align}
-    \mathsf G_r(C)
-    &:=
-    r\norm C_2^2+\frac1r\abs{\Tr C}^2
-    -\norm{\Tr_U C}_2^2-\norm{\Tr_V C}_2^2,
-\label{eq:sos-main-gap}\\
-    \mathsf R_r(C)
-    &:=
-    r\norm C_2^2-\abs{\Tr C}^2.
-\label{eq:sos-trace-rank-gap}
-\end{align}
-
-\begin{proposition}[Polynomial SOS for the trace--rank residual]
-\label[proposition]{prop:sos-trace-rank}
-Assume $r\le\dim(U\otimes V)$ and write
-\[
-    C=\sum_{i=1}^r\ketbra{e_i}{d_i},
-\]
-where $e_1,\ldots,e_r$ are orthonormal and zero columns $d_i=0$ are
-allowed. In $(U\otimes V)\otimes\C^r$, put
-\[
-    \mathbf e:=\sum_i e_i\otimes q_i,
-    \qquad
-    \mathbf d:=\sum_i d_i\otimes q_i.
-\]
-Equip the exterior square with the convention that
-$u_\alpha\wedge u_\beta$ for $\alpha<\beta$ is orthonormal whenever
-$(u_\alpha)$ is an orthonormal basis. Then
-\begin{equation}
-\label{eq:sos-lagrange}
-    \mathsf R_r(C)
-    =\norm{\mathbf e\wedge\mathbf d}^2.
-\end{equation}
-Equivalently, in any orthonormal coordinate system,
-\begin{equation}
-\label{eq:sos-lagrange-coordinates}
-    \mathsf R_r(C)
-    =
-    \sum_{\alpha<\beta}
-    \abs{
-      \mathbf e_\alpha\mathbf d_\beta
-      -\mathbf e_\beta\mathbf d_\alpha
-    }^2.
-\end{equation}
-\end{proposition}
-
-\begin{proof}
-One has
-\[
-    \norm{\mathbf e}^2=r,
-    \qquad
-    \norm{\mathbf d}^2=\norm C_2^2,
-    \qquad
-    \abs{\ip{\mathbf e}{\mathbf d}}=\abs{\Tr C}.
-\]
-The complex Lagrange identity gives both formulas.
-\end{proof}
-
-For the remainder of this section, fix an exact rank-$r$
-factorization
-\[
-    C=\sum_{i=1}^r\ketbra{e_i}{d_i},
-    \qquad
-    \delta_e=\sum_i e_i\otimes q_i,
-    \qquad
-    \delta_d=\sum_i d_i\otimes q_i,
-\]
-and retain $\rho_0$, $\Pi_e$, $P_\pm$, and $\Phi$ from the proof of
-\cref{prop:operator_ineq}. Let $\mathcal T_-:=\mathcal T$ be the
-negative-sector synthesis map in \cref{eq:T-definition}. Choose an
-orthonormal basis of $\ran P_+$ and let $\mathcal T_+$ be the
-synthesis map whose columns are all Kraus images under $\Phi$ of those
-positive-sector basis vectors. Then
-\[
-    \Phi(P_\pm)=\mathcal T_\pm\mathcal T_\pm^*.
-\]
-
-For a coefficient array $c=(c^{(ij)}_{\alpha\beta})$, define
-\[
-    K_{ij}:=\sum_{\alpha,\beta}
-    c^{(ij)}_{\alpha\beta}L_\alpha\otimes M_\beta.
-\]
-At a vertex $k$, associate to an incident edge the signed vectors
-\[
-    v_{k,ik}:=K_{ik}\overline e_i\quad(i<k),
-    \qquad
-    v_{k,kj}:=-K_{kj}\overline e_j\quad(k<j).
-\]
-
-\begin{proposition}[Complete-graph defect certificate]
-\label[proposition]{prop:sos-complete-graph}
-With the skew Kraus normalization used in \cref{eq:Kc-norm},
-\begin{equation}
-\label{eq:sos-complete-graph}
-\boxed{
-\begin{aligned}
- &(r-1)\norm{c}_2^2-\norm{\mathcal T_-c}^2\\
- &\quad=
- \frac{r-1}{2}\sum_{i<j}
- \left[
-   \frac12\norm{K_{ij}}_2^2
-   -\norm{K_{ij}\overline e_i}^2
-   -\norm{K_{ij}\overline e_j}^2
- \right]\\
- &\qquad+
- \frac12\sum_{k=1}^r
- \sum_{\substack{e<f\\e,f\ni k}}
- \norm{v_{k,e}-v_{k,f}}^2.
-\end{aligned}}
-\end{equation}
-Consequently $\norm{\mathcal T_-}^2\le r-1$ and
-\[
-    (r-1)(I-\Pi_e)-\mathcal T_-\mathcal T_-^*\succeq0.
-\]
-\end{proposition}
-
-\begin{proof}
-At every vertex use the exact variance identity
-\[
-    (r-1)\sum_{e\ni k}\norm{v_{k,e}}^2
-    -\norm{\sum_{e\ni k}v_{k,e}}^2
-    =
-    \sum_{\substack{e<f\\e,f\ni k}}
-    \norm{v_{k,e}-v_{k,f}}^2.
-\]
-By \cref{eq:T-by-vertices,eq:Kc-norm},
-\begin{align*}
- &(r-1)\norm{c}_2^2-\norm{\mathcal T_-c}^2\\
- &\quad=
- \frac{r-1}{4}\sum_{i<j}\norm{K_{ij}}_2^2
- -\frac12\sum_{k=1}^r
-   \norm{\sum_{e\ni k}v_{k,e}}^2\\
- &\quad=
- \frac{r-1}{4}\sum_{i<j}\norm{K_{ij}}_2^2
- -\frac{r-1}{2}\sum_{i<j}
-   \left(
-     \norm{K_{ij}\overline e_i}^2
-     +\norm{K_{ij}\overline e_j}^2
-   \right)\\
- &\qquad+
- \frac12\sum_{k=1}^r
- \sum_{\substack{e<f\\e,f\ni k}}
- \norm{v_{k,e}-v_{k,f}}^2.
-\end{align*}
-Factoring the first two sums gives exactly
-\cref{eq:sos-complete-graph}.  The vertex-variance terms are
-nonnegative, and each edge bracket is nonnegative by
-\cref{lem:double-skew}. Hence $\norm{\mathcal T_-}^2\le r-1$.
-Finally, \cref{eq:T-orthogonal} gives
-$\ran\mathcal T_-\subseteq\delta_e^\perp$, whose projection is
-$I-\Pi_e$, so the operator inequality follows.
-\end{proof}
-
-\begin{proposition}[Exact positive/negative-sector Gram identity]
-\label[proposition]{prop:sos-sector-gram}
-Put
-\begin{equation}
-\label{eq:sos-negative-defect}
-    B_E
-    :=(r-1)(I-\Pi_e)-\mathcal T_-\mathcal T_-^*.
-\end{equation}
-Then
-\begin{equation}
-\label{eq:sos-main-gram}
-    \boxed{
-    \mathsf G_r(C)
-    =
-    \norm{\mathcal T_+^*\delta_d}^2
-    +\ip{\delta_d}{B_E\delta_d}.}
-\end{equation}
-Moreover, $B_E\succeq0$.
-\end{proposition}
-
-\begin{proof}
-By \cref{lem:partial-trace-contractions},
-$\mathsf G_r(C)=\ip{\delta_d}{H_r^{(0)}\delta_d}$.  Substituting
-\cref{eq:H-decomposition} and the two synthesis factorizations gives
-\cref{eq:sos-main-gram}.  Positivity of $B_E$ is the operator
-conclusion of \cref{prop:sos-complete-graph}.
-\end{proof}
-
-\begin{remark}[Scope of the Gram certificate]
-The complete-graph identity separates the global synthesis-map defect
-into vertex variances and edgewise double-skew deficits. Edgewise
-nonnegativity is precisely the Fu--Gao--Park projection estimate used
-in \cref{lem:double-skew}. No uniform polynomial SOS certificate in
-the raw range-isometry variables is claimed.
-\end{remark}
 
 \section{Applications and Corollaries}
 
@@ -2229,6 +2032,212 @@ number at least $4$. For the state in
 \end{aligned}
 \]
 \end{corollary}
+
+
+\appendix
+
+% This appendix is independent of the main line of argument: nothing in
+% Sections 2-5 depends on it.  It records the algebraic defect structure
+% underlying the proof of Proposition 2.2.
+
+\section{Gram structure and defect identities}
+
+This section records the algebraic defect structure of the rank-$r$
+proof. The main residual is represented by positive Gram operators
+once the range isometry is fixed; this is not claimed to be a uniform
+bounded-degree polynomial sum-of-squares identity in the raw Stiefel
+coordinates. The only literal polynomial SOS below is the elementary
+trace--rank residual.
+
+For an operator $C$ of rank at most $r$, define
+\begin{align}
+    \mathsf G_r(C)
+    &:=
+    r\norm C_2^2+\frac1r\abs{\Tr C}^2
+    -\norm{\Tr_U C}_2^2-\norm{\Tr_V C}_2^2,
+\label{eq:sos-main-gap}\\
+    \mathsf R_r(C)
+    &:=
+    r\norm C_2^2-\abs{\Tr C}^2.
+\label{eq:sos-trace-rank-gap}
+\end{align}
+
+\begin{proposition}[Polynomial SOS for the trace--rank residual]
+\label[proposition]{prop:sos-trace-rank}
+Assume $r\le\dim(U\otimes V)$ and write
+\[
+    C=\sum_{i=1}^r\ketbra{e_i}{d_i},
+\]
+where $e_1,\ldots,e_r$ are orthonormal and zero columns $d_i=0$ are
+allowed. In $(U\otimes V)\otimes\C^r$, put
+\[
+    \mathbf e:=\sum_i e_i\otimes q_i,
+    \qquad
+    \mathbf d:=\sum_i d_i\otimes q_i.
+\]
+Equip the exterior square with the convention that
+$u_\alpha\wedge u_\beta$ for $\alpha<\beta$ is orthonormal whenever
+$(u_\alpha)$ is an orthonormal basis. Then
+\begin{equation}
+\label{eq:sos-lagrange}
+    \mathsf R_r(C)
+    =\norm{\mathbf e\wedge\mathbf d}^2.
+\end{equation}
+Equivalently, in any orthonormal coordinate system,
+\begin{equation}
+\label{eq:sos-lagrange-coordinates}
+    \mathsf R_r(C)
+    =
+    \sum_{\alpha<\beta}
+    \abs{
+      \mathbf e_\alpha\mathbf d_\beta
+      -\mathbf e_\beta\mathbf d_\alpha
+    }^2.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+One has
+\[
+    \norm{\mathbf e}^2=r,
+    \qquad
+    \norm{\mathbf d}^2=\norm C_2^2,
+    \qquad
+    \abs{\ip{\mathbf e}{\mathbf d}}=\abs{\Tr C}.
+\]
+The complex Lagrange identity gives both formulas.
+\end{proof}
+
+For the remainder of this section, fix an exact rank-$r$
+factorization
+\[
+    C=\sum_{i=1}^r\ketbra{e_i}{d_i},
+    \qquad
+    \delta_e=\sum_i e_i\otimes q_i,
+    \qquad
+    \delta_d=\sum_i d_i\otimes q_i,
+\]
+and retain $\rho_0$, $\Pi_e$, $P_\pm$, and $\Phi$ from the proof of
+\cref{prop:operator_ineq}. Let $\mathcal T_-:=\mathcal T$ be the
+negative-sector synthesis map in \cref{eq:T-definition}. Choose an
+orthonormal basis of $\ran P_+$ and let $\mathcal T_+$ be the
+synthesis map whose columns are all Kraus images under $\Phi$ of those
+positive-sector basis vectors. Then
+\[
+    \Phi(P_\pm)=\mathcal T_\pm\mathcal T_\pm^*.
+\]
+
+For a coefficient array $c=(c^{(ij)}_{\alpha\beta})$, define
+\[
+    K_{ij}:=\sum_{\alpha,\beta}
+    c^{(ij)}_{\alpha\beta}L_\alpha\otimes M_\beta.
+\]
+At a vertex $k$, associate to an incident edge the signed vectors
+\[
+    v_{k,ik}:=K_{ik}\overline e_i\quad(i<k),
+    \qquad
+    v_{k,kj}:=-K_{kj}\overline e_j\quad(k<j).
+\]
+
+\begin{proposition}[Complete-graph defect certificate]
+\label[proposition]{prop:sos-complete-graph}
+With the skew Kraus normalization used in \cref{eq:Kc-norm},
+\begin{equation}
+\label{eq:sos-complete-graph}
+\boxed{
+\begin{aligned}
+ &(r-1)\norm{c}_2^2-\norm{\mathcal T_-c}^2\\
+ &\quad=
+ \frac{r-1}{2}\sum_{i<j}
+ \left[
+   \frac12\norm{K_{ij}}_2^2
+   -\norm{K_{ij}\overline e_i}^2
+   -\norm{K_{ij}\overline e_j}^2
+ \right]\\
+ &\qquad+
+ \frac12\sum_{k=1}^r
+ \sum_{\substack{e<f\\e,f\ni k}}
+ \norm{v_{k,e}-v_{k,f}}^2.
+\end{aligned}}
+\end{equation}
+Consequently $\norm{\mathcal T_-}^2\le r-1$ and
+\[
+    (r-1)(I-\Pi_e)-\mathcal T_-\mathcal T_-^*\succeq0.
+\]
+\end{proposition}
+
+\begin{proof}
+At every vertex use the exact variance identity
+\[
+    (r-1)\sum_{e\ni k}\norm{v_{k,e}}^2
+    -\norm{\sum_{e\ni k}v_{k,e}}^2
+    =
+    \sum_{\substack{e<f\\e,f\ni k}}
+    \norm{v_{k,e}-v_{k,f}}^2.
+\]
+By \cref{eq:T-by-vertices,eq:Kc-norm},
+\begin{align*}
+ &(r-1)\norm{c}_2^2-\norm{\mathcal T_-c}^2\\
+ &\quad=
+ \frac{r-1}{4}\sum_{i<j}\norm{K_{ij}}_2^2
+ -\frac12\sum_{k=1}^r
+   \norm{\sum_{e\ni k}v_{k,e}}^2\\
+ &\quad=
+ \frac{r-1}{4}\sum_{i<j}\norm{K_{ij}}_2^2
+ -\frac{r-1}{2}\sum_{i<j}
+   \left(
+     \norm{K_{ij}\overline e_i}^2
+     +\norm{K_{ij}\overline e_j}^2
+   \right)\\
+ &\qquad+
+ \frac12\sum_{k=1}^r
+ \sum_{\substack{e<f\\e,f\ni k}}
+ \norm{v_{k,e}-v_{k,f}}^2.
+\end{align*}
+Factoring the first two sums gives exactly
+\cref{eq:sos-complete-graph}.  The vertex-variance terms are
+nonnegative, and each edge bracket is nonnegative by
+\cref{lem:double-skew}. Hence $\norm{\mathcal T_-}^2\le r-1$.
+Finally, \cref{eq:T-orthogonal} gives
+$\ran\mathcal T_-\subseteq\delta_e^\perp$, whose projection is
+$I-\Pi_e$, so the operator inequality follows.
+\end{proof}
+
+\begin{proposition}[Exact positive/negative-sector Gram identity]
+\label[proposition]{prop:sos-sector-gram}
+Put
+\begin{equation}
+\label{eq:sos-negative-defect}
+    B_E
+    :=(r-1)(I-\Pi_e)-\mathcal T_-\mathcal T_-^*.
+\end{equation}
+Then
+\begin{equation}
+\label{eq:sos-main-gram}
+    \boxed{
+    \mathsf G_r(C)
+    =
+    \norm{\mathcal T_+^*\delta_d}^2
+    +\ip{\delta_d}{B_E\delta_d}.}
+\end{equation}
+Moreover, $B_E\succeq0$.
+\end{proposition}
+
+\begin{proof}
+By \cref{lem:partial-trace-contractions},
+$\mathsf G_r(C)=\ip{\delta_d}{H_r^{(0)}\delta_d}$.  Substituting
+\cref{eq:H-decomposition} and the two synthesis factorizations gives
+\cref{eq:sos-main-gram}.  Positivity of $B_E$ is the operator
+conclusion of \cref{prop:sos-complete-graph}.
+\end{proof}
+
+\begin{remark}[Scope of the Gram certificate]
+The complete-graph identity separates the global synthesis-map defect
+into vertex variances and edgewise double-skew deficits. Edgewise
+nonnegativity is precisely the Fu--Gao--Park projection estimate used
+in \cref{lem:double-skew}. No uniform polynomial SOS certificate in
+the raw range-isometry variables is claimed.
+\end{remark}
 
 
 \begin{thebibliography}{10}
