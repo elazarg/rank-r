@@ -271,13 +271,41 @@ Each step ends compiling; each maps to a labeled equation.
   `qform (A Y Aᴴ) x = qform Y (Aᴴx)` makes PSD-preservation two lines. This
   drops the Physlib dependency for the phase (and retires the D1 table's
   "`Λ_E` is CP via Choi" item).
-- **A3 — The sectors.** `η_ij`, `P₋`, `P₊`, and `eq:rho-partial-transpose` in
-  unnormalized form: with `ρ₀ = |δ_e⟩⟨δ_e|` and `s = r` it reads
-  `ρ₀^{T_UV} = P₊ − P₋` — denominator-free, continuing the `HopScaled`
-  convention.
-- **A4 — The decomposition** (`eq:H-decomposition`, scaled):
-  `r·H = Φ(P₊) + (r−1)(I−ρ) − Φ(P₋)`. Entrywise algebra, preflight-exact.
-  Grindable; delegate.
+- **A3 — The sectors.** Exact statements, all verified numerically at
+  `(dU,dV,s)` ∈ {(2,2,2),(3,2,3),(2,3,2),(3,3,4),(2,2,1),(3,2,1)}:
+
+  With `εⱼₖ := ē_j ⊗ q_k` (so `εⱼₖ(p,m) = conj (e j p) · [m = k]`),
+  `σᵢⱼ := εᵢⱼ + εⱼᵢ`, `ζᵢⱼ := εᵢⱼ − εⱼᵢ`, define the **doubled** sectors
+
+      Ppos := 2 ∑ᵢ |εᵢᵢ⟩⟨εᵢᵢ| + ∑_{i<j} |σᵢⱼ⟩⟨σᵢⱼ|      ( = 2P₊ )
+      Pneg :=                     ∑_{i<j} |ζᵢⱼ⟩⟨ζᵢⱼ|      ( = 2P₋ )
+
+  Both are **manifestly PSD** — sums of `rankOne y y` — so no projection theory
+  is needed, and the `1/√2` of the paper's `η_ij` never appears. The identity
+  to prove is
+
+      Ppos − Pneg = 2 · ρ₀^{T_UV}                          (`eq:rho-partial-transpose`)
+
+  where `ρ₀ = rankOne (delta e) (delta e)` and the partial transpose is on the
+  `U × V` factor: `ρ₀^{T}_{(p,i),(p',i')} = ρ₀_{(p',i),(p,i')}`. Define that
+  transpose entrywise, as `placeUQ` is defined.
+- **A4 — The decomposition.** Two steps, both verified numerically on the
+  triples above. First `eq:Phi-rhoT`, which scales to something with **no
+  denominators at all**:
+
+      Φ(ρ₀^{T_UV}) = I − placeUQ (margUQ ρ₀) − placeVQ (margVQ ρ₀) + ρ₀
+
+  (the manuscript's `(1/r)I − ρ_UQ⊗I_V − I_U⊗ρ_VQ + ρ`, multiplied through by
+  `r`). Then, purely by rearranging that against the definition of `HopScaled`:
+
+      HopScaled e = s(s−1)·I − (s−1)·ρ₀ + s·Φ(ρ₀^{T_UV})
+
+  Combined with A3 this gives the target in doubled form:
+
+      2 · HopScaled = s·Φ(Ppos) + [ 2s(s−1)·I − 2(s−1)·ρ₀ − s·Φ(Pneg) ]
+
+  where the first bracket is PSD by A2 + A3, and the second is exactly what A6
+  and A8 bound. Entrywise algebra; grindable.
 - **A5 — `Φ(P₋) = 𝒯𝒯*`** (`eq:Phi-Pminus-TTstar`, D2 #3). Define `𝒯` as a
   matrix with columns indexed by `(edge, α, β)` — fixing the column indexing
   the paper never states (MANUSCRIPT-NOTES §4). **Budget the most debugging
