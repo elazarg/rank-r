@@ -18,6 +18,7 @@ variable {W : Type*} [Fintype W] [DecidableEq W]
 def col (C : Matrix W W ℂ) (q : W) : EuclideanSpace ℂ W :=
   WithLp.toLp 2 (fun p => C p q)
 
+omit [Fintype W] [DecidableEq W] in
 @[simp] theorem col_apply (C : Matrix W W ℂ) (q p : W) : col C q p = C p q := rfl
 
 theorem col_mem_range (C : Matrix W W ℂ) (q : W) :

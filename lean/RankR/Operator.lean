@@ -58,7 +58,7 @@ theorem inner_delta_delta (e d : Fin s → EuclideanSpace ℂ W) :
   refine Finset.sum_congr rfl fun i _ => ?_
   rw [PiLp.inner_apply, map_sum]
   exact Finset.sum_congr rfl fun p _ => by
-    simp [RCLike.inner_apply']; ring
+    simp; ring
 
 /-- **`eq:contraction-trace` in operator form**: `⟪δ, ρ₀ δ⟫ = |Tr C|²`, where
 `ρ₀ = |δ_e⟩⟨δ_e|` is the unnormalized `s · ρ`. -/
@@ -94,6 +94,7 @@ def margVQ (R : Matrix ((U × V) × Fin s) ((U × V) × Fin s) ℂ) :
     Matrix (V × Fin s) (V × Fin s) ℂ :=
   Matrix.of fun x y => ∑ a, R ((a, x.1), x.2) ((a, y.1), y.2)
 
+omit [DecidableEq U] in
 /-- Expansion of the `U`-marginal quadratic form.  The `if b = b'` of `placeUQ`
 collapses the `b'` sum; what is left is a six-fold sum in the order `qform`
 produces it. -/
@@ -113,6 +114,7 @@ theorem qform_placeUQ_expand (y x : EuclideanSpace ℂ ((U × V) × Fin s)) :
   simp only [Finset.mem_univ, if_true]
   exact Finset.sum_congr rfl fun c _ => by ring
 
+omit [DecidableEq U] in
 /-- **`eq:contraction-U` in operator form**: `⟪δ, (ρ_UQ ⊗ I_V) δ⟫ = ‖Tr_U C‖₂²`,
 with `ρ₀ = |δ_e⟩⟨δ_e|` the unnormalized `s · ρ`. -/
 theorem qform_margUQ (e d : Fin s → EuclideanSpace ℂ (U × V)) :
@@ -134,6 +136,7 @@ theorem qform_margUQ (e d : Fin s → EuclideanSpace ℂ (U × V)) :
   refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun a' _ => ?_
   congr 1 <;> exact Finset.sum_congr rfl fun _ _ => by ring
 
+omit [DecidableEq V] in
 /-- Expansion of the `V`-marginal quadratic form; here the `if a = a'` of
 `placeVQ` collapses the `a'` sum. -/
 theorem qform_placeVQ_expand (y x : EuclideanSpace ℂ ((U × V) × Fin s)) :
@@ -154,6 +157,7 @@ theorem qform_placeVQ_expand (y x : EuclideanSpace ℂ ((U × V) × Fin s)) :
   simp only [Finset.mem_univ, if_true]
   exact Finset.sum_congr rfl fun c _ => by ring
 
+omit [DecidableEq V] in
 /-- **`eq:contraction-V` in operator form**. -/
 theorem qform_margVQ (e d : Fin s → EuclideanSpace ℂ (U × V)) :
     qform (placeVQ (margVQ (rankOne (delta e) (delta e)))) (delta d)

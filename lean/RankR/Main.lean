@@ -11,14 +11,17 @@ section QFormAlgebra
 
 variable {W : Type*} [Fintype W] [DecidableEq W]
 
+omit [DecidableEq W] in
 theorem qform_add (A B : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
     qform (A + B) x = qform A x + qform B x := by
   simp only [qform, Matrix.add_apply, mul_add, add_mul, Finset.sum_add_distrib]
 
+omit [DecidableEq W] in
 theorem qform_sub (A B : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
     qform (A - B) x = qform A x - qform B x := by
   simp only [qform, Matrix.sub_apply, mul_sub, sub_mul, Finset.sum_sub_distrib]
 
+omit [DecidableEq W] in
 theorem qform_smul (c : ℂ) (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
     qform (c • A) x = c * qform A x := by
   simp only [qform, Matrix.smul_apply, smul_eq_mul, Finset.mul_sum]
@@ -98,7 +101,7 @@ theorem qform_HopScaled (e d : Fin s → EuclideanSpace ℂ (U × V)) :
 `C` of rank at most `r` satisfies
 `‖Tr_U C‖₂² + ‖Tr_V C‖₂² ≤ r‖C‖₂² + (1/r)|Tr C|²`. -/
 theorem rank_r_of_operatorIneq (hOp : OperatorIneq U V)
-    (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (hr : 0 < r) (hrank : C.rank ≤ r) :
+    (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (_hr : 0 < r) (hrank : C.rank ≤ r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace := by
   obtain ⟨e, d, he, hC⟩ := exists_rankFactor_rank C
