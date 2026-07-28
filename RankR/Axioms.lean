@@ -23,6 +23,7 @@ otherwise match itself):
       RankR/ RankR.lean --exclude=Axioms.lean
 -/
 import RankR.Extend
+import RankR.MapId
 import RankR.Optimal
 import RankR.OneSided
 import RankR.Results
@@ -146,6 +147,23 @@ is stated for an arbitrary Kraus family and an arbitrary member of its span,
 /-- info: 'RankR.qform_krausQ_ptransposeUV_ge' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms qform_krausQ_ptransposeUV_ge
+
+/-! ## The map identity
+
+`Δ` is monoidal, `(Λ_U ⊗ Λ_V) ∘ τ = S_U ⊗ S_V` for `S = Δ − id`, and `Ψ_r` is the
+tensor square `r · R_{−1/r} ⊗ R_{−1/r}`. -/
+
+/-- info: 'RankR.RU_zero_RV_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms RU_zero_RV_zero
+
+/-- info: 'RankR.Lam4_transpose' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Lam4_transpose
+
+/-- info: 'RankR.Psi_eq_tensor_square' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Psi_eq_tensor_square
 
 /-! ## The one-sided bound, also unconditional -/
 

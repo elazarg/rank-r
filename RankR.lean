@@ -15,6 +15,7 @@ import RankR.Bessel
 import RankR.Restrict
 import RankR.Choi
 import RankR.ChoiSkew
+import RankR.MapId
 import RankR.Lifting
 import RankR.Theorem
 import RankR.Antisym
