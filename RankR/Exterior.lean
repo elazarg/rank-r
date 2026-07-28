@@ -219,49 +219,70 @@ theorem inv_sqrt_mul_inv_sqrt (n : ℕ) :
   rw [h1, ← Complex.ofReal_inv, ← Complex.ofReal_mul, ← Complex.ofReal_inv, ← mul_inv,
     Real.mul_self_sqrt (Nat.cast_nonneg n)]
 
+/-- Orthonormality of a normalized family of signed vectors, from two data: a
+pairing rule for its terms, and the number of indices that contribute.
+
+Both families of modes have this shape.  A term is a unimodular sign times a
+vector; two terms pair to `1` exactly when their indices agree, that index
+contributes to the first label, and the two labels agree; and every label has
+the same number `N` of contributing indices.  The family itself is taken as a
+parameter `mode`, so that a caller supplies it definitionally and the
+normalization never has to be matched again. -/
+theorem inner_of_pairing {S E : Type*} [DecidableEq S] [NormedAddCommGroup E]
+    [InnerProductSpace ℂ E] {N : ℕ} (mode : S → E) (σ : S → Fin r → ℂ) (w : S → Fin r → E)
+    (hmode : ∀ s, mode s = ((Real.sqrt N : ℝ) : ℂ)⁻¹ • ∑ v : Fin r, σ s v • w s v)
+    (hσ : ∀ s v, conj (σ s v) * σ s v = 1)
+    (P : S → Fin r → Prop) [∀ s v, Decidable (P s v)]
+    (hpair : ∀ (s s' : S) (v v' : Fin r),
+      inner ℂ (w s v) (w s' v') = if v = v' ∧ P s v ∧ s = s' then (1 : ℂ) else 0)
+    (hcount : ∀ s : S, (((Finset.univ.filter (P s)).card : ℝ) : ℂ) = ((N : ℝ) : ℂ))
+    (hN : ((N : ℝ) : ℂ) ≠ 0) (s s' : S) :
+    inner ℂ (mode s) (mode s') = if s = s' then 1 else 0 := by
+  rw [hmode s, hmode s', inner_smul_left, inner_smul_right, sum_inner]
+  have hv : ∀ v : Fin r,
+      inner ℂ (σ s v • w s v) (∑ v' : Fin r, σ s' v' • w s' v')
+        = conj (σ s v) * (σ s v * (if P s v ∧ s = s' then 1 else 0)) := fun v => by
+    rw [inner_smul_left, inner_sum]
+    have hv' : ∀ v' : Fin r,
+        inner ℂ (w s v) (σ s' v' • w s' v')
+          = if v' = v then σ s v * (if P s v ∧ s = s' then 1 else 0) else 0 := fun v' => by
+      rw [inner_smul_right, hpair s s' v v']
+      by_cases hvv : v = v'
+      · subst hvv
+        by_cases hcond : P s v ∧ s = s'
+        · rw [if_pos ⟨rfl, hcond.1, hcond.2⟩, if_pos rfl, if_pos hcond, mul_one, mul_one,
+            hcond.2]
+        · rw [if_neg (fun h => hcond ⟨h.2.1, h.2.2⟩), if_pos rfl, if_neg hcond,
+            mul_zero, mul_zero]
+      · rw [if_neg (fun h => hvv h.1), if_neg (Ne.symm hvv), mul_zero]
+    rw [Finset.sum_congr rfl fun v' _ => hv' v', Finset.sum_ite_eq' Finset.univ v,
+      if_pos (Finset.mem_univ v)]
+  rw [Finset.sum_congr rfl fun v _ => hv v]
+  simp only [← mul_assoc, hσ, one_mul]
+  by_cases hss : s = s'
+  · subst hss
+    have hc : ∑ v : Fin r, (if P s v ∧ s = s then (1 : ℂ) else 0) = ((N : ℝ) : ℂ) := by
+      have h : ∀ v : Fin r, (if P s v ∧ s = s then (1 : ℂ) else 0)
+          = if v ∈ Finset.univ.filter (P s) then 1 else 0 := fun v => by simp
+      rw [Finset.sum_congr rfl fun v _ => h v, Finset.sum_ite_mem, Finset.univ_inter,
+        Finset.sum_const, nsmul_eq_mul, mul_one, ← hcount s]
+      norm_cast
+    rw [hc, if_pos rfl, inv_sqrt_mul_inv_sqrt, inv_mul_cancel₀ hN]
+  · have h : ∀ v : Fin r, (if P s v ∧ s = s' then (1 : ℂ) else 0) = 0 :=
+      fun v => if_neg (fun h => hss h.2)
+    rw [Finset.sum_congr rfl fun v _ => h v, Finset.sum_const_zero, mul_zero, if_neg hss]
+
 /-- The incidence modes are orthonormal. -/
 theorem inner_etaMode {e : Fin r → EuclideanSpace ℂ W} (he : Orthonormal ℂ e) (hk : 1 ≤ k)
     (I I' : Face r k) : inner ℂ (etaMode e I) (etaMode e I') = if I = I' then 1 else 0 := by
   have hkR : ((k : ℝ) : ℂ) ≠ 0 := by
     have : (k : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
     exact_mod_cast this
-  rw [etaMode, etaMode, inner_smul_left, inner_smul_right, sum_inner]
-  have hv : ∀ v : Fin r,
-      inner ℂ (esign I.val v • placeAt (ebar e v) (I.val.erase v)
-          : EuclideanSpace ℂ (W × Face r (k - 1)))
-        (∑ v' : Fin r, esign I'.val v' • placeAt (ebar e v') (I'.val.erase v'))
-      = if v ∈ I.val ∧ I = I' then 1 else 0 := fun v => by
-    rw [inner_smul_left, inner_sum, conj_esign]
-    have hv' : ∀ v' : Fin r,
-        inner ℂ (placeAt (ebar e v) (I.val.erase v) : EuclideanSpace ℂ (W × Face r (k - 1)))
-            (esign I'.val v' • placeAt (ebar e v') (I'.val.erase v'))
-          = if v' = v then esign I.val v * (if v ∈ I.val ∧ I = I' then 1 else 0) else 0 :=
-      fun v' => by
-        rw [inner_smul_right, inner_placeAt_erase he hk I I' v v']
-        by_cases hvv : v = v'
-        · subst hvv
-          by_cases hcond : v ∈ I.val ∧ I = I'
-          · rw [if_pos ⟨rfl, hcond.1, hcond.2⟩, if_pos rfl, if_pos hcond, mul_one, mul_one,
-              hcond.2]
-          · rw [if_neg (fun h => hcond ⟨h.2.1, h.2.2⟩), if_pos rfl, if_neg hcond,
-              mul_zero, mul_zero]
-        · rw [if_neg (fun h => hvv h.1), if_neg (Ne.symm hvv), mul_zero]
-    rw [Finset.sum_congr rfl fun v' _ => hv' v', Finset.sum_ite_eq' Finset.univ v,
-      if_pos (Finset.mem_univ v), ← mul_assoc, esign_mul_self, one_mul]
-  rw [Finset.sum_congr rfl fun v _ => hv v]
-  by_cases hII : I = I'
-  · subst hII
-    have hcount : ∑ v : Fin r, (if v ∈ I.val ∧ I = I then (1 : ℂ) else 0) = ((k : ℝ) : ℂ) := by
-      have h : ∀ v : Fin r, (if v ∈ I.val ∧ I = I then (1 : ℂ) else 0)
-          = if v ∈ I.val then 1 else 0 := fun v => by simp
-      rw [Finset.sum_congr rfl fun v _ => h v, Finset.sum_ite_mem, Finset.univ_inter,
-        Finset.sum_const, I.2]
-      simp
-    rw [hcount, if_pos rfl, ← mul_assoc, inv_sqrt_mul_inv_sqrt, inv_mul_cancel₀ hkR]
-  · have h : ∀ v : Fin r, (if v ∈ I.val ∧ I = I' then (1 : ℂ) else 0) = 0 :=
-      fun v => if_neg (fun h => hII h.2)
-    rw [Finset.sum_congr rfl fun v _ => h v, Finset.sum_const_zero, mul_zero, mul_zero,
-      if_neg hII]
+  refine inner_of_pairing (etaMode e) (fun J v => esign J.val v)
+    (fun J v => placeAt (ebar e v) (J.val.erase v)) (fun _ => rfl)
+    (fun _ _ => by rw [conj_esign, esign_mul_self]) (fun J v => v ∈ J.val)
+    (fun J J' v v' => inner_placeAt_erase he hk J J' v v') (fun J => ?_) hkR I I'
+  rw [Finset.filter_mem_eq_inter, Finset.univ_inter, J.2]
 
 /-- **The incidence modes form an orthonormal family.** -/
 theorem orthonormal_etaMode {e : Fin r → EuclideanSpace ℂ W} (he : Orthonormal ℂ e)
@@ -331,46 +352,14 @@ theorem inner_deltaMode {e : Fin r → EuclideanSpace ℂ W} (he : Orthonormal �
   have hNR : (((r - k + 2 : ℕ) : ℝ) : ℂ) ≠ 0 := by
     have : ((r - k + 2 : ℕ) : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
     exact_mod_cast this
-  rw [deltaMode, deltaMode, inner_smul_left, inner_smul_right, sum_inner]
-  have hj : ∀ j : Fin r,
-      inner ℂ (esign L.val j • placeAt (e j) (insert j L.val)
-          : EuclideanSpace ℂ (W × Face r (k - 1)))
-        (∑ j' : Fin r, esign L'.val j' • placeAt (e j') (insert j' L'.val))
-      = if j ∉ L.val ∧ L = L' then 1 else 0 := fun j => by
-    rw [inner_smul_left, inner_sum, conj_esign]
-    have hj' : ∀ j' : Fin r,
-        inner ℂ (placeAt (e j) (insert j L.val) : EuclideanSpace ℂ (W × Face r (k - 1)))
-            (esign L'.val j' • placeAt (e j') (insert j' L'.val))
-          = if j' = j then esign L.val j * (if j ∉ L.val ∧ L = L' then 1 else 0) else 0 :=
-      fun j' => by
-        rw [inner_smul_right, inner_placeAt_insert he hk L L' j j']
-        by_cases hjj : j = j'
-        · subst hjj
-          by_cases hcond : j ∉ L.val ∧ L = L'
-          · rw [if_pos ⟨rfl, hcond.1, hcond.2⟩, if_pos rfl, if_pos hcond, mul_one, mul_one,
-              hcond.2]
-          · rw [if_neg (fun h => hcond ⟨h.2.1, h.2.2⟩), if_pos rfl, if_neg hcond,
-              mul_zero, mul_zero]
-        · rw [if_neg (fun h => hjj h.1), if_neg (Ne.symm hjj), mul_zero]
-    rw [Finset.sum_congr rfl fun j' _ => hj' j', Finset.sum_ite_eq' Finset.univ j,
-      if_pos (Finset.mem_univ j), ← mul_assoc, esign_mul_self, one_mul]
-  rw [Finset.sum_congr rfl fun j _ => hj j]
-  by_cases hLL : L = L'
-  · subst hLL
-    have hcount : ∑ j : Fin r, (if j ∉ L.val ∧ L = L then (1 : ℂ) else 0)
-        = (((r - k + 2 : ℕ) : ℝ) : ℂ) := by
-      have h : ∀ j : Fin r, (if j ∉ L.val ∧ L = L then (1 : ℂ) else 0)
-          = if j ∈ L.valᶜ then 1 else 0 := fun j => by simp
-      rw [Finset.sum_congr rfl fun j _ => h j, Finset.sum_ite_mem, Finset.univ_inter,
-        Finset.sum_const, Finset.card_compl, L.2, Fintype.card_fin]
-      have hcard : r - (k - 2) = r - k + 2 := by omega
-      rw [hcard]
-      simp
-    rw [hcount, if_pos rfl, ← mul_assoc, inv_sqrt_mul_inv_sqrt, inv_mul_cancel₀ hNR]
-  · have h : ∀ j : Fin r, (if j ∉ L.val ∧ L = L' then (1 : ℂ) else 0) = 0 :=
-      fun j => if_neg (fun h => hLL h.2)
-    rw [Finset.sum_congr rfl fun j _ => h j, Finset.sum_const_zero, mul_zero, mul_zero,
-      if_neg hLL]
+  refine inner_of_pairing (deltaMode (k := k) e) (fun M j => esign M.val j)
+    (fun M j => placeAt (e j) (insert j M.val)) (fun _ => rfl)
+    (fun _ _ => by rw [conj_esign, esign_mul_self]) (fun M j => j ∉ M.val)
+    (fun M M' j j' => inner_placeAt_insert he hk M M' j j') (fun M => ?_) hNR L L'
+  have hcompl : Finset.univ.filter (fun j => j ∉ M.val) = M.valᶜ := by ext j; simp
+  rw [hcompl, Finset.card_compl, M.2, Fintype.card_fin,
+    show r - (k - 2) = r - k + 2 from by omega]
+
 
 /-- **The protected modes form an orthonormal family**, one for each
 `(k-2)`-face. -/
