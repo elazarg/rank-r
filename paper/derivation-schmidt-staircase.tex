@@ -1,0 +1,745 @@
+\documentclass[11pt,reqno]{amsart}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{braket}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=blue!55!black,
+  urlcolor=blue!55!black]{hyperref}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\usepackage[nameinlink,capitalize,noabbrev]{cleveref}
+
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\SN}{SN}
+\DeclareMathOperator{\SR}{SR}
+\DeclareMathOperator{\vecop}{vec}
+\DeclareMathOperator{\Iso}{Iso}
+\newcommand{\cL}{\mathcal L}
+\newcommand{\cT}{\mathcal T}
+\newcommand{\cR}{\mathcal R}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\ketbra}[2]{\lvert #1\rangle\!\langle #2\rvert}
+\newcommand{\ip}[2]{\langle #1,#2\rangle}
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+\newcommand{\C}{\mathbb C}
+
+\title{An exact Schmidt-number staircase\\
+from the double-skew dictionary}
+\author{Elazar Gershuni}
+\date{\today}
+
+\begin{document}
+\begin{abstract}
+The double-skew dictionary $\Phi_{m,n}=\Lambda_m\otimes\Lambda_n$, with
+$\Lambda_d(X)=\Tr(X)I-X^T$, has $\beta_2=1$.  Pair amplification lifts it to a
+$k$-block-positive witness
+$W_k=k(I-\frac1k\ketbra{\Omega_m}{\Omega_m})
+\otimes(I-\frac1k\ketbra{\Omega_n}{\Omega_n})$ for every $k$.  We compute the
+exact Schmidt number of the family
+$\rho_p=p\,\Iso_m(s/m)\otimes\Iso_n(0)+(1-p)I/(mn)^2$: it exceeds $k$ precisely
+when $p>p_k=(km-1)(kn-1)/[(km-1)(kn-1)+kmn(s-k)]$.  The thresholds increase
+strictly in $k$, so a single one-parameter family realizes every Schmidt number
+$1,\ldots,s$ in order.  Exactness --- not merely a witness bound --- comes from
+an explicit decomposition of $\rho_{p_k}$ into two product-isotropic states of
+Schmidt number $k$.  The protected coefficient $\frac1k$, supplied by transpose
+symmetry of the Kraus operators, is what makes the threshold sharp: the
+unprotected witness has a strictly larger threshold for $k>1$, and the
+entangled marginal alone crosses only at $(km-1)/(sm-1)>p_k$.
+\end{abstract}
+\maketitle
+
+\section{Conventions}
+
+Fix $m,n\ge2$ and name the four tensor factors
+\[
+    A_1=\C^m,\qquad B_1=\C^m,\qquad A_2=\C^n,\qquad B_2=\C^n .
+\]
+All operators below act on $A_1B_1A_2B_2$, and \emph{all} Schmidt ranks,
+Schmidt numbers and separability statements refer to the regrouped
+bipartition
+\begin{equation}
+\label{eq:cut}
+    (A_1A_2):(B_1B_2).
+\end{equation}
+
+\begin{remark}[The register-order trap]
+\label{rem:order}
+These two orderings are not the same, and the note uses both.  A formula
+written as a tensor product of an operator on $\C^m\otimes\C^m$ with an
+operator on $\C^n\otimes\C^n$ --- as $W_k$, $J(\Phi_{m,n})$ and every isotropic
+state below are --- lives in the order $A_1B_1A_2B_2$, that is
+$(m_{\mathrm{out}},m_{\mathrm{in}},n_{\mathrm{out}},n_{\mathrm{in}})$.  But for
+$C\in\cL(\C^m\otimes\C^n)$ the vectorization $\vecop(C)$ is naturally indexed
+$(m_{\mathrm{out}},n_{\mathrm{out}},m_{\mathrm{in}},n_{\mathrm{in}})$, that is
+$A_1A_2B_1B_2$, which is the order in which \cref{eq:cut} is a cut into two
+adjacent halves.  The two differ by the transposition $B_1\leftrightarrow A_2$
+of the middle two factors, and that transposition is applied silently whenever
+a product formula is paired against a vectorization.  It is not cosmetic:
+performing the pairing in the wrong order changes the sign of
+$\ip{\psi}{W_k\psi}$ in \cref{prop:equality-mode}.
+\end{remark}
+
+Write $\Omega_d=\sum_{i=1}^de_i\otimes e_i$ for the unnormalized maximally
+entangled vector of $\C^d\otimes\C^d$ and
+$P_d=\frac1d\ketbra{\Omega_d}{\Omega_d}$ for the corresponding rank-one
+projection.  In the register order of \cref{rem:order},
+$P_m\otimes P_n$ is the maximally entangled projection $P_{mn}$ of the cut
+\cref{eq:cut}.  The normalized isotropic state of fidelity $F\in[0,1]$ is
+\begin{equation}
+\label{eq:iso}
+    \Iso_d(F):=F\,P_d+\frac{1-F}{d^2-1}\bigl(I-P_d\bigr),
+\end{equation}
+so $\Tr[P_d\Iso_d(F)]=F$ and $\Iso_d(1/d^2)=I/d^2$.  Their Schmidt-number
+stratification is classical \cite{TerhalHorodecki2000}:
+\begin{equation}
+\label{eq:TH}
+    \SN\bigl(\Iso_d(F)\bigr)\le k
+    \quad\Longleftrightarrow\quad
+    F\le\frac kd
+    \qquad(1\le k\le d).
+\end{equation}
+We use the normalization in which
+\begin{equation}
+\label{eq:SR-rank}
+    \SR\bigl(\vecop(C)\bigr)=\rank C ,
+    \qquad
+    (A\otimes B)\vecop(C)=\vecop(ACB^T),
+\end{equation}
+across the cut \cref{eq:cut}; in particular
+$\vecop(A\otimes B)=\vecop(A)\otimes\vecop(B)$ in the order $A_1B_1A_2B_2$.
+
+Let $\cT$ denote the \emph{product-isotropic twirl}, the average of
+$\sigma\mapsto(U\otimes\overline U\otimes V\otimes\overline V)\sigma(\cdot)^*$
+over Haar-random $U\in\mathrm U(m)$, $V\in\mathrm U(n)$, the four factors acting
+on $A_1,B_1,A_2,B_2$ respectively.  Regrouped along \cref{eq:cut} each element
+of the group is the local unitary
+$(U\otimes V)\otimes(\overline U\otimes\overline V)$, so $\cT$ does not raise
+Schmidt number.  Its range is the commutant
+\begin{equation}
+\label{eq:commutant}
+    \cL_{\cT}
+    =\operatorname{span}\bigl\{E_a\otimes G_b\bigr\}_{a,b\in\{0,1\}},
+    \qquad
+    E_1=P_m,\quad E_0=I-P_m,
+\end{equation}
+and likewise $G_1=P_n$, $G_0=I-P_n$; it is four-dimensional because
+$\cL(\C^d)=\C I\oplus\{\text{traceless}\}$ splits into two inequivalent
+$\mathrm U(d)$-irreducibles.  Attach to any operator $\sigma$ on
+$A_1B_1A_2B_2$ the three \emph{moments}
+\begin{equation}
+\label{eq:moments}
+    F_m(\sigma):=\Tr[(P_m\otimes I)\sigma],
+    \quad
+    F_n(\sigma):=\Tr[(I\otimes P_n)\sigma],
+    \quad
+    F_{mn}(\sigma):=\Tr[(P_m\otimes P_n)\sigma].
+\end{equation}
+
+\begin{lemma}[Moments determine the twirl]
+\label{lem:moments}
+A state in $\cL_{\cT}$ is determined by
+$\bigl(F_m,F_n,F_{mn}\bigr)$.  If moreover $F_{mn}=F_mF_n$, that state is
+$\Iso_m(F_m)\otimes\Iso_n(F_n)$.
+\end{lemma}
+
+\begin{proof}
+Write $\sigma=\sum_{a,b}c_{ab}E_a\otimes G_b$.  Since $\Tr(E_1)=\Tr(G_1)=1$,
+$\Tr(E_0)=m^2-1$, $\Tr(G_0)=n^2-1$ and $\Tr(P_mE_a)=\delta_{a1}$,
+\[
+    F_{mn}=c_{11},
+    \qquad
+    F_m=c_{11}+c_{10}(n^2-1),
+    \qquad
+    F_n=c_{11}+c_{01}(m^2-1),
+\]
+and $\Tr\sigma=1$ then fixes $c_{00}$.  So the four coefficients are recovered.
+By \cref{eq:iso}, $\Iso_m(F)\otimes\Iso_n(G)$ lies in $\cL_{\cT}$ with moments
+$(F,G,FG)$, which gives the second claim.
+\end{proof}
+
+\begin{lemma}[Product seeds]
+\label{lem:seed}
+Let $A\in\cL(\C^m)$ and $B\in\cL(\C^n)$ be nonzero, and put
+$\psi:=\vecop(A\otimes B)/\norm{A\otimes B}_F$.  Then
+\[
+    \cT\bigl(\ketbra\psi\psi\bigr)
+    =\Iso_m\!\left(\frac{\abs{\Tr A}^2}{m\norm A_F^2}\right)
+     \otimes
+     \Iso_n\!\left(\frac{\abs{\Tr B}^2}{n\norm B_F^2}\right),
+\]
+and $\SN(\cT(\ketbra\psi\psi))\le\rank A\cdot\rank B$.
+\end{lemma}
+
+\begin{proof}
+By \cref{eq:SR-rank}, $\psi=\vecop(A)\otimes\vecop(B)$ up to normalization, in
+the order $A_1B_1A_2B_2$.  Since $\ip{\Omega_d}{\vecop(X)}=\Tr X$,
+\[
+    F_m(\ketbra\psi\psi)=\frac{\abs{\Tr A}^2}{m\norm A_F^2},
+    \qquad
+    F_n(\ketbra\psi\psi)=\frac{\abs{\Tr B}^2}{n\norm B_F^2},
+\]
+and $F_{mn}=F_mF_n$ because $\psi$ is a product vector across $A_1B_1:A_2B_2$
+and $P_m\otimes P_n$ is a product observable for that same splitting.  Moments
+are twirl invariant, so \cref{lem:moments} applies.  Finally
+$\SR(\psi)=\rank(A\otimes B)=\rank A\cdot\rank B$ by \cref{eq:SR-rank}, and
+$\cT$ is a mixture of local unitary conjugations.
+\end{proof}
+
+Throughout, $s$ is a target Schmidt number and
+\begin{equation}
+\label{eq:hyp}
+    m\ge s\ge2,
+    \qquad
+    n\ge\max\{2,s-1\}.
+\end{equation}
+The hypothesis $m\ge s$ is what makes $\Iso_m(s/m)$ a state, i.e.\ makes the
+seed fidelity $s/m$ admissible in \cref{eq:iso}; $n\ge2$ is needed for a pair
+$v\perp w$ in $\C^n$, which is what gives the second factor of the seed zero
+fidelity; and $n\ge s-1$ makes $\Iso_n(k/n)$ meaningful for every $k$ up to
+$s-1$, which is the range of thresholds the staircase runs through.
+
+\section{The dictionary and its Choi constant}
+
+Let $L_{ij}:=E_{ij}-E_{ji}$ for $i<j$, so that
+\begin{equation}
+\label{eq:Lam-kraus}
+    \Lambda_d(X)=\Tr(X)I-X^T=\sum_{i<j}L_{ij}XL_{ij}^* .
+\end{equation}
+The dictionary of this note is
+\begin{equation}
+\label{eq:Phi}
+    \Phi_{m,n}:=\Lambda_m\otimes\Lambda_n ,
+\end{equation}
+with Kraus operators $A_{ij,ab}=L_{ij}\otimes L_{ab}$, indexed by $i<j$ in
+$[m]$ and $a<b$ in $[n]$.  These are real and transpose-symmetric,
+\begin{equation}
+\label{eq:sym}
+    A_{ij,ab}^T=(-L_{ij})\otimes(-L_{ab})=A_{ij,ab},
+\end{equation}
+the dictionary is $\mathrm O(m)\times\mathrm O(n)$-covariant, and its joint
+Kraus span is the double-skew space
+$\mathfrak{so}(m)\otimes\mathfrak{so}(n)$.
+
+\begin{proposition}
+\label{prop:beta2}
+$\beta_2(\Phi_{m,n})=1$.
+\end{proposition}
+
+\begin{proof}
+Write $\Sigma_d$ for the flip on $\C^d\otimes\C^d$, so that
+$\sum_{i<j}\ketbra{\vecop L_{ij}}{\vecop L_{ij}}=I-\Sigma_d=2\Pi_-^{(d)}$ with
+$\Pi_-^{(d)}$ the antisymmetric projection.  Hence
+\begin{equation}
+\label{eq:J}
+    J(\Phi_{m,n})
+    =(I-\Sigma_m)\otimes(I-\Sigma_n)
+    =4\,\Pi_-^{(m)}\otimes\Pi_-^{(n)} .
+\end{equation}
+Under the regrouping of \cref{rem:order},
+$\Pi_-^{(m)}\otimes\Pi_-^{(n)}$ is the Frobenius-orthogonal projection onto
+$\mathfrak{so}(m)\otimes\mathfrak{so}(n)$ in the vectorization picture, so by
+Johnston--Kribs projection duality \cite{JohnstonKribs2010} its $S(2)$-norm is
+\[
+    \kappa_2
+    =\max\bigl\{s_1(K)^2+s_2(K)^2:
+      K\in\mathfrak{so}(m)\otimes\mathfrak{so}(n),\ \norm K_F=1\bigr\}
+    =\tfrac12 .
+\]
+Hence $2\beta_2(\Phi_{m,n})=\norm{J(\Phi_{m,n})}_{S(2)}=4\cdot\frac12=2$.
+\end{proof}
+
+\begin{remark}[Cross-check]
+\label{rem:crosscheck}
+The value $\kappa_2=\frac12$ is the case $k=2$ of $\kappa_k=\min\{k,4\}/4$ from
+the companion note on the higher Choi constants of the double-skew space, whose
+normalization $\beta_k=4\kappa_k/k$ returns $\beta_2=4\cdot\frac12/2=1$: the two
+routes agree.  The estimate is a genuine joint-span computation.  In
+Kraus-combination language it reads
+\[
+    s_1(K)^2+s_2(K)^2\le2\norm c_2^2,
+    \qquad
+    K=\sum c_{ij,ab}\,L_{ij}\otimes L_{ab},
+\]
+because $\norm{L_{ij}\otimes L_{ab}}_F^2=4$; equality is already attained at
+$K=L_{12}\otimes L_{12}$, whose four nonzero singular values are equal.
+\end{remark}
+
+\section{The lifted witness}
+
+Write $\Delta(X)=\Tr(X)I$, let $\tau$ be transposition, and set
+$\cR_{-a}:=\Delta-a\,\id$.  On a single factor
+$\Lambda_d\circ\tau=\Delta-\id=\cR_{-1}$, and both $\Delta$ and $\tau$ are
+monoidal, so $\Phi_{m,n}\circ\tau=\cR_{-1}^{(m)}\otimes\cR_{-1}^{(n)}$.  The
+lift is the map identity: for every $k\ge1$,
+\begin{equation}
+\label{eq:mapid}
+    (\Phi_{m,n}\circ\tau)
+    +(k-1)\Bigl(\Delta-\tfrac1k\id\Bigr)
+    =
+    k\,\cR_{-1/k}^{(m)}\otimes\cR_{-1/k}^{(n)} ,
+\end{equation}
+the binomial expansion of $(S+t\,\id)^{\otimes2}$ at $S=\Delta-\id$,
+$t=(k-1)/k$.  \Cref{eq:mapid} is formalized as
+\texttt{RankR.Psi\_eq\_tensor\_square} in \texttt{RankR/MapId.lean}, in the
+normalization that scales both sides by $4$ to match the convention
+\texttt{Lam4}${}=4(\Lambda_m\otimes\Lambda_n)$ used there.
+
+Since $J(\Delta)=I$ and $J(\id)=\ketbra{\Omega}{\Omega}$, the Choi operator of
+the right-hand side of \cref{eq:mapid} is
+\begin{equation}
+\label{eq:Wk}
+    \boxed{\;
+    W_k
+    :=
+    k\left(I-\frac1k\ketbra{\Omega_m}{\Omega_m}\right)
+    \otimes
+    \left(I-\frac1k\ketbra{\Omega_n}{\Omega_n}\right),
+    \;}
+\end{equation}
+written --- per \cref{rem:order} --- in the register order $A_1B_1A_2B_2$.
+
+\begin{proposition}
+\label{prop:blockpos}
+$W_k$ is $k$-block-positive across \cref{eq:cut}: $\Tr(W_k\sigma)\ge0$ for
+every state $\sigma$ with $\SN(\sigma)\le k$.
+\end{proposition}
+
+\begin{proof}
+The Kraus operators \cref{eq:sym} are transpose-symmetric and
+$\beta_2(\Phi_{m,n})=1$ by \cref{prop:beta2}, so pair amplification makes
+$\Phi_{m,n}\circ\tau+(k-1)(\Delta-\frac1k\id)$ a $k$-positive map.  By
+\cref{eq:mapid} that map is $k\,\cR_{-1/k}\otimes\cR_{-1/k}$, whose Choi
+operator is \cref{eq:Wk}.  A map is $k$-positive exactly when its Choi operator
+is $k$-block-positive \cite{TerhalHorodecki2000}, and a state of Schmidt number
+at most $k$ is a mixture of pure states of Schmidt rank at most $k$.
+\end{proof}
+
+\begin{lemma}[Trace formula]
+\label{lem:trace}
+For all admissible fidelities $F,G$,
+\begin{equation}
+\label{eq:trace}
+    \Tr\bigl[W_k\bigl(\Iso_m(F)\otimes\Iso_n(G)\bigr)\bigr]
+    =
+    k\left(1-\frac{mF}k\right)\left(1-\frac{nG}k\right).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Both $W_k$ and the state factor along $A_1B_1$ against $A_2B_2$, and
+$\ketbra{\Omega_d}{\Omega_d}=dP_d$, so each factor contributes
+$1-\frac1k\Tr[dP_d\Iso_d(F)]=1-\frac{dF}k$.
+\end{proof}
+
+\section{The state family and the threshold}
+
+Fix $s$ subject to \cref{eq:hyp} and define the seed and the noisy family
+\begin{equation}
+\label{eq:tau-rho}
+    \tau_s:=\Iso_m\!\left(\frac sm\right)\otimes\Iso_n(0),
+    \qquad
+    \rho_p:=p\,\tau_s+(1-p)\frac I{(mn)^2},
+    \qquad
+    0\le p\le1 .
+\end{equation}
+
+\begin{lemma}
+\label{lem:seed-SN}
+$\SN(\tau_s)=s$, and $\tau_s=\cT(\ketbra{\psi_s}{\psi_s})$ for
+\begin{equation}
+\label{eq:psis}
+    \psi_s=\frac1{\sqrt s}\vecop\bigl(P^{(s)}\otimes\ketbra vw\bigr),
+    \qquad v\perp w,
+\end{equation}
+with $P^{(s)}$ a rank-$s$ projection in $\C^m$.  Moreover
+$\SN(I/(mn)^2)=1$ and
+\begin{equation}
+\label{eq:noise-split}
+    \frac I{(mn)^2}=\Iso_m\!\left(\frac1{m^2}\right)
+                    \otimes\Iso_n\!\left(\frac1{n^2}\right).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Take $A=P^{(s)}$ and $B=\ketbra vw$ in \cref{lem:seed}: then $\Tr A=s$,
+$\norm A_F^2=s$, $\Tr B=\ip wv=0$, $\norm B_F=1$, so the twirl is
+$\Iso_m(s/m)\otimes\Iso_n(0)$ and $\SN\le\rank A\cdot\rank B=s$.  The reverse
+inequality holds because tracing out $A_2B_2$ is local across \cref{eq:cut} and
+leaves $\Iso_m(s/m)$, which has Schmidt number exactly $s$ by \cref{eq:TH}.
+\Cref{eq:noise-split} is $\Iso_d(1/d^2)=I/d^2$ applied twice, and the
+maximally mixed state is separable.  The hypotheses \cref{eq:hyp} are exactly
+what make $P^{(s)}$ and $v\perp w$ available.
+\end{proof}
+
+\begin{proposition}[One-sided threshold]
+\label{prop:onesided}
+Put
+\begin{equation}
+\label{eq:gamma}
+    \gamma_k
+    :=k\left(1-\frac1{km}\right)\left(1-\frac1{kn}\right)
+    =\frac{(km-1)(kn-1)}{kmn}
+    =k-\frac1m-\frac1n+\frac1{kmn}.
+\end{equation}
+Then
+\begin{equation}
+\label{eq:trace-rho}
+    \Tr(W_k\rho_p)=(1-p)\gamma_k-p(s-k),
+\end{equation}
+which is negative exactly for $p>p_k$, where
+\begin{equation}
+\label{eq:pk}
+    \boxed{\;
+    p_k
+    :=\frac{\gamma_k}{\gamma_k+s-k}
+    =\frac{(km-1)(kn-1)}{(km-1)(kn-1)+kmn(s-k)}\;}\,.
+\end{equation}
+Consequently $p>p_k$ implies $\SN(\rho_p)>k$, for every $1\le k\le s-1$.
+\end{proposition}
+
+\begin{proof}
+\Cref{lem:trace} with $(F,G)=(s/m,0)$ gives $\Tr(W_k\tau_s)=k-s$, and with
+$(F,G)=(1/m^2,1/n^2)$, using \cref{eq:noise-split}, gives
+$\Tr(W_kI/(mn)^2)=\gamma_k$; \cref{eq:trace-rho} is their convex combination.
+It is affine and strictly decreasing in $p$ since $\gamma_k+s-k>0$, with zero
+at \cref{eq:pk}.  A negative value contradicts \cref{prop:blockpos}.
+\end{proof}
+
+The nontrivial half is the converse.
+
+\section{Exact boundary decomposition}
+
+\begin{theorem}[Boundary decomposition]
+\label{thm:decomp}
+Let $1\le k\le s-1$, put
+\begin{equation}
+\label{eq:Dk-alphak}
+    D_k:=(km-1)(kn-1)+kmn(s-k),
+    \qquad
+    \alpha_k:=\frac{m(s-k)}{D_k}=\frac{1-p_k}{kn} .
+\end{equation}
+Then
+\begin{equation}
+\label{eq:decomp}
+    \rho_{p_k}
+    =
+    (1-\alpha_k)
+    \left[\Iso_m\!\left(\frac km\right)\otimes\Iso_n(0)\right]
+    +
+    \alpha_k
+    \left[\Iso_m\!\left(\frac1{m^2}\right)\otimes\Iso_n\!\left(\frac kn\right)
+    \right],
+\end{equation}
+and both summands have Schmidt number at most $k$.  Hence
+$\SN(\rho_{p_k})\le k$.
+\end{theorem}
+
+\begin{proof}
+Both sides of \cref{eq:decomp} are states in $\cL_{\cT}$, so by
+\cref{lem:moments} it suffices to match the three moments \cref{eq:moments}.
+On the left, from \cref{eq:tau-rho} and \cref{eq:noise-split},
+\[
+    F_m=p_k\frac sm+\frac{1-p_k}{m^2},
+    \qquad
+    F_n=\frac{1-p_k}{n^2},
+    \qquad
+    F_{mn}=\frac{1-p_k}{m^2n^2};
+\]
+on the right,
+\[
+    F_m=(1-\alpha_k)\frac km+\frac{\alpha_k}{m^2},
+    \qquad
+    F_n=\alpha_k\frac kn,
+    \qquad
+    F_{mn}=\alpha_k\frac k{m^2n}.
+\]
+The second pair agrees precisely by $\alpha_k=(1-p_k)/(kn)$, and the third then
+agrees as well.  For the first, substituting $\alpha_k=(1-p_k)/(kn)$,
+\[
+    m\bigl(F_m^{\mathrm{LHS}}-F_m^{\mathrm{RHS}}\bigr)
+    =(s-k)-(1-p_k)\left(s-\frac1m-\frac1n+\frac1{kmn}\right)
+    =(s-k)-(1-p_k)(\gamma_k+s-k),
+\]
+using the last expression in \cref{eq:gamma}; and
+$(1-p_k)(\gamma_k+s-k)=s-k$ by \cref{eq:pk}.  So the difference vanishes.  The
+two forms of $\alpha_k$ in \cref{eq:Dk-alphak} agree because
+$\gamma_k+s-k=D_k/(kmn)$, whence $1-p_k=kmn(s-k)/D_k$.
+
+For the Schmidt numbers, apply \cref{lem:seed}.  The first summand is the twirl
+of $\frac1{\sqrt k}\vecop(P^{(k)}\otimes\ketbra vw)$ with $v\perp w$: its
+moments are $(k/m,0)$ and its Schmidt rank is $k$.  The second is the twirl of
+$\frac1{\sqrt k}\vecop(\ketbra uz\otimes P'^{(k)})$ with $P'^{(k)}$ of rank $k$
+in $\C^n$ and $\abs{\ip zu}^2=1/m$: its moments are
+$\abs{\ip zu}^2/m=1/m^2$ and $k^2/(nk)=k/n$, and its Schmidt rank is
+$1\cdot k=k$.  Both need only \cref{eq:hyp}.
+\end{proof}
+
+\begin{lemma}[Strict monotonicity]
+\label{lem:mono}
+$\gamma_{k+1}-\gamma_k=1-\frac1{k(k+1)mn}>0$, and $p_1<p_2<\cdots<p_{s-1}$.
+\end{lemma}
+
+\begin{proof}
+The displayed difference is immediate from the last expression in
+\cref{eq:gamma}, and $k(k+1)mn\ge8$.  The map $x\mapsto x/(x+c)$ is strictly
+increasing in $x>0$ for $c>0$ and strictly decreasing in $c$, and passing from
+$k$ to $k+1$ increases $\gamma_k$ and decreases $s-k$.
+\end{proof}
+
+\begin{theorem}[Staircase]
+\label{thm:staircase}
+Assume \cref{eq:hyp}.  For every $1\le k\le s-1$,
+\begin{equation}
+\label{eq:iff}
+    \SN(\rho_p)>k
+    \quad\Longleftrightarrow\quad
+    p>p_k ,
+\end{equation}
+and consequently
+\begin{equation}
+\label{eq:stair}
+    \SN(\rho_p)
+    =
+    \begin{cases}
+    1,&0\le p\le p_1,\\
+    j,&p_{j-1}<p\le p_j,\quad 2\le j\le s-1,\\
+    s,&p_{s-1}<p\le1 .
+    \end{cases}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+The forward implication is \cref{prop:onesided}.  For the converse let
+$p\le p_k$.  Then
+\[
+    \rho_p
+    =\frac p{p_k}\rho_{p_k}+\left(1-\frac p{p_k}\right)\frac I{(mn)^2},
+\]
+as one checks by expanding $\rho_{p_k}$ from \cref{eq:tau-rho}; both terms have
+Schmidt number at most $k$, by \cref{thm:decomp} and \cref{lem:seed-SN}, so
+$\SN(\rho_p)\le k$.  This proves \cref{eq:iff}.  Since
+$\SN(\rho_p)\le\SN(\tau_s)=s$ always, \cref{eq:stair} follows by applying
+\cref{eq:iff} at every $k$ and using \cref{lem:mono} to order the thresholds.
+\end{proof}
+
+\begin{remark}
+\label{rem:whyexact}
+Only the forward direction uses the witness.  Exactness is supplied entirely by
+\cref{thm:decomp}, an identity between twirl-invariant states; nothing here
+asserts that $W_k$ is optimal among $k$-block-positive witnesses.  What the two
+halves share is the number $\gamma_k$: the same expression that is the
+white-noise expectation of $W_k$ is the one that makes the moment equation of
+\cref{thm:decomp} close.
+\end{remark}
+
+\section{The adjacent threshold}
+
+Specializing to $s=r+1$ isolates the transition between Schmidt number $r+1$
+and $r$.
+
+\begin{corollary}
+\label{cor:adjacent}
+Let $m\ge r+1\ge2$ and $n\ge\max\{2,r\}$, and write $\rho_p$ for the family
+\cref{eq:tau-rho} at $s=r+1$.  Then, with
+\begin{equation}
+\label{eq:pstar}
+    p_r^*=\frac{(rm-1)(rn-1)}{(rm-1)(rn-1)+rmn},
+\end{equation}
+one has $\SN(\rho_p)=r+1$ for $p>p_r^*$ and $\SN(\rho_p)\le r$ for
+$p\le p_r^*$, with $\SN(\rho_{p_r^*})=r$ exactly.  In terms of the white-noise
+fraction $\nu=1-p$ the critical amount of noise is
+\begin{equation}
+\label{eq:nustar}
+    \nu_r^*=\frac{rmn}{(rm-1)(rn-1)+rmn} .
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+\Cref{eq:pstar} is \cref{eq:pk} at $k=r$, $s=r+1$, and \cref{eq:nustar} is
+$1-p_r^*$.  The trichotomy is \cref{eq:iff} at $k=r$.  The value at $p=p_r^*$ is
+exactly $r$ rather than less: for $r\ge2$ because $p_r^*=p_r>p_{r-1}$ by
+\cref{lem:mono}, and for $r=1$ because Schmidt numbers are at least $1$.
+\end{proof}
+
+\begin{proposition}[Equality mode]
+\label{prop:equality-mode}
+Let $P^{(r+1)}$ be a rank-$(r+1)$ projection in $\C^m$ and $v\perp w$ in
+$\C^n$, and put
+\begin{equation}
+\label{eq:psir}
+    \psi_{r+1}:=\frac1{\sqrt{r+1}}
+    \vecop\bigl(P^{(r+1)}\otimes\ketbra vw\bigr).
+\end{equation}
+Then $\SR(\psi_{r+1})=r+1$ and
+\begin{equation}
+\label{eq:minus-one}
+    \ip{\psi_{r+1}}{W_r\psi_{r+1}}=-1 .
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+The Schmidt rank is $\rank(P^{(r+1)})\cdot\rank(\ketbra vw)=r+1$ by
+\cref{eq:SR-rank}.  Because $W_r$ is invariant under the twirl group,
+$\ip{\psi_{r+1}}{W_r\psi_{r+1}}=\Tr[W_r\cT(\ketbra{\psi_{r+1}}{\psi_{r+1}})]$,
+and $\cT(\ketbra{\psi_{r+1}}{\psi_{r+1}})=\Iso_m(\frac{r+1}m)\otimes\Iso_n(0)$
+by \cref{lem:seed}.  Now \cref{eq:trace} at $k=r$ gives
+$r(1-\frac{r+1}r)(1-0)=-1$.  The pairing must be performed after the
+regrouping of \cref{rem:order}; done in the order $A_1A_2B_1B_2$ it returns the
+wrong sign.
+\end{proof}
+
+So the violation at the adjacent level is by a fixed amount, independent of
+$m$, $n$ and $r$: the witness is normalized so that its extreme modes of
+Schmidt rank $r+1$ sit at $-1$.
+
+\section{Two comparisons}
+
+Both comparisons say the same thing from different sides: the threshold
+\cref{eq:pk} is not attainable by a cruder instrument.
+
+\begin{proposition}[The protected coefficient is material]
+\label{prop:unprotected}
+Amplification without the transpose-symmetry correction yields
+\begin{equation}
+\label{eq:Wun}
+    W_k^{\mathrm{un}}
+    :=J(\Phi_{m,n}\circ\tau)+(k-1)I
+    =W_k+\frac{k-1}k\ketbra{\Omega_{mn}}{\Omega_{mn}} .
+\end{equation}
+Its white-noise baseline is $\gamma_k^{\mathrm{un}}=\gamma_k+\frac{k-1}{kmn}$,
+its seed expectation is unchanged at $k-s$, and its detection threshold
+\begin{equation}
+\label{eq:pun}
+    p_k^{\mathrm{un}}
+    =\frac{\gamma_k^{\mathrm{un}}}{\gamma_k^{\mathrm{un}}+s-k}
+\end{equation}
+satisfies $p_k^{\mathrm{un}}>p_k$ for every $k>1$.
+\end{proposition}
+
+\begin{proof}
+The second equality in \cref{eq:Wun} is \cref{eq:mapid} read at the level of
+Choi operators: the correction $(k-1)(\Delta-\frac1k\id)$ differs from
+$(k-1)\Delta$ by $-\frac{k-1}k\id$, and $J(\id)=\ketbra\Omega\Omega$ with
+$\Omega_{mn}=\Omega_m\otimes\Omega_n$ after the regrouping of \cref{rem:order}.
+Now $\ketbra{\Omega_{mn}}{\Omega_{mn}}=mn\,P_m\otimes P_n$, so its expectation
+is $mn\,F_{mn}$.  For the seed $F_{mn}=\frac sm\cdot0=0$, and for white noise
+$F_{mn}=1/(mn)^2$, giving the extra $\frac{k-1}k\cdot\frac1{mn}$.  Finally
+$x\mapsto x/(x+s-k)$ is strictly increasing for $x>0$ when $s>k$.
+\end{proof}
+
+Thus the unprotected witness misses an entire interval
+$(p_k,p_k^{\mathrm{un}}]$ of states whose Schmidt number already exceeds $k$.
+The protected $\frac1k$ is exactly what closes it.
+
+\begin{proposition}[The entangled marginal is strictly weaker]
+\label{prop:marginal}
+The entangled marginal of $\rho_p$ has Schmidt number exceeding $k$ exactly
+when
+\begin{equation}
+\label{eq:pmarg}
+    p>p_k^{\mathrm{marg}}:=\frac{km-1}{sm-1},
+\end{equation}
+and $p_k<p_k^{\mathrm{marg}}$ for every $1\le k\le s-1$.
+\end{proposition}
+
+\begin{proof}
+Tracing out $A_2B_2$ is local across \cref{eq:cut} and leaves the isotropic
+state of fidelity $F=ps/m+(1-p)/m^2$, so \cref{eq:TH} turns $F>k/m$ into
+$psm+1-p>km$, i.e.\ \cref{eq:pmarg}.  Since
+$x\mapsto x/(1-x)$ is strictly increasing on $[0,1)$ it suffices to compare
+odds.  By \cref{eq:pk} and \cref{eq:gamma},
+\[
+    \frac{p_k}{1-p_k}
+    =\frac{\gamma_k}{s-k}
+    =\frac{km-1}{m(s-k)}\left(1-\frac1{kn}\right)
+    <\frac{km-1}{m(s-k)}
+    =\frac{p_k^{\mathrm{marg}}}{1-p_k^{\mathrm{marg}}} . \qedhere
+\]
+\end{proof}
+
+Since a partial trace along \cref{eq:cut} cannot raise Schmidt number, the
+marginal is a sound but strictly weaker detector: it certifies $\SN(\rho_p)>k$
+only from $p_k^{\mathrm{marg}}$ on, whereas the transition already happened at
+$p_k$.  The gap is governed by the factor $1-\frac1{kn}$, contributed by the
+second --- separable --- factor of the seed.
+
+\section*{What is and is not established}
+
+Established here, and used above: $\beta_2(\Phi_{m,n})=1$, which rests on the
+double-skew estimate $\kappa_2=\frac12$ proved in the companion note;
+$k$-block-positivity of $W_k$, which rests on pair amplification together with
+the map identity \cref{eq:mapid}, the latter formalized as
+\texttt{RankR.Psi\_eq\_tensor\_square}; the trace formula \cref{eq:trace}; the
+boundary decomposition \cref{thm:decomp}, which is an elementary moment
+computation; and hence \cref{thm:staircase}.
+
+Not established.  First, the seed \cref{eq:tau-rho} is bi-isotropic, and the
+entire converse direction consumes that: \cref{lem:moments} works because the
+twirl commutant \cref{eq:commutant} is four-dimensional, so three numbers pin a
+state down.  Nothing here transfers to generic association-scheme or Clifford
+dictionaries, where the commutant is large and no such rigidity is available;
+that harder problem is untouched.  Second, no literature priority check has
+been performed for the staircase.  The isotropic stratification \cref{eq:TH} is
+Terhal--Horodecki \cite{TerhalHorodecki2000} and is cited as such; what is
+claimed new is the two-factor staircase \cref{eq:stair} together with the exact
+threshold \cref{eq:pk}, and that claim is unverified against the literature.
+Third, \cref{rem:whyexact}: no optimality of $W_k$ among $k$-block-positive
+witnesses is asserted, and the thresholds are specific to ambient white noise
+$I/(mn)^2$ --- other noise models are not covered.
+
+\section*{Numerical corroboration}
+
+All identities of \cref{lem:trace}, \cref{prop:onesided} and \cref{thm:decomp}
+were evaluated in exact matrix form at
+$(m,n,s)\in\{(4,3,3),(5,4,4),(3,3,3)\}$, for every $k$ in $1,\ldots,s-1$.  The
+seed and white-noise expectations $\Tr(W_k\tau_s)=k-s$ and
+$\Tr(W_kI/(mn)^2)=\gamma_k$ reproduce to $10^{-16}$, as does the splitting
+\cref{eq:noise-split} of the ambient noise into a product of isotropic states.
+Both expressions for $\alpha_k$ in \cref{eq:Dk-alphak} agree to the same
+precision.
+
+The crux is \cref{eq:decomp}, and it was checked entrywise rather than through
+its moments: the two sides agree to $10^{-18}$ at each of the three parameter
+choices and each $k$.  This is the statement that makes the threshold exact
+rather than merely a witness bound, so it is the one worth checking
+independently of the moment argument that proves it.
+
+\Cref{eq:minus-one} was checked directly on the vectorized mode
+\cref{eq:psir}, with the regrouping of \cref{rem:order} applied explicitly,
+at $(m,n,r)\in\{(4,3,2),(5,4,3),(6,5,4)\}$; the value is $-1$ to machine
+precision.  Performing the same contraction without the regrouping is what
+produced a sign error before the convention was fixed.  Finally the difference
+$\gamma_{k+1}-\gamma_k=1-\frac1{k(k+1)mn}$ of \cref{lem:mono}, and with it the
+strict ordering of the $p_k$, was confirmed over the same parameter range.
+
+\begin{thebibliography}{10}
+
+\bibitem{JohnstonKribs2010}
+Nathaniel Johnston and David W. Kribs.
+``A family of norms with applications in quantum information theory.''
+\newblock Journal of Mathematical Physics, 51:082202, 2010.
+\newblock \url{https://doi.org/10.1063/1.3459068}
+
+\bibitem{TerhalHorodecki2000}
+Barbara M. Terhal and Pawe\l{} Horodecki.
+``Schmidt number for density matrices.''
+\newblock Physical Review A, 61:040301, 2000.
+\newblock \url{https://doi.org/10.1103/PhysRevA.61.040301}
+
+\end{thebibliography}
+
+\end{document}
