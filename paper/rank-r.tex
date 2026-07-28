@@ -778,15 +778,18 @@ whose spectrum is contained in $\{0,2\}$.
 
 Define
 \[
-    \Phi
-    :=
-    \Lambda_U\otimes\Lambda_V\otimes\id_Q.
+    \Phi:=\Lambda_U\otimes\Lambda_V
+    \quad\text{on }\cL(U\otimes V),
+    \qquad
+    \Phi_Q:=\Phi\otimes\id_Q .
 \]
+Thus $\Phi$ is the map to which $\beta_2$ of \cref{def:beta2} is attached, and
+$\Phi_Q$ is its amplification, the operator that acts on $U\otimes V\otimes Q$.
 For an operator $Y$ on $U\otimes V\otimes Q$, direct expansion gives
 \begin{equation}
 \label{eq:Phi-expansion}
 \begin{aligned}
-    \Phi(Y)
+    \Phi_Q(Y)
     ={}&
     \iota_Q(\Tr_{UV}Y)
     -\iota_{VQ}\!\left((\Tr_UY)^{T_V}\right)\\
@@ -797,7 +800,7 @@ For an operator $Y$ on $U\otimes V\otimes Q$, direct expansion gives
 Applying \cref{eq:Phi-expansion} to $Y=\rho_0^{T_{UV}}$ gives
 \begin{equation}
 \label{eq:Phi-rhoT}
-    \Phi(\rho_0^{T_{UV}})
+    \Phi_Q(\rho_0^{T_{UV}})
     =
     I_{UVQ}
     -\iota_{UQ}(\rho^0_{UQ})
@@ -809,16 +812,16 @@ Using \cref{eq:rho-partial-transpose}, we therefore obtain
 \label{eq:H-decomposition}
     H_r^{(0)}
     =
-    \Phi(P_+)
+    \Phi_Q(P_+)
     +
     \Bigl[
-      (r-1)(I_{UVQ}-\Pi_e)-\Phi(P_-)
+      (r-1)(I_{UVQ}-\Pi_e)-\Phi_Q(P_-)
     \Bigr].
 \end{equation}
-Since $\Phi(P_+)\succeq0$, it remains to prove
+Since $\Phi_Q(P_+)\succeq0$, it remains to prove
 \begin{equation}
 \label{eq:Phi-Pminus-goal}
-    \Phi(P_-)
+    \Phi_Q(P_-)
     \preceq
     (r-1)(I_{UVQ}-\Pi_e).
 \end{equation}
@@ -857,9 +860,9 @@ $\mathcal T:\ell_2(\mathcal I_r)\to U\otimes V\otimes Q$ by
 Thus the column indexed by
 $(i,j,\alpha,\beta)\in\mathcal I_r$ is
 $(L_\alpha\otimes M_\beta\otimes I_Q)\eta_{ij}$.  Using the Kraus
-form of $\Phi$ and the rank-one expansion of $P_-$ therefore gives
+form of $\Phi_Q$ and the rank-one expansion of $P_-$ therefore gives
 \begin{align}
-    \Phi(P_-)
+    \Phi_Q(P_-)
     &=
     \sum_{i<j}\sum_{\alpha,\beta}
     \ketbra{
@@ -943,13 +946,16 @@ of $\Phi$ on $\cL(U\otimes V)$, here $A_{\alpha\beta}=L_\alpha\otimes M_\beta$,
 and let $S:c\mapsto\sum_ac_aA_a$ be its synthesis operator, so that
 $SS^*=J(\Phi)$ under $\operatorname{vec}$.  For an orthonormal pair $x,y$ and
 $P:=\ketbra xx+\ketbra yy$, self-adjoint idempotence of $P$ gives
-$\norm{KP}_2=\sup\{\abs{\ip MK_{\mathrm{HS}}}:\rank M\le2,\ \norm M_2=1\}$,
-so with $K=Sc$,
+$\ip K{KP}_{\mathrm{HS}}=\norm{KP}_2^2$, so $M:=KP/\norm{KP}_2$ has
+$\rank M\le2$, $\norm M_2=1$ and $\ip MK_{\mathrm{HS}}=\norm{KP}_2$; hence
+$\norm{KP}_2\le\sup\{\abs{\ip MK_{\mathrm{HS}}}:\rank M\le2,\ \norm M_2=1\}$,
+with equality only when $P$ compresses onto a dominant pair of singular
+directions.  With $K=Sc$ this suffices:
 \begin{equation}
 \label{eq:kraus-cauchy-schwarz}
     \norm{Kx}^2+\norm{Ky}^2
     =\norm{KP}_2^2
-    =\sup_M\abs{\ip{S^*M}{c}}^2
+    \le\sup_M\abs{\ip{S^*M}{c}}^2
     \le\norm c_2^2\,\sup_M\norm{S^*M}_2^2
     =\norm c_2^2\,\norm{J(\Phi)}_{S(2)},
 \end{equation}
@@ -1049,7 +1055,8 @@ it to \cref{eq:Phi-Pminus-goal}, whence $H_r^{(0)}\succeq0$ by
 
 \begin{proof}[Proof of \cref{thm:amplification}]
 The argument just given uses $\Phi$ only through three facts, and they enter at
-separate points.  That $\Phi$ is a Kraus sum gives $\Phi(P_+)\succeq0$ and
+separate points.  That $\Phi$ is a Kraus sum gives
+$(\Phi\otimes\id_Q)(P_+)\succeq0$ and
 \cref{eq:Phi-Pminus-TTstar}.  That its Kraus span obeys
 \cref{eq:kraus-pair-bound} --- which needs only $\beta_2(\Phi)$ --- gives
 \cref{eq:T-operator-bound}, hence
@@ -1059,8 +1066,9 @@ only in \cref{eq:T-orthogonal}, and only to replace $I$ by $I-\Pi_e$, giving
 \cref{eq:amplification-A}.
 
 Each of \cref{eq:amplification-B0,eq:amplification-B} follows from the
-corresponding upper bound: $\rho_0^{T_{UV}}=P_+-P_-$ and $\Phi(P_+)\succeq0$,
-so $\Phi(\rho_0^{T_{UV}})\succeq-\Phi(P_-)$.
+corresponding upper bound: $\rho_0^{T_{UV}}=P_+-P_-$ and
+$(\Phi\otimes\id_Q)(P_+)\succeq0$, so
+$(\Phi\otimes\id_Q)(\rho_0^{T_{UV}})\succeq-(\Phi\otimes\id_Q)(P_-)$.
 
 For the $r$-positivity assertion no further identity is needed.  Since the $e_i$
 are orthonormal, $\Tr_{UV}\rho_0=I_Q$ and $\rho_0=r\Pi_e$, so
@@ -2655,9 +2663,7 @@ is the lifting layer, where $\Phi=\Lambda_U\otimes\Lambda_V$ enters only through
 \cref{eq:beta2-double-skew}.  Those files, and \texttt{Sectors}, \texttt{Synth},
 \texttt{Frame} and \texttt{Edge} beneath them, are stated over a single space
 rather than over $U\otimes V$; the bipartite structure enters at the $\Phi_4$
-kernel and not before.  Consequently
-\cref{eq:main-bound-parametrized} is covered at every $\beta_2$, not only at
-$\beta_2=1$.  \Cref{eq:map-identity} is covered as
+kernel and not before.  \Cref{eq:map-identity} is covered as
 \texttt{Psi\_eq\_tensor\_square}, with the two structural inputs of
 \cref{rem:operator-ineq-as-map} --- monoidality of $\Delta$ and
 \cref{eq:lambda-tau-monoidal} --- as separate lemmas, and the

@@ -35,7 +35,7 @@ for each headline theorem, so the build fails if it ever stops holding.
 
 `RankR/Autonne.lean` proves the **Autonne–Takagi factorization** — every complex
 symmetric matrix is $UDU^T$ with $U$ unitary and $D$ diagonal nonnegative
-(Horn–Johnson, *Matrix Analysis*, 2nd ed., Thm 4.4.16). It is absent from
+(Horn–Johnson, *Matrix Analysis*, 2nd ed., Cor. 4.4.4). It is absent from
 Mathlib, and is stated coordinate-free
 (`LinearMap.IsConjSymmetric.exists_orthonormalBasis`) with the matrix form as a
 specialization. `RankR/Takagi.lean` then derives Lemma 2.1 from it.
@@ -129,7 +129,7 @@ revision.
 
 | Path | Contents |
 | --- | --- |
-| `RankR/` | the formalization (31 files) |
+| `RankR/` | the formalization (34 files) |
 | `paper/` | the manuscript |
 
 ### The formalization, bottom-up
