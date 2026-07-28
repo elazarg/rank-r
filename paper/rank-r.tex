@@ -20,6 +20,7 @@
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
 \newtheorem*{hypothesis}{Hypothesis}
@@ -40,6 +41,7 @@
 \newcommand{\norm}[1]{\lVert #1\rVert}
 \newcommand{\abs}[1]{\lvert #1\rvert}
 \newcommand{\C}{\mathbb C}
+\newcommand{\Z}{\mathbb Z}
 
 \title[A Sharp Rank-$r$ Partial-Trace Inequality]
 {A Sharp Rank-$r$ Partial-Trace Inequality via Double-Skew Singular-Value Bounds}
@@ -451,8 +453,82 @@ $\ip M{\Pi M}_{\mathrm{HS}}=\norm{\Pi M}_2^2\le\frac12\norm{M}_2^2$.
 Both directions are machine-checked; see \cref{app:formal}.
 \end{remark}
 
-We next establish an operator inequality for pure states with a
-maximally mixed marginal.
+\subsection{The amplification theorem}
+\label{sec:amplification}
+
+\Cref{lem:double-skew} is one instance of a general mechanism, and it is
+cleaner to state the general form first and specialize.  What the argument of
+\cref{sec:proof} consumes is a single number attached to a completely positive
+map.
+
+\begin{definition}[Rank-two Choi constant]
+\label[definition]{def:beta2}
+Let $\Phi$ be completely positive on $\cL(H)$ with Kraus family $\{A_a\}$, and
+let
+\[
+    J(\Phi):=\sum_a\ketbra{\operatorname{vec}A_a}{\operatorname{vec}A_a}
+\]
+be its Choi operator.  Set
+\[
+    \beta_2(\Phi)
+    :=\tfrac12\norm{J(\Phi)}_{S(2)}
+    =\tfrac12\sup\bigl\{\ip z{J(\Phi)z}:
+      \operatorname{SR}(z)\le2,\ \norm z=1\bigr\}.
+\]
+\end{definition}
+
+$J(\Phi)$ is the same operator for every Kraus family of $\Phi$, so
+$\beta_2$ depends on $\Phi$ alone --- no minimality and no orthogonality of the
+family is required.  It is linear in $\Phi$, so a map and its constant always
+carry the same scale, and no normalization convention has to be tracked.  By
+\cref{rem:fgp-equivalence}, $J(\Lambda_U\otimes\Lambda_V)$ is $4Q_-$ and
+$\norm{Q_-}_{S(2)}=\frac12$, so
+\begin{equation}
+\label{eq:beta2-double-skew}
+    \beta_2(\Lambda_U\otimes\Lambda_V)=1 .
+\end{equation}
+
+\begin{theorem}[Amplification]
+\label[theorem]{thm:amplification}
+Let $\Phi$ be completely positive on $\cL(U\otimes V)$ with
+\emph{transpose-symmetric} Kraus operators, $A_a^T=A_a$.  Then for every
+$r\ge1$ the map
+\[
+    \Psi_{r,\Phi}
+    :=
+    \Phi\circ\tau
+    +(r-1)\beta_2(\Phi)\left(\Delta-\tfrac1r\id\right)
+\]
+is $r$-positive, where $\Delta(X)=\Tr(X)I$ and $\tau$ is transposition.
+Equivalently, in the notation of \cref{prop:operator_ineq}, for every
+orthonormal family $e_1,\ldots,e_r$ in $U\otimes V$,
+\begin{equation}
+\label{eq:amplification-A}
+    (\Phi\otimes\id_Q)(P_-)
+    \preceq
+    (r-1)\beta_2(\Phi)\,(I_{UVQ}-\Pi_e),
+\end{equation}
+\begin{equation}
+\label{eq:amplification-B}
+    (\Phi\otimes\id_Q)\bigl(\rho_0^{T_{UV}}\bigr)
+    +(r-1)\beta_2(\Phi)\,(I_{UVQ}-\Pi_e)
+    \succeq0 .
+\end{equation}
+\end{theorem}
+
+The proof occupies \cref{sec:proof}; \cref{eq:amplification-A} is
+\cref{eq:Phi-Pminus-goal} with $\beta_2$ in place of $1$, and
+\cref{eq:amplification-B} follows from it because $P_+$ survives $\Phi$ and
+$P_+-P_-$ is twice the partial transpose.  Two hypotheses do all the work.  The
+transpose symmetry is what puts the frame in $\delta_e^\perp$
+(\cref{eq:T-orthogonal}), and \cref{rem:parity} identifies it as a $\Z/2$-degree
+condition; the constant $\beta_2$ enters through a single Cauchy--Schwarz over
+the Kraus index (\cref{eq:kraus-cauchy-schwarz}).  Nothing else about $\Phi$ is
+used --- in particular nothing about $\mathfrak{so}(U)\otimes\mathfrak{so}(V)$
+beyond \cref{eq:beta2-double-skew}.
+
+At $\Phi=\Lambda_U\otimes\Lambda_V$ and $\beta_2=1$, \cref{thm:amplification} is
+the operator inequality we now record in the form \cref{sec:proof} uses.
 
 \begin{proposition}[Rank-$r$ marginal operator inequality]
 \label[proposition]{prop:operator_ineq}
@@ -750,26 +826,49 @@ Cauchy--Schwarz yields
     \right).
 \label{eq:T-Cauchy}
 \end{align}
-By \cref{lem:double-skew}, each parenthesized expression is at most
-$\frac12\norm{K_c^{(ij)}}_2^2$. Therefore,
+Each parenthesized expression is bounded by $\beta_2(\Phi)$ directly, without
+\cref{eq:Kc-norm} and without any property of
+$\mathfrak{so}(U)\otimes\mathfrak{so}(V)$.  Write $\{A_a\}$ for the Kraus family
+of $\Phi$ on $\cL(U\otimes V)$, here $A_{\alpha\beta}=L_\alpha\otimes M_\beta$;
+fix an edge and put $K:=K_c^{(ij)}$, $c:=c^{(ij)}$, so that $K=\sum_ac_aA_a$.
+Let $x,y$ be an orthonormal pair and $P:=\ketbra xx+\ketbra yy$, so that
+$A:=\norm{KP}_2^2=\norm{Kx}^2+\norm{Ky}^2$ and $\rank(KP)\le2$.  Because $P$ is
+a self-adjoint idempotent, $\ip K{KP}_{\mathrm{HS}}=A$; expanding $K$ along the
+Kraus family and applying Cauchy--Schwarz on the Kraus index,
+\begin{equation}
+\label{eq:kraus-cauchy-schwarz}
+    A
+    =\sum_a\overline{c_a}\,\ip{A_a}{KP}_{\mathrm{HS}}
+    \le\norm c_2
+      \Bigl(\sum_a\bigl|\ip{A_a}{KP}_{\mathrm{HS}}\bigr|^2\Bigr)^{1/2}
+    =\norm c_2\,
+      \ip{\operatorname{vec}(KP)}{J(\Phi)\operatorname{vec}(KP)}^{1/2}
+    \le\norm c_2\bigl(2\beta_2(\Phi)A\bigr)^{1/2},
+\end{equation}
+the middle equality by \cref{def:beta2} and the last step because
+$\rank(KP)\le2$.  If $A=0$ there is nothing to prove; otherwise one factor of
+$A$ cancels, giving
+\begin{equation}
+\label{eq:kraus-pair-bound}
+    \norm{Kx}^2+\norm{Ky}^2
+    \le
+    2\beta_2(\Phi)\norm c_2^2 .
+\end{equation}
+Neither minimality nor orthogonality of $\{A_a\}$ is used; the projection $Q_-$
+enters only through the number $\beta_2(\Phi)$, and $\Pi K=K$ is replaced by
+membership of $K$ in the Kraus span.  Substituting
+\cref{eq:kraus-pair-bound} into \cref{eq:T-Cauchy},
 \begin{align}
     \norm{\mathcal Tc}^2
     &\le
-    \frac{r-1}{4}
-    \sum_{i<j}
-    \norm{K_c^{(ij)}}_2^2
+    \frac{r-1}{2}\cdot2\beta_2(\Phi)
+    \sum_{i<j}\norm{c^{(ij)}}_2^2
     \notag\\
-    &=(r-1)\norm{c}_2^2,
+    &=(r-1)\beta_2(\Phi)\norm{c}_2^2 .
 \label{eq:T-operator-bound}
 \end{align}
-where the last equality follows from \cref{eq:Kc-norm}.  The constant
-bookkeeping is
-\[
-    \frac{r-1}{2}\cdot\frac12\cdot4=r-1:
-\]
-the three factors are respectively the vertex Cauchy--Schwarz bound
-including the $1/\sqrt2$ in $\eta_{ij}$, the double-skew action bound,
-and the Kraus normalization.  This estimate is attained already when
+For $\Phi=\Lambda_U\otimes\Lambda_V$ this is $(r-1)\norm c_2^2$ by
+\cref{eq:beta2-double-skew}, and the estimate is attained already when
 $r=2$ and $\dim U=\dim V=2$.  Then every vertex has degree one and
 $\mathfrak{so}(2)\otimes\mathfrak{so}(2)$ is one-dimensional; its
 nonzero elements are scalar multiples of a unitary, so every
@@ -780,7 +879,7 @@ Thus
 \[
     \mathcal T\mathcal T^*
     \preceq
-    (r-1)I_{UVQ}.
+    (r-1)\beta_2(\Phi)\,I_{UVQ}.
 \]
 It remains to use the orthogonality of the range of $\mathcal T$ to
 $\delta_e$. Since each tensor product of two skew-symmetric operators
@@ -817,7 +916,7 @@ Hence
     P_{\delta_e^\perp}=I_{UVQ}-\Pi_e.
 \]
 Since \cref{eq:T-operator-bound} says that
-$\norm{\mathcal T}^2\le r-1$, for every vector $x$,
+$\norm{\mathcal T}^2\le(r-1)\beta_2(\Phi)$, for every vector $x$,
 \[
 \begin{aligned}
     \ip{x}{\mathcal T\mathcal T^*x}
@@ -825,58 +924,102 @@ $\norm{\mathcal T}^2\le r-1$, for every vector $x$,
     \ip{P_{\delta_e^\perp}x}
        {\mathcal T\mathcal T^*P_{\delta_e^\perp}x}\\
     &\le
-    (r-1)\norm{P_{\delta_e^\perp}x}^2.
+    (r-1)\beta_2(\Phi)\norm{P_{\delta_e^\perp}x}^2.
 \end{aligned}
 \]
 Equivalently,
 \[
     \mathcal T\mathcal T^*
     \preceq
-    (r-1)(I_{UVQ}-\Pi_e).
+    (r-1)\beta_2(\Phi)(I_{UVQ}-\Pi_e).
 \]
-This proves \cref{eq:Phi-Pminus-goal}, and therefore
-$H_r^{(0)}\succeq0$ by \cref{eq:H-decomposition}.
+This is \cref{eq:amplification-A}, and \cref{eq:beta2-double-skew} specializes
+it to \cref{eq:Phi-Pminus-goal}, whence $H_r^{(0)}\succeq0$ by
+\cref{eq:H-decomposition}.
+\end{proof}
+
+\begin{proof}[Proof of \cref{thm:amplification}]
+The argument just given uses $\Phi$ only through three facts: that it is a Kraus
+sum, so that $\Phi(P_+)\succeq0$ and \cref{eq:Phi-Pminus-TTstar} holds; that its
+Kraus operators are transpose-symmetric, which is what makes
+\cref{eq:T-orthogonal} vanish; and \cref{eq:kraus-cauchy-schwarz}, which uses
+only $\beta_2(\Phi)$ and membership of each $K_c^{(ij)}$ in the Kraus span.  It
+therefore proves \cref{eq:amplification-A} verbatim for any such $\Phi$.
+
+For \cref{eq:amplification-B}, $P_+-P_-=2\rho_0^{T_{UV}}$ by
+\cref{eq:rho-partial-transpose} and $\Phi(P_+)\succeq0$, so
+$2\Phi(\rho_0^{T_{UV}})\succeq-\Phi(P_-)$; \cref{eq:amplification-A} bounds the
+right-hand side.  Finally \cref{eq:H_r} together with
+\cref{eq:map-identity} identifies $\Psi_{r,\Phi}$ with the map whose value at
+$\rho_0$ is the left-hand side of \cref{eq:amplification-B}, and
+\cref{eq:C-decomposition} supplies, for each $C$ of rank at most $r$, the
+orthonormal frame and the test vector at which to evaluate it; this is the
+$r$-positivity assertion.
 \end{proof}
 
 \begin{remark}[Transpose parity, and where the trace term comes from]
 \label[remark]{rem:parity}
-The only structural input to \cref{eq:T-orthogonal} is that every $K$ in the
-span of $\{L\otimes M\}$ satisfies $K^T=K$, and that holds because a tensor
-product of an \emph{even} number of skew-symmetric factors is symmetric.  Had
-the number of factors been odd, one would have $K^T=-K$, the two terms of
-\cref{eq:T-orthogonal} would add instead of cancelling, and $\ran\mathcal T$
-would not lie in $\delta_e^\perp$.  The argument would then yield only
-$\mathcal T\mathcal T^*\preceq(r-1)I$ in place of
-$(r-1)(I-\Pi_e)$, giving $rI+\rho_0-\iota_{UQ}(\rho^0_{UQ})
--\iota_{VQ}(\rho^0_{VQ})\succeq0$ and hence the coefficient $1$ rather than
-the sharp $1/r$ in front of $\abs{\Tr C}^2$.
+Since $\operatorname{vec}(K^T)=F\operatorname{vec}(K)$ for the flip $F$ on the
+two vectorization slots, transposition is an involution of the Kraus space and
+grades it by the flip eigenvalue: $\wedge^2\!H$ has degree $1$ and
+$\operatorname{Sym}^2\!H$ degree $0$.  Kraus spaces multiply under $\otimes$ and
+the degree is additive, so the grading is by $\Z/2$.  In this language:
+
+\begin{quote}
+The hypothesis of \cref{eq:T-orthogonal} is that the Kraus space has degree
+$0$; each $\mathfrak{so}$ factor has degree $1$; hence exactly the products of
+an \emph{even} number of skew factors qualify.
+\end{quote}
+
+Concretely, every $K$ in the span of $\{L\otimes M\}$ satisfies $K^T=K$, which
+is what makes the two terms of \cref{eq:T-orthogonal} cancel.  In odd degree
+$K^T=-K$, the two terms add, and $\ran\mathcal T$ does not lie in
+$\delta_e^\perp$; the argument then yields only
+$\mathcal T\mathcal T^*\preceq(r-1)I$ in place of $(r-1)(I-\Pi_e)$, giving
+$rI+\rho_0-\iota_{UQ}(\rho^0_{UQ})-\iota_{VQ}(\rho^0_{VQ})\succeq0$ and hence
+the coefficient $1$ rather than the sharp $1/r$ in front of $\abs{\Tr C}^2$.
 
 So the $\frac1r\abs{\Tr C}^2$ term of \cref{thm:rank_r} is exactly the
-contribution of the single protected direction $\delta_e$, and transpose
-parity is what protects it.  This also indicates which generalizations can be
-expected to keep the sharp trace coefficient: those built from an even number
-of skew factors.
+contribution of the single protected direction $\delta_e$, and the grading is
+what protects it: the generalizations that keep the sharp trace coefficient are
+the even-degree ones.
 \end{remark}
 
 \begin{remark}[The marginal inequality as an $r$-positivity statement]
 \label[remark]{rem:operator-ineq-as-map}
-Write $\Delta(X):=\Tr(X)I$, let $\tau$ denote transposition, and recall
-$\mathcal R_\alpha(X)=\Tr(X)I+\alpha X$ from \cref{cor:tensor-square}.  On a
-product operator $X_U\otimes X_V$ one has
-$\tau(X_U\otimes X_V)=X_U^T\otimes X_V^T$ and therefore
-$\Lambda_U(X_U^T)=t_UI-X_U$ with $t_U:=\Tr X_U$, so
-$(\Lambda_U\otimes\Lambda_V)\circ\tau
-=\mathcal R^U_{-1}\otimes\mathcal R^V_{-1}$.  Adding
-$(r-1)\bigl(t_Ut_V I-\frac1rX_U\otimes X_V\bigr)$ gives
+Write $\Delta:=\eta\circ\varepsilon$ for discard-then-reprepare, where
+$\varepsilon=\Tr$ and $\eta(\lambda)=\lambda I$, so $\Delta(X)=\Tr(X)I$; let
+$\tau$ denote transposition; and recall
+$\mathcal R_\alpha(X)=\Tr(X)I+\alpha X$ from \cref{cor:tensor-square}.  Put
 \[
-    rt_Ut_V\,I
-    -t_U\,I\otimes X_V
-    -t_V\,X_U\otimes I
-    +\tfrac1r\,X_U\otimes X_V
-    =
-    r\left(t_UI-\tfrac1rX_U\right)\otimes\left(t_VI-\tfrac1rX_V\right),
+    S:=\mathcal R_{-1}=\Delta-\id,
+    \qquad
+    t:=\frac{r-1}{r},
+    \qquad\text{so that}\qquad
+    \mathcal R_{-1/r}=S+t\,\id .
 \]
-and since both sides are linear and product operators span, for every $r\ge1$
+
+Two facts suffice.  First, $\Delta$ is monoidal: discarding a composite system
+and repreparing it is discarding and repreparing each factor, so
+$\Delta_{U\otimes V}=\Delta_U\otimes\Delta_V$; and $\tau$ is monoidal too.
+Since $\Lambda(Y)=\Tr(Y)I-Y^T$ gives $\Lambda\circ\tau=\Delta-\id=S$ on a single
+factor,
+\begin{equation}
+\label{eq:lambda-tau-monoidal}
+    (\Lambda_U\otimes\Lambda_V)\circ\tau
+    =(\Lambda_U\circ\tau_U)\otimes(\Lambda_V\circ\tau_V)
+    =S_U\otimes S_V .
+\end{equation}
+Second, $\{\id,\Delta\}$ spans a two-dimensional commutative algebra, and the
+rest is a binomial expansion in it: using $\Delta=S+\id$ on each factor,
+\begin{align*}
+    S\otimes S+(r-1)\,\Delta_U\otimes\Delta_V-t\,\id
+    &=S\otimes S+(r-1)(S+\id)\otimes(S+\id)-t\,\id\\
+    &=r\,S\otimes S+(r-1)(S\otimes\id+\id\otimes S)+\tfrac{(r-1)^2}{r}\,\id\\
+    &=r\bigl[S\otimes S+t(S\otimes\id+\id\otimes S)+t^2\,\id\bigr],
+\end{align*}
+by $rt=r-1$ and $rt^2=(r-1)^2/r$.  The bracket is
+$(S+t\,\id)^{\otimes2}$, so for every $r\ge1$
 \begin{equation}
 \label{eq:map-identity}
     (\Lambda_U\otimes\Lambda_V)\circ\tau
@@ -899,11 +1042,36 @@ as
     \bigr](\rho_0).
 \]
 Thus \cref{prop:operator_ineq} states precisely that
-$\mathcal R_{-1/r}\otimes\mathcal R_{-1/r}$ is $r$-positive; conjugating
-$\rho_0$ by a filter on the ancilla passes from orthonormal frames
-$e_1,\ldots,e_r$ to arbitrary vectors of Schmidt rank at most $r$.  Equivalently,
-it is the sufficiency half of \cref{cor:asymmetric-block-positive} at
-$a=b=1/r$, which is thus available already here, before \cref{thm:rank_r}.
+$\mathcal R_{-1/r}\otimes\mathcal R_{-1/r}$ is $r$-positive.  The passage from
+orthonormal frames $e_1,\ldots,e_r$ to arbitrary vectors of Schmidt rank at most
+$r$ is the range factorization \cref{eq:C-decomposition}, which produces the
+frame $\{e_i\}$ and the test vector $\delta_d$ in one step; no filtering or
+limiting argument is involved.  Equivalently, this is the sufficiency half of
+\cref{cor:asymmetric-block-positive} at $a=b=1/r$, available here, before
+\cref{thm:rank_r}.
+\end{remark}
+
+\begin{remark}[Why the correction term has this shape]
+\label[remark]{rem:covariance}
+$\cL(H)=\C I\oplus\{\text{traceless}\}$ is a decomposition into inequivalent
+$\mathrm U(d)$-representations, so the commutant --- the $\mathrm
+U(d)$-covariant superoperators on $\cL(H)$ --- is exactly
+$\operatorname{span}\{\id,\Delta\}$, of dimension two, with $\mathcal R_{-a}$
+acting as $d-a$ on $\C I$ and as $-a$ on the traceless part.  A covariant
+correction to $\Phi\circ\tau$ therefore lies in a one-parameter pencil once its
+scale is fixed, and $1/r$ is the single free coefficient; \cref{rem:parity}
+identifies what pins it, namely the protected direction $\delta_e$.  The
+correction term is not a choice.
+
+The collapse in \cref{eq:map-identity} is specific to two factors.  For $n$
+factors monoidality gives
+$\Delta=\sum_{T\subseteq[n]}\bigotimes_{i\in T}S_i$, and matching against
+$c\bigotimes(S+t\,\id)$ forces $r-1=r\,t^{\,n-\abs T}$ for every $T$ with
+$\abs T<n$.  At $\abs T=n-1$ this reads $r-1=rt$, which holds; for $n=2$ the
+$-t\,\id$ term repairs $\abs T=0$; but for $n\ge3$ the equation at
+$\abs T=n-2$ is $r-1=(r-1)^2/r$, i.e.\ $r=1$.  So the even-partite
+generalizations of \cref{rem:parity} are genuine inequalities and cannot be
+recast as a map identity of the form $\bigotimes\mathcal R_{-a}$.
 \end{remark}
 
 \section{Proof of the Rank-\texorpdfstring{$r$}{r}
@@ -1115,41 +1283,71 @@ $1-\frac1r\ge\frac12$ while $\norm{C}_2^2>0$.  Hence the inequality of
 exact-rank assertion of \cref{rem:optimality}.
 \end{proof}
 
-\begin{remark}[Dependence on the constant of \cref{lem:double-skew}]
+\begin{remark}[The bound at general $\beta_2$]
 \label[remark]{rem:constant-dependence}
-Every constant in \cref{sec:double-skew,sec:proof} is affine in the constant
-of \cref{eq:double-skew-action}, so what the argument proves is really a
-one-parameter family.  Suppose \cref{eq:double-skew-action} holds with
-$\frac12$ replaced by some $c$, that is,
-$\norm{Kx}^2+\norm{Ky}^2\le c\norm{K}_2^2$.  Tracking $c$ through
-\cref{eq:T-Cauchy,eq:T-operator-bound} turns \cref{eq:Phi-Pminus-goal} into
-$\Phi(P_-)\preceq2c(r-1)(I-\Pi_e)$, whence
-\[
-    H_r^{(0)}+(2c-1)(r-1)(I-\Pi_e)\succeq0,
-\]
-and contracting against $\delta_d$ as in the proof above gives, for nonzero
-$C$ with $r=\rank C$,
+Every constant in \cref{sec:double-skew,sec:proof} is affine in $\beta_2(\Phi)$,
+so contracting \cref{eq:amplification-B} against $\delta_d$ exactly as above
+gives, for any $\Phi$ admissible in \cref{thm:amplification} and any nonzero $C$
+with $r=\rank C$,
 \begin{equation}
 \label{eq:main-bound-parametrized}
     \norm{\Tr_U C}_2^2+\norm{\Tr_V C}_2^2
     \le
-    \bigl[r+(2c-1)(r-1)\bigr]\norm{C}_2^2
-    +\bigl[1-(2c-1)(r-1)\bigr]\frac1r\abs{\Tr C}^2 .
+    \bigl[r+(\beta_2-1)(r-1)\bigr]\norm{C}_2^2
+    +\bigl[1-(\beta_2-1)(r-1)\bigr]\frac1r\abs{\Tr C}^2 ,
+    \qquad \beta_2:=\beta_2(\Phi).
 \end{equation}
-At $c=\frac12$ this is \cref{eq:main-bound-exact-rank}.
+At $\beta_2=1$ this is \cref{eq:main-bound-exact-rank}.  (In terms of a
+two-vector action bound $\norm{Kx}^2+\norm{Ky}^2\le c\norm K_2^2$ on a subspace
+of symmetric operators, $\beta_2=2c$; reading the family in $\beta_2$ rather
+than in $c$ removes the dependence on how the subspace is normalized, since
+$\beta_2$ is an invariant of the map.)
 
-The value $\frac12$ cannot be improved for
-$\mathfrak{so}(U)\otimes\mathfrak{so}(V)$: as noted after
-\cref{eq:T-operator-bound} it is already attained at $\dim U=\dim V=2$, where
-$\mathfrak{so}(2)\otimes\mathfrak{so}(2)$ is one-dimensional and every
-orthonormal pair saturates \cref{eq:double-skew-action}.  So
-\cref{eq:main-bound-parametrized} is never stronger than \cref{thm:rank_r} on
-that space, and its interest is elsewhere: the reduction of
-\cref{sec:double-skew,sec:proof} never uses any property of the double-skew
-space beyond \cref{eq:double-skew-action}, so a two-vector action bound with
-constant $c$ on \emph{any} subspace of symmetric operators transfers to a
-rank-$r$ partial-trace inequality with the explicit constants displayed
-above.
+For $\Phi=\Lambda_U\otimes\Lambda_V$ the value $\beta_2=1$ cannot be improved:
+as noted after \cref{eq:T-operator-bound} it is already attained at
+$\dim U=\dim V=2$, where $\mathfrak{so}(2)\otimes\mathfrak{so}(2)$ is
+one-dimensional and every orthonormal pair saturates
+\cref{eq:double-skew-action}.  The extremizer of \cref{rem:optimality} forces
+$\beta_2\ge1$ there unconditionally, so \cref{eq:main-bound-parametrized} is
+never stronger than \cref{thm:rank_r} on that space.  Its interest is that
+$\beta_2$ is the \emph{only} input: any completely positive map with
+transpose-symmetric Kraus operators yields a rank-$r$ partial-trace inequality
+with the constants displayed, and by the equivalence in
+\cref{rem:fgp-equivalence} at $p=2$ the constant $\beta_2$ is optimal for each
+such map rather than merely sufficient.
+\end{remark}
+
+\begin{remark}[Two limits of the method]
+\label[remark]{rem:scope}
+\Cref{thm:amplification} does not extend in either of the two directions one
+would try first.
+
+\emph{Schmidt rank $p$.}  \Cref{eq:kraus-cauchy-schwarz} generalizes at once: a
+rank-$p$ compression $P$ and the $S(p)$-norm of $J(\Phi)$ give
+$\sum_{i\le p}\norm{Kx_i}^2\le p\,\beta_p(\Phi)\norm c_2^2$ for any orthonormal
+$p$-tuple.  The reduction does not.  The pair structure of
+\cref{sec:proof} comes from the partial transpose and not from the Schmidt
+rank: $P_\pm$ are the $\pm1$ eigenspaces of the flip that
+$\rho_0^{T_{UV}}$ decomposes into, and $\eta_{ij}$, $\zeta_{ij}$, and the edge
+set of $K_r$ are pair-indexed downstream of that.  A $p$-fold analogue would
+have to decompose the symmetric group $S_p$, which is a different problem.  We
+record it as open.
+
+\emph{Higher copies.}  By \cref{rem:parity}, $\Phi=\Lambda_{U_1}\otimes\cdots
+\otimes\Lambda_{U_{2m}}$ has degree $0$ and so satisfies the hypothesis of
+\cref{thm:amplification} for every $m$; expanding $\Phi\circ\tau$ then gives,
+for $\rank C\le r$,
+\[
+    \sum_{S\subseteq[2m]}(-1)^{\abs S}\norm{\Tr_SC}_2^2
+    +(r-1)\beta_2(\Phi)\left(\norm C_2^2-\tfrac1r\abs{\Tr C}^2\right)
+    \ge0 .
+\]
+At $m=1$ this is \cref{eq:main-bound-exact-rank}.  What is missing is the
+constant: $\beta_2(\Lambda^{\otimes2m})$ for $m\ge2$ is a Ky-Fan-$2$
+concentration constant for the $2m$-fold antisymmetric projection, and we do not
+know its value.  So the family \emph{reduces} to one rank-two Choi $S(2)$-norm
+per $m$; it does not follow from \cref{lem:double-skew}.  By
+\cref{rem:covariance} it also cannot be recast as a map identity.
 \end{remark}
 
 \section{Applications and Corollaries}
@@ -1728,8 +1926,16 @@ is $r$-positive if and only if \cref{eq:asymmetric-threshold} holds.
 \end{corollary}
 
 \begin{proof}
-For $r\le d$, the assertion follows immediately from
-\cref{thm:exact-asymmetric-score}.  If $r>d$ and
+The corner $a=b=1/r$ of the sufficiency half is
+\cref{rem:operator-ineq-as-map}, which derives it from
+\cref{prop:operator_ineq} directly; it does not depend on this section.  For the
+general case with $r\le d$, the assertion follows from
+\cref{thm:exact-asymmetric-score}.  (That route passes through
+\cref{thm:rank_r}, hence through \cref{prop:operator_ineq}; the remark shows the
+$a=b=1/r$ corner without the detour.  The other corners do need an argument
+rather than a citation: $\mathcal R_{-a}=\mathcal R_{-1/r}+(\frac1r-a)\id$, and
+the cross terms $\mathcal R_{-1/r}\otimes\id$ are not separately positive, so
+monotonicity in $a$ and $b$ is not immediate.)  If $r>d$ and
 $a,b\le1/d$, both factors
 $I-a\ketbra{\Omega}{\Omega}$ and
 $I-b\ketbra{\Omega}{\Omega}$ are positive semidefinite, so their
@@ -2152,8 +2358,11 @@ The formal counterpart of \cref{thm:rank_r} is
 \texttt{rank\_r\_partial\_trace}, and it has \emph{no}
 hypotheses.  The Autonne--Takagi factorization is itself proved, as
 \texttt{Matrix.exists\_takagi}; \texttt{Takagi.lean} derives
-\cref{lem:double-skew} from it and \texttt{Results.lean} composes the
-chain, so the development is proved end to end.  Beyond
+\cref{lem:double-skew} from it, \texttt{Equivalence.lean} converts that into
+$\beta_2(\Lambda_U\otimes\Lambda_V)=1$, and \texttt{Results.lean} composes the
+chain, so the development is proved end to end.  The single quantitative input
+is that one number: the development's only route from
+\cref{sec:double-skew} to \cref{sec:proof} is \cref{def:beta2}.  Beyond
 \cref{eq:main-bound} itself the development covers the strict form of
 \cref{eq:rank-monotonicity}, hence the assertion that for nonzero $C$ equality
 in \cref{eq:main-bound} forces $\rank C=r$; all of \cref{rem:optimality} --- the
@@ -2198,7 +2407,21 @@ weights in step 4 of \cref{lem:double-skew} & \texttt{exists\_pair\_sum\_weighte
 \cref{rem:fgp-equivalence}, converse & \texttt{FGPBound\_of\_doubleSkewBoundQm}\\
 \cite[Thm.~2.4]{fu2026solution2copydistillabilitywerner} & \texttt{fgpBound\_holds}\\
 zero extension in \cref{rem:fgp-equivalence} & \texttt{FGPBound\_of\_card\_le}\\
-\cref{prop:operator_ineq} & \texttt{operatorIneq\_of\_doubleSkew}\\
+\cref{def:beta2}, $J(\Phi)$ & \texttt{choiOf}\\
+\cref{def:beta2}, $\beta_2$ & \texttt{ChoiTwoBound}\\
+\cref{eq:beta2-double-skew} & \texttt{choiOf\_skewKraus},\\
+ & \texttt{choiTwoBound\_skewKraus}\\
+\cref{eq:kraus-cauchy-schwarz}, \cref{eq:kraus-pair-bound}
+  & \texttt{norm\_sq\_pair\_le\_of\_choiTwoBound}\\
+\cref{eq:amplification-A} & \texttt{qform\_krausQ\_Pneg\_le}\\
+\cref{eq:amplification-B} & \texttt{qform\_krausQ\_ptransposeUV\_ge}\\
+\cref{eq:map-identity} & \texttt{Psi\_eq\_tensor\_square}\\
+$\Delta_{U\otimes V}=\Delta_U\otimes\Delta_V$ & \texttt{RU\_zero\_RV\_zero}\\
+\cref{eq:lambda-tau-monoidal} & \texttt{Lam4\_transpose}\\
+\cref{prop:operator_ineq} & \texttt{operatorIneq\_of\_choiTwoBound},\\
+ & \texttt{operatorIneq\_of\_FGP}\\
+\cref{rem:operator-ineq-as-map}, $r$-block positivity
+  & \texttt{isBlockPositive\_psiChoi}\\
 \cref{eq:rho-partial-transpose} & \texttt{Ppos\_sub\_Pneg}\\
 \cref{eq:Phi-expansion} & \texttt{Phi4\_apply}\\
 \cref{eq:Phi-rhoT} & \texttt{Phi4\_ptransposeUV\_rankOne}\\
@@ -2259,12 +2482,27 @@ Of \cref{sec:applications}, only \cref{lem:one-sided-partial-trace} is covered,
 in the elementary form proved there rather than through trace-norm duality; the
 Schatten-$1$ norm appears nowhere in the development.  The remaining results of
 \cref{sec:applications}, and those of \cref{app:gram} and \cref{app:generic},
-are not covered.  Nor are \cref{eq:map-identity} or
-\cref{eq:main-bound-parametrized}: the former is an identity between maps, which
-the development never forms, and the latter is what the same argument yields
-from a modified hypothesis that the development does not carry.
-\Cref{rem:parity} is an observation about the mechanism of the formalized
-proof, not a further claim.
+are not covered.
+
+\Cref{thm:amplification} \emph{is} covered, in both operator forms and for an
+arbitrary transpose-symmetric Kraus family: \texttt{Choi.lean} carries
+\cref{eq:kraus-cauchy-schwarz} with $(\Phi,\beta_2)$ abstract and
+\texttt{Lifting.lean} carries \cref{eq:amplification-A,eq:amplification-B}, so
+$\Phi=\Lambda_U\otimes\Lambda_V$ enters only through
+\cref{eq:beta2-double-skew}.  Consequently
+\cref{eq:main-bound-parametrized} is covered at every $\beta_2$, not only at
+$\beta_2=1$.  \Cref{eq:map-identity} is covered as
+\texttt{Psi\_eq\_tensor\_square}, with the two structural inputs of
+\cref{rem:operator-ineq-as-map} --- monoidality of $\Delta$ and
+\cref{eq:lambda-tau-monoidal} --- as separate lemmas, and the
+$r$-block-positivity reading of \cref{rem:operator-ineq-as-map} as
+\texttt{isBlockPositive\_psiChoi}.  The $r$-positivity statement of
+\cref{thm:amplification} is formalized in the unrolled form
+$\rank C\le r$ rather than through a definition of Schmidt rank, exactly as
+\texttt{FGPBound} is.  \Cref{rem:parity} and \cref{rem:covariance} are
+observations about the mechanism of the formalized proof, not further claims;
+the $\Z/2$-grading and the two-dimensionality of the commutant are not
+themselves formalized.
 
 % This appendix is independent of the main line of argument: nothing in
 % Sections 2-5 depends on it.  It records the algebraic defect structure

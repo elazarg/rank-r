@@ -148,9 +148,13 @@ revision.
 | `Phi` | the `Φ₄` kernel, `eq:Phi-expansion`, `eq:Phi-rhoT` |
 | `Synth` | the synthesis map, `eq:T-by-vertices`, the vertex bound |
 | `Frame` | adjoint move, `eq:T-orthogonal` |
-| `Edge` | the edgewise double-skew bound — the sole consumer of `DoubleSkewBound` |
-| `Assemble`, `Bessel`, `Restrict`, `Synthesis` | the Bessel-duality chain |
-| `Theorem` | Proposition 2.2 and Theorem 1.1 given the double-skew bound |
+| `Edge` | orthonormality of the conjugated frame |
+| `Choi` | `J(Φ) = ∑ₐ\|vec Aₐ⟩⟨vec Aₐ\|`, the constant `β₂`, and **Lifting I** for an arbitrary Kraus family |
+| `ChoiSkew` | **`J(Λ_U ⊗ Λ_V) = 16 Qm`**, hence `β₂ = 4` in the `Phi4` scaling |
+| `MapId` | `Δ` monoidal, `(Λ_U⊗Λ_V)∘τ = S_U⊗S_V`, and **the map identity** `Ψ_r = r·R_{−1/r}⊗R_{−1/r}` |
+| `Bessel`, `Restrict` | Bessel duality, and its sharpening on `δ_e^⊥` |
+| `Lifting` | **Lifting II** for an arbitrary transpose-symmetric Kraus family, in both operator forms |
+| `Theorem` | Proposition 2.2 and Theorem 1.1 given the rank-two Choi bound |
 | `Antisym`, `FGP`, `Extend` | the antisymmetrizer, and Theorem 1.1 from Fu–Gao–Park as published (retained, no longer on the critical path) |
 | `Optimal` | the extremizer, and optimality of the coefficients `r`, `1/r` |
 | `OneSided` | HS submultiplicativity, and `lem:one-sided-partial-trace` |
@@ -159,16 +163,27 @@ revision.
 | `Weights` | Ky Fan at `k = 2`, in weight form |
 | `Takagi` | the Autonne–Takagi interface, Lemma 2.3, and the truncation chain |
 | `Autonne` | **the Autonne–Takagi factorization itself** |
-| `Results` | joins the two halves: Theorem 1.1 with no hypotheses |
 | `Equivalence` | the converse, and **Fu–Gao–Park's Theorem 2.4** |
+| `Results` | joins the two halves: Theorem 1.1 with no hypotheses |
+| `BlockPos` | Theorem 1.1 as the `r`-block positivity of `J(Ψ_r)` |
+
+| `Axioms` | the axiom surface, checked by the build |
 
 The import graph has two independent halves that meet only in `Results`: the
-*reduction* (`Conventions` … `Theorem`), which is parametrized by the
-double-skew bound and knows nothing about where it comes from, and the *bound*
-(`Antisym`, `Flip`, `SymOuter`, `Weights`, `Takagi`, `Autonne`), which knows
-nothing about partial traces. `FGP` and `Extend` hang off the reduction and are
-no longer on any critical path.
-| `Axioms` | the axiom surface, checked by the build |
+*reduction* (`Conventions` … `Theorem`), which is parametrized by the pair
+`(Φ, β₂)` and knows nothing about where the constant comes from, and the *bound*
+(`Antisym`, `Flip`, `SymOuter`, `Weights`, `Takagi`, `Autonne`, `Equivalence`),
+which knows nothing about partial traces. `Extend` hangs off the reduction and
+is no longer on any critical path.
+
+The seam between them is one number. `Choi.lean` and `Lifting.lean` are stated
+for an arbitrary completely positive `Φ` with transpose-symmetric Kraus
+operators, and consume it only through
+
+    ChoiTwoBound (choiOf A) β  —  ⟨z, J(Φ) z⟩ ≤ 2β‖z‖² for z of Schmidt rank ≤ 2,
+
+so `Λ_U ⊗ Λ_V` enters exactly once, in `ChoiSkew.lean`, as
+`J = 16 Qm` and hence `β = 4`.
 
 ## A note on provenance
 
