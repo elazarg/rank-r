@@ -174,7 +174,8 @@ The sum runs over all of `Fin r`; a vertex outside `I` leaves `I` unchanged, and
 a set of cardinality `k` labels no `(k-1)`-face, so those terms vanish. -/
 noncomputable def etaMode (e : Fin r → EuclideanSpace ℂ W) (I : Face r k) :
     EuclideanSpace ℂ (W × Face r (k - 1)) :=
-  ((Real.sqrt k : ℝ) : ℂ)⁻¹ • ∑ v : Fin r, esign I.val v • placeAt (ebar e v) (I.val.erase v)
+  ((Real.sqrt k : ℝ) : ℂ)⁻¹ •
+    ∑ v : Fin r, esign I.val v • placeAt (ebar e v) (I.val.erase v)
 
 /-- A term of one incidence mode pairs with a term of another only when the two
 extracted vertices agree and lie in the first face; the two faces then agree
@@ -213,7 +214,8 @@ theorem inner_placeAt_erase {e : Fin r → EuclideanSpace ℂ W} (he : Orthonorm
 
 /-- The reciprocal of `√n`, squared, is the reciprocal of `n`. -/
 theorem inv_sqrt_mul_inv_sqrt (n : ℕ) :
-    conj ((Real.sqrt n : ℝ) : ℂ)⁻¹ * ((Real.sqrt n : ℝ) : ℂ)⁻¹ = ((n : ℝ) : ℂ)⁻¹ := by
+    conj ((Real.sqrt n : ℝ) : ℂ)⁻¹ * ((Real.sqrt n : ℝ) : ℂ)⁻¹
+      = ((n : ℝ) : ℂ)⁻¹ := by
   have h1 : conj ((Real.sqrt n : ℝ) : ℂ)⁻¹ = ((Real.sqrt n : ℝ) : ℂ)⁻¹ := by
     rw [map_inv₀, Complex.conj_ofReal]
   rw [h1, ← Complex.ofReal_inv, ← Complex.ofReal_mul, ← Complex.ofReal_inv, ← mul_inv,
@@ -229,7 +231,8 @@ the same number `N` of contributing indices.  The family itself is taken as a
 parameter `mode`, so that a caller supplies it definitionally and the
 normalization never has to be matched again. -/
 theorem inner_of_pairing {S E : Type*} [DecidableEq S] [NormedAddCommGroup E]
-    [InnerProductSpace ℂ E] {N : ℕ} (mode : S → E) (σ : S → Fin r → ℂ) (w : S → Fin r → E)
+    [InnerProductSpace ℂ E] {N : ℕ} (mode : S → E) (σ : S → Fin r → ℂ)
+    (w : S → Fin r → E)
     (hmode : ∀ s, mode s = ((Real.sqrt N : ℝ) : ℂ)⁻¹ • ∑ v : Fin r, σ s v • w s v)
     (hσ : ∀ s v, conj (σ s v) * σ s v = 1)
     (P : S → Fin r → Prop) [∀ s v, Decidable (P s v)]
@@ -286,7 +289,8 @@ theorem inner_etaMode {e : Fin r → EuclideanSpace ℂ W} (he : Orthonormal ℂ
 
 /-- **The incidence modes form an orthonormal family.** -/
 theorem orthonormal_etaMode {e : Fin r → EuclideanSpace ℂ W} (he : Orthonormal ℂ e)
-    (hk : 1 ≤ k) : Orthonormal ℂ (etaMode e : Face r k → EuclideanSpace ℂ (W × Face r (k - 1))) :=
+    (hk : 1 ≤ k) :
+    Orthonormal ℂ (etaMode e : Face r k → EuclideanSpace ℂ (W × Face r (k - 1))) :=
   orthonormal_iff_ite.mpr fun I I' => inner_etaMode he hk I I'
 
 end Eta
@@ -365,7 +369,8 @@ theorem inner_deltaMode {e : Fin r → EuclideanSpace ℂ W} (he : Orthonormal �
 `(k-2)`-face. -/
 theorem orthonormal_deltaMode {e : Fin r → EuclideanSpace ℂ W} (he : Orthonormal ℂ e)
     (hk : 2 ≤ k) (hkr : k ≤ r) :
-    Orthonormal ℂ (deltaMode (k := k) e : Face r (k - 2) → EuclideanSpace ℂ (W × Face r (k - 1))) :=
+    Orthonormal ℂ
+      (deltaMode (k := k) e : Face r (k - 2) → EuclideanSpace ℂ (W × Face r (k - 1))) :=
   orthonormal_iff_ite.mpr fun L L' => inner_deltaMode he hk hkr L L'
 
 end Delta

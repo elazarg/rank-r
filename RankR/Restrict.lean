@@ -66,7 +66,8 @@ correction is the full Bessel sum of that family. -/
 
 section OrthoFamily
 
-variable {ι κ E : Type*} [Fintype ι] [Fintype κ] [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+variable {ι κ E : Type*} [Fintype ι] [Fintype κ] [NormedAddCommGroup E]
+  [InnerProductSpace ℂ E]
 
 /-- The Pythagorean identity for the component of `y` off the span of an
 orthonormal family. -/
@@ -107,9 +108,11 @@ theorem frame_le_sub_proj_family {w : ι → E} {z : κ → E} (hz : Orthonormal
   refine le_trans (le_of_eq ?_) h
   refine Finset.sum_congr rfl fun a _ => congrArg Complex.normSq ?_
   rw [inner_sub_right, inner_sum]
-  have hzero : ∀ l : κ, (inner ℂ (w a) ((inner ℂ (z l) y : ℂ) • z l) : ℂ) = 0 := fun l => by
-    rw [inner_smul_right,
-      show (inner ℂ (w a) (z l) : ℂ) = 0 by rw [← inner_conj_symm, horth l a, map_zero], mul_zero]
+  have hzero : ∀ l : κ, (inner ℂ (w a) ((inner ℂ (z l) y : ℂ) • z l) : ℂ) = 0 :=
+    fun l => by
+    have hwz : (inner ℂ (w a) (z l) : ℂ) = 0 := by
+      rw [← inner_conj_symm, horth l a, map_zero]
+    rw [inner_smul_right, hwz, mul_zero]
   rw [Finset.sum_congr rfl fun l _ => hzero l, Finset.sum_const_zero, sub_zero]
 
 end OrthoFamily

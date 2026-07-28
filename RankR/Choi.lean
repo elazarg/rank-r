@@ -85,7 +85,8 @@ theorem hsInner_smul_left (c : ℂ) (A B : Matrix m n ℂ) :
     RCLike.star_def, smul_eq_mul]
 
 /-- `hsInner` is additive in its first argument, over an arbitrary finite index. -/
-theorem hsInner_sum_left {ι : Type*} [Fintype ι] (A : ι → Matrix m n ℂ) (B : Matrix m n ℂ) :
+theorem hsInner_sum_left {ι : Type*} [Fintype ι] (A : ι → Matrix m n ℂ)
+    (B : Matrix m n ℂ) :
     hsInner (∑ a, A a) B = ∑ a, hsInner (A a) B := by
   simp only [hsInner, Matrix.conjTranspose_sum]
   rw [Matrix.sum_mul, Matrix.trace_sum]
@@ -380,7 +381,8 @@ Math. Z. 184:101--108 (1983), Prop. 1.1. -/
 theorem norm_sq_le_of_choiKBound {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β) {k : ℕ}
     (hJ : ChoiKBound (choiOf A) k β) (c : ι → ℂ)
     {x : Fin k → EuclideanSpace ℂ W} (hx : Orthonormal ℂ x) :
-    ∑ i, ‖mulVecE (∑ a, c a • A a) (x i)‖ ^ 2 ≤ k * β * ∑ a, Complex.normSq (c a) := by
+    ∑ i, ‖mulVecE (∑ a, c a • A a) (x i)‖ ^ 2
+      ≤ k * β * ∑ a, Complex.normSq (c a) := by
   set K : Matrix W W ℂ := ∑ a, c a • A a with hK
   set M : Matrix W W ℂ := K * projK x with hM
   set N : ℝ := hsNormSq M with hN

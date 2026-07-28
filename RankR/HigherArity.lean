@@ -106,7 +106,8 @@ def blockAt (y : EuclideanSpace ℂ (W × Face r m)) (J : Face r m) : EuclideanS
 `J`. -/
 theorem blockAt_sum_placeAt {M : Type*} (s : Finset M) (u : M → EuclideanSpace ℂ W)
     (t : M → Finset (Fin r)) (J : Face r m) :
-    blockAt (∑ x ∈ s, placeAt (u x) (t x)) J = ∑ x ∈ s.filter (fun x => J.val = t x), u x := by
+    blockAt (∑ x ∈ s, placeAt (u x) (t x)) J
+      = ∑ x ∈ s.filter (fun x => J.val = t x), u x := by
   ext p
   rw [blockAt_apply, sum_apply_euclidean, sum_apply_euclidean, Finset.sum_filter]
   exact Finset.sum_congr rfl fun x _ => by rw [placeAt_apply]
@@ -116,7 +117,8 @@ variable [Fintype W]
 /-- The squared norm is the total squared block norm. -/
 theorem norm_sq_eq_sum_blockAt (y : EuclideanSpace ℂ (W × Face r m)) :
     ‖y‖ ^ 2 = ∑ J : Face r m, ‖blockAt y J‖ ^ 2 := by
-  have h : ∀ J : Face r m, ‖blockAt y J‖ ^ 2 = ∑ p : W, Complex.normSq (y (p, J)) := fun J => by
+  have h : ∀ J : Face r m, ‖blockAt y J‖ ^ 2 = ∑ p : W, Complex.normSq (y (p, J)) :=
+    fun J => by
     rw [norm_sq_eq_sum_normSq]
     exact Finset.sum_congr rfl fun p _ => rfl
   rw [Finset.sum_congr rfl fun J _ => h J, norm_sq_eq_sum_normSq, Fintype.sum_prod_type,
@@ -253,20 +255,32 @@ noncomputable def Kface (A : ι → Matrix W W ℂ) (c : ι × Face r k → ℂ)
 noncomputable def uterm (A : ι → Matrix W W ℂ) (e : Fin r → EuclideanSpace ℂ W)
     (c : ι × Face r k → ℂ) (x : Face r k × Fin r) : EuclideanSpace ℂ W :=
   if x.2 ∈ x.1.val then
-    ((Real.sqrt k : ℝ) : ℂ)⁻¹ • (esign x.1.val x.2 • mulVecE (Kface A c x.1) (ebar e x.2))
+    ((Real.sqrt k : ℝ) : ℂ)⁻¹ •
+      (esign x.1.val x.2 • mulVecE (Kface A c x.1) (ebar e x.2))
   else 0
 
 /-- An operator acting trivially on the exterior factor moves the incidence mode
 of `I` to the sum of its incidence contributions. -/
+theorem mulVecE_placeT_etaMode_raw (N : Matrix W W ℂ) (e : Fin r → EuclideanSpace ℂ W)
+    (I : Face r k) :
+    mulVecE (placeT (T := Face r (k - 1)) N) (etaMode e I)
+      = ((Real.sqrt k : ℝ) : ℂ)⁻¹ •
+          ∑ v : Fin r, esign I.val v • placeAt (mulVecE N (ebar e v)) (I.val.erase v) := by
+  rw [etaMode, mulVecE_smul_vec, mulVecE_sum_vec]
+  refine congrArg _ (Finset.sum_congr rfl fun v _ => ?_)
+  rw [mulVecE_smul_vec, mulVecE_placeT_placeAt]
+
+/-- The same contributions with the scalar pushed inside and the vanishing terms
+made explicit: a vertex outside `I` leaves `I` unchanged, and a set of
+cardinality `k` labels no `(k-1)`-face. -/
 theorem mulVecE_placeT_etaMode (hk : 1 ≤ k) (N : Matrix W W ℂ)
     (e : Fin r → EuclideanSpace ℂ W) (I : Face r k) :
     mulVecE (placeT (T := Face r (k - 1)) N) (etaMode e I)
       = ∑ v : Fin r, placeAt (if v ∈ I.val then
           ((Real.sqrt k : ℝ) : ℂ)⁻¹ • (esign I.val v • mulVecE N (ebar e v)) else 0)
           (I.val.erase v) := by
-  rw [etaMode, mulVecE_smul_vec, mulVecE_sum_vec, Finset.smul_sum]
+  rw [mulVecE_placeT_etaMode_raw, Finset.smul_sum]
   refine Finset.sum_congr rfl fun v _ => ?_
-  rw [mulVecE_smul_vec, mulVecE_placeT_placeAt]
   by_cases hv : v ∈ I.val
   · rw [if_pos hv, placeAt_smul, placeAt_smul]
   · have hc : (I.val.erase v).card ≠ k - 1 := by
@@ -276,7 +290,8 @@ theorem mulVecE_placeT_etaMode (hk : 1 ≤ k) (N : Matrix W W ℂ)
 
 /-- Synthesizing the frame with coefficients `c` deposits, at each incidence
 `(I, v)` of the hypergraph, the vector `uterm` at the face `I ∖ v`. -/
-theorem sum_smul_wvecF (hk : 1 ≤ k) (A : ι → Matrix W W ℂ) (e : Fin r → EuclideanSpace ℂ W)
+theorem sum_smul_wvecF (hk : 1 ≤ k) (A : ι → Matrix W W ℂ)
+    (e : Fin r → EuclideanSpace ℂ W)
     (H : Finset (Face r k)) (c : ι × Face r k → ℂ) :
     ∑ z : ι × Face r k, c z • wvecF A e H z.1 z.2
       = ∑ x ∈ H ×ˢ (Finset.univ : Finset (Fin r)),
@@ -411,7 +426,8 @@ theorem norm_sum_smul_wvecF_le {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 �
   calc ‖∑ x ∈ H ×ˢ (Finset.univ : Finset (Fin r)),
           (placeAt (uterm A e c x) (x.1.val.erase x.2) :
             EuclideanSpace ℂ (W × Face r (k - 1)))‖ ^ 2
-      ≤ (upDeg H : ℝ) * ∑ x ∈ H ×ˢ (Finset.univ : Finset (Fin r)), ‖uterm A e c x‖ ^ 2 :=
+      ≤ (upDeg H : ℝ)
+          * ∑ x ∈ H ×ˢ (Finset.univ : Finset (Fin r)), ‖uterm A e c x‖ ^ 2 :=
         norm_sq_sum_placeAt_le (m := k - 1) (H ×ˢ (Finset.univ : Finset (Fin r)))
           (uterm A e c) (fun x => x.1.val.erase x.2) (card_fibre_le_upDeg hk H)
     _ ≤ (upDeg H : ℝ) * (β * ∑ z : ι × Face r k, Complex.normSq (c z)) :=
@@ -495,16 +511,6 @@ theorem inner_mulVecE_ebar_symm {N : Matrix W W ℂ} (hN : Nᵀ = N)
     rwa [Matrix.transpose_apply] at hxy
   rw [hsym]
   ring
-
-/-- The incidence contributions of `I`, before the vanishing terms are discarded. -/
-theorem mulVecE_placeT_etaMode_raw (N : Matrix W W ℂ) (e : Fin r → EuclideanSpace ℂ W)
-    (I : Face r k) :
-    mulVecE (placeT (T := Face r (k - 1)) N) (etaMode e I)
-      = ((Real.sqrt k : ℝ) : ℂ)⁻¹ •
-          ∑ v : Fin r, esign I.val v • placeAt (mulVecE N (ebar e v)) (I.val.erase v) := by
-  rw [etaMode, mulVecE_smul_vec, mulVecE_sum_vec]
-  refine congrArg _ (Finset.sum_congr rfl fun v _ => ?_)
-  rw [mulVecE_smul_vec, mulVecE_placeT_placeAt]
 
 /-- **Koszul cancellation.**  For a transpose-symmetric operator, every protected
 mode is orthogonal to the image of every incidence mode.
@@ -617,7 +623,8 @@ theorem inner_deltaMode_mulVecE_placeT_etaMode (hk : 2 ≤ k) {N : Matrix W W �
 
 /-- Transpose symmetry of the Kraus operators makes every frame vector orthogonal
 to every protected mode. -/
-theorem inner_deltaMode_wvecF (hk : 2 ≤ k) {A : ι → Matrix W W ℂ} (hsym : ∀ f, (A f)ᵀ = A f)
+theorem inner_deltaMode_wvecF (hk : 2 ≤ k) {A : ι → Matrix W W ℂ}
+    (hsym : ∀ f, (A f)ᵀ = A f)
     (e : Fin r → EuclideanSpace ℂ W) (H : Finset (Face r k)) (L : Face r (k - 2))
     (f : ι) (I : Face r k) : inner ℂ (deltaMode (k := k) e L) (wvecF A e H f I) = 0 := by
   rw [wvecF]
@@ -716,7 +723,8 @@ theorem card_filter_subset_univ (hk : 1 ≤ k) (hkr : k ≤ r) (J : Face r (k - 
   have hcard : ∀ v : {v : Fin r // v ∈ J.valᶜ}, (insert v.1 J.val).card = k := fun v => by
     rw [Finset.card_insert_of_notMem (Finset.mem_compl.mp v.2), J.2]
     omega
-  set f : {v : Fin r // v ∈ J.valᶜ} → Face r k := fun v => ⟨insert v.1 J.val, hcard v⟩ with hf
+  set f : {v : Fin r // v ∈ J.valᶜ} → Face r k :=
+    fun v => ⟨insert v.1 J.val, hcard v⟩ with hf
   have hfinj : Function.Injective f := by
     intro a b hab
     have h : insert a.1 J.val = insert b.1 J.val := congrArg Subtype.val hab
@@ -783,7 +791,8 @@ theorem qform_krausF_Phyp_le_of_choiTwoBound {A : ι → Matrix W W ℂ} {β : �
 graph: transpose symmetry of the Kraus operators protects the single mode
 `δ_∅ = δ_e/√r`, which is the `‖y‖² − |⟪δ_e, y⟫|²/r` of
 `qform_krausQ_Pneg_le`. -/
-theorem qform_krausF_Phyp_le_of_choiTwoBound_sub {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β)
+theorem qform_krausF_Phyp_le_of_choiTwoBound_sub {A : ι → Matrix W W ℂ} {β : ℝ}
+    (hβ : 0 ≤ β)
     (hJ : ChoiTwoBound (choiOf A) β) (hsym : ∀ f, (A f)ᵀ = A f) (hr : 2 ≤ r)
     {e : Fin r → EuclideanSpace ℂ W} (he : Orthonormal ℂ e)
     (y : EuclideanSpace ℂ (W × Face r 1)) :

@@ -97,9 +97,10 @@ and any orthonormal `k`-tuple with `k ≥ 2`,
   `∑ᵢ ‖K xᵢ‖² ≤ (k/4)‖K‖₂²`.
 
 The double-skew bound applied to the pair `(xᵢ, xⱼ)` for `i ≠ j` gives
-`‖K xᵢ‖² + ‖K xⱼ‖² ≤ ½‖K‖₂²`.  Summing over the `k(k - 1)` ordered pairs, in each
-of which every index occurs `k - 1` times, gives
-`2(k - 1)∑ᵢ‖K xᵢ‖² ≤ k(k - 1)·½‖K‖₂²`, and `k ≥ 2` makes `k - 1` cancellable.
+`‖K xᵢ‖² + ‖K xⱼ‖² ≤ ½‖K‖₂²`.  Summing over the `k(k - 1)` ordered pairs, in
+each of which every index occurs `k - 1` times, gives
+`2(k - 1)∑ᵢ‖K xᵢ‖² ≤ k(k - 1)·½‖K‖₂²`, and `k ≥ 2` makes `k - 1`
+cancellable.
 
 The hypothesis `k ≥ 2` is the whole content of the averaging: it guarantees that
 at least one pair exists.  At `k = 1` the conclusion is false — the element
