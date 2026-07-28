@@ -69,109 +69,13 @@ theorem rankOne_mul_rankOne (u v z w : EuclideanSpace ℂ W) :
 
 end HsAlgebra
 
-/-! ## Sesquilinearity of the Hilbert-Schmidt pairing
-
-`Elementary.lean` has the `Fin s`-indexed bilinear expansion; the Kraus index is
-an arbitrary `Fintype`, and only the first argument moves. -/
-
-section Sesqui
-
-variable {m n : Type*} [Fintype m] [Fintype n]
-
-/-- `hsInner` is conjugate-homogeneous in its first argument. -/
-theorem hsInner_smul_left (c : ℂ) (A B : Matrix m n ℂ) :
-    hsInner (c • A) B = conj c * hsInner A B := by
-  simp [hsInner, Matrix.conjTranspose_smul, Matrix.smul_mul, Matrix.trace_smul,
-    RCLike.star_def, smul_eq_mul]
-
-/-- `hsInner` is additive in its first argument, over an arbitrary finite index. -/
-theorem hsInner_sum_left {ι : Type*} [Fintype ι] (A : ι → Matrix m n ℂ)
-    (B : Matrix m n ℂ) :
-    hsInner (∑ a, A a) B = ∑ a, hsInner (A a) B := by
-  simp only [hsInner, Matrix.conjTranspose_sum]
-  rw [Matrix.sum_mul, Matrix.trace_sum]
-
-end Sesqui
-
-/-! ## The rank-two projection
-
-`proj2 x y` is the orthogonal projection onto `span {x, y}` for an orthonormal
-pair.  Compressing `K` by it produces a matrix of rank at most two whose squared
-Hilbert-Schmidt norm is exactly the quantity to be bounded, and which pairs with
-`K` to that same real number. -/
-
-section Projection
-
-variable {W : Type*} [Fintype W] {x y : EuclideanSpace ℂ W}
-
-/-- The rank-two orthogonal projection onto `span {x, y}`. -/
-noncomputable def proj2 (x y : EuclideanSpace ℂ W) : Matrix W W ℂ :=
-  rankOne x x + rankOne y y
-
-omit [Fintype W] in
-theorem proj2_conjTranspose : (proj2 x y)ᴴ = proj2 x y := by
-  simp [proj2, Matrix.conjTranspose_add, rankOne_conjTranspose]
-
-theorem proj2_mul_self (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) (hxy : inner ℂ x y = (0 : ℂ)) :
-    proj2 x y * proj2 x y = proj2 x y := by
-  have hyx : (inner ℂ y x : ℂ) = 0 := by
-    rw [← inner_conj_symm, hxy, map_zero]
-  have hxx : (inner ℂ x x : ℂ) = 1 := by
-    rw [inner_self_eq_norm_sq_to_K, hx]; norm_num
-  have hyy : (inner ℂ y y : ℂ) = 1 := by
-    rw [inner_self_eq_norm_sq_to_K, hy]; norm_num
-  simp only [proj2, Matrix.add_mul, Matrix.mul_add, rankOne_mul_rankOne,
-    hxx, hyy, hxy, hyx, one_smul, zero_smul]
-  abel
-
-/-- `K P` is the two-term operator `|Kx⟩⟨x| + |Ky⟩⟨y|`; this is the unrolling of
-"rank at most two" that `ChoiTwoBound` quantifies over. -/
-theorem mul_proj2 (K : Matrix W W ℂ) (x y : EuclideanSpace ℂ W) :
-    K * proj2 x y = rankOne (mulVecE K x) x + rankOne (mulVecE K y) y := by
-  rw [proj2, Matrix.mul_add, mul_rankOne, mul_rankOne]
-
-/-- `‖K P‖₂²` is the action of `K` on the orthonormal pair. -/
-theorem hsNormSq_mul_proj2 (K : Matrix W W ℂ) (hx : ‖x‖ = 1) (hy : ‖y‖ = 1)
-    (hxy : inner ℂ x y = (0 : ℂ)) :
-    hsNormSq (K * proj2 x y) = ‖mulVecE K x‖ ^ 2 + ‖mulVecE K y‖ ^ 2 := by
-  have hyx : (inner ℂ y x : ℂ) = 0 := by rw [← inner_conj_symm, hxy, map_zero]
-  have hxx : (inner ℂ x x : ℂ) = 1 := by
-    rw [inner_self_eq_norm_sq_to_K, hx]; norm_num
-  have hyy : (inner ℂ y y : ℂ) = 1 := by
-    rw [inner_self_eq_norm_sq_to_K, hy]; norm_num
-  rw [mul_proj2, ← Complex.ofReal_inj, ← hsInner_self, hsInner_add_left,
-    hsInner_add_right, hsInner_add_right, hsInner_rankOne, hsInner_rankOne,
-    hsInner_rankOne, hsInner_rankOne, hxy, hyx, hxx, hyy,
-    inner_self_eq_norm_sq_to_K, inner_self_eq_norm_sq_to_K]
-  push_cast
-  simp
-
-/-- `⟪K, K P⟫ = ‖K P‖₂²`, because `P` is a self-adjoint idempotent.  This is what
-lets the compressed operator be tested against `K` itself. -/
-theorem hsInner_mul_proj2 (K : Matrix W W ℂ) (hx : ‖x‖ = 1) (hy : ‖y‖ = 1)
-    (hxy : inner ℂ x y = (0 : ℂ)) :
-    hsInner K (K * proj2 x y) = (hsNormSq (K * proj2 x y) : ℂ) := by
-  rw [← hsInner_self]
-  have e1 : hsInner K (K * proj2 x y) = (Kᴴ * K * proj2 x y).trace := by
-    rw [hsInner, Matrix.mul_assoc]
-  have e2 : hsInner (K * proj2 x y) (K * proj2 x y) = (Kᴴ * K * proj2 x y).trace := by
-    rw [hsInner, Matrix.conjTranspose_mul, proj2_conjTranspose,
-      show proj2 x y * Kᴴ * (K * proj2 x y) = proj2 x y * (Kᴴ * K * proj2 x y) by
-        simp only [Matrix.mul_assoc],
-      Matrix.trace_mul_comm,
-      show Kᴴ * K * proj2 x y * proj2 x y = Kᴴ * K * (proj2 x y * proj2 x y) by
-        simp only [Matrix.mul_assoc],
-      proj2_mul_self hx hy hxy]
-  rw [e1, e2]
-
-end Projection
-
 /-! ## The rank-`k` projection
 
 `projK x` is the orthogonal projection onto the span of an orthonormal `k`-tuple.
-Everything the amplification step asks of `proj2` is asked of a self-adjoint
-idempotent of rank at most `k`, and the two-term structure is never used, so the
-same four identities hold verbatim one index at a time. -/
+Everything the amplification step asks of a compression is asked of a self-adjoint
+idempotent of rank at most `k`, and no two-term structure is ever used, so the
+four identities below are proved once, at arbitrary `k`; the rank-two projection
+of `sec:double-skew` is the case `k = 2` and is derived from them. -/
 
 section ProjectionK
 
@@ -244,6 +148,70 @@ theorem hsInner_mul_projK (K : Matrix W W ℂ) (hx : Orthonormal ℂ x) :
   rw [e1, e2]
 
 end ProjectionK
+
+/-! ## The rank-two projection
+
+`proj2 x y` is the orthogonal projection onto `span {x, y}` for an orthonormal
+pair.  Compressing `K` by it produces a matrix of rank at most two whose squared
+Hilbert-Schmidt norm is exactly the quantity to be bounded, and which pairs with
+`K` to that same real number.
+
+It is `projK` at `k = 2`, and every identity it needs is the `k = 2` case of one
+proved above; only the two-term unrolling of the sum is new. -/
+
+section Projection
+
+variable {W : Type*} [Fintype W] {x y : EuclideanSpace ℂ W}
+
+/-- The rank-two orthogonal projection onto `span {x, y}`. -/
+noncomputable def proj2 (x y : EuclideanSpace ℂ W) : Matrix W W ℂ :=
+  rankOne x x + rankOne y y
+
+/-- An orthonormal pair, read as an orthonormal `Fin 2`-tuple. -/
+theorem orthonormal_pair (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) (hxy : inner ℂ x y = (0 : ℂ)) :
+    Orthonormal ℂ ![x, y] := by
+  have hyx : (inner ℂ y x : ℂ) = 0 := by rw [← inner_conj_symm, hxy, map_zero]
+  rw [orthonormal_iff_ite]
+  intro i j
+  fin_cases i <;> fin_cases j <;>
+    simp [hxy, hyx, inner_self_eq_norm_sq_to_K, hx, hy]
+
+omit [Fintype W] in
+/-- `proj2` is `projK` at `k = 2`. -/
+theorem proj2_eq_projK (x y : EuclideanSpace ℂ W) : proj2 x y = projK ![x, y] := by
+  simp [proj2, projK, Fin.sum_univ_two]
+
+omit [Fintype W] in
+theorem proj2_conjTranspose : (proj2 x y)ᴴ = proj2 x y := by
+  simp [proj2, Matrix.conjTranspose_add, rankOne_conjTranspose]
+
+theorem proj2_mul_self (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) (hxy : inner ℂ x y = (0 : ℂ)) :
+    proj2 x y * proj2 x y = proj2 x y := by
+  rw [proj2_eq_projK]
+  exact projK_mul_self (orthonormal_pair hx hy hxy)
+
+/-- `K P` is the two-term operator `|Kx⟩⟨x| + |Ky⟩⟨y|`; this is the unrolling of
+"rank at most two" that `ChoiTwoBound` quantifies over. -/
+theorem mul_proj2 (K : Matrix W W ℂ) (x y : EuclideanSpace ℂ W) :
+    K * proj2 x y = rankOne (mulVecE K x) x + rankOne (mulVecE K y) y := by
+  rw [proj2, Matrix.mul_add, mul_rankOne, mul_rankOne]
+
+/-- `‖K P‖₂²` is the action of `K` on the orthonormal pair. -/
+theorem hsNormSq_mul_proj2 (K : Matrix W W ℂ) (hx : ‖x‖ = 1) (hy : ‖y‖ = 1)
+    (hxy : inner ℂ x y = (0 : ℂ)) :
+    hsNormSq (K * proj2 x y) = ‖mulVecE K x‖ ^ 2 + ‖mulVecE K y‖ ^ 2 := by
+  rw [proj2_eq_projK, hsNormSq_mul_projK K (orthonormal_pair hx hy hxy)]
+  simp [Fin.sum_univ_two]
+
+/-- `⟪K, K P⟫ = ‖K P‖₂²`, because `P` is a self-adjoint idempotent.  This is what
+lets the compressed operator be tested against `K` itself. -/
+theorem hsInner_mul_proj2 (K : Matrix W W ℂ) (hx : ‖x‖ = 1) (hy : ‖y‖ = 1)
+    (hxy : inner ℂ x y = (0 : ℂ)) :
+    hsInner K (K * proj2 x y) = (hsNormSq (K * proj2 x y) : ℂ) := by
+  rw [proj2_eq_projK]
+  exact hsInner_mul_projK K (orthonormal_pair hx hy hxy)
+
+end Projection
 
 /-! ## The Choi operator of a Kraus family -/
 
@@ -421,13 +389,8 @@ theorem norm_sq_pair_le_of_choiTwoBound {A : ι → Matrix W W ℂ} {β : ℝ} (
     (hxy : inner ℂ x y = (0 : ℂ)) :
     ‖mulVecE (∑ a, c a • A a) x‖ ^ 2 + ‖mulVecE (∑ a, c a • A a) y‖ ^ 2
       ≤ 2 * β * ∑ a, Complex.normSq (c a) := by
-  have hyx : (inner ℂ y x : ℂ) = 0 := by rw [← inner_conj_symm, hxy, map_zero]
-  have ho : Orthonormal ℂ ![x, y] := by
-    rw [orthonormal_iff_ite]
-    intro i j
-    fin_cases i <;> fin_cases j <;>
-      simp [hxy, hyx, inner_self_eq_norm_sq_to_K, hx, hy]
-  have h := norm_sq_le_of_choiKBound hβ (choiTwoBound_iff_choiKBound_two.mp hJ) c ho
+  have h := norm_sq_le_of_choiKBound hβ (choiTwoBound_iff_choiKBound_two.mp hJ) c
+    (orthonormal_pair hx hy hxy)
   rw [Fin.sum_univ_two] at h
   push_cast at h
   simpa using h

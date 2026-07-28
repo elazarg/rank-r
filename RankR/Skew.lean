@@ -80,7 +80,7 @@ end Conj
 
 section DoubleSkew
 
-variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
+variable {U V : Type*}
 
 /-- Elementary tensors of skew matrices are the generators of `doubleSkew`. -/
 theorem kron_mem_doubleSkew {L : Matrix U U ℂ} {M : Matrix V V ℂ}

@@ -99,10 +99,10 @@ theorem doubleSkewBound_of_FGP (hFGP : FGPBound U V) : DoubleSkewBound U V := by
 The only hypothesis is `FGPBound`, the double-antisymmetric projection estimate
 of Fu–Gao–Park; nothing else is assumed. -/
 theorem rank_r_partial_trace_of_FGP (hFGP : FGPBound U V)
-    (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (hr : 0 < r) (hrank : C.rank ≤ r) :
+    (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (hrank : C.rank ≤ r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
-  rank_r_partial_trace_of_choiTwoBound (choiTwoBound_of_FGP hFGP) C r hr hrank
+  rank_r_partial_trace_of_choiTwoBound (choiTwoBound_of_FGP hFGP) C r hrank
 
 /-- **The exact-rank form** (`eq:main-bound-exact-rank`), from Fu–Gao–Park. -/
 theorem rank_r_partial_trace_of_FGP_exact (hFGP : FGPBound U V)

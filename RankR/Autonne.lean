@@ -134,8 +134,10 @@ theorem exists_eigenvector [FiniteDimensional ℂ E] [Nontrivial E] (hσ : IsCon
   · obtain ⟨u, hu1, hu2⟩ := exists_norm_one_of_conj_smul_eq hw0 hwe
     exact ⟨u, s, hu1, hs0, hu2⟩
 
-/-- The orthogonal complement of the line through a `σ`-eigenvector is `σ`-invariant. -/
-theorem orthogonal_invariant (hσ : IsConjSymmetric σ) {v : E} {t : ℝ} (h : σ v = (t : ℂ) • v)
+/-- The orthogonal complement of the line through a `σ`-eigenvector is
+`σ`-invariant.  The eigenvalue may be any complex number: only the conjugate
+symmetry and the orthogonality are used. -/
+theorem orthogonal_invariant (hσ : IsConjSymmetric σ) {v : E} {t : ℂ} (h : σ v = t • v)
     {x : E} (hx : x ∈ (ℂ ∙ v)ᗮ) : σ x ∈ (ℂ ∙ v)ᗮ := by
   rw [Submodule.mem_orthogonal_singleton_iff_inner_right] at hx ⊢
   rw [← inner_conj_symm, hσ x v, h, inner_smul_left, hx, mul_zero, map_zero]

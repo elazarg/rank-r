@@ -61,6 +61,7 @@ def ThetaPositive (A : ι → Matrix W W ℂ) (R : ℕ) (lam : ℝ) : Prop :=
   ∀ C : Matrix W W ℂ, C.rank ≤ R →
     0 ≤ (thetaPair A C).re + lam * (hsNormSq C - Complex.normSq C.trace / R)
 
+omit [DecidableEq W] in
 /-- The correction term is nonnegative at rank `R`, by the trace-rank bound. -/
 theorem correction_nonneg {C : Matrix W W ℂ} {R : ℕ} (hR : 0 < R) (hrank : C.rank ≤ R) :
     0 ≤ hsNormSq C - Complex.normSq C.trace / R := by
@@ -71,6 +72,7 @@ theorem correction_nonneg {C : Matrix W W ℂ} {R : ℕ} (hR : 0 < R) (hrank : C
   rw [sub_nonneg, div_le_iff₀ hRpos]
   nlinarith
 
+omit [DecidableEq W] in
 /-- **`ThetaPositive` is monotone in `λ`.**  As with `choiTwoBound_mono`, this is
 why the condition alone determines no number: the threshold needs a witness at
 the other end. -/
@@ -82,23 +84,6 @@ theorem thetaPositive_mono {A : ι → Matrix W W ℂ} {R : ℕ} (hR : 0 < R) {l
   nlinarith
 
 end Theta
-
-/-! ## Two missing pieces of `hsInner` bilinearity -/
-
-section Bilinear
-
-variable {m n : Type*} [Fintype m] [Fintype n]
-
-/-- `hsInner` is homogeneous in its second argument. -/
-theorem hsInner_smul_right' (c : ℂ) (A B : Matrix m n ℂ) :
-    hsInner A (c • B) = c * hsInner A B := by
-  simp [hsInner, Matrix.mul_smul, Matrix.trace_smul, smul_eq_mul]
-
-/-- The two signs of a pairing of negatives cancel. -/
-theorem hsInner_neg_neg (A B : Matrix m n ℂ) : hsInner (-A) (-B) = hsInner A B := by
-  simp [hsInner]
-
-end Bilinear
 
 /-! ## The diagonal projection, and the witness as a Kronecker product -/
 
@@ -167,7 +152,7 @@ private theorem hsInner_pair_single {i j : U} (hne : i ≠ j) (a b : ℂ) :
     hsInner (a • Matrix.single i j (1 : ℂ) - b • Matrix.single j i 1)
         (a • Matrix.single j i (1 : ℂ) - b • Matrix.single i j 1)
       = -(conj a * b) - conj b * a := by
-  simp only [hsInner_sub_left, hsInner_sub_right, hsInner_smul_left, hsInner_smul_right',
+  simp only [hsInner_sub_left, hsInner_sub_right, hsInner_smul_left, hsInner_smul_right,
     hsInner_single, if_neg hne, if_neg (Ne.symm hne), if_true, mul_one]
   ring
 

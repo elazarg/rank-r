@@ -19,11 +19,19 @@ theorem finrank_range_toEuclideanLin (C : Matrix W W ℂ) :
     (EuclideanSpace.basisFun W ℂ).toBasis]
   rfl
 
-/-- The range factorization, re-indexed by `C.rank`. -/
-theorem exists_rankFactor_rank (C : Matrix W W ℂ) :
-    ∃ e d : Fin C.rank → EuclideanSpace ℂ W, Orthonormal ℂ e ∧ C = rankFactor e d :=
-  (finrank_range_toEuclideanLin C) ▸ exists_rankFactor C
+omit [DecidableEq W] in
+/-- The range factorization, re-indexed by `C.rank`.
 
+`Matrix.rank` decides no equality, so neither does this statement: the
+`DecidableEq` of `exists_rankFactor` is an artifact of `Matrix.toEuclideanLin`,
+which appears only in the proof.  Everything downstream of this lemma is free of
+it. -/
+theorem exists_rankFactor_rank (C : Matrix W W ℂ) :
+    ∃ e d : Fin C.rank → EuclideanSpace ℂ W, Orthonormal ℂ e ∧ C = rankFactor e d := by
+  classical
+  exact (finrank_range_toEuclideanLin C) ▸ exists_rankFactor C
+
+omit [DecidableEq W] in
 /-- Rank `0` means the empty range factorization, hence the zero matrix. -/
 theorem eq_zero_of_rank_eq_zero {C : Matrix W W ℂ} (h : C.rank = 0) : C = 0 := by
   obtain ⟨e, d, _, hC⟩ := exists_rankFactor_rank C
@@ -31,9 +39,11 @@ theorem eq_zero_of_rank_eq_zero {C : Matrix W W ℂ} (h : C.rank = 0) : C = 0 :=
     rw [← Finset.card_eq_zero, Finset.card_univ, Fintype.card_fin]; exact h
   rw [hC]; ext p q; simp [rankFactor_apply, huniv]
 
+omit [DecidableEq W] in
 theorem rank_pos_of_ne_zero {C : Matrix W W ℂ} (h : C ≠ 0) : 0 < C.rank :=
   Nat.pos_of_ne_zero fun h0 => h (eq_zero_of_rank_eq_zero h0)
 
+omit [DecidableEq W] in
 /-- The trace-rank bound `|Tr C|² ≤ (rank C)‖C‖₂²`, stated for `C` itself.
 This is `normSq_trace_le` transported along the range factorization. -/
 theorem normSq_trace_le_rank (C : Matrix W W ℂ) :
@@ -113,15 +123,18 @@ theorem rank_r_of_operatorIneq_exact (hOp : OperatorIneq U V)
 /-- **Theorem 1.1** (`thm:rank_r`), given Proposition 2.2.
 
 `C` of rank at most `r` satisfies
-`‖Tr_U C‖₂² + ‖Tr_V C‖₂² ≤ r‖C‖₂² + (1/r)|Tr C|²`. -/
+`‖Tr_U C‖₂² + ‖Tr_V C‖₂² ≤ r‖C‖₂² + (1/r)|Tr C|²`.
+
+No positivity hypothesis on `r` is needed: `r = 0` forces `C = 0` through
+`hrank`, and then both sides vanish, `1/0` being `0`. -/
 theorem rank_r_of_operatorIneq (hOp : OperatorIneq U V)
-    (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (_hr : 0 < r) (hrank : C.rank ≤ r) :
+    (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (hrank : C.rank ≤ r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace := by
   rcases eq_or_ne C 0 with rfl | hC
   · simp [hsNormSq]
   · exact (rank_r_of_operatorIneq_exact hOp C).trans
-      (rank_mono (hsNormSq_nonneg _) (Complex.normSq_nonneg _) (rank_pos_of_ne_zero hC)
+      (rank_mono (Complex.normSq_nonneg _) (rank_pos_of_ne_zero hC)
         hrank (normSq_trace_le_rank C))
 
 /-- **Strictness below the exact rank** (`sec:proof`): for nonzero `C` of rank
@@ -133,8 +146,8 @@ theorem rank_r_of_operatorIneq_strict (hOp : OperatorIneq U V)
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       < r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
   (rank_r_of_operatorIneq_exact hOp C).trans_lt
-    (rank_mono_strict (hsNormSq_pos hC) (Complex.normSq_nonneg _)
-      (rank_pos_of_ne_zero hC) hrank (normSq_trace_le_rank C))
+    (rank_mono_strict (hsNormSq_pos hC) (rank_pos_of_ne_zero hC) hrank
+      (normSq_trace_le_rank C))
 
 /-- **Equality forces the exact rank** (`thm:rank_r`, sharpness paragraph):
 for nonzero `C`, equality in the rank-`r` inequality requires `rank C = r`.

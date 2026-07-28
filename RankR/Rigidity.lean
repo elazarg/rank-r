@@ -25,15 +25,6 @@ namespace RankR
 
 open Matrix Finset ComplexConjugate
 
-/-- The standard basis vector of `EuclideanSpace ℂ W`, defined directly (rather
-than through the deprecated `EuclideanSpace.single`) so that its value at a
-point is definitional and `simp` can see through it via `eBasis_apply`. -/
-noncomputable def eBasis {W : Type*} [DecidableEq W] (x : W) : EuclideanSpace ℂ W :=
-  WithLp.toLp 2 fun p => if p = x then (1 : ℂ) else 0
-
-@[simp] theorem eBasis_apply {W : Type*} [DecidableEq W] (x p : W) :
-    eBasis x p = if p = x then (1 : ℂ) else 0 := rfl
-
 /-! ## Positivity on the diagonal
 
 Two facts about a matrix whose quadratic form has nonnegative real part.  They
@@ -67,8 +58,9 @@ theorem diag_re_nonneg {F : Matrix W W ℂ} (hpos : ∀ z, 0 ≤ (qform F z).re)
   have h := hpos (eBasis x)
   rwa [qform_single] at h
 
-/-- The quadratic form on the span of two basis vectors. -/
-theorem qform_pair (F : Matrix W W ℂ) (a b : ℂ) {x y : W} (_hxy : x ≠ y) :
+/-- The quadratic form on the span of two basis vectors.  The two need not be
+distinct: at `x = y` both sides collapse to `‖a+b‖² F x x`. -/
+theorem qform_pair (F : Matrix W W ℂ) (a b : ℂ) {x y : W} :
     qform F (a • eBasis x + b • eBasis y)
       = conj a * a * F x x + conj a * b * F x y
         + (conj b * a * F y x + conj b * b * F y y) := by
@@ -125,7 +117,7 @@ theorem row_eq_zero_of_diag_eq_zero {F : Matrix W W ℂ} (hherm : Fᴴ = F)
       (Complex.normSq_eq_conj_mul_self).symm
     have heq : qform F ((-(lam : ℂ) * F x y) • eBasis x + (1 : ℂ) • eBasis y)
         = (((-2 * lam * Complex.normSq (F x y) : ℝ)) : ℂ) + F y y := by
-      rw [qform_pair F _ _ hxy, hx, hyx]
+      rw [qform_pair F, hx, hyx]
       simp only [map_mul, map_neg, map_one, Complex.conj_ofReal, mul_zero, zero_add,
         mul_one, one_mul]
       push_cast

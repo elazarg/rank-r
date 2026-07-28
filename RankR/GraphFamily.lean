@@ -47,18 +47,6 @@ theorem hsInner_single (a b c d : W) :
     map_one, map_zero, ite_mul, zero_mul, mul_ite, mul_zero]
   by_cases hac : a = c <;> by_cases hbd : b = d <;> simp [hac, hbd]
 
-omit [DecidableEq W] in
-/-- `hsInner` is additive in the first argument under subtraction. -/
-theorem hsInner_sub_left (A B C : Matrix W W ℂ) :
-    hsInner (A - B) C = hsInner A C - hsInner B C := by
-  simp only [hsInner, Matrix.conjTranspose_sub, Matrix.sub_mul, Matrix.trace_sub]
-
-omit [DecidableEq W] in
-/-- `hsInner` is additive in the second argument under subtraction. -/
-theorem hsInner_sub_right (A B C : Matrix W W ℂ) :
-    hsInner A (B - C) = hsInner A B - hsInner A C := by
-  simp only [hsInner, Matrix.mul_sub, Matrix.trace_sub]
-
 /-- **The elementary skew matrices are Frobenius-orthogonal**, with squared norm
 `2`.  Reading it at `(a, b) = (c, d)` gives `‖skewUnit a b‖₂² = 2` for `a ≠ b`;
 reading it at an unordered pair met in the opposite order gives `-2`; and any two
@@ -99,11 +87,11 @@ variable {U : Type*} [Fintype U] [DecidableEq U] [LinearOrder U]
 noncomputable def edgeKraus (p : U × U) : Matrix (U × Fin 2) (U × Fin 2) ℂ :=
   skewUnit p.1 p.2 ⊗ₖ skewUnit (0 : Fin 2) 1
 
-omit [LinearOrder U] in
+omit [Fintype U] [LinearOrder U] in
 theorem edgeKraus_mem_doubleSkew (p : U × U) : edgeKraus p ∈ doubleSkew U (Fin 2) :=
   kron_mem_doubleSkew (skewUnit_isSkew _ _) (skewUnit_isSkew _ _)
 
-omit [LinearOrder U] in
+omit [Fintype U] [LinearOrder U] in
 /-- The Kraus operators are transpose-symmetric: two skew factors make a
 symmetric tensor. -/
 theorem edgeKraus_transpose (p : U × U) : (edgeKraus p)ᵀ = edgeKraus p :=
@@ -136,11 +124,11 @@ noncomputable def graphKraus (E : Finset (U × U)) :
     {p : U × U // p ∈ E} → Matrix (U × Fin 2) (U × Fin 2) ℂ :=
   fun e => edgeKraus e.val
 
-omit [LinearOrder U] in
+omit [Fintype U] [LinearOrder U] in
 theorem graphKraus_transpose (E : Finset (U × U)) (e : {p : U × U // p ∈ E}) :
     (graphKraus E e)ᵀ = graphKraus E e := edgeKraus_transpose e.val
 
-omit [LinearOrder U] in
+omit [Fintype U] [LinearOrder U] in
 theorem graphKraus_mem_doubleSkew (E : Finset (U × U)) (e : {p : U × U // p ∈ E}) :
     graphKraus E e ∈ doubleSkew U (Fin 2) := edgeKraus_mem_doubleSkew e.val
 
@@ -186,18 +174,6 @@ theorem choiTwoBound_Qm : ChoiTwoBound (Qm : Matrix (Idx U V) (Idx U V) ℂ) (1 
   have hc : (1 / 16 : ℝ) * 4 = 1 / 4 := by norm_num
   rwa [hop, hc] at h'
 
-/-- `Qm` is an orthogonal projection, so its quadratic form at `v` is the squared
-norm of the image of `v`. -/
-theorem norm_sq_mulVecE_Qm (v : EuclideanSpace ℂ (Idx U V)) :
-    ‖mulVecE Qm v‖ ^ 2 = (qform Qm v).re := by
-  have hQ : mulVecE (Qm : Matrix (Idx U V) (Idx U V) ℂ) (mulVecE Qm v) = mulVecE Qm v := by
-    rw [mulVecE_mul, Qm_mul_self]
-  have h : (inner ℂ (mulVecE Qm v) (mulVecE Qm v) : ℂ) = qform Qm v := by
-    rw [qform_eq_inner]
-    conv_rhs => rw [← hQ, inner_mulVecE_left, Qm_conjTranspose]
-  rw [← h, ← inner_self_eq_norm_sq (𝕜 := ℂ)]
-  rfl
-
 end Beta
 
 section GraphBeta
@@ -235,7 +211,7 @@ theorem choiTwoBound_graphKraus {E : Finset (U × U)} (hE : ∀ p ∈ E, p.1 < p
     rw [Finset.sum_congr rfl fun e _ => hterm e, ← Finset.mul_sum]
     exact mul_le_mul_of_nonneg_left hbess (by norm_num)
   have hQ : ‖w‖ ^ 2 ≤ 1 / 2 * hsNormSq M := by
-    rw [hw, norm_sq_mulVecE_Qm]
+    rw [hw, norm_mulVecE_Qm_sq]
     have := choiTwoBound_Qm (U := U) (V := Fin 2) u₁ v₁ u₂ v₂
     rw [← hM] at this
     linarith

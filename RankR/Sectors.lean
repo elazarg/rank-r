@@ -73,12 +73,6 @@ section Positivity
 
 variable {W : Type*} [Fintype W]
 
-/-- The quadratic form is additive over an arbitrary finite index set. -/
-theorem qform_sum_finset {ι : Type*} (t : Finset ι) (A : ι → Matrix W W ℂ)
-    (x : EuclideanSpace ℂ W) : qform (∑ a ∈ t, A a) x = ∑ a ∈ t, qform (A a) x := by
-  simp only [qform, Matrix.sum_apply, Finset.mul_sum, Finset.sum_mul]
-  exact Eq.trans (Finset.sum_congr rfl fun _ _ => Finset.sum_comm) Finset.sum_comm
-
 /-- Doubling a complex number doubles its real part. -/
 theorem two_mul_re (z : ℂ) : ((2 : ℂ) * z).re = 2 * z.re := by
   simp [Complex.mul_re]

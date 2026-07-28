@@ -123,16 +123,18 @@ theorem hsNormSq_ptraceV_projWit :
 /-- **The extremizer attains `eq:main-bound` at `r = S.card`**, so the pair of
 coefficients `(r, 1/r)` is achieved and not merely approached: with `‖C‖₂² = r`,
 `|Tr C|² = r²|⟨w, v⟩|²`, both sides equal `r² + r|⟨w, v⟩|²`. -/
-theorem projWit_bound_eq {r : ℕ} (hr : 0 < r) (hS : S.card = r) :
+theorem projWit_bound_eq {r : ℕ} (hS : S.card = r) :
     hsNormSq (ptraceU (projWit S x₀ x₁)) + hsNormSq (ptraceV (projWit S x₀ x₁))
       = r * hsNormSq (projWit S x₀ x₁)
         + (1 / r : ℝ) * Complex.normSq (projWit S x₀ x₁).trace := by
-  have hrpos : (0 : ℝ) < r := by exact_mod_cast hr
   rw [hsNormSq_ptraceU_projWit, hsNormSq_ptraceV_projWit, hsNormSq_projWit,
     trace_projWit, hS]
   split_ifs with h
   · rw [Complex.normSq_natCast]
-    field_simp
+    rcases Nat.eq_zero_or_pos r with rfl | hr
+    · norm_num
+    · have hrpos : (0 : ℝ) < r := by exact_mod_cast hr
+      field_simp
   · simp [sq]
 
 end Witness

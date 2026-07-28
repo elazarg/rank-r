@@ -244,10 +244,10 @@ projection estimate on `(ℂ^d)^{⊗4}`, all four tensor factors the same space,
 which is the form Fu–Gao–Park state.  Nothing else is assumed. -/
 theorem rank_r_partial_trace_of_FGP_square
     (hU : Fintype.card U ≤ d) (hV : Fintype.card V ≤ d) (hFGP : FGPBound (Fin d) (Fin d))
-    (r : ℕ) (hr : 0 < r) (hrank : C.rank ≤ r) :
+    (r : ℕ) (hrank : C.rank ≤ r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
-  rank_r_partial_trace_of_FGP (FGPBound_of_card_le hU hV hFGP) C r hr hrank
+  rank_r_partial_trace_of_FGP (FGPBound_of_card_le hU hV hFGP) C r hrank
 
 /-- **Theorem 1.1 at the exact rank** (`eq:main-bound-exact-rank`), from
 Fu–Gao–Park as published. -/

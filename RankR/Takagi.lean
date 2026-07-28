@@ -44,27 +44,8 @@ open Matrix Finset ComplexConjugate
 
 /-! ## Private helpers
 
-`hsInner_add_left` and `hsInner_add_right` are in `FGP.lean`; the scalar and
-finite-sum cases of sesquilinearity, the linearity of `flipU`, and the two
-scalar facts that Lemma 2.3 rests on are only needed here. -/
-
-section Bilinear
-
-variable {W : Type*} [Fintype W]
-
-private theorem hsInner_smul_left (c : ℂ) (A B : Matrix W W ℂ) :
-    hsInner (c • A) B = conj c * hsInner A B := by
-  simp [hsInner, Matrix.smul_mul]
-
-private theorem hsInner_smul_right (c : ℂ) (A B : Matrix W W ℂ) :
-    hsInner A (c • B) = c * hsInner A B := by
-  simp [hsInner, Matrix.mul_smul]
-
-private theorem hsInner_sum_left {ι : Type*} [Fintype ι] (A : ι → Matrix W W ℂ)
-    (B : Matrix W W ℂ) : hsInner (∑ i, A i) B = ∑ i, hsInner (A i) B := by
-  simp [hsInner, Matrix.conjTranspose_sum, Finset.sum_mul, Matrix.trace_sum]
-
-end Bilinear
+Sesquilinearity of `hsInner` is in `HS.lean`; the linearity of `flipU` and the
+two scalar facts that Lemma 2.3 rests on are only needed here. -/
 
 section FlipLinear
 

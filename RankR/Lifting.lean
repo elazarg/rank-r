@@ -62,7 +62,7 @@ variable {W : Type*} [Fintype W] {ι : Type*} [Fintype ι] {s : ℕ}
 ancilla. -/
 noncomputable def krausQ (A : ι → Matrix W W ℂ) (Y : Matrix (W × Fin s) (W × Fin s) ℂ) :
     Matrix (W × Fin s) (W × Fin s) ℂ :=
-  krausSum (fun f => placeQ (A f)) Y
+  krausSum (fun f => placeT (A f)) Y
 
 /-- A Kraus sum preserves positive semidefiniteness. -/
 theorem qform_krausQ_nonneg (A : ι → Matrix W W ℂ) {Y : Matrix (W × Fin s) (W × Fin s) ℂ}
@@ -84,7 +84,7 @@ theorem krausQ_smul (A : ι → Matrix W W ℂ) (t : ℂ) (Y : Matrix (W × Fin 
 extended by zero off the edge set `p.1 < p.2`. -/
 noncomputable def wvec (A : ι → Matrix W W ℂ) (e : Fin s → EuclideanSpace ℂ W) (f : ι)
     (p : Fin s × Fin s) : EuclideanSpace ℂ (W × Fin s) :=
-  if p.1 < p.2 then mulVecE (placeQ (A f)) (zetaV e p.1 p.2) else 0
+  if p.1 < p.2 then mulVecE (placeT (A f)) (zetaV e p.1 p.2) else 0
 
 /-- The quadratic form of `Φ_A(P₋)` is the total squared overlap with the frame.
 
@@ -148,11 +148,11 @@ noncomputable def Kof (A : ι → Matrix W W ℂ) (c : ι × (Fin s × Fin s) �
 
 /-- Contracting the Kraus operators against the coefficients of a single ordered
 pair produces the placed edge matrix. -/
-theorem sum_smul_placeQ (A : ι → Matrix W W ℂ) (c : ι × (Fin s × Fin s) → ℂ)
+theorem sum_smul_placeT (A : ι → Matrix W W ℂ) (c : ι × (Fin s × Fin s) → ℂ)
     (p : Fin s × Fin s) :
-    ∑ f : ι, c (f, p) • placeQ (s := s) (A f) = placeQ (Kof A c p.1 p.2) := by
-  rw [Kof, placeQ_sum]
-  exact Finset.sum_congr rfl fun f _ => by rw [placeQ_smul]
+    ∑ f : ι, c (f, p) • placeT (T := Fin s) (A f) = placeT (Kof A c p.1 p.2) := by
+  rw [Kof, placeT_sum]
+  exact Finset.sum_congr rfl fun f _ => by rw [placeT_smul]
 
 variable [Fintype W]
 
@@ -167,7 +167,7 @@ theorem sum_smul_wvec (A : ι → Matrix W W ℂ) (e : Fin s → EuclideanSpace 
   refine Finset.sum_congr rfl fun p _ => ?_
   by_cases h : p.1 < p.2
   · simp only [wvec, h, if_true]
-    rw [← sum_smul_placeQ A c p, sum_mulVecE]
+    rw [← sum_smul_placeT A c p, sum_mulVecE]
     exact Finset.sum_congr rfl fun f _ => (smul_mulVecE _ _ _).symm
   · simp [wvec, h]
 
@@ -244,7 +244,7 @@ theorem inner_delta_wvec {A : ι → Matrix W W ℂ} (e : Fin s → EuclideanSpa
     inner ℂ (delta e) (wvec A e f p) = 0 := by
   rw [wvec]
   split
-  · exact inner_delta_placeQ_zetaV e (hsym f) _ _
+  · exact inner_delta_placeT_zetaV e (hsym f) _ _
   · simp
 
 /-! ## Lifting II -/
@@ -294,7 +294,7 @@ theorem qform_krausQ_Pneg_le {A : ι → Matrix W W ℂ} {β : ℝ}
     exact qform_krausQ_Pneg_le_of_norm hβ hJ hs he z
   rw [re_qform_krausQ_Pneg]
   exact frame_le_sub_proj (w := fun k : ι × (Fin s × Fin s) => wvec A e k.1 k.2)
-    (z := delta e) hsr (norm_delta_orthonormal he)
+    (z := delta e) hsr (norm_delta_of_norm_one he.1)
     (fun k => inner_delta_wvec e hsym k.1 k.2) hbess y
 
 /-- **Lifting II, form (B₀)**: `(Φ_A ⊗ id)(ρ_E^{T_W}) + β(s−1) I ⪰ 0`.

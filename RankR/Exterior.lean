@@ -108,33 +108,14 @@ theorem inner_placeAt (u v : EuclideanSpace ℂ W) {t t' : Finset (Fin r)} (ht :
 
 end Place
 
-/-! ## Operators acting trivially on the face factor -/
+/-! ## Operators acting trivially on the face factor
+
+`placeT` itself is in `Phi.lean`, at an arbitrary ancilla; what is special here is
+that it preserves the face label of a placed vector. -/
 
 section PlaceT
 
 variable {W T : Type*} [DecidableEq T]
-
-/-- `A ⊗ I_T`, for `A` on `W`, placed on `W ⊗ T` for an arbitrary ancilla `T`. -/
-def placeT (A : Matrix W W ℂ) : Matrix (W × T) (W × T) ℂ :=
-  Matrix.of fun x y => if x.2 = y.2 then A x.1 y.1 else 0
-
-@[simp] theorem placeT_apply (A : Matrix W W ℂ) (x y : W × T) :
-    placeT A x y = if x.2 = y.2 then A x.1 y.1 else 0 := rfl
-
-/-- Placing an operator on the ancilla is additive. -/
-theorem placeT_sum {ι : Type*} [Fintype ι] (A : ι → Matrix W W ℂ) :
-    placeT (T := T) (∑ i, A i) = ∑ i, placeT (T := T) (A i) := by
-  ext x y
-  simp only [placeT_apply, Matrix.sum_apply]
-  split_ifs with h
-  · rfl
-  · exact Finset.sum_const_zero.symm
-
-/-- Placing an operator on the ancilla is homogeneous. -/
-theorem placeT_smul (c : ℂ) (A : Matrix W W ℂ) :
-    placeT (T := T) (c • A) = c • placeT (T := T) A := by
-  ext x y
-  simp only [placeT_apply, Matrix.smul_apply, smul_eq_mul, mul_ite, mul_zero]
 
 variable {r m : ℕ} [Fintype W]
 

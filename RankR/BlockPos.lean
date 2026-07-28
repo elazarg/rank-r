@@ -190,11 +190,11 @@ theorem re_qform_psiChoi (r : ℕ) (C : Matrix (U × V) (U × V) ℂ) :
   rw [hsNormSq_eq_norm_sq C]
 
 /-- **Theorem 1.1 is the `r`-block positivity of `J(Ψ_r)`**, unconditionally. -/
-theorem isBlockPositive_psiChoi (r : ℕ) (hr : 0 < r) :
+theorem isBlockPositive_psiChoi (r : ℕ) :
     IsBlockPositive r (psiChoi (U := U) (V := V) r) := by
   intro C hrank
   rw [re_qform_psiChoi]
-  linarith [rank_r_partial_trace C r hr hrank]
+  linarith [rank_r_partial_trace C r hrank]
 
 /-- The converse reading: block positivity at `r` returns the bound. -/
 theorem rank_r_partial_trace_of_isBlockPositive (r : ℕ)

@@ -13,7 +13,7 @@ claim is deliberately narrow, and what follows spells out its limits.
 
 ```lean
 theorem RankR.rank_r_partial_trace
-    (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (hr : 0 < r) (hrank : C.rank ≤ r) :
+    (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (hrank : C.rank ≤ r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace
 ```
@@ -132,12 +132,12 @@ family `A_I` and its own constant `β_I`:
     Γ ≥ max_J ∑_{I ∈ H, J ⊆ I} β_I,
 
 as `qform_PhypAmp_le_of_norm` and `qform_PhypAmp_le`. The coefficient is the
-weighted modulus of the incidence correspondence; the uniform theorems are the
-constant-weight case, where that modulus is the largest fibre `d↑_{k-1}(H) β`, and
-`qform_krausF_Phyp_le_of_weighted` derives Theorem B from the weighted form to
-check the two agree. The one hypothesis the weighted route adds is `0 < β_I`,
-because the weighted regrouping divides by the weight; `qform_krausF_Phyp_le`
-still covers `β = 0` directly.
+weighted modulus of the incidence correspondence, and the uniform theorems
+`qform_krausF_Phyp_le_of_norm` and `qform_krausF_Phyp_le` are *derived* from
+these as the constant-weight case, where that modulus is the largest fibre
+`d↑_{k-1}(H) β`. The weights need only be nonnegative: a hyperedge of weight
+zero satisfies `ChoiKBound _ k 0`, which forces its incidences to vanish, so the
+degenerate case costs nothing.
 
 **Not proved:** the *support-adapted* protected space of the same generalization —
 restricting the star of each `(k-2)`-face to the facets actually present in `H`,

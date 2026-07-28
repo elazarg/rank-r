@@ -87,10 +87,10 @@ theorem operatorIneq_of_choiTwoBound
 rather than an `axiom`, so the dependency is visible in the type. -/
 theorem rank_r_partial_trace_of_choiTwoBound
     (hβ : ChoiTwoBound (choiOf (skewKraus (U := U) (V := V))) 4)
-    (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (hr : 0 < r) (hrank : C.rank ≤ r) :
+    (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (hrank : C.rank ≤ r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
-  rank_r_of_operatorIneq (operatorIneq_of_choiTwoBound hβ) C r hr hrank
+  rank_r_of_operatorIneq (operatorIneq_of_choiTwoBound hβ) C r hrank
 
 /-- **The exact-rank form** (`eq:main-bound-exact-rank`). -/
 theorem rank_r_partial_trace_exact_of_choiTwoBound

@@ -10,13 +10,13 @@ the dark state.
 
 Two statements, of different strengths.
 
-* `inner_delta_placeQ_zetaV_iff` upgrades `eq:T-orthogonal` to an equivalence:
+* `inner_delta_placeT_zetaV_iff` upgrades `eq:T-orthogonal` to an equivalence:
   the pairing `⟪δ_e, (N ⊗ I_Q) ζ_{ij}⟫` is the *difference* of the two bilinear
   forms, so it vanishes for every edge exactly when `IsFrameSymmetric e N`.  This
-  is to `inner_delta_placeQ_zetaV` what
+  is to `inner_delta_placeT_zetaV` what
   `transpose_eq_of_forall_isFrameSymmetric` is to
   `isFrameSymmetric_of_transpose_eq`, and it is where the `ℤ/2`-degree enters:
-  `inner_delta_placeQ_zetaV_of_isSkew` evaluates the same pairing on a *skew*
+  `inner_delta_placeT_zetaV_of_isSkew` evaluates the same pairing on a *skew*
   operator, where the two forms are negatives and the difference becomes twice a
   single one.
 
@@ -49,11 +49,11 @@ variable {W : Type*} [Fintype W] {s : ℕ}
 /-- The pairing of `δ_e` against a placed edge vector, evaluated.  It is the
 *difference* of the two bilinear forms of `N` on the pair `(e_i, e_j)`; both
 directions of the dichotomy read off this one identity. -/
-theorem inner_delta_placeQ_zetaV_eq (e : Fin s → EuclideanSpace ℂ W) (N : Matrix W W ℂ)
+theorem inner_delta_placeT_zetaV_eq (e : Fin s → EuclideanSpace ℂ W) (N : Matrix W W ℂ)
     (i j : Fin s) :
-    inner ℂ (delta e) (mulVecE (placeQ N) (zetaV e i j))
+    inner ℂ (delta e) (mulVecE (placeT N) (zetaV e i j))
       = inner ℂ (e j) (mulVecE N (ebar e i)) - inner ℂ (e i) (mulVecE N (ebar e j)) := by
-  rw [mulVecE_placeQ_zetaV e (fun _ _ => N) i j, inner_sub_right, inner_delta_epsOf,
+  rw [mulVecE_placeT_zetaV e (fun _ _ => N) i j, inner_sub_right, inner_delta_epsOf,
     inner_delta_epsOf]
 
 /-- **`eq:T-orthogonal` is an equivalence.**  Orthogonality of every placed edge
@@ -62,27 +62,27 @@ vector to `δ_e` is not merely implied by frame symmetry: it *is* frame symmetry
 `Frame.lean` supplies the direction used downstream; this is the converse, and it
 is what makes `IsFrameSymmetric` the exact hypothesis rather than a convenient
 sufficient one. -/
-theorem inner_delta_placeQ_zetaV_iff (e : Fin s → EuclideanSpace ℂ W) (N : Matrix W W ℂ) :
-    (∀ i j, inner ℂ (delta e) (mulVecE (placeQ N) (zetaV e i j)) = 0)
+theorem inner_delta_placeT_zetaV_iff (e : Fin s → EuclideanSpace ℂ W) (N : Matrix W W ℂ) :
+    (∀ i j, inner ℂ (delta e) (mulVecE (placeT N) (zetaV e i j)) = 0)
       ↔ IsFrameSymmetric e N := by
   constructor
   · intro h a b
     have hab := h b a
-    rw [inner_delta_placeQ_zetaV_eq, sub_eq_zero] at hab
+    rw [inner_delta_placeT_zetaV_eq, sub_eq_zero] at hab
     exact hab
   · intro h i j
-    rw [inner_delta_placeQ_zetaV_eq, sub_eq_zero]
+    rw [inner_delta_placeT_zetaV_eq, sub_eq_zero]
     exact h j i
 
 /-- **The skew case: the pairing is the sum, not the difference.**
 
-For `Nᵀ = -N` the two bilinear forms of `inner_delta_placeQ_zetaV_eq` are
+For `Nᵀ = -N` the two bilinear forms of `inner_delta_placeT_zetaV_eq` are
 negatives of one another, so the difference doubles instead of cancelling.  This
 is the `ℤ/2`-degree dichotomy of `rem:parity` made explicit: degree `0` protects
 `δ_e`, degree `1` pairs against it twice over. -/
-theorem inner_delta_placeQ_zetaV_of_isSkew (e : Fin s → EuclideanSpace ℂ W)
+theorem inner_delta_placeT_zetaV_of_isSkew (e : Fin s → EuclideanSpace ℂ W)
     {N : Matrix W W ℂ} (hN : Nᵀ = -N) (i j : Fin s) :
-    inner ℂ (delta e) (mulVecE (placeQ N) (zetaV e i j))
+    inner ℂ (delta e) (mulVecE (placeT N) (zetaV e i j))
       = -2 * inner ℂ (e i) (mulVecE N (ebar e j)) := by
   have hskew : ∀ a b : Fin s, inner ℂ (e a) (mulVecE N (ebar e b))
       = -inner ℂ (e b) (mulVecE N (ebar e a)) := by
@@ -96,7 +96,7 @@ theorem inner_delta_placeQ_zetaV_of_isSkew (e : Fin s → EuclideanSpace ℂ W)
       have hxy := congrFun (congrFun hN x) y
       rwa [Matrix.transpose_apply, Matrix.neg_apply] at hxy
     rw [hsym]; ring
-  rw [inner_delta_placeQ_zetaV_eq, hskew j i]
+  rw [inner_delta_placeT_zetaV_eq, hskew j i]
   ring
 
 end Converse
@@ -166,7 +166,7 @@ theorem orthonormal_pb : Orthonormal ℂ pb := by
     · revert h; fin_cases i <;> fin_cases j <;> simp
 
 /-- The frame is *not* symmetric for the skew family: this is the failure of
-`eq:T-orthogonal` itself, via `inner_delta_placeQ_zetaV_iff`. -/
+`eq:T-orthogonal` itself, via `inner_delta_placeT_zetaV_iff`. -/
 theorem not_isFrameSymmetric_skewFam : ¬ ∀ f, IsFrameSymmetric pb (skewFam f) := by
   intro h
   have h01 := h () 0 1
@@ -194,7 +194,7 @@ theorem inner_pb_mulVecE_skewFam :
 theorem inner_delta_wvec_skewFam :
     inner ℂ (delta pb) (wvec skewFam pb () (0, 1)) = -2 := by
   rw [wvec, if_pos (by decide : ((0 : Fin 2), (1 : Fin 2)).1 < ((0 : Fin 2), (1 : Fin 2)).2),
-    inner_delta_placeQ_zetaV_of_isSkew pb (skewFam_isSkew ()) 0 1, inner_pb_mulVecE_skewFam]
+    inner_delta_placeT_zetaV_of_isSkew pb (skewFam_isSkew ()) 0 1, inner_pb_mulVecE_skewFam]
   ring
 
 /-- The left-hand side of both forms, at `y = δ_e`. -/
@@ -227,7 +227,7 @@ equality: `2β(s-1)‖y‖² = 4` at `β = 1`, `s = 2`. -/
 theorem qform_krausQ_Pneg_skewFam_saturates :
     (qform (krausQ skewFam (Pneg pb)) (delta pb)).re
       = 2 * 1 * ((2 : ℝ) - 1) * ‖delta pb‖ ^ 2 := by
-  rw [re_qform_krausQ_Pneg_skewFam, norm_delta_orthonormal orthonormal_pb]
+  rw [re_qform_krausQ_Pneg_skewFam, norm_delta_of_norm_one orthonormal_pb.1]
   norm_num
 
 /-- **Form (A) is false for a skew family**, for every constant `β` whatsoever.
@@ -246,7 +246,7 @@ theorem not_qform_krausQ_Pneg_le_skewFam (β : ℝ) :
         ≤ 2 * β * ((2 : ℝ) - 1)
             * (‖delta pb‖ ^ 2
                 - Complex.normSq (inner ℂ (delta pb) (delta pb)) / 2)) := by
-  rw [re_qform_krausQ_Pneg_skewFam, norm_delta_orthonormal orthonormal_pb,
+  rw [re_qform_krausQ_Pneg_skewFam, norm_delta_of_norm_one orthonormal_pb.1,
     normSq_inner_self_delta_pb]
   norm_num
 

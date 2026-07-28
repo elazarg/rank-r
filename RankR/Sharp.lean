@@ -76,19 +76,11 @@ section Witness
 
 variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
 
-/-- The standard basis vector, written out rather than taken from Mathlib's
-deprecated `EuclideanSpace.single`, so that its value at a point is definitional. -/
-private noncomputable def sbasis {W : Type*} [DecidableEq W] (x : W) : EuclideanSpace ℂ W :=
-  WithLp.toLp 2 fun p => if p = x then (1 : ℂ) else 0
-
-@[simp] private theorem sbasis_apply {W : Type*} [DecidableEq W] (x p : W) :
-    sbasis x p = if p = x then (1 : ℂ) else 0 := rfl
-
 /-- The extremizing operator `M = N P`, in coordinates: it sends `(a₀, b₀)` to
 `(a₁, b₁)` and `(a₀, b₁)` to `-(a₁, b₀)`, and kills everything else. -/
 noncomputable def sharpWit (a₀ a₁ : U) (b₀ b₁ : V) : Matrix (U × V) (U × V) ℂ :=
-  rankOne (sbasis (a₁, b₁)) (sbasis (a₀, b₀))
-    + rankOne (-(sbasis (a₁, b₀) : EuclideanSpace ℂ (U × V))) (sbasis (a₀, b₁))
+  rankOne (eBasis (a₁, b₁)) (eBasis (a₀, b₀))
+    + rankOne (-(eBasis (a₁, b₀) : EuclideanSpace ℂ (U × V))) (eBasis (a₀, b₁))
 
 omit [Fintype U] [Fintype V] in
 /-- The two nonzero entries of the extremizer. -/
@@ -97,7 +89,7 @@ theorem sharpWit_apply (a₀ a₁ : U) (b₀ b₁ : V) (p q : U × V) :
       = (if p = (a₁, b₁) then (1 : ℂ) else 0) * (if q = (a₀, b₀) then 1 else 0)
         - (if p = (a₁, b₀) then (1 : ℂ) else 0) * (if q = (a₀, b₁) then 1 else 0) := by
   simp only [sharpWit, Matrix.add_apply, rankOne, Matrix.of_apply, PiLp.neg_apply,
-    sbasis_apply, apply_ite (starRingEnd ℂ), map_one, map_zero]
+    eBasis_apply, apply_ite (starRingEnd ℂ), map_one, map_zero]
   ring
 
 /-- The support of the extremizer: the two index points carrying its entries. -/
@@ -225,7 +217,7 @@ theorem choiTwoAttained_of_sharpWit {J : Matrix (Idx U V) (Idx U V) ℂ} {β : �
     (heq : (qform J (vec (sharpWit a₀ a₁ b₀ b₁))).re
       = 2 * β * hsNormSq (sharpWit a₀ a₁ b₀ b₁)) :
     ChoiTwoAttained J β :=
-  ⟨sbasis (a₁, b₁), sbasis (a₀, b₀), -(sbasis (a₁, b₀)), sbasis (a₀, b₁), hne, heq⟩
+  ⟨eBasis (a₁, b₁), eBasis (a₀, b₀), -(eBasis (a₁, b₀)), eBasis (a₀, b₁), hne, heq⟩
 
 /-- **`¼` is attained by the double antisymmetrizer.**  With the upper bound that
 `Equivalence.lean` derives from Autonne-Takagi, this is `‖Qm‖_{S(2)} = ½`. -/
@@ -289,11 +281,11 @@ This is the sharpness of the *conclusion* at the double-skew instance.  The
 sharpness of the amplification *coefficient* `(r-1)β₂` for a general `Φ` is a
 different statement, needing a family for which that coefficient is attained ---
 the edge-Kraus graph family of `paper/derivation-graph-inclusion.tex` is one. -/
-theorem re_qform_psiChoi_projWit {r : ℕ} (hr : 0 < r) {S : Finset U} (hS : S.card = r)
+theorem re_qform_psiChoi_projWit {r : ℕ} {S : Finset U} (hS : S.card = r)
     (x₀ x₁ : V) :
     (qform (psiChoi (U := U) (V := V) r) (vec (projWit S x₀ x₁))).re = 0 := by
   rw [re_qform_psiChoi]
-  linarith [projWit_bound_eq (U := U) S x₀ x₁ hr hS]
+  linarith [projWit_bound_eq (U := U) S x₀ x₁ hS]
 
 end BlockBoundary
 

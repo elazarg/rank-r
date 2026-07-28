@@ -136,14 +136,14 @@ variable {W : Type*} [Fintype W] {s : ℕ}
 
 /-- `(N ⊗ I_Q)(v ⊗ q_k) = (N v) ⊗ q_k`: an operator acting trivially on `Q`
 preserves the `Q`-coordinate of a placed vector. -/
-theorem mulVecE_placeQ_epsOf (N : Matrix W W ℂ) (v : EuclideanSpace ℂ W) (k : Fin s) :
-    mulVecE (placeQ N) (epsOf v k) = epsOf (mulVecE N v) k := by
+theorem mulVecE_placeT_epsOf (N : Matrix W W ℂ) (v : EuclideanSpace ℂ W) (k : Fin s) :
+    mulVecE (placeT N) (epsOf v k) = epsOf (mulVecE N v) k := by
   ext x
   rw [mulVecE_apply, epsOf_apply, mulVecE_apply, Fintype.sum_prod_type]
-  have h : ∀ q : W, (∑ m, placeQ N x (q, m) * epsOf v k (q, m))
+  have h : ∀ q : W, (∑ m, placeT N x (q, m) * epsOf v k (q, m))
       = if x.2 = k then N x.1 q * v q else 0 := by
     intro q
-    have h' : ∀ m : Fin s, placeQ N x (q, m) * epsOf v k (q, m)
+    have h' : ∀ m : Fin s, placeT N x (q, m) * epsOf v k (q, m)
         = if m = k then (if x.2 = k then N x.1 q * v q else 0) else 0 := by
       intro m
       by_cases hmk : m = k
@@ -162,16 +162,16 @@ theorem mulVecE_placeQ_epsOf (N : Matrix W W ℂ) (v : EuclideanSpace ℂ W) (k 
 data `K`. -/
 noncomputable def Tsyn (e : Fin s → EuclideanSpace ℂ W)
     (K : Fin s → Fin s → Matrix W W ℂ) : EuclideanSpace ℂ (W × Fin s) :=
-  ∑ p ∈ Edges, mulVecE (placeQ (K p.1 p.2)) (zetaV e p.1 p.2)
+  ∑ p ∈ Edges, mulVecE (placeT (K p.1 p.2)) (zetaV e p.1 p.2)
 
 /-- The edge `(i, j)` contributes `+K_{ij} ēᵢ` at `Q`-coordinate `j` and
 `-K_{ij} ēⱼ` at `Q`-coordinate `i`. -/
-theorem mulVecE_placeQ_zetaV (e : Fin s → EuclideanSpace ℂ W)
+theorem mulVecE_placeT_zetaV (e : Fin s → EuclideanSpace ℂ W)
     (K : Fin s → Fin s → Matrix W W ℂ) (i j : Fin s) :
-    mulVecE (placeQ (K i j)) (zetaV e i j)
+    mulVecE (placeT (K i j)) (zetaV e i j)
       = epsOf (mulVecE (K i j) (ebar e i)) j - epsOf (mulVecE (K i j) (ebar e j)) i := by
-  rw [zetaV, eps_eq_epsOf, eps_eq_epsOf, mulVecE_sub, mulVecE_placeQ_epsOf,
-    mulVecE_placeQ_epsOf]
+  rw [zetaV, eps_eq_epsOf, eps_eq_epsOf, mulVecE_sub, mulVecE_placeT_epsOf,
+    mulVecE_placeT_epsOf]
 
 /-- The `k`-th vertex block of `T`: the signed sum of the edge contributions of
 all edges incident to `k`. -/
@@ -187,11 +187,11 @@ theorem Tsyn_eq_delta_vtx (e : Fin s → EuclideanSpace ℂ W)
   ext x
   rw [Tsyn, sum_apply_euclidean, delta_apply, vtx, PiLp.sub_apply, sum_apply_euclidean,
     sum_apply_euclidean]
-  have h : ∀ q : Fin s × Fin s, mulVecE (placeQ (K q.1 q.2)) (zetaV e q.1 q.2) x
+  have h : ∀ q : Fin s × Fin s, mulVecE (placeT (K q.1 q.2)) (zetaV e q.1 q.2) x
       = (if x.2 = q.2 then mulVecE (K q.1 q.2) (ebar e q.1) x.1 else 0)
         - (if x.2 = q.1 then mulVecE (K q.1 q.2) (ebar e q.2) x.1 else 0) := by
     intro q
-    rw [mulVecE_placeQ_zetaV, PiLp.sub_apply, epsOf_apply, epsOf_apply]
+    rw [mulVecE_placeT_zetaV, PiLp.sub_apply, epsOf_apply, epsOf_apply]
   rw [Finset.sum_congr rfl fun q _ => h q, Finset.sum_sub_distrib,
     sum_Edges_ite_snd x.2 (fun i j => mulVecE (K i j) (ebar e i) x.1),
     sum_Edges_ite_fst x.2 (fun i j => mulVecE (K i j) (ebar e j) x.1)]

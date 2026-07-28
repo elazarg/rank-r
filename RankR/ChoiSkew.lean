@@ -44,10 +44,12 @@ skew-symmetric matrices. -/
 noncomputable def skewKraus (f : KIdx U V) : Matrix (U × V) (U × V) ℂ :=
   skewUnit f.1.1 f.1.2 ⊗ₖ skewUnit f.2.1 f.2.2
 
+omit [Fintype U] [Fintype V] in
 /-- Every Kraus operator of the family lies in the double-skew subspace. -/
 theorem skewKraus_mem_doubleSkew (f : KIdx U V) : skewKraus f ∈ doubleSkew U V :=
   kron_mem_doubleSkew (skewUnit_isSkew _ _) (skewUnit_isSkew _ _)
 
+omit [Fintype U] [Fintype V] in
 /-- **The Kraus operators are transpose-symmetric.**  Two skew factors make a
 symmetric tensor, and this is the hypothesis under which the trace correction of
 `prop:operator_ineq` survives: it is what makes `⟪δ_E, 𝒯c⟫ = 0`. -/

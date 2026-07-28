@@ -16,13 +16,12 @@ section Ortho
 variable {ι E : Type*} [Fintype ι] [NormedAddCommGroup E] [InnerProductSpace ℂ E]
 
 omit [Fintype ι] in
-/-- Subtracting the `z`-component of `y` leaves the overlaps with any family
-orthogonal to `z` unchanged. -/
-theorem inner_sub_smul_of_orthogonal {w : ι → E} {z : E}
-    (hz : ∀ k, inner ℂ z (w k) = 0) (y : E) (a : ℂ) (k : ι) :
-    inner ℂ (w k) (y - a • z) = inner ℂ (w k) y := by
-  have h : inner ℂ (w k) z = 0 := by
-    rw [← inner_conj_symm, hz k, map_zero]
+/-- Subtracting the `z`-component of `y` leaves the overlap with any single
+vector orthogonal to `z` unchanged. -/
+theorem inner_sub_smul_of_orthogonal {v z : E} (hz : inner ℂ z v = 0) (y : E) (a : ℂ) :
+    inner ℂ v (y - a • z) = inner ℂ v y := by
+  have h : inner ℂ v z = 0 := by
+    rw [← inner_conj_symm, hz, map_zero]
   rw [inner_sub_right, inner_smul_right, h, mul_zero, sub_zero]
 
 /-- The Pythagorean identity for the component of `y` off a vector `z` of squared
@@ -44,7 +43,12 @@ theorem norm_sub_proj_sq {z : E} {n : ℝ} (hn : 0 < n) (hzn : ‖z‖ ^ 2 = n) 
   field_simp
   ring
 
-/-- Bessel bound sharpened on the orthogonal complement of `z`. -/
+/-- Bessel bound sharpened on the orthogonal complement of `z`.
+
+This is the single-vector case of `frame_le_sub_proj_family` below, up to
+normalizing `z`; it is proved separately because the caller supplies `z = δ_e`
+with `‖z‖² = s`, and carrying that norm as the parameter `n` is cheaper than
+rescaling the vector and unscaling the resulting projection term. -/
 theorem frame_le_sub_proj {w : ι → E} {z : E} {n : ℝ} (hn : 0 < n) (hzn : ‖z‖ ^ 2 = n)
     (horth : ∀ k, inner ℂ z (w k) = 0) {M : ℝ}
     (hb : ∀ y : E, ∑ k, Complex.normSq (inner ℂ (w k) y) ≤ M * ‖y‖ ^ 2) (y : E) :
@@ -54,7 +58,7 @@ theorem frame_le_sub_proj {w : ι → E} {z : E} {n : ℝ} (hn : 0 < n) (hzn : �
   rw [norm_sub_proj_sq hn hzn] at h
   refine le_trans (le_of_eq ?_) h
   exact Finset.sum_congr rfl fun k _ => by
-    rw [inner_sub_smul_of_orthogonal horth]
+    rw [inner_sub_smul_of_orthogonal (horth k)]
 
 end Ortho
 
@@ -119,10 +123,11 @@ end OrthoFamily
 
 variable {W : Type*} [Fintype W] {s : ℕ}
 
-/-- `‖δ_e‖² = s` for an orthonormal frame. -/
-theorem norm_delta_orthonormal {e : Fin s → EuclideanSpace ℂ W}
-    (he : Orthonormal ℂ e) : ‖delta e‖ ^ 2 = (s : ℝ) := by
+/-- `‖δ_e‖² = s` for a frame of unit vectors.  Orthogonality plays no part: the
+blocks of `δ` are the `eᵢ` themselves, so only their norms enter. -/
+theorem norm_delta_of_norm_one {e : Fin s → EuclideanSpace ℂ W}
+    (he : ∀ i, ‖e i‖ = 1) : ‖delta e‖ ^ 2 = (s : ℝ) := by
   rw [norm_delta]
-  simp [he.1]
+  simp [he]
 
 end RankR

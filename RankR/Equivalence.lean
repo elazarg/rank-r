@@ -146,12 +146,6 @@ private theorem hsInner_rankOne_right {W : Type*} [Fintype W] (A : Matrix W W �
   rw [Finset.mul_sum]
   exact Finset.sum_congr rfl fun p _ => by ring
 
-/-- `hsInner` is additive over a finite sum in its second argument. -/
-private theorem hsInner_sum_right {W ι : Type*} [Fintype W] [Fintype ι]
-    (A : Matrix W W ℂ) (B : ι → Matrix W W ℂ) :
-    hsInner A (∑ i, B i) = ∑ i, hsInner A (B i) := by
-  simp [hsInner, Matrix.mul_sum, Matrix.trace_sum]
-
 /-- Transposition preserves the rank.  `Matrix.rank_transpose` needs only
 `Field`, whereas `Matrix.rank_conjTranspose` lives in a `StarOrderedField`
 section and would require the star order on `ℂ`; the development orders `ℂ`
@@ -161,7 +155,7 @@ private theorem rank_transpose_le {W : Type*} [Fintype W]
   rwa [Matrix.rank_transpose]
 
 /-- `(|x⟩⟨y|)ᵀ = |ȳ⟩⟨x̄|`. -/
-private theorem transpose_rankOne {W : Type*} [Fintype W] (x y : EuclideanSpace ℂ W) :
+private theorem transpose_rankOne {W : Type*} (x y : EuclideanSpace ℂ W) :
     (rankOne x y)ᵀ = rankOne (bar y) (bar x) := by
   ext p q
   simp [rankOne, Matrix.transpose_apply, mul_comm]

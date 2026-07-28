@@ -45,17 +45,9 @@ variable {W : Type*} [Fintype W]
 the inner product, is what the partial transpose pairs vectors with. -/
 def bil (x y : EuclideanSpace ℂ W) : ℂ := ∑ w, x w * y w
 
-/-- The single-vector conjugate, matching `ebar` at each index. -/
-def conjVec (x : EuclideanSpace ℂ W) : EuclideanSpace ℂ W :=
-  WithLp.toLp 2 fun p => conj (x p)
-
 omit [Fintype W] in
-@[simp] theorem conjVec_apply (x : EuclideanSpace ℂ W) (p : W) :
-    conjVec x p = conj (x p) := rfl
-
-omit [Fintype W] in
-theorem ebar_eq_conjVec {s : ℕ} (e : Fin s → EuclideanSpace ℂ W) (i : Fin s) :
-    ebar e i = conjVec (e i) := rfl
+theorem ebar_eq_bar {s : ℕ} (e : Fin s → EuclideanSpace ℂ W) (i : Fin s) :
+    ebar e i = bar (e i) := rfl
 
 /-- The pairing is symmetric, having no conjugation to break it. -/
 theorem bil_comm (x y : EuclideanSpace ℂ W) : bil x y = bil y x :=
@@ -64,15 +56,15 @@ theorem bil_comm (x y : EuclideanSpace ℂ W) : bil x y = bil y x :=
 /-- **Moving the adjoint across the bilinear pairing.**  With both arguments
 conjugated, `Aᴴ` on the left becomes `A` on the right and the whole pairing
 conjugates.  This is what makes the conjugated frame the right one. -/
-theorem bil_conjVec_mulVecE (A : Matrix W W ℂ) (x y : EuclideanSpace ℂ W) :
-    bil (mulVecE Aᴴ (conjVec x)) (conjVec y) = conj (bil (mulVecE A y) x) := by
+theorem bil_bar_mulVecE (A : Matrix W W ℂ) (x y : EuclideanSpace ℂ W) :
+    bil (mulVecE Aᴴ (bar x)) (bar y) = conj (bil (mulVecE A y) x) := by
   rw [bil, bil, map_sum]
-  have hL : ∀ w : W, mulVecE Aᴴ (conjVec x) w * conjVec y w
+  have hL : ∀ w : W, mulVecE Aᴴ (bar x) w * bar y w
       = ∑ w', conj (A w' w * y w * x w') := by
     intro w
-    rw [mulVecE_apply, conjVec_apply, Finset.sum_mul]
+    rw [mulVecE_apply, bar_apply, Finset.sum_mul]
     refine Finset.sum_congr rfl fun w' _ => ?_
-    rw [Matrix.conjTranspose_apply, conjVec_apply, RCLike.star_def]
+    rw [Matrix.conjTranspose_apply, bar_apply, RCLike.star_def]
     simp only [map_mul]
     ring
   have hR : ∀ w' : W, conj (mulVecE A y w' * x w') = ∑ w, conj (A w' w * y w * x w') := by
@@ -90,22 +82,14 @@ section DoubleSums
 variable {W : Type*} [Fintype W] {s : ℕ}
 
 /-- An operator acting on a `δ`-assembled vector acts blockwise. -/
-theorem mulVecE_placeQ_delta (N : Matrix W W ℂ) (v : Fin s → EuclideanSpace ℂ W) :
-    mulVecE (placeQ N) (delta v) = delta fun i => mulVecE N (v i) := by
+theorem mulVecE_placeT_delta (N : Matrix W W ℂ) (v : Fin s → EuclideanSpace ℂ W) :
+    mulVecE (placeT N) (delta v) = delta fun i => mulVecE N (v i) := by
   ext x
-  simp only [mulVecE_apply, delta_apply, placeQ_apply, Fintype.sum_prod_type]
+  simp only [mulVecE_apply, delta_apply, placeT_apply, Fintype.sum_prod_type]
   refine Finset.sum_congr rfl fun q _ => ?_
   rw [Finset.sum_eq_single x.2 (fun m _ hm => by simp [Ne.symm hm])
     (fun h => absurd (Finset.mem_univ x.2) h)]
   simp
-
-/-- Reordering a fourfold sum from `(p, q, i, j)` to `(i, j, p, q)`. -/
-private theorem swapPairs {α β : Type*} [Fintype α] [Fintype β] (G : α → α → β → β → ℂ) :
-    (∑ p, ∑ q, ∑ i, ∑ j, G p q i j) = ∑ i, ∑ j, ∑ p, ∑ q, G p q i j := by
-  rw [Finset.sum_congr rfl fun p (_ : p ∈ Finset.univ) => Finset.sum_comm, Finset.sum_comm]
-  refine Finset.sum_congr rfl fun i _ => ?_
-  rw [Finset.sum_congr rfl fun p (_ : p ∈ Finset.univ) => Finset.sum_comm]
-  exact Finset.sum_comm
 
 /-- Reordering a fourfold sum from `(w, i, w', j)` to `(i, j, w, w')`. -/
 private theorem swap4 (G : W → Fin s → W → Fin s → ℂ) :
@@ -174,7 +158,7 @@ theorem hsInner_rankFactor_transpose (u d : Fin s → EuclideanSpace ℂ W) :
     rw [map_mul]
     ring
   rw [Finset.sum_congr rfl fun p _ => Finset.sum_congr rfl fun q _ => hL p q, hR]
-  exact swapPairs (fun p q i j => conj (u i p) * d i q * (u j q * conj (d j p)))
+  exact sum4_swap fun i j p q => conj (u i p) * d i q * (u j q * conj (d j p))
 
 end DoubleSums
 
@@ -187,23 +171,23 @@ variable {W : Type*} [Fintype W] {s : ℕ}
 /-- **The negative-sector form at the conjugated frame is the Choi pairing.**
 
 Both are double sums over the frame indices of products of bilinear pairings, and
-`bil_conjVec_mulVecE` matches them term by term.  The transposition of the index
-pair is absorbed by `swapPairs`-free relabelling: the two factors of each summand
+`bil_bar_mulVecE` matches them term by term.  The transposition of the index
+pair is absorbed by a relabelling: the two factors of each summand
 exchange roles. -/
 theorem qform_ptransposeUV_conj_frame (A : Matrix W W ℂ) (e d : Fin s → EuclideanSpace ℂ W) :
     qform (ptransposeUV (rankOne (delta (ebar e)) (delta (ebar e))))
-        (mulVecE (placeQ Aᴴ) (delta (ebar d)))
+        (mulVecE (placeT Aᴴ) (delta (ebar d)))
       = hsInner (A * rankFactor e d) ((A * rankFactor e d)ᵀ) := by
-  rw [mulVecE_placeQ_delta, qform_ptransposeUV_rankOne_delta, mul_rankFactor,
+  rw [mulVecE_placeT_delta, qform_ptransposeUV_rankOne_delta, mul_rankFactor,
     hsInner_rankFactor_transpose]
   have hfac : ∀ i j : Fin s,
       conj (bil (mulVecE Aᴴ (ebar d i)) (ebar e j)) * bil (ebar e i) (mulVecE Aᴴ (ebar d j))
         = conj (bil (mulVecE A (e i)) (d j)) * bil (d i) (mulVecE A (e j)) := by
     intro i j
-    rw [ebar_eq_conjVec, ebar_eq_conjVec, ebar_eq_conjVec, ebar_eq_conjVec,
-      bil_conjVec_mulVecE, Complex.conj_conj,
-      bil_comm (conjVec (e i)) (mulVecE Aᴴ (conjVec (d j))),
-      bil_conjVec_mulVecE, bil_comm (d i) (mulVecE A (e j))]
+    rw [ebar_eq_bar, ebar_eq_bar, ebar_eq_bar, ebar_eq_bar,
+      bil_bar_mulVecE, Complex.conj_conj,
+      bil_comm (bar (e i)) (mulVecE Aᴴ (bar (d j))),
+      bil_bar_mulVecE, bil_comm (d i) (mulVecE A (e j))]
     ring
   exact Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => hfac i j
 
@@ -229,7 +213,7 @@ theorem thetaPair_eq_qform_krausQ (A : ι → Matrix W W ℂ)
   rw [← qform_ptransposeUV_conj_frame (A a) e d]
   congr 2
   ext x y
-  simp only [placeQ_apply, Matrix.conjTranspose_apply, eq_comm]
+  simp only [placeT_apply, Matrix.conjTranspose_apply, eq_comm]
   split_ifs with h
   · rfl
   · exact (map_zero (starRingEnd ℂ)).symm
@@ -262,14 +246,14 @@ omit [DecidableEq W] in
 Lifting II form (B), run at the conjugated frame `ē` of the range factorization
 and the test vector `δ_{d̄}`. -/
 theorem thetaPositive_at_rank {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β)
-    (hJ : ChoiTwoBound (choiOf A) β) (hsym : ∀ f, (A f)ᵀ = A f) (hs : 0 < s)
-    {e d : Fin s → EuclideanSpace ℂ W} (he : Orthonormal ℂ e) :
+    (hJ : ChoiTwoBound (choiOf A) β) {e d : Fin s → EuclideanSpace ℂ W}
+    (hsym : ∀ f, IsFrameSymmetric (ebar e) (A f)) (hs : 0 < s) (he : Orthonormal ℂ e) :
     0 ≤ (thetaPair A (rankFactor e d)).re
         + β * ((s : ℝ) - 1) * (hsNormSq (rankFactor e d)
             - Complex.normSq (rankFactor e d).trace / s) := by
   have hb := orthonormal_ebar he
   have hkey := qform_krausQ_ptransposeUV_ge (A := A) (β := β) (e := ebar e) hβ hJ
-    (fun f => isFrameSymmetric_of_transpose_eq (hsym f) _) hs hb (delta (ebar d))
+    hsym hs hb (delta (ebar d))
   rw [← thetaPair_eq_qform_krausQ, norm_delta_ebar_eq e d he,
     inner_delta_ebar_eq_trace e d] at hkey
   exact hkey
@@ -313,7 +297,8 @@ theorem thetaPositive_of_choiTwoBound {A : ι → Matrix W W ℂ} {β : ℝ} (h�
   · simp [thetaPair, hsInner, hsNormSq]
   · have hr₀ : 0 < C.rank := rank_pos_of_ne_zero hC
     obtain ⟨e, d, he, hCeq⟩ := exists_rankFactor_rank C
-    have hat := thetaPositive_at_rank (A := A) hβ hJ hsym hr₀ (d := d) he
+    have hat := thetaPositive_at_rank (A := A) hβ hJ (d := d)
+      (fun f => isFrameSymmetric_of_transpose_eq (hsym f) _) hr₀ he
     rw [← hCeq] at hat
     have hmono := coeff_mono (a := hsNormSq C) (t := Complex.normSq C.trace) hβ
       (hsNormSq_nonneg C) hr₀ hrank (normSq_trace_le_rank C)

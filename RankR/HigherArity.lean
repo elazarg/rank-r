@@ -529,10 +529,15 @@ theorem sum_normSq_prod (c : ι × Face r k → ℂ) :
 /-- **The weighted synthesis bound.**  The face regrouping costs the weighted
 modulus `Γ` of the incidence correspondence, and the mass a hyperedge carries is
 bounded by its own constant `β_I`, so the two meet in a weighted
-Cauchy-Schwarz. -/
+Cauchy-Schwarz.
+
+The weights are only required to be nonnegative.  A hyperedge of weight zero has
+`ChoiKBound _ k 0`, which forces all of its incidences to vanish, so the
+normalized mass `‖·‖²/β_I` — which Lean reads as `0` there — is an honest bound
+rather than a division by zero. -/
 theorem norm_sum_smul_wvecF_le_weighted {A : Face r k → ι → Matrix W W ℂ}
     {β : Face r k → ℝ} {Γ : ℝ} (hk : 1 ≤ k) (H : Finset (Face r k))
-    (hβ : ∀ I ∈ H, 0 < β I) (hJ : ∀ I ∈ H, ChoiKBound (choiOf (A I)) k (β I))
+    (hβ : ∀ I ∈ H, 0 ≤ β I) (hJ : ∀ I ∈ H, ChoiKBound (choiOf (A I)) k (β I))
     {e : Fin r → EuclideanSpace ℂ W} (he : Orthonormal ℂ e) (hΓ0 : 0 ≤ Γ)
     (hΓ : ∀ J : Face r (k - 1), ∑ I ∈ H.filter fun I => J.val ⊆ I.val, β I ≤ Γ)
     (c : ι × Face r k → ℂ) :
@@ -540,15 +545,28 @@ theorem norm_sum_smul_wvecF_le_weighted {A : Face r k → ι → Matrix W W ℂ}
       ≤ Γ * ∑ z : ι × Face r k, Complex.normSq (c z) := by
   set s := H ×ˢ (Finset.univ : Finset (Fin r)) with hs
   have hmemH : ∀ x ∈ s, x.1 ∈ H := fun x hx => (Finset.mem_product.mp hx).1
-  have hmass : ∀ x ∈ s, ‖uterm A e c x‖ ^ 2 ≤ β x.1 * (‖uterm A e c x‖ ^ 2 / β x.1) :=
-    fun x hx => le_of_eq (mul_div_cancel₀ _ (hβ x.1 (hmemH x hx)).ne').symm
+  -- a hyperedge of weight zero carries no mass at all
+  have hzero : ∀ x ∈ s, β x.1 = 0 → ‖uterm A e c x‖ ^ 2 = 0 := by
+    intro x hx h0
+    have hle := sum_norm_sq_uterm_le (A := A) (I := x.1) hk h0.ge (hJ x.1 (hmemH x hx)) he c
+    rw [h0, zero_mul] at hle
+    have hsum0 : ∑ v : Fin r, ‖uterm A e c (x.1, v)‖ ^ 2 = 0 :=
+      le_antisymm hle (Finset.sum_nonneg fun _ _ => sq_nonneg _)
+    have hx2 := (Finset.sum_eq_zero_iff_of_nonneg fun v _ => sq_nonneg _).mp hsum0 x.2
+      (Finset.mem_univ x.2)
+    simpa using hx2
+  have hmass : ∀ x ∈ s, ‖uterm A e c x‖ ^ 2 ≤ β x.1 * (‖uterm A e c x‖ ^ 2 / β x.1) := by
+    intro x hx
+    rcases eq_or_ne (β x.1) 0 with h0 | hne
+    · rw [h0, zero_mul, hzero x hx h0]
+    · exact le_of_eq (mul_div_cancel₀ _ hne).symm
   -- the regrouping, weighted by the constant of each hyperedge
   have hreg := norm_sq_sum_placeAt_le_weighted (m := k - 1) s (uterm A e c)
     (fun x => x.1.val.erase x.2) (fun x => β x.1)
     (fun x => ‖uterm A e c x‖ ^ 2 / β x.1)
-    (fun x hx => (hβ x.1 (hmemH x hx)).le)
-    (fun x hx => div_nonneg (sq_nonneg _) (hβ x.1 (hmemH x hx)).le) hmass hΓ0
-    (fun J => le_trans (sum_fibre_weight_le hk H (fun I hI => (hβ I hI).le) J) (hΓ J))
+    (fun x hx => hβ x.1 (hmemH x hx))
+    (fun x hx => div_nonneg (sq_nonneg _) (hβ x.1 (hmemH x hx))) hmass hΓ0
+    (fun J => le_trans (sum_fibre_weight_le hk H hβ J) (hΓ J))
   -- the total normalized mass is at most the coefficient mass
   have htotal : ∑ x ∈ s, ‖uterm A e c x‖ ^ 2 / β x.1
       ≤ ∑ z : ι × Face r k, Complex.normSq (c z) := by
@@ -556,43 +574,24 @@ theorem norm_sum_smul_wvecF_le_weighted {A : Face r k → ι → Matrix W W ℂ}
     refine le_trans (Finset.sum_le_sum fun I hI => ?_)
       (Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ H) fun I _ _ =>
         Finset.sum_nonneg fun _ _ => Complex.normSq_nonneg _)
-    have hpos := hβ I hI
     show ∑ v : Fin r, ‖uterm A e c (I, v)‖ ^ 2 / β I ≤ _
-    rw [← Finset.sum_div, div_le_iff₀ hpos, mul_comm]
-    exact sum_norm_sq_uterm_le (I := I) hk hpos.le (hJ I hI) he c
+    rcases eq_or_lt_of_le (hβ I hI) with h0 | hpos
+    · have hz : ∀ v : Fin r, ‖uterm A e c (I, v)‖ ^ 2 / β I = 0 := fun v => by
+        rw [← h0, div_zero]
+      rw [Finset.sum_congr rfl fun v _ => hz v, Finset.sum_const_zero]
+      exact Finset.sum_nonneg fun _ _ => Complex.normSq_nonneg _
+    · rw [← Finset.sum_div, div_le_iff₀ hpos, mul_comm]
+      exact sum_norm_sq_uterm_le (I := I) hk hpos.le (hJ I hI) he c
   rw [sum_smul_wvecF hk]
   exact le_trans hreg (mul_le_mul_of_nonneg_left htotal hΓ0)
 
-/-- **The uniform synthesis bound.**  The face regrouping costs `d↑_{k-1}(H)`;
-Lifting I at level `k` bounds each hyperedge's contribution by `kβ` times the
-coefficient mass it carries, and the `1/k` of the incidence modes cancels the
-`k`.
-
-This is the weighted bound at a constant weight, but is proved directly so that
-the degenerate value `β = 0` is covered. -/
-theorem norm_sum_smul_wvecF_le {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β)
-    (hJ : ChoiKBound (choiOf A) k β) (hk : 1 ≤ k) {e : Fin r → EuclideanSpace ℂ W}
-    (he : Orthonormal ℂ e) (H : Finset (Face r k)) (c : ι × Face r k → ℂ) :
-    ‖∑ z : ι × Face r k, c z • wvecF (fun _ => A) e H z.1 z.2‖ ^ 2
-      ≤ (upDeg H : ℝ) * β * ∑ z : ι × Face r k, Complex.normSq (c z) := by
-  have htotal : ∑ x ∈ H ×ˢ (Finset.univ : Finset (Fin r)),
-      ‖uterm (fun _ => A) e c x‖ ^ 2 ≤ β * ∑ z : ι × Face r k, Complex.normSq (c z) := by
-    rw [Finset.sum_product, sum_normSq_prod, Finset.mul_sum]
-    refine le_trans (Finset.sum_le_sum fun I _ =>
-      sum_norm_sq_uterm_le (A := fun _ => A) (I := I) hk hβ hJ he c) ?_
-    refine Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ _) fun I _ _ => ?_
-    exact mul_nonneg hβ (Finset.sum_nonneg fun _ _ => Complex.normSq_nonneg _)
-  rw [sum_smul_wvecF hk]
-  calc ‖∑ x ∈ H ×ˢ (Finset.univ : Finset (Fin r)),
-          (placeAt (uterm (fun _ => A) e c x) (x.1.val.erase x.2) :
-            EuclideanSpace ℂ (W × Face r (k - 1)))‖ ^ 2
-      ≤ (upDeg H : ℝ)
-          * ∑ x ∈ H ×ˢ (Finset.univ : Finset (Fin r)), ‖uterm (fun _ => A) e c x‖ ^ 2 :=
-        norm_sq_sum_placeAt_le (m := k - 1) (H ×ˢ (Finset.univ : Finset (Fin r)))
-          (uterm (fun _ => A) e c) (fun x => x.1.val.erase x.2) (card_fibre_le_upDeg hk H)
-    _ ≤ (upDeg H : ℝ) * (β * ∑ z : ι × Face r k, Complex.normSq (c z)) :=
-        mul_le_mul_of_nonneg_left htotal (Nat.cast_nonneg _)
-    _ = (upDeg H : ℝ) * β * ∑ z : ι × Face r k, Complex.normSq (c z) := by ring
+/-- At a constant weight, the modulus of the incidence correspondence over a
+facet is the number of hyperedges through that facet. -/
+theorem sum_const_filter_le_upDeg {β : ℝ} (hβ : 0 ≤ β) (H : Finset (Face r k))
+    (J : Face r (k - 1)) :
+    ∑ _I ∈ H.filter fun I => J.val ⊆ I.val, β ≤ (upDeg H : ℝ) * β := by
+  rw [Finset.sum_const, nsmul_eq_mul]
+  exact mul_le_mul_of_nonneg_right (by exact_mod_cast card_le_upDeg H J) hβ
 
 /-- **Theorem A, weighted.**  `∑_I (Φ_{A_I} ⊗ id)(|η_I⟩⟨η_I|) ⪯ Γ I`, for any `Γ`
 dominating the weighted modulus `max_J ∑_{I ⊇ J} β_I` of the incidence
@@ -601,7 +600,7 @@ correspondence.
 The synthesis bound is the whole input; Bessel duality converts it into the
 analysis bound.  No hypothesis on the transposes of the Kraus operators. -/
 theorem qform_PhypAmp_le_of_norm {A : Face r k → ι → Matrix W W ℂ} {β : Face r k → ℝ}
-    {Γ : ℝ} (hk : 1 ≤ k) (H : Finset (Face r k)) (hβ : ∀ I ∈ H, 0 < β I)
+    {Γ : ℝ} (hk : 1 ≤ k) (H : Finset (Face r k)) (hβ : ∀ I ∈ H, 0 ≤ β I)
     (hJ : ∀ I ∈ H, ChoiKBound (choiOf (A I)) k (β I))
     {e : Fin r → EuclideanSpace ℂ W} (he : Orthonormal ℂ e) (hΓ0 : 0 ≤ Γ)
     (hΓ : ∀ J : Face r (k - 1), ∑ I ∈ H.filter fun I => J.val ⊆ I.val, β I ≤ Γ)
@@ -612,15 +611,18 @@ theorem qform_PhypAmp_le_of_norm {A : Face r k → ι → Matrix W W ℂ} {β : 
     (norm_sum_smul_wvecF_le_weighted hk H hβ hJ he hΓ0 hΓ) y
 
 /-- **Theorem A.**  `(Φ_A ⊗ id)(P_H) ⪯ d↑_{k-1}(H) β I`, for any Kraus family
-whose Choi operator obeys `ChoiKBound _ k β`. -/
+whose Choi operator obeys `ChoiKBound _ k β`.
+
+This is the weighted bound at the constant family and the constant weight, where
+the weighted modulus of the correspondence is its largest fibre. -/
 theorem qform_krausF_Phyp_le_of_norm {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β)
     (hJ : ChoiKBound (choiOf A) k β) (hk : 1 ≤ k) {e : Fin r → EuclideanSpace ℂ W}
     (he : Orthonormal ℂ e) (H : Finset (Face r k))
     (y : EuclideanSpace ℂ (W × Face r (k - 1))) :
     (qform (krausF A (Phyp e H)) y).re ≤ (upDeg H : ℝ) * β * ‖y‖ ^ 2 := by
-  rw [re_qform_krausF_Phyp]
-  exact frame_le_of_synthesis_le (fun z : ι × Face r k => wvecF (fun _ => A) e H z.1 z.2)
-    (mul_nonneg (Nat.cast_nonneg _) hβ) (norm_sum_smul_wvecF_le hβ hJ hk he H) y
+  rw [krausF_Phyp_eq_PhypAmp]
+  exact qform_PhypAmp_le_of_norm hk H (fun _ _ => hβ) (fun _ _ => hJ) he
+    (mul_nonneg (Nat.cast_nonneg _) hβ) (fun J => sum_const_filter_le_upDeg hβ H J) y
 
 end Synthesis
 
@@ -819,7 +821,7 @@ support-adapted sharpening — restricting the star of `L` to the facets actuall
 present in `H`, so that the span is indexed by the hinges `H` really has — would
 keep the same cancellation but change the modes, and is not proved here. -/
 theorem qform_PhypAmp_le {A : Face r k → ι → Matrix W W ℂ} {β : Face r k → ℝ} {Γ : ℝ}
-    (hk : 2 ≤ k) (hkr : k ≤ r) (H : Finset (Face r k)) (hβ : ∀ I ∈ H, 0 < β I)
+    (hk : 2 ≤ k) (hkr : k ≤ r) (H : Finset (Face r k)) (hβ : ∀ I ∈ H, 0 ≤ β I)
     (hJ : ∀ I ∈ H, ChoiKBound (choiOf (A I)) k (β I))
     {e : Fin r → EuclideanSpace ℂ W} (he : Orthonormal ℂ e)
     (hsym : ∀ I f, IsFrameSymmetric e (A I f)) (hΓ0 : 0 ≤ Γ)
@@ -841,8 +843,10 @@ theorem qform_PhypAmp_le {A : Face r k → ι → Matrix W W ℂ} {β : Face r k
 /-- **Theorem B.**  `(Φ_A ⊗ id)(P_H) ⪯ d↑_{k-1}(H) β (I − Π)`, where `Π` is the
 orthogonal projection onto the span of the protected modes.
 
-The uniform case of the weighted form, proved directly so that the degenerate
-value `β = 0` is covered. -/
+This is the weighted form at the constant family and the constant weight, where
+the weighted modulus of the correspondence is its largest fibre.  The degenerate
+value `β = 0` needs no separate treatment: a hyperedge of weight zero has no
+incidences to bound. -/
 theorem qform_krausF_Phyp_le {A : ι → Matrix W W ℂ} {β : ℝ}
     {e : Fin r → EuclideanSpace ℂ W} (hβ : 0 ≤ β)
     (hJ : ChoiKBound (choiOf A) k β) (hsym : ∀ f, IsFrameSymmetric e (A f)) (hk : 2 ≤ k)
@@ -851,44 +855,9 @@ theorem qform_krausF_Phyp_le {A : ι → Matrix W W ℂ} {β : ℝ}
     (qform (krausF A (Phyp e H)) y).re
       ≤ (upDeg H : ℝ) * β * (‖y‖ ^ 2
           - ∑ L : Face r (k - 2), Complex.normSq (inner ℂ (deltaMode (k := k) e L) y)) := by
-  have hbess : ∀ z : EuclideanSpace ℂ (W × Face r (k - 1)),
-      ∑ w : ι × Face r k, Complex.normSq (inner ℂ (wvecF (fun _ => A) e H w.1 w.2) z)
-        ≤ (upDeg H : ℝ) * β * ‖z‖ ^ 2 := fun z => by
-    rw [← re_qform_krausF_Phyp]
-    exact qform_krausF_Phyp_le_of_norm hβ hJ (by omega) he H z
-  rw [re_qform_krausF_Phyp]
-  exact frame_le_sub_proj_family
-    (w := fun w : ι × Face r k => wvecF (fun _ => A) e H w.1 w.2)
-    (z := deltaMode (k := k) e) (M := (upDeg H : ℝ) * β) (orthonormal_deltaMode he hk hkr)
-    (fun L w => inner_deltaMode_wvecF hk e (fun _ f => hsym f) H L w.1 w.2) hbess y
-
-/-- At a constant weight, the modulus of the incidence correspondence over a
-facet is the number of hyperedges through that facet. -/
-theorem sum_const_filter_le_upDeg {β : ℝ} (hβ : 0 ≤ β) (H : Finset (Face r k))
-    (J : Face r (k - 1)) :
-    ∑ _I ∈ H.filter fun I => J.val ⊆ I.val, β ≤ (upDeg H : ℝ) * β := by
-  rw [Finset.sum_const, nsmul_eq_mul]
-  exact mul_le_mul_of_nonneg_right (by exact_mod_cast card_le_upDeg H J) hβ
-
-/-- **The weighted theorem subsumes the uniform one.**  Running `qform_PhypAmp_le`
-at the constant family and the constant weight reproduces Theorem B, with
-`Γ = d↑_{k-1}(H) β` — the weighted modulus of the correspondence at unit weights
-being its largest fibre.
-
-Only `0 < β` is needed beyond Theorem B's hypotheses, and only because the
-weighted regrouping divides by the weight; `qform_krausF_Phyp_le` covers `β = 0`
-directly. -/
-theorem qform_krausF_Phyp_le_of_weighted {A : ι → Matrix W W ℂ} {β : ℝ}
-    {e : Fin r → EuclideanSpace ℂ W} (hβ : 0 < β)
-    (hJ : ChoiKBound (choiOf A) k β) (hsym : ∀ f, IsFrameSymmetric e (A f)) (hk : 2 ≤ k)
-    (hkr : k ≤ r) (he : Orthonormal ℂ e) (H : Finset (Face r k))
-    (y : EuclideanSpace ℂ (W × Face r (k - 1))) :
-    (qform (krausF A (Phyp e H)) y).re
-      ≤ (upDeg H : ℝ) * β * (‖y‖ ^ 2
-          - ∑ L : Face r (k - 2), Complex.normSq (inner ℂ (deltaMode (k := k) e L) y)) := by
   rw [krausF_Phyp_eq_PhypAmp]
   exact qform_PhypAmp_le hk hkr H (fun _ _ => hβ) (fun _ _ => hJ) he (fun _ f => hsym f)
-    (mul_nonneg (Nat.cast_nonneg _) hβ.le) (fun J => sum_const_filter_le_upDeg hβ.le H J) y
+    (mul_nonneg (Nat.cast_nonneg _) hβ) (fun J => sum_const_filter_le_upDeg hβ H J) y
 
 end Koszul
 

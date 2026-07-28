@@ -36,16 +36,30 @@ theorem vec_smul (c : ℂ) (A : Matrix m n ℂ) : vec (c • A) = c • vec A :=
   ext p
   simp [vec]
 
-theorem vec_sum {ι : Type*} [Fintype ι] (A : ι → Matrix m n ℂ) :
-    vec (∑ i, A i) = ∑ i, vec (A i) := by
+theorem vec_sum {ι : Type*} (t : Finset ι) (A : ι → Matrix m n ℂ) :
+    vec (∑ i ∈ t, A i) = ∑ i ∈ t, vec (A i) := by
   ext p
-  show (∑ i, A i) p.1 p.2 = (∑ i, vec (A i)) p
+  show (∑ i ∈ t, A i) p.1 p.2 = (∑ i ∈ t, vec (A i)) p
   rw [Matrix.sum_apply]
-  show _ = WithLp.ofLp (∑ i, vec (A i)) p
+  show _ = WithLp.ofLp (∑ i ∈ t, vec (A i)) p
   rw [WithLp.ofLp_sum, Finset.sum_apply]
   rfl
 
 end Vec
+
+/-! ## The standard basis
+
+Written out rather than taken from Mathlib's deprecated `EuclideanSpace.single`,
+so that its value at a point is definitional and `simp` can see through it via
+`eBasis_apply`.  It decides an equality but sums over nothing, so it needs
+`DecidableEq` and not `Fintype`. -/
+
+/-- The standard basis vector of `EuclideanSpace ℂ W` at the coordinate `x`. -/
+noncomputable def eBasis {W : Type*} [DecidableEq W] (x : W) : EuclideanSpace ℂ W :=
+  WithLp.toLp 2 fun p => if p = x then (1 : ℂ) else 0
+
+@[simp] theorem eBasis_apply {W : Type*} [DecidableEq W] (x p : W) :
+    eBasis x p = if p = x then (1 : ℂ) else 0 := rfl
 
 variable {m n : Type*} [Fintype m] [Fintype n]
 
@@ -74,6 +88,50 @@ theorem hsInner_add_left (A B C : Matrix m n ℂ) :
 theorem hsInner_add_right (A B C : Matrix m n ℂ) :
     hsInner A (B + C) = hsInner A B + hsInner A C := by
   simp [hsInner, Matrix.mul_add, Matrix.trace_add]
+
+/-- `hsInner` respects subtraction in its first argument. -/
+theorem hsInner_sub_left (A B C : Matrix m n ℂ) :
+    hsInner (A - B) C = hsInner A C - hsInner B C := by
+  simp only [hsInner, Matrix.conjTranspose_sub, Matrix.sub_mul, Matrix.trace_sub]
+
+/-- `hsInner` respects subtraction in its second argument. -/
+theorem hsInner_sub_right (A B C : Matrix m n ℂ) :
+    hsInner A (B - C) = hsInner A B - hsInner A C := by
+  simp only [hsInner, Matrix.mul_sub, Matrix.trace_sub]
+
+/-- `hsInner` is conjugate-homogeneous in its first argument. -/
+theorem hsInner_smul_left (c : ℂ) (A B : Matrix m n ℂ) :
+    hsInner (c • A) B = conj c * hsInner A B := by
+  simp [hsInner, Matrix.conjTranspose_smul, Matrix.smul_mul, Matrix.trace_smul,
+    RCLike.star_def, smul_eq_mul]
+
+/-- `hsInner` is homogeneous in its second argument. -/
+theorem hsInner_smul_right (c : ℂ) (A B : Matrix m n ℂ) :
+    hsInner A (c • B) = c * hsInner A B := by
+  simp [hsInner, Matrix.mul_smul, Matrix.trace_smul, smul_eq_mul]
+
+/-- The two signs of a pairing of negatives cancel. -/
+theorem hsInner_neg_neg (A B : Matrix m n ℂ) : hsInner (-A) (-B) = hsInner A B := by
+  simp [hsInner]
+
+/-- `hsInner` is additive in its first argument, over an arbitrary finite index. -/
+theorem hsInner_sum_left {ι : Type*} [Fintype ι] (A : ι → Matrix m n ℂ) (B : Matrix m n ℂ) :
+    hsInner (∑ a, A a) B = ∑ a, hsInner (A a) B := by
+  simp only [hsInner, Matrix.conjTranspose_sum]
+  rw [Matrix.sum_mul, Matrix.trace_sum]
+
+/-- `hsInner` is additive in its second argument, over an arbitrary finite index. -/
+theorem hsInner_sum_right {ι : Type*} [Fintype ι] (A : Matrix m n ℂ) (B : ι → Matrix m n ℂ) :
+    hsInner A (∑ b, B b) = ∑ b, hsInner A (B b) := by
+  simp [hsInner, Matrix.mul_sum, Matrix.trace_sum]
+
+/-- Sesquilinearity of `hsInner` over a pair of finite sums.  The two index types
+are independent: nothing here pairs the summands off. -/
+theorem hsInner_sum_sum {ι κ : Type*} [Fintype ι] [Fintype κ]
+    (A : ι → Matrix m n ℂ) (B : κ → Matrix m n ℂ) :
+    hsInner (∑ i, A i) (∑ j, B j) = ∑ i, ∑ j, hsInner (A i) (B j) := by
+  rw [hsInner_sum_left]
+  exact Finset.sum_congr rfl fun i _ => hsInner_sum_right _ _
 
 theorem hsInner_self (A : Matrix m n ℂ) : hsInner A A = (hsNormSq A : ℂ) := by
   simp only [hsInner, hsNormSq, Matrix.trace, Matrix.diag_apply, Matrix.mul_apply,

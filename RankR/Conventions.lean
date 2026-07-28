@@ -82,7 +82,7 @@ end Bipartite
 
 section Skew
 
-variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
+variable {U V : Type*}
 
 /-- `so(U)`: skew-symmetric w.r.t. the fixed orthonormal basis (section 2).
 
@@ -96,9 +96,12 @@ def IsSkew (L : Matrix U U ℂ) : Prop := Lᵀ = -L
 
 This is the linear *span* of the elementary tensors `L ⊗ M`, not the set of
 elementary tensors: `eq:T-definition` applies the double-skew bound to
-`∑_{α,β} c_{αβ} L_α ⊗ M_β`, a general element. -/
-def doubleSkew (U V : Type*) [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] :
-    Submodule ℂ (Matrix (U × V) (U × V) ℂ) :=
+`∑_{α,β} c_{αβ} L_α ⊗ M_β`, a general element.
+
+Neither factor need be finite, and no equality is decided: the subspace is a span
+of Kronecker products.  The finiteness of `DoubleSkewBound` below comes from the
+norm and the action, not from the subspace. -/
+def doubleSkew (U V : Type*) : Submodule ℂ (Matrix (U × V) (U × V) ℂ) :=
   Submodule.span ℂ { K | ∃ L M, IsSkew L ∧ IsSkew M ∧ K = L ⊗ₖ M }
 
 /-- **The double-skew action bound**, Lemma 2.1 of the paper

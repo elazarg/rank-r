@@ -27,12 +27,6 @@ section Submultiplicative
 
 variable {l m n : Type*} [Fintype l] [Fintype m] [Fintype n]
 
-/-- `‖u‖²` as a sum of `normSq`, the form in which `hsNormSq` is stated. -/
-theorem norm_sq_euclidean {ι : Type*} [Fintype ι] (u : EuclideanSpace ℂ ι) :
-    ‖u‖ ^ 2 = ∑ j, Complex.normSq (u j) := by
-  rw [EuclideanSpace.norm_eq, Real.sq_sqrt (by positivity)]
-  exact Finset.sum_congr rfl fun j _ => (Complex.normSq_eq_norm_sq _).symm
-
 theorem hsNormSq_transpose (A : Matrix m n ℂ) : hsNormSq Aᵀ = hsNormSq A := by
   simp only [hsNormSq, Matrix.transpose_apply]
   exact Finset.sum_comm
@@ -64,10 +58,10 @@ theorem hsNormSq_mul_le (A : Matrix l m ℂ) (B : Matrix m n ℂ) :
       rw [RCLike.inner_apply']
       simp [hu, hv]
     have hnu : ‖u‖ ^ 2 = ∑ j, Complex.normSq (A i j) := by
-      rw [norm_sq_euclidean]
+      rw [norm_sq_eq_sum_normSq]
       exact Finset.sum_congr rfl fun j _ => by simp [hu]
     have hnv : ‖v‖ ^ 2 = ∑ j, Complex.normSq (B j k) := by
-      rw [norm_sq_euclidean]
+      rw [norm_sq_eq_sum_normSq]
     have hcs := norm_inner_le_norm (𝕜 := ℂ) u v
     have h0 : (0 : ℝ) ≤ ‖inner ℂ u v‖ := norm_nonneg _
     have hnn : (0 : ℝ) ≤ ‖u‖ * ‖v‖ := by positivity
@@ -106,7 +100,7 @@ omit [Fintype U] [Fintype V] in
     matOf x a b = x (a, b) := rfl
 
 theorem hsNormSq_matOf (x : EuclideanSpace ℂ (U × V)) : hsNormSq (matOf x) = ‖x‖ ^ 2 := by
-  rw [norm_sq_euclidean, hsNormSq]
+  rw [norm_sq_eq_sum_normSq, hsNormSq]
   exact (Fintype.sum_prod_type fun p : U × V => Complex.normSq (x p)).symm
 
 omit [Fintype U] in
@@ -146,24 +140,25 @@ section Factorization
 variable {U V : Type*} [Fintype U] [Fintype V] {s : ℕ}
 
 /-- The common core of the two one-sided bounds: if each summand of a finite
-family of matrices has `‖·‖₂ ≤ ‖dᵢ‖`, the sum has `‖·‖₂² ≤ s ∑ᵢ ‖dᵢ‖²`. -/
-private theorem hsNormSq_sum_le {m n : Type*} [Fintype m] [Fintype n]
-    (A : Fin s → Matrix m n ℂ) (d : Fin s → EuclideanSpace ℂ (U × V))
-    (h : ∀ i, hsNormSq (A i) ≤ ‖d i‖ ^ 2) :
-    hsNormSq (∑ i, A i) ≤ s * ∑ i, ‖d i‖ ^ 2 := by
-  have hstep : ∀ i, ‖vec (A i)‖ ≤ ‖d i‖ := by
+family of matrices has `‖·‖₂ ≤ cᵢ`, the sum has `‖·‖₂² ≤ s ∑ᵢ cᵢ²`.
+
+The bounding data is a family of nonnegative reals, not of vectors: the callers
+supply `cᵢ = ‖dᵢ‖`, but nothing here looks at the `dᵢ` themselves. -/
+private theorem hsNormSq_sum_le {m n : Type*} [Fintype m] [Fintype n] {s : ℕ}
+    (A : Fin s → Matrix m n ℂ) (c : Fin s → ℝ) (hc : ∀ i, 0 ≤ c i)
+    (h : ∀ i, hsNormSq (A i) ≤ c i ^ 2) :
+    hsNormSq (∑ i, A i) ≤ s * ∑ i, c i ^ 2 := by
+  have hstep : ∀ i, ‖vec (A i)‖ ≤ c i := by
     intro i
-    have h1 : ‖vec (A i)‖ ^ 2 ≤ ‖d i‖ ^ 2 := by
+    have h1 : ‖vec (A i)‖ ^ 2 ≤ c i ^ 2 := by
       rw [← hsNormSq_eq_norm_sq]; exact h i
-    have h2 : (0 : ℝ) ≤ ‖d i‖ := norm_nonneg _
-    nlinarith [norm_nonneg (vec (A i))]
-  have htri : ‖vec (∑ i, A i)‖ ≤ ∑ i, ‖d i‖ := by
+    nlinarith [norm_nonneg (vec (A i)), hc i]
+  have htri : ‖vec (∑ i, A i)‖ ≤ ∑ i, c i := by
     rw [vec_sum]
     exact (norm_sum_le _ _).trans (Finset.sum_le_sum fun i _ => hstep i)
-  have hsq : (∑ i, ‖d i‖) ^ 2 ≤ (s : ℝ) * ∑ i, ‖d i‖ ^ 2 := by
-    simpa using sq_sum_le_card_mul_sum_sq (s := (Finset.univ : Finset (Fin s)))
-      (f := fun i => ‖d i‖)
-  have h3 : (0 : ℝ) ≤ ∑ i, ‖d i‖ := Finset.sum_nonneg fun i _ => norm_nonneg (d i)
+  have hsq : (∑ i, c i) ^ 2 ≤ (s : ℝ) * ∑ i, c i ^ 2 := by
+    simpa using sq_sum_le_card_mul_sum_sq (s := (Finset.univ : Finset (Fin s))) (f := c)
+  have h3 : (0 : ℝ) ≤ ∑ i, c i := Finset.sum_nonneg fun i _ => hc i
   rw [hsNormSq_eq_norm_sq]
   nlinarith [norm_nonneg (vec (∑ i, A i))]
 
@@ -172,7 +167,7 @@ theorem hsNormSq_ptraceV_rankFactor_le (e d : Fin s → EuclideanSpace ℂ (U ×
     (he : Orthonormal ℂ e) :
     hsNormSq (ptraceV (rankFactor e d)) ≤ s * hsNormSq (rankFactor e d) := by
   rw [hsNormSq_rankFactor_eq e d he, rankFactor_eq_sum, ptraceV_sum]
-  refine hsNormSq_sum_le _ d fun i => ?_
+  refine hsNormSq_sum_le _ (fun i => ‖d i‖) (fun i => norm_nonneg _) fun i => ?_
   have h := hsNormSq_ptraceV_rankOne_le (e i) (d i)
   rwa [he.1 i, one_pow, one_mul] at h
 
@@ -181,7 +176,7 @@ theorem hsNormSq_ptraceU_rankFactor_le (e d : Fin s → EuclideanSpace ℂ (U ×
     (he : Orthonormal ℂ e) :
     hsNormSq (ptraceU (rankFactor e d)) ≤ s * hsNormSq (rankFactor e d) := by
   rw [hsNormSq_rankFactor_eq e d he, rankFactor_eq_sum, ptraceU_sum]
-  refine hsNormSq_sum_le _ d fun i => ?_
+  refine hsNormSq_sum_le _ (fun i => ‖d i‖) (fun i => norm_nonneg _) fun i => ?_
   have h := hsNormSq_ptraceU_rankOne_le (e i) (d i)
   rwa [he.1 i, one_pow, one_mul] at h
 
@@ -191,7 +186,7 @@ end Factorization
 
 section Statement
 
-variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
+variable {U V : Type*} [Fintype U] [Fintype V]
 
 /-- **`lem:one-sided-partial-trace`, the `V` side.**  For `C` of rank at most `r`,
 `‖Tr_V C‖₂² ≤ r‖C‖₂²`.  Unconditional. -/

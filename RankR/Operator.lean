@@ -37,6 +37,17 @@ theorem qform_smul (c : ℂ) (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
   simp only [qform, Matrix.smul_apply, smul_eq_mul, Finset.mul_sum]
   exact Finset.sum_congr rfl fun p _ => Finset.sum_congr rfl fun q _ => by ring
 
+/-- The quadratic form is additive in its matrix argument, over an arbitrary
+finite index set. -/
+theorem qform_sum_finset {ι : Type*} (t : Finset ι) (A : ι → Matrix W W ℂ)
+    (x : EuclideanSpace ℂ W) : qform (∑ a ∈ t, A a) x = ∑ a ∈ t, qform (A a) x := by
+  simp only [qform, Matrix.sum_apply, Finset.mul_sum, Finset.sum_mul]
+  exact Eq.trans (Finset.sum_congr rfl fun _ _ => Finset.sum_comm) Finset.sum_comm
+
+/-- The quadratic form is additive in its matrix argument. -/
+theorem qform_sum {ι : Type*} [Fintype ι] (A : ι → Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
+    qform (∑ a, A a) x = ∑ a, qform (A a) x := qform_sum_finset _ A x
+
 /-- `⟪x, I x⟫ = ‖x‖²`.  The identity is the one matrix among these whose entries
 decide an equality, so this is the only member of the group needing
 `DecidableEq`. -/

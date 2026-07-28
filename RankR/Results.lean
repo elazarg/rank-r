@@ -43,11 +43,14 @@ theorem operatorIneq_holds : OperatorIneq U V :=
 /-- **Theorem 1.1** (`thm:rank_r`, `eq:main-bound`), unconditionally.
 
 For `C` of rank at most `r`,
-`‖Tr_U C‖₂² + ‖Tr_V C‖₂² ≤ r‖C‖₂² + (1/r)|Tr C|²`. -/
-theorem rank_r_partial_trace (r : ℕ) (hr : 0 < r) (hrank : C.rank ≤ r) :
+`‖Tr_U C‖₂² + ‖Tr_V C‖₂² ≤ r‖C‖₂² + (1/r)|Tr C|²`.
+
+The rank parameter needs no positivity hypothesis: `r = 0` forces `C = 0`, and
+then both sides vanish. -/
+theorem rank_r_partial_trace (r : ℕ) (hrank : C.rank ≤ r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
-  rank_r_partial_trace_of_choiTwoBound choiTwoBound_holds C r hr hrank
+  rank_r_partial_trace_of_choiTwoBound choiTwoBound_holds C r hrank
 
 /-- **Theorem 1.1 at the exact rank** (`eq:main-bound-exact-rank`),
 unconditionally. -/

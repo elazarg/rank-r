@@ -175,9 +175,10 @@ The two families of modes attached to the faces of `Fin r`. -/
 Theorem A needs only the level-`k` Choi bound; Theorem B adds frame symmetry of
 the Kraus operators and gains the span of the protected modes.  Both hold in a
 weighted form, one Kraus family and one constant per hyperedge, whose coefficient
-is the weighted modulus of the incidence correspondence; `upDeg_univ` gives the
-complete hypergraph its degree `r - k + 1`, and the two pair-level corollaries
-are the `k = 2` reading. -/
+is the weighted modulus of the incidence correspondence, and the uniform form is
+that weighted form at a constant weight; `upDeg_univ` gives the complete
+hypergraph its degree `r - k + 1`, and the two pair-level corollaries are the
+`k = 2` reading. -/
 
 /--
 info: 'RankR.qform_krausF_Phyp_le_of_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -214,12 +215,6 @@ info: 'RankR.qform_PhypAmp_le_of_norm' depends on axioms: [propext, Classical.ch
 /-- info: 'RankR.qform_PhypAmp_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms qform_PhypAmp_le
-
-/--
-info: 'RankR.qform_krausF_Phyp_le_of_weighted' depends on axioms: [propext, Classical.choice, Quot.sound]
--/
-#guard_msgs in
-#print axioms qform_krausF_Phyp_le_of_weighted
 
 /-- info: 'RankR.isFrameSymmetric_of_transpose_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
@@ -350,13 +345,13 @@ last two entries go further: a skew family saturates form (A₀) and refutes for
 (A), so the hypothesis is load-bearing for the conclusion and not only for the
 proof. -/
 
-/-- info: 'RankR.inner_delta_placeQ_zetaV_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'RankR.inner_delta_placeT_zetaV_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
-#print axioms inner_delta_placeQ_zetaV_iff
+#print axioms inner_delta_placeT_zetaV_iff
 
-/-- info: 'RankR.inner_delta_placeQ_zetaV_of_isSkew' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'RankR.inner_delta_placeT_zetaV_of_isSkew' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
-#print axioms inner_delta_placeQ_zetaV_of_isSkew
+#print axioms inner_delta_placeT_zetaV_of_isSkew
 
 /-- info: 'RankR.not_isFrameSymmetric_skewFam' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

@@ -63,18 +63,6 @@ theorem mulVecE_sum {ι : Type*} (t : Finset ι) (A : Matrix W W ℂ)
   rw [Finset.sum_congr rfl fun q _ => h q, Finset.sum_comm]
   exact Finset.sum_congr rfl fun i _ => (mulVecE_apply _ _ _).symm
 
-/-- Exchange of the outer and inner pairs of indices in a four-fold sum. -/
-theorem sum_comm₄ (F : W → W → W → W → ℂ) :
-    ∑ p, ∑ q, ∑ u, ∑ v, F p q u v = ∑ u, ∑ v, ∑ p, ∑ q, F p q u v :=
-  calc ∑ p, ∑ q, ∑ u, ∑ v, F p q u v
-      = ∑ p, ∑ u, ∑ q, ∑ v, F p q u v :=
-        Finset.sum_congr rfl fun _ _ => Finset.sum_comm
-    _ = ∑ u, ∑ p, ∑ q, ∑ v, F p q u v := Finset.sum_comm
-    _ = ∑ u, ∑ p, ∑ v, ∑ q, F p q u v :=
-        Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => Finset.sum_comm
-    _ = ∑ u, ∑ v, ∑ p, ∑ q, F p q u v :=
-        Finset.sum_congr rfl fun _ _ => Finset.sum_comm
-
 /-- Conjugating a matrix by `A` pulls the test vector back through `Aᴴ`. -/
 theorem qform_conj (A Y : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
     qform (A * Y * Aᴴ) x = qform Y (mulVecE Aᴴ x) := by
@@ -94,13 +82,8 @@ theorem qform_conj (A Y : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
     simp only [mulVecE_apply, Matrix.conjTranspose_apply, RCLike.star_def,
       map_sum, map_mul, Complex.conj_conj, Finset.sum_mul, Finset.mul_sum]
     exact Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => by ring
-  rw [hL, hR, sum_comm₄]
-
-/-- The quadratic form is additive in its matrix argument. -/
-theorem qform_sum {ι : Type*} [Fintype ι] (A : ι → Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
-    qform (∑ a, A a) x = ∑ a, qform (A a) x := by
-  simp only [qform, Matrix.sum_apply, Finset.mul_sum, Finset.sum_mul]
-  exact Eq.trans (Finset.sum_congr rfl fun _ _ => Finset.sum_comm) Finset.sum_comm
+  rw [hL, hR]
+  exact sum4_swap fun u v p q => conj (x p) * A p u * Y u v * conj (A q v) * x q
 
 /-- The Kraus sum `Y ↦ ∑ₐ Kₐ Y Kₐᴴ` with Kraus operators `K`. -/
 def krausSum {ι : Type*} [Fintype ι] (K : ι → Matrix W W ℂ) (Y : Matrix W W ℂ) :
