@@ -59,9 +59,24 @@
 \begin{document}
 
 \begin{abstract}
-We prove the arbitrary-matrix rank-$r$ partial-trace inequality for
-all ranks: for every finite-dimensional bipartite Hilbert space and
-every operator $C$ of rank at most $r$,
+We prove a \emph{pair-amplification} theorem: one number computed at
+level two controls $r$-positivity at every level $r$.  To a completely
+positive map $\Phi$ admitting a Kraus representation with $A_a^T=A_a$,
+attach $\beta_2(\Phi)=\frac12\norm{J(\Phi)}_{S(2)}$, the rank-two
+operator norm of its Choi operator.  Then
+$\Phi\circ\tau+(r-1)\beta_2(\Phi)\bigl(\Delta-\frac1r\id\bigr)$ is
+$r$-positive for every $r$, where $\Delta(X)=\Tr(X)I$ and $\tau$ is
+transposition.  Two mechanisms drive it: an ancilla construction and a
+partial transpose reduce the assertion to pair-indexed antisymmetric
+modes, over which a complete-graph summation costs only the vertex
+degree $r-1$; and transpose symmetry --- a $\Z/2$-degree condition on
+the Kraus space --- protects one distinguished direction, which sharpens
+the trace coefficient from $1$ to $1/r$.
+
+Its principal corollary, at $\Phi=\Lambda_U\otimes\Lambda_V$ together
+with a contraction identity for that map, is the arbitrary-matrix
+rank-$r$ partial-trace inequality: for every operator $C$ of rank at
+most $r$ on a finite-dimensional bipartite space,
 \[
     \norm{\Tr_U C}_2^2+\norm{\Tr_V C}_2^2
     \le r\norm{C}_2^2+\frac{1}{r}\abs{\Tr C}^2.
@@ -70,30 +85,15 @@ Both coefficients are optimal --- the first outright, the second once
 the first is fixed --- whenever one factor has dimension at least $r$
 and the other at least $2$, and for nonzero $C$ equality forces
 $\rank C=r$.  This is the extension beyond normal matrices that Costa
-Rico and Wolf identify as open.
+Rico and Wolf identify as open; it was obtained independently and
+concurrently by Fraser, Huber, Pozsgay and Vona, by a different route.
 
-What the argument actually proves is a pair-amplification theorem, of
-which the displayed inequality is one instance.  To a completely positive map
-$\Phi$ whose Kraus operators are transpose-symmetric, attach the single
-number $\beta_2(\Phi)=\frac12\norm{J(\Phi)}_{S(2)}$, the rank-two
-operator norm of its Choi operator.  Then
-$\Phi\circ\tau+(r-1)\beta_2(\Phi)\bigl(\Delta-\frac1r\id\bigr)$ is
-$r$-positive for every $r$, where $\Delta(X)=\Tr(X)I$ and $\tau$ is
-transposition.  Two things drive it: an ancilla construction and a
-partial transpose reduce the assertion to pair-indexed antisymmetric
-modes, over which a complete-graph summation costs only the vertex
-degree $r-1$; and transpose symmetry --- a $\Z/2$-degree condition on
-the Kraus space --- protects one distinguished direction, which is
-what yields the sharp trace coefficient $1/r$ rather than $1$.  Nothing
-else about $\Phi$ enters.
-
-The displayed inequality is the case $\Phi=\Lambda_U\otimes\Lambda_V$,
-where $\beta_2=1$ is a two-vector action bound on the double-skew space
+There $\beta_2=1$ is a two-vector action bound on the double-skew space
 $\mathfrak{so}(U)\otimes\mathfrak{so}(V)$, proved here from the
 Autonne--Takagi factorization and equivalent to Fu, Gao, and Park's
-sharp Schmidt-rank-two projection estimate.  In that case the
-amplified map is $r\,\mathcal R_{-1/r}\otimes\mathcal R_{-1/r}$ for
-$\mathcal R_\alpha(X)=\Tr(X)I+\alpha X$, an identity that also fixes
+sharp Schmidt-rank-two projection estimate, and the amplified map is
+$r\,\mathcal R_{-1/r}\otimes\mathcal R_{-1/r}$ for
+$\mathcal R_\alpha(X)=\Tr(X)I+\alpha X$ --- an identity that fixes
 the meaning of both constants: $r-1$ is the vertex degree, and $1/r$ is
 the only coefficient a unitarily covariant correction is free to carry.
 
@@ -213,6 +213,41 @@ factorization as well, making that chain complete end to end.  \Cref{rem:fgp-equ
 estimate of Fu, Gao, and Park, so their Theorem~2.4 may be substituted
 for the proof given here, and conversely.
 
+The main theorem is the mechanism.  For a completely positive $\Phi$ on
+$\cL(H)$ with Choi operator $J(\Phi)=\sum_a\ketbra{\operatorname{vec}A_a}
+{\operatorname{vec}A_a}$, write $\beta_2(\Phi):=\frac12\norm{J(\Phi)}_{S(2)}$
+for half the supremum of $\ip z{J(\Phi)z}$ over unit vectors of Schmidt rank at
+most two (\cref{def:beta2}), and let $\Delta(X):=\Tr(X)I$ and $\tau$ be
+transposition.
+
+\begin{theorem}[Pair amplification]
+\label[theorem]{thm:pair-amplification}
+Let $\Phi$ be completely positive on $\cL(H)$, $\dim H<\infty$, admitting a
+Kraus representation with $A_a^T=A_a$.  Then for every $r\ge1$ the map
+\[
+    \Psi_{r,\Phi}
+    :=
+    \Phi\circ\tau
+    +(r-1)\beta_2(\Phi)\left(\Delta-\tfrac1r\id\right)
+\]
+is $r$-positive.
+\end{theorem}
+
+One number, computed at level two, controls every level $r$; the cost grows
+linearly, with slope $\beta_2(\Phi)$, and vanishes at $r=1$, where the assertion
+is that $\Phi\circ\tau$ is positive.  The two hypotheses act separately, and
+\cref{thm:amplification} states the operator forms this splits into: complete
+positivity and $\beta_2$ give the bound, and transpose symmetry --- a
+$\Z/2$-degree condition on the Kraus space, \cref{rem:parity} --- supplies the
+$\frac1r\id$, which is exactly the difference between the coefficients $1$ and
+$1/r$ below.  \Cref{sec:amplification} proves it.
+
+Its principal corollary is the estimate the introduction began with.  It is not
+a special case: passing from $r$-positivity to the marginals needs a contraction
+identity for the particular map $\Lambda_U\otimes\Lambda_V$
+(\cref{eq:Phi-rhoT}), and \cref{rem:constant-dependence} shows that $\beta_2$
+alone cannot carry it.
+
 \begin{theorem}[Rank-$r$ partial-trace inequality]
 \label[theorem]{thm:rank_r}
 Let $U$ and $V$ be finite-dimensional complex Hilbert spaces. If
@@ -230,6 +265,15 @@ Consequently, for every $r\in\mathbb N_{\ge1}$ such that $\rank C\le r$,
 \end{equation}
 The assertion is immediate when $C=0$.
 \end{theorem}
+
+\Cref{eq:main-bound} was obtained independently and concurrently by Fraser,
+Huber, Pozsgay and Vona \cite{FraserHuberPozsgayVona2026}, by a different
+route; Bharti, Gajjala and Haug \cite{BhartiGajjalaHaug2026} obtain the
+rank-two case together with finite-copy extensions.  Both, like the present
+work, resolve the two-copy distillability question through Costa Rico's
+equivalence.  The overlap is the inequality; what is particular to this
+account is the derivation from \cref{thm:pair-amplification}, together with
+the formal development of \cref{app:formal}.
 
 \begin{remark}[Optimality of the coefficients]
 \label[remark]{rem:optimality}
@@ -527,7 +571,7 @@ $\norm{Q_-}_{S(2)}=\frac12$, so
     \beta_2(\Lambda_U\otimes\Lambda_V)=1 .
 \end{equation}
 
-\begin{theorem}[Pair amplification]
+\begin{theorem}[Pair amplification, operator forms]
 \label[theorem]{thm:amplification}
 Let $\Phi$ be completely positive on $\cL(U\otimes V)$.  Then, in the notation
 of \cref{prop:operator_ineq}, for every $r\ge1$ and every orthonormal family
@@ -567,9 +611,8 @@ else, supplies the projection.  \Cref{rem:parity} identifies that hypothesis as
 a $\Z/2$-degree condition and shows what the sharpening is worth: the
 coefficient $1/r$ of $\abs{\Tr C}^2$ in \cref{thm:rank_r} rather than $1$.
 
-Write $\Delta(X):=\Tr(X)I$ for the map that discards its argument and reprepares
-the identity, and $\tau$ for transposition.  In the transpose-symmetric case
-\cref{eq:amplification-B} says that
+In the transpose-symmetric case \cref{eq:amplification-B} is
+\cref{thm:pair-amplification}: it says that
 \[
     \Psi_{r,\Phi}
     :=
@@ -3064,6 +3107,18 @@ Nathaniel Johnston and David W. Kribs.
 ``A family of norms with applications in quantum information theory.''
 \newblock Journal of Mathematical Physics, 51:082202, 2010.
 \newblock \url{https://doi.org/10.1063/1.3459068}
+
+\bibitem{FraserHuberPozsgayVona2026}
+Thomas C. Fraser, Felix Huber, Bal\'azs Pozsgay, and Istv\'an Vona.
+``On the two-copy distillability of Werner states and a new partial trace
+inequality.''
+\newblock arXiv:2607.24309, 2026.
+
+\bibitem{BhartiGajjalaHaug2026}
+Kishor Bharti, Rishikesh Gajjala, and Tobias Haug.
+``Two-copy nondistillability of Werner states: sharp partial-trace inequalities
+and finite-copy extensions.''
+\newblock arXiv:2607.24479, 2026.
 
 \bibitem{TakasakiTomiyama1983}
 Toshiyuki Takasaki and Jun Tomiyama.
