@@ -3,6 +3,8 @@ The routine layer: rank monotonicity, the range-factorization identities of
 `lem:partial-trace-contractions`, and the finite-sum reindexings they need.
 -/
 import RankR.HS
+import Mathlib.Algebra.Order.Chebyshev
+import Mathlib.Tactic.Positivity.Finset
 
 namespace RankR
 

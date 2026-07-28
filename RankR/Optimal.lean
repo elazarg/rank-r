@@ -14,6 +14,7 @@ and then `b ≥ 1/r` for any bound `‖Tr_U C‖₂² + ‖Tr_V C‖₂² ≤ a�
 valid at rank `r`.  Nothing here is conditional on the Fu-Gao-Park estimate.
 -/
 import RankR.HS
+import Mathlib.LinearAlgebra.Matrix.Rank
 
 namespace RankR
 

@@ -13,7 +13,8 @@ inclusion heuristic pulls in every instance-implicit whose type mentions an
 included variable, so a single omnibus `variable` line would give `vec` a
 spurious `[DecidableEq m]` argument.
 -/
-import Mathlib
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.LinearAlgebra.Matrix.Kronecker
 
 namespace RankR
 

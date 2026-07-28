@@ -2,6 +2,7 @@
 Assembly of Theorem 1.1 from Proposition 2.2.
 -/
 import RankR.Factor
+import Mathlib.LinearAlgebra.Matrix.Rank
 
 namespace RankR
 
