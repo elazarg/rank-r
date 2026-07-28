@@ -1448,10 +1448,14 @@ $\beta_2\ge1$ there unconditionally, so \cref{eq:main-bound-parametrized} is
 never stronger than \cref{thm:rank_r} on that space.
 \end{remark}
 
-\begin{remark}[Two limits of the method]
+\begin{remark}[Instances]
 \label[remark]{rem:scope}
-\Cref{thm:amplification} does not extend in either of the two directions one
-would try first.
+An instance of \cref{thm:pair-amplification} is a completely positive $\Phi$
+admitting a transpose-symmetric Kraus representation, together with the value of
+$\beta_2(\Phi)$; a partial-trace consequence needs in addition a contraction
+identity of the kind \cref{eq:Phi-rhoT} supplies for
+$\Lambda_U\otimes\Lambda_V$.  The two directions one would look in next each
+stop at a definite point, and it is worth recording where.
 
 \emph{Schmidt rank $p$.}  \Cref{eq:kraus-cauchy-schwarz} generalizes at once: a
 rank-$p$ compression $P$ and the $S(p)$-norm of $J(\Phi)$ give
@@ -1488,8 +1492,17 @@ This section collects consequences of the results proved above: the exact
 symmetric score curve, an asymmetric tensor-product score theorem, block
 positivity and positive maps, quantitative Schmidt-number separation, Ky
 Fan bounds for Kronecker sums, and the exact Schmidt number of a product
-of antisymmetric projector states.  None of them is part of the
-machine-checked development.
+of antisymmetric projector states.  All of them descend from
+\cref{thm:rank_r}, or from \cref{lem:double-skew}, rather than from
+\cref{thm:pair-amplification} directly; none is part of the machine-checked
+development.
+
+The consequences at $r=2$ --- the two-copy distillability threshold and the
+statements at the endpoint $\alpha=-\frac12$ --- are also reached in
+\cite{FraserHuberPozsgayVona2026,BhartiGajjalaHaug2026}, the latter with
+finite-copy extensions beyond anything proved here.  What the results below add
+is the behaviour away from that endpoint: exact score curves at every $r$, the
+asymmetric threshold, and the Schmidt-number consequences that need $r>2$.
 
 They do not all rest on the same input.
 \Cref{prop:exact-q2-score,thm:exact-asymmetric-score,cor:kronecker} use
