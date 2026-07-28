@@ -53,26 +53,46 @@ theorem rank_mono_strict {a t : ℝ} (ha : 0 < a) (_ht : 0 ≤ t) {r₀ r : ℕ}
   rw [sub_pos, div_lt_iff₀ (by positivity)]
   nlinarith [mul_pos hr0 ha]
 
-section Contractions
+/-! ## The range factorization, entry by entry
 
-variable {W : Type*} [Fintype W] {s : ℕ}
+The factorization and the vectors it is built from are defined coordinatewise,
+and summing over the `s` columns needs nothing of `W`; only the norms and
+pairings below sum over `W` itself. -/
+
+section Entrywise
+
+variable {W : Type*} {s : ℕ}
 
 /-- The range factorization `C = ∑ᵢ |eᵢ⟩⟨dᵢ|` of `lem:partial-trace-contractions`.
 Zero columns `dᵢ = 0` are allowed, as in Prop 4.1. -/
 def rankFactor (e d : Fin s → EuclideanSpace ℂ W) : Matrix W W ℂ :=
   Matrix.of fun p q => ∑ i, e i p * conj (d i q)
 
+@[simp] theorem rankFactor_apply (e d : Fin s → EuclideanSpace ℂ W) (p q : W) :
+    rankFactor e d p q = ∑ i, e i p * conj (d i q) := rfl
+
 /-- `δ = ∑ᵢ dᵢ ⊗ qᵢ ∈ (U ⊗ V) ⊗ Q`, the unnormalized vector of section 3. -/
 def delta (d : Fin s → EuclideanSpace ℂ W) : EuclideanSpace ℂ (W × Fin s) :=
   WithLp.toLp 2 (fun pi => d pi.2 pi.1)
 
-omit [Fintype W] in
 @[simp] theorem delta_apply (d : Fin s → EuclideanSpace ℂ W) (pi : W × Fin s) :
     delta d pi = d pi.2 pi.1 := rfl
 
-omit [Fintype W] in
-@[simp] theorem rankFactor_apply (e d : Fin s → EuclideanSpace ℂ W) (p q : W) :
-    rankFactor e d p q = ∑ i, e i p * conj (d i q) := rfl
+/-- The rank-one operator `|x⟩⟨y|`, with the section 1 convention
+`vec (|x⟩⟨y|) = x ⊗ conj y`. -/
+def rankOne (x y : EuclideanSpace ℂ W) : Matrix W W ℂ :=
+  Matrix.of fun p q => x p * conj (y q)
+
+theorem rankFactor_eq_sum (e d : Fin s → EuclideanSpace ℂ W) :
+    rankFactor e d = ∑ i, rankOne (e i) (d i) := by
+  ext p q
+  simp [rankFactor, rankOne, Matrix.sum_apply]
+
+end Entrywise
+
+section Contractions
+
+variable {W : Type*} [Fintype W] {s : ℕ}
 
 theorem norm_delta (d : Fin s → EuclideanSpace ℂ W) :
     ‖delta d‖ ^ 2 = ∑ i, ‖d i‖ ^ 2 := by
@@ -81,17 +101,6 @@ theorem norm_delta (d : Fin s → EuclideanSpace ℂ W) :
   refine Finset.sum_congr rfl fun i _ => ?_
   rw [EuclideanSpace.norm_eq, Real.sq_sqrt (by positivity)]
   rfl
-
-/-- The rank-one operator `|x⟩⟨y|`, with the section 1 convention
-`vec (|x⟩⟨y|) = x ⊗ conj y`. -/
-def rankOne (x y : EuclideanSpace ℂ W) : Matrix W W ℂ :=
-  Matrix.of fun p q => x p * conj (y q)
-
-omit [Fintype W] in
-theorem rankFactor_eq_sum (e d : Fin s → EuclideanSpace ℂ W) :
-    rankFactor e d = ∑ i, rankOne (e i) (d i) := by
-  ext p q
-  simp [rankFactor, rankOne, Matrix.sum_apply]
 
 /-- The one genuine computation: `⟪|x⟩⟨y|, |z⟩⟨w|⟫ = ⟪x,z⟫ · conj ⟪y,w⟫`. -/
 theorem hsInner_rankOne (x y z w : EuclideanSpace ℂ W) :
@@ -234,6 +243,12 @@ theorem sum6_perm' {A B I C M : Type*} [Fintype A] [Fintype B] [Fintype I] [Fint
         (q.2.2.2.2.2, q.2.2.1, q.1, q.2.2.2.1, q.2.1, q.2.2.2.2.1)
       left_inv := fun _ => rfl
       right_inv := fun _ => rfl } _ _ (fun _ => rfl)
+
+/-! ## The two marginals
+
+`Tr_U` sums over `U` and leaves `V` untouched, so its lemmas need `Fintype U`
+and not `Fintype V`; `Tr_V` is the mirror.  Each `omit` below records which of
+the two factors the declaration under it actually contracts. -/
 
 section Product
 

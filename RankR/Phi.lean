@@ -43,6 +43,28 @@ theorem sum_ite_one_mul' (c : Z) (f : Z → ℂ) :
     ∑ z, (if z = c then (1 : ℂ) else 0) * f z = f c := by
   simp
 
+/-- **Collapse of a sum against an antisymmetrized Kronecker delta.**  The two
+delta terms pick out `z = c₂` and `z = c₁` respectively, and each surviving
+factor is the delta of the indices left over.
+
+The double-skew kernel is a product of one such factor per side, so this is
+applied once on `U` and once on `V`; nothing distinguishes the two beyond which
+index type is being summed. -/
+theorem sum_antisym_collapse_factor (a : ℂ) (c₀ c₁ c₂ : Z) (f : Z → ℂ) :
+    ∑ z : Z, (a * ((if c₀ = c₁ then (1 : ℂ) else 0) * (if c₂ = z then 1 else 0)
+        - (if c₀ = z then (1 : ℂ) else 0) * (if c₂ = c₁ then 1 else 0))) * f z
+      = a * ((if c₀ = c₁ then (1 : ℂ) else 0) * f c₂
+           - (if c₂ = c₁ then (1 : ℂ) else 0) * f c₀) := by
+  have hterm : ∀ z : Z, (a * ((if c₀ = c₁ then (1 : ℂ) else 0) * (if c₂ = z then 1 else 0)
+        - (if c₀ = z then (1 : ℂ) else 0) * (if c₂ = c₁ then 1 else 0))) * f z
+      = (if c₂ = z then (1 : ℂ) else 0) * (a * (if c₀ = c₁ then (1 : ℂ) else 0) * f z)
+        - (if c₀ = z then (1 : ℂ) else 0)
+            * (a * (if c₂ = c₁ then (1 : ℂ) else 0) * f z) :=
+    fun z => by ring
+  rw [Finset.sum_congr rfl fun z _ => hterm z, Finset.sum_sub_distrib, sum_ite_one_mul,
+    sum_ite_one_mul]
+  ring
+
 /-- A double sum whose summand splits as a product of one factor per index. -/
 theorem sum_sum_mul {ι κ : Type*} [Fintype ι] [Fintype κ] (f : ι → ℂ) (g : κ → ℂ) :
     ∑ a : ι, ∑ b : κ, f a * g b = (∑ a, f a) * (∑ b, g b) :=
@@ -136,14 +158,6 @@ section SkewSums
 
 variable {W : Type*} [Fintype W] [DecidableEq W]
 
-omit [Fintype W] in
-/-- The entries of `skewUnit a b` as a difference of products of Kronecker deltas. -/
-theorem skewUnit_apply' (a b p q : W) :
-    skewUnit a b p q
-      = (if a = p then (1 : ℂ) else 0) * (if b = q then 1 else 0)
-        - (if b = p then (1 : ℂ) else 0) * (if a = q then 1 else 0) := by
-  simp only [skewUnit, Matrix.sub_apply, Matrix.single_apply, ite_and, ite_mul, one_mul, zero_mul]
-
 /-- The Gram-type sum of the elementary skew matrices over *all* index pairs is
 twice an antisymmetrized Kronecker delta. -/
 theorem sum_skewUnit_mul_conj (α γ α' γ' : W) :
@@ -171,7 +185,7 @@ theorem sum_skewUnit_mul_conj (α γ α' γ' : W) :
         + ((if a = γ then (1 : ℂ) else 0) * (if a = γ' then 1 else 0))
           * ((if b = α then (1 : ℂ) else 0) * (if b = α' then 1 else 0)) := by
     intro a b
-    rw [skewUnit_apply', skewUnit_apply']
+    rw [skewUnit_apply, skewUnit_apply]
     simp only [map_sub, map_mul, apply_ite conj, map_one, map_zero]
     ring
   rw [Fintype.sum_prod_type,
@@ -184,14 +198,19 @@ end SkewSums
 
 /-! ## The map `Φ` -/
 
-section Phi
+section Kron
 
-variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] {s : ℕ}
+variable {U V : Type*}
 
-omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
 /-- Entries of a Kronecker product, for indices that are not literal pairs. -/
 theorem kron_apply (A : Matrix U U ℂ) (B : Matrix V V ℂ) (u v : U × V) :
     (A ⊗ₖ B) u v = A u.1 v.1 * B u.2 v.2 := rfl
+
+end Kron
+
+section Phi
+
+variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] {s : ℕ}
 
 /-- The Kraus coefficient of the double-skew family: the product of two
 antisymmetrized Kronecker deltas, each carrying a factor `2`. -/
@@ -261,36 +280,6 @@ theorem Phi4_apply_aux (Y : Matrix ((U × V) × Fin s) ((U × V) × Fin s) ℂ)
   rw [← sum_kron_coeff x.1 q y.1 q', Finset.sum_mul]
   exact Finset.sum_congr rfl fun p _ => by ring
 
-omit [Fintype U] [DecidableEq U] in
-/-- Collapse of a sum against an antisymmetrized Kronecker delta on `V`. -/
-theorem sum_antisym_collapse_V (c : ℂ) (β β' δ : V) (h : V → ℂ) :
-    ∑ δ' : V, (c * ((if β = β' then (1 : ℂ) else 0) * (if δ = δ' then 1 else 0)
-        - (if β = δ' then (1 : ℂ) else 0) * (if δ = β' then 1 else 0))) * h δ'
-      = c * ((if β = β' then (1 : ℂ) else 0) * h δ - (if δ = β' then (1 : ℂ) else 0) * h β) := by
-  have hterm : ∀ δ' : V, (c * ((if β = β' then (1 : ℂ) else 0) * (if δ = δ' then 1 else 0)
-        - (if β = δ' then (1 : ℂ) else 0) * (if δ = β' then 1 else 0))) * h δ'
-      = (if δ = δ' then (1 : ℂ) else 0) * (c * (if β = β' then (1 : ℂ) else 0) * h δ')
-        - (if β = δ' then (1 : ℂ) else 0) * (c * (if δ = β' then (1 : ℂ) else 0) * h δ') :=
-    fun δ' => by ring
-  rw [Finset.sum_congr rfl fun δ' _ => hterm δ', Finset.sum_sub_distrib, sum_ite_one_mul,
-    sum_ite_one_mul]
-  ring
-
-omit [Fintype V] [DecidableEq V] in
-/-- Collapse of a sum against an antisymmetrized Kronecker delta on `U`. -/
-theorem sum_antisym_collapse_U (c : ℂ) (α α' γ : U) (g : U → ℂ) :
-    ∑ γ' : U, (c * ((if α = α' then (1 : ℂ) else 0) * (if γ = γ' then 1 else 0)
-        - (if α = γ' then (1 : ℂ) else 0) * (if γ = α' then 1 else 0))) * g γ'
-      = c * ((if α = α' then (1 : ℂ) else 0) * g γ - (if γ = α' then (1 : ℂ) else 0) * g α) := by
-  have hterm : ∀ γ' : U, (c * ((if α = α' then (1 : ℂ) else 0) * (if γ = γ' then 1 else 0)
-        - (if α = γ' then (1 : ℂ) else 0) * (if γ = α' then 1 else 0))) * g γ'
-      = (if γ = γ' then (1 : ℂ) else 0) * (c * (if α = α' then (1 : ℂ) else 0) * g γ')
-        - (if α = γ' then (1 : ℂ) else 0) * (c * (if γ = α' then (1 : ℂ) else 0) * g γ') :=
-    fun γ' => by ring
-  rw [Finset.sum_congr rfl fun γ' _ => hterm γ', Finset.sum_sub_distrib, sum_ite_one_mul,
-    sum_ite_one_mul]
-  ring
-
 /-- Collapse of the inner double sum against the product of the two
 antisymmetrized Kronecker deltas. -/
 theorem sum_antisym_collapse (c : ℂ) (α α' γ : U) (β β' δ : V) (H : U → V → ℂ) :
@@ -314,9 +303,9 @@ theorem sum_antisym_collapse (c : ℂ) (α α' γ : U) (β β' δ : V) (H : U �
            - (if α = γ' then (1 : ℂ) else 0) * (if γ = α' then 1 else 0)))
         * ((if β = β' then (1 : ℂ) else 0) * H γ' δ
            - (if δ = β' then (1 : ℂ) else 0) * H γ' β) :=
-    fun γ' => sum_antisym_collapse_V _ β β' δ (H γ')
+    fun γ' => sum_antisym_collapse_factor _ β β' δ (H γ')
   rw [Finset.sum_congr rfl fun γ' _ => h1 γ']
-  exact sum_antisym_collapse_U c α α' γ _
+  exact sum_antisym_collapse_factor c α α' γ _
 
 /-- Collapse of the outer double sum, after the inner one has been collapsed. -/
 theorem sum_outer_collapse (α α' : U) (β β' : V) (G : U → V → U → V → ℂ) :

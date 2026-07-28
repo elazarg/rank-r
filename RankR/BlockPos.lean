@@ -38,9 +38,12 @@ def IsBlockPositive (r : ℕ) (M : Matrix (W × W) (W × W) ℂ) : Prop :=
 
 end BlockPositive
 
-variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
+variable {U V : Type*} [DecidableEq U] [DecidableEq V]
 
-/-! ## The four test vectors -/
+/-! ## The four test vectors
+
+Each is an indicator, so the definitions and their entries decide equalities
+without summing; the overlaps below are where the sums start. -/
 
 /-- `Ω`, the vectorization of the identity: `⟪Ω, vec C⟫ = Tr C`. -/
 def omegaVec : EuclideanSpace ℂ ((U × V) × (U × V)) :=
@@ -54,17 +57,16 @@ def gU (b c : V) : EuclideanSpace ℂ ((U × V) × (U × V)) :=
 def gV (a a' : U) : EuclideanSpace ℂ ((U × V) × (U × V)) :=
   WithLp.toLp 2 fun X => if X.1.2 = X.2.2 ∧ X.1.1 = a ∧ X.2.1 = a' then (1 : ℂ) else 0
 
-omit [Fintype U] [Fintype V] in
 @[simp] theorem omegaVec_apply (X : (U × V) × (U × V)) :
     omegaVec X = if X.1 = X.2 then (1 : ℂ) else 0 := rfl
 
-omit [Fintype U] [Fintype V] in
 @[simp] theorem gU_apply (b c : V) (X : (U × V) × (U × V)) :
     gU (U := U) b c X = if X.1.1 = X.2.1 ∧ X.1.2 = b ∧ X.2.2 = c then (1 : ℂ) else 0 := rfl
 
-omit [Fintype U] [Fintype V] in
 @[simp] theorem gV_apply (a a' : U) (X : (U × V) × (U × V)) :
     gV (V := V) a a' X = if X.1.2 = X.2.2 ∧ X.1.1 = a ∧ X.2.1 = a' then (1 : ℂ) else 0 := rfl
+
+variable [Fintype U] [Fintype V]
 
 theorem inner_omegaVec (C : Matrix (U × V) (U × V) ℂ) :
     inner ℂ (omegaVec (U := U) (V := V)) (vec C) = C.trace := by

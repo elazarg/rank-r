@@ -147,19 +147,24 @@ end Interface
 
 /-! ## Lemma 2.3 -/
 
-section Lemma23
+section PairMat
 
-variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
+variable {U V : Type*}
 
 /-- The two-term symmetric matrix that Lemma 2.3 applies to. -/
 noncomputable def pairMat (s₁ s₂ : ℝ) (w₁ w₂ : EuclideanSpace ℂ (U × V)) :
     Matrix (U × V) (U × V) ℂ :=
   (s₁ : ℂ) • symOuter w₁ + (s₂ : ℂ) • symOuter w₂
 
-omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
 theorem transpose_pairMat (s₁ s₂ : ℝ) (w₁ w₂ : EuclideanSpace ℂ (U × V)) :
     (pairMat s₁ s₂ w₁ w₂)ᵀ = pairMat s₁ s₂ w₁ w₂ := by
   simp [pairMat, Matrix.transpose_add, Matrix.transpose_smul, transpose_symOuter]
+
+end PairMat
+
+section Lemma23
+
+variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
 
 omit [DecidableEq U] [DecidableEq V] in
 /-- **Fu-Gao-Park Lemma 2.3**, reduced by `Flip.lean` to a scalar inequality.

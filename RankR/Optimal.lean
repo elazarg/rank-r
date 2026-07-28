@@ -20,7 +20,7 @@ namespace RankR
 
 open Matrix Finset ComplexConjugate
 
-variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
+variable {U V : Type*} [DecidableEq U] [DecidableEq V]
 
 section Witness
 
@@ -40,14 +40,12 @@ def projWit : Matrix (U × V) (U × V) ℂ :=
     (if p.1 = q.1 ∧ p.1 ∈ S then 1 else 0) *
       ((if p.2 = x₀ then 1 else 0) * (if q.2 = x₁ then 1 else 0))
 
-omit [Fintype U] [Fintype V] in
 @[simp]
 theorem projWit_apply (p q : U × V) :
     projWit S x₀ x₁ p q =
       (if p.1 = q.1 ∧ p.1 ∈ S then 1 else 0) *
         ((if p.2 = x₀ then 1 else 0) * (if q.2 = x₁ then 1 else 0)) := rfl
 
-omit [Fintype U] [Fintype V] in
 /-- The extremizer factors through `S`, which is what bounds its rank. -/
 theorem projWit_eq_mul : projWit S x₀ x₁ = projWitCol S x₀ * projWitRow S x₁ := by
   ext p q
@@ -59,6 +57,8 @@ theorem projWit_eq_mul : projWit S x₀ x₁ = projWitCol S x₀ * projWitRow S 
   simp only [mul_ite, mul_one, mul_zero]
   by_cases hq : q.1 = p.1 <;> by_cases hS : p.1 ∈ S <;>
     simp_all [eq_comm, and_comm]
+
+variable [Fintype U] [Fintype V]
 
 /-- The extremizer has rank at most `S.card`, since it factors through `S`. -/
 theorem rank_projWit_le : (projWit S x₀ x₁).rank ≤ S.card := by
@@ -139,7 +139,7 @@ end Witness
 
 section Optimality
 
-variable {r : ℕ}
+variable [Fintype U] [Fintype V] {r : ℕ}
 
 /-- **The coefficient `r` of `‖C‖₂²` is optimal.**  Testing a bound with
 coefficients `a, b` on the extremizer with `x₀ ≠ x₁` kills the trace term and

@@ -28,6 +28,11 @@ namespace RankR
 open Matrix Finset ComplexConjugate
 open scoped Kronecker
 
+/-- Symmetry of a Kronecker delta in its two indices. -/
+private theorem ite_swap {α : Type*} [DecidableEq α] (p q : α) :
+    (if p = q then (1 : ℂ) else 0) = if q = p then (1 : ℂ) else 0 := by
+  by_cases h : p = q <;> simp [h, eq_comm]
+
 variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
 
 /-- The Kraus index of the double-skew family: an ordered pair of indices on each
@@ -58,11 +63,6 @@ private theorem ite_and4 {p q r s : Prop} [Decidable p] [Decidable q] [Decidable
         * ((if q then (1 : ℂ) else 0) * (if s then 1 else 0)) := by
   by_cases hp : p <;> by_cases hq : q <;> by_cases hr : r <;> by_cases hs : s <;>
     simp [hp, hq, hr, hs]
-
-omit [Fintype U] [Fintype V] in
-private theorem ite_swap {α : Type*} [DecidableEq α] (p q : α) :
-    (if p = q then (1 : ℂ) else 0) = if q = p then (1 : ℂ) else 0 := by
-  by_cases h : p = q <;> simp [h, eq_comm]
 
 omit [Fintype U] [Fintype V] in
 /-- The entries of `Qm`, with the four indices separated and the Klein

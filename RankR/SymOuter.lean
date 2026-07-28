@@ -18,28 +18,31 @@ open Matrix Finset ComplexConjugate
 
 /-! ## Symmetric rank-one matrices -/
 
-section SymOuter
+section Entrywise
 
-variable {W : Type*} [Fintype W]
+variable {W : Type*}
 
 /-- The entrywise conjugate of a vector. -/
 def bar (w : EuclideanSpace ℂ W) : EuclideanSpace ℂ W :=
   WithLp.toLp 2 (fun p => conj (w p))
 
-omit [Fintype W] in
 @[simp] theorem bar_apply (w : EuclideanSpace ℂ W) (p : W) : bar w p = conj (w p) := rfl
 
 /-- `w wᵀ`, the symmetric rank-one matrix built from a vector.  This is
 `|w⟩⟨w̄|`, not `|w⟩⟨w|`: it is symmetric, not positive semidefinite. -/
 def symOuter (w : EuclideanSpace ℂ W) : Matrix W W ℂ := Matrix.of fun p q => w p * w q
 
-omit [Fintype W] in
 @[simp] theorem symOuter_apply (w : EuclideanSpace ℂ W) (p q : W) :
     symOuter w p q = w p * w q := rfl
 
-omit [Fintype W] in
 theorem transpose_symOuter (w : EuclideanSpace ℂ W) : (symOuter w)ᵀ = symOuter w := by
   ext p q; simp [mul_comm]
+
+end Entrywise
+
+section SymOuter
+
+variable {W : Type*} [Fintype W]
 
 /-- `⟨u uᵀ, v vᵀ⟩ = ⟪u,v⟫²`.  The double sum factorizes into two copies of the
 same inner product.  In particular an orthonormal family of vectors gives an

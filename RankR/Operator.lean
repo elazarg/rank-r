@@ -21,6 +21,36 @@ instance juggling (and no `DecidableEq`) is needed. -/
 def qform (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) : ℂ :=
   ∑ p, ∑ q, conj (x p) * A p q * x q
 
+/-! `qform` is linear in the matrix, which is how the four terms of a composite
+operator are separated before each is evaluated. -/
+
+theorem qform_add (A B : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
+    qform (A + B) x = qform A x + qform B x := by
+  simp only [qform, Matrix.add_apply, mul_add, add_mul, Finset.sum_add_distrib]
+
+theorem qform_sub (A B : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
+    qform (A - B) x = qform A x - qform B x := by
+  simp only [qform, Matrix.sub_apply, mul_sub, sub_mul, Finset.sum_sub_distrib]
+
+theorem qform_smul (c : ℂ) (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
+    qform (c • A) x = c * qform A x := by
+  simp only [qform, Matrix.smul_apply, smul_eq_mul, Finset.mul_sum]
+  exact Finset.sum_congr rfl fun p _ => Finset.sum_congr rfl fun q _ => by ring
+
+/-- `⟪x, I x⟫ = ‖x‖²`.  The identity is the one matrix among these whose entries
+decide an equality, so this is the only member of the group needing
+`DecidableEq`. -/
+theorem qform_one [DecidableEq W] (x : EuclideanSpace ℂ W) :
+    qform (1 : Matrix W W ℂ) x = ((‖x‖ ^ 2 : ℝ) : ℂ) := by
+  have h : qform (1 : Matrix W W ℂ) x = ∑ p, conj (x p) * x p := by
+    simp only [qform, Matrix.one_apply, mul_ite, ite_mul, mul_one, mul_zero,
+      zero_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+  rw [h, EuclideanSpace.norm_eq, Real.sq_sqrt (by positivity)]
+  push_cast
+  exact Finset.sum_congr rfl fun p _ => by
+    rw [← Complex.normSq_eq_conj_mul_self]
+    simp [Complex.normSq_eq_norm_sq]
+
 /-- `⟪x, |y⟩⟨y| x⟫ = |⟪y, x⟫|²`. -/
 theorem qform_rankOne (y x : EuclideanSpace ℂ W) :
     qform (rankOne y y) x = ((Complex.normSq (inner ℂ y x) : ℝ) : ℂ) := by
@@ -65,6 +95,13 @@ theorem qform_rho_delta (e d : Fin s → EuclideanSpace ℂ W) :
   rw [qform_rankOne, inner_delta_delta, Complex.normSq_conj]
 
 end Trace
+
+/-! ## Placement on the labeled factors
+
+The instances split across the two sides in the opposite way to the names:
+`placeUQ A` is `A ⊗ I_V`, whose entries compare the two `V` labels, so the
+`U`-marginal lemmas decide equality in `V` and not in `U`.  Each `omit` below
+names the factor its declaration leaves alone. -/
 
 section Place
 

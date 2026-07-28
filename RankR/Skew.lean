@@ -23,22 +23,39 @@ open scoped Kronecker
 
 section SkewUnits
 
-variable {W : Type*} [Fintype W] [DecidableEq W]
+variable {W : Type*} [DecidableEq W]
 
-omit [Fintype W] in
 /-- The elementary skew-symmetric matrix `E_{ab} - E_{ba}`.
 
 For `a = b` this is the zero matrix; for `a ≠ b` it is the generator of the
 rotation in the `(a, b)` plane.  These matrices span `so(W)`. -/
 def skewUnit (a b : W) : Matrix W W ℂ := Matrix.single a b 1 - Matrix.single b a 1
 
-omit [Fintype W] in
+/-- The entries of `skewUnit a b` as a difference of products of Kronecker
+deltas. -/
+theorem skewUnit_apply (a b p q : W) :
+    skewUnit a b p q
+      = (if a = p then (1 : ℂ) else 0) * (if b = q then 1 else 0)
+        - (if b = p then (1 : ℂ) else 0) * (if a = q then 1 else 0) := by
+  simp only [skewUnit, Matrix.sub_apply, Matrix.single_apply, ite_and, ite_mul,
+    one_mul, zero_mul]
+
 /-- `skewUnit a b` is skew-symmetric: `(E_{ab} - E_{ba})ᵀ = E_{ba} - E_{ab}`. -/
 theorem skewUnit_isSkew (a b : W) : IsSkew (skewUnit a b) := by
   rw [IsSkew, skewUnit, Matrix.transpose_sub, Matrix.transpose_single,
     Matrix.transpose_single, neg_sub]
 
-omit [DecidableEq W] in
+end SkewUnits
+
+/-! ## Conjugation and orthonormality
+
+Independent of the skew units: what is needed of conjugation is that it is an
+isometry, which is a statement about the index type alone. -/
+
+section Conj
+
+variable {W : Type*} [Fintype W]
+
 /-- Entrywise complex conjugation preserves orthonormality.
 
 Conjugation is an isometry of `ℂ` and conjugates the Hermitian form,
@@ -57,7 +74,7 @@ theorem orthonormal_conj {ι : Type*} {e : ι → EuclideanSpace ℂ W} (he : Or
     rw [PiLp.inner_apply, ← h']
     exact Finset.sum_congr rfl fun p _ => by simp [mul_comm]
 
-end SkewUnits
+end Conj
 
 /-! ## The double-skew subspace -/
 

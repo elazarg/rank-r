@@ -89,7 +89,8 @@ theorem hsNormSq_eq_norm_sq (A : Matrix m n ℂ) : hsNormSq A = ‖vec A‖ ^ 2 
   simpa using h2
 
 /-- A finite sum in `EuclideanSpace` is computed coordinatewise. -/
-theorem sum_apply_euclidean {ι T : Type*} (t : Finset ι) (f : ι → EuclideanSpace ℂ T) (x : T) :
+theorem sum_apply_euclidean {ι T : Type*} (t : Finset ι)
+    (f : ι → EuclideanSpace ℂ T) (x : T) :
     (∑ a ∈ t, f a) x = ∑ a ∈ t, f a x := by
   show WithLp.ofLp (∑ a ∈ t, f a) x = _
   rw [WithLp.ofLp_sum, Finset.sum_apply]

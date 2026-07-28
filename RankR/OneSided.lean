@@ -90,6 +90,10 @@ end Submultiplicative
 
 /-! ## Partial traces of rank-one operators as matrix products -/
 
+/-! Reading a partial trace as a matrix product contracts one factor and leaves
+the other alone, so each of the two identities needs only its own factor to be
+finite. -/
+
 section RankOne
 
 variable {U V : Type*} [Fintype U] [Fintype V]

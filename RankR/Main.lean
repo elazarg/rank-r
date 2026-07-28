@@ -8,39 +8,6 @@ namespace RankR
 
 open Matrix Finset ComplexConjugate
 
-section QFormAlgebra
-
-variable {W : Type*} [Fintype W] [DecidableEq W]
-
-omit [DecidableEq W] in
-theorem qform_add (A B : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
-    qform (A + B) x = qform A x + qform B x := by
-  simp only [qform, Matrix.add_apply, mul_add, add_mul, Finset.sum_add_distrib]
-
-omit [DecidableEq W] in
-theorem qform_sub (A B : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
-    qform (A - B) x = qform A x - qform B x := by
-  simp only [qform, Matrix.sub_apply, mul_sub, sub_mul, Finset.sum_sub_distrib]
-
-omit [DecidableEq W] in
-theorem qform_smul (c : ℂ) (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
-    qform (c • A) x = c * qform A x := by
-  simp only [qform, Matrix.smul_apply, smul_eq_mul, Finset.mul_sum]
-  exact Finset.sum_congr rfl fun p _ => Finset.sum_congr rfl fun q _ => by ring
-
-theorem qform_one (x : EuclideanSpace ℂ W) :
-    qform (1 : Matrix W W ℂ) x = ((‖x‖ ^ 2 : ℝ) : ℂ) := by
-  have h : qform (1 : Matrix W W ℂ) x = ∑ p, conj (x p) * x p := by
-    simp only [qform, Matrix.one_apply, mul_ite, ite_mul, mul_one, mul_zero,
-      zero_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true]
-  rw [h, EuclideanSpace.norm_eq, Real.sq_sqrt (by positivity)]
-  push_cast
-  exact Finset.sum_congr rfl fun p _ => by
-    rw [← Complex.normSq_eq_conj_mul_self]
-    simp [Complex.normSq_eq_norm_sq]
-
-end QFormAlgebra
-
 section Rank
 
 variable {W : Type*} [Fintype W] [DecidableEq W]
