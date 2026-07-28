@@ -1,0 +1,441 @@
+\documentclass[11pt,reqno]{amsart}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{braket}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=blue!55!black,
+  urlcolor=blue!55!black]{hyperref}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\usepackage[nameinlink,capitalize,noabbrev]{cleveref}
+
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\vecop}{vec}
+\newcommand{\cL}{\mathcal L}
+\newcommand{\cS}{\mathcal S}
+\newcommand{\cU}{\mathcal U}
+\newcommand{\cD}{\mathcal D}
+\newcommand{\ketbra}[2]{\lvert #1\rangle\!\langle #2\rvert}
+\newcommand{\ip}[2]{\langle #1,#2\rangle}
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+\newcommand{\C}{\mathbb C}
+
+\title{Exact finite-level free-spectrahedral inclusion\\
+from a two-layer graph operator system}
+\author{Elazar Gershuni}
+\date{\today}
+
+\begin{document}
+\begin{abstract}
+Pair amplification turns a Schmidt-rank-two estimate on a Kraus dictionary into
+$R$-positivity of a corrected map, hence into an inclusion of free spectrahedra
+valid through matrix level $R$ and failing at level $R+1$.  Read on a full
+matrix dictionary the resulting statement is tomographically complete, so it
+certifies nothing a Choi computation would not.  We exhibit a family of
+edge-indexed Kraus maps $\Phi_G$ on $M_{2m}$, one for each simple graph $G$ on
+$m$ vertices, with $\beta_2(\Phi_G)=1$ exactly, and we show that the amplified
+coefficient $R-1$ is attained whenever $G$ contains an $R$-clique.  The
+coefficient system can then be compressed: not to the graph operator system
+$\cS_G$, whose one-corner compression destroys the protected direction, but to
+the two-layer system $\cU_G=\cS_G\otimes\cD_2$, which is invariant, carries
+$2m(1+k)-1$ traceless coefficients for a $k$-regular $G$, and still contains a
+positive matrix-level element witnessing sharpness.  For the rook graph
+$H(2,q)$ this gives exact inclusion through every level $R<q$ using
+$2q^2(2q-1)-1$ coefficients in place of $4q^4-1$.
+\end{abstract}
+\maketitle
+
+\section{Setting}
+
+Let $\Phi(X)=\sum_aA_aXA_a^*$ be completely positive on $M_d$ with every Kraus
+operator transpose-symmetric, $A_a^T=A_a$.  Write
+\[
+    2\beta_2(\Phi)
+    =\sup_{\norm c_2=1}\bigl(s_1(K_c)^2+s_2(K_c)^2\bigr),
+    \qquad K_c=\sum_ac_aA_a,
+\]
+and, for an integer $R\ge1$,
+\begin{equation}
+\label{eq:theta}
+    \Theta^\Phi_{R,\lambda}
+    :=\Phi\circ\tau+\lambda\Bigl(\Delta_d-\tfrac1R\id\Bigr),
+    \qquad
+    \Delta_d(X)=\Tr(X)I_d,
+\end{equation}
+with $\tau$ the transpose.  Pair amplification (\texttt{rank-r.tex},
+Theorem 1.1) states that $\Theta^\Phi_{R,\lambda}$ is $R$-positive as soon as
+$\lambda\ge(R-1)\beta_2(\Phi)$, so the \emph{protected inclusion constant}
+\begin{equation}
+\label{eq:lamstar}
+    \lambda_R^*(\Phi)
+    :=\inf\{\lambda\ge0:\Theta^\Phi_{R,\lambda}\ \text{is $R$-positive}\}
+\end{equation}
+obeys $\lambda_R^*(\Phi)\le(R-1)\beta_2(\Phi)$.  Throughout, $R$-positivity is
+used in its Choi form: $\Psi$ is $R$-positive if and only if
+$\ip{\vecop C}{J(\Psi)\vecop C}\ge0$ for every $C$ with $\rank C\le R$, where
+$J(\Psi)=\sum_{ij}E_{ij}\otimes\Psi(E_{ij})$.  In that normalization
+$\Delta_d$ contributes $\norm C_F^2$ and $\id$ contributes $\abs{\Tr C}^2$, so
+the correction in \cref{eq:theta} contributes
+$\lambda(\norm C_F^2-\abs{\Tr C}^2/R)$.
+
+The point of what follows is that the bound \cref{eq:lamstar} is attained by a
+family whose coefficient system is far smaller than $M_d$.
+
+\section{The edge-Kraus graph family}
+
+Let $G=(V,E)$ be a simple graph on $V=\{1,\dots,m\}$ with $E\neq\emptyset$.
+For an edge $e=\{i,j\}$ with $i<j$ set
+\begin{equation}
+\label{eq:kraus}
+    L_e=E_{ij}-E_{ji}\in M_m,
+    \qquad
+    J=E_{01}-E_{10}\in M_2,
+    \qquad
+    A_e=L_e\otimes J\in M_{2m}.
+\end{equation}
+Both factors are real and skew, so $A_e^T=A_e=A_e^*$: the Kraus operators are
+real symmetric, which is the frame-independent hypothesis pair amplification
+needs.  Put
+\begin{equation}
+\label{eq:phig}
+    \Phi_G(Y)=\sum_{e\in E}A_eYA_e .
+\end{equation}
+
+\begin{lemma}[Exact local constant]
+\label{lem:beta}
+$\beta_2(\Phi_G)=1$ for every nonempty $G$.
+\end{lemma}
+
+\begin{proof}
+For $c=(c_e)_{e\in E}$ write $K_c=\sum_ec_eA_e=L_c\otimes J$ with
+$L_c=\sum_ec_eL_e$.  The $L_e$ are Frobenius-orthogonal with
+$\norm{L_e}_F^2=2$, so $\norm{L_c}_F^2=2\norm c_2^2$.  A complex skew matrix
+has its nonzero singular values in equal pairs, hence
+$2s_1(L_c)^2\le\norm{L_c}_F^2$, that is $s_1(L_c)^2\le\norm c_2^2$.  Since $J$
+is unitary, the singular values of $L_c\otimes J$ are those of $L_c$ with
+multiplicities doubled, so $s_1(K_c)=s_2(K_c)=s_1(L_c)$ and
+\[
+    s_1(K_c)^2+s_2(K_c)^2=2s_1(L_c)^2\le2\norm c_2^2 .
+\]
+A vector supported on a single edge attains equality, since $s_1(L_e)=1$.
+\end{proof}
+
+Write $\Theta^G_{R,\lambda}$ for \cref{eq:theta} with $\Phi=\Phi_G$, $d=2m$.
+
+\begin{theorem}[Clique sharpness]
+\label{thm:clique}
+If $G$ contains an $R$-clique then $\lambda^*_R(\Phi_G)=R-1$.  More generally,
+for every nonempty $S\subseteq V$ with $\abs S\le R$,
+\begin{equation}
+\label{eq:avgdeg}
+    \lambda^*_R(\Phi_G)\ \ge\ \frac{2\abs{E(G[S])}}{\abs S}.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+The upper bound is pair amplification with \cref{lem:beta}.  For the lower
+bound take $C=P_S\otimes E_{01}$, where $P_S=\sum_{i\in S}E_{ii}$.  Then
+$\rank C=\abs S$, $\Tr C=0$ and $\norm C_F^2=\abs S$.  An edge $e$ inside $S$
+contributes $-2$ to $\ip{\vecop C}{J(\Phi_G\circ\tau)\vecop C}$ and an edge
+meeting $S$ in at most one vertex contributes $0$, so that pairing equals
+$-2\abs{E(G[S])}$, while the correction contributes $\lambda\abs S$.
+Nonnegativity forces \cref{eq:avgdeg}.  For an $R$-clique,
+$2\abs{E(G[S])}=R(R-1)$ and the total is $R(\lambda-R+1)$.
+\end{proof}
+
+So the obstruction is the maximum induced average degree up to size $R$, and a
+clique is exactly what makes the universal bound $R-1$ sharp.
+
+\section{One layer is not enough}
+
+The natural small coefficient system attached to $G$ is the graph operator
+system
+\begin{equation}
+\label{eq:sg}
+    \cS_G=\operatorname{span}\{E_{ii}:i\in V\}
+      +\operatorname{span}\{E_{ij}:\{i,j\}\in E\}\subseteq M_m,
+\end{equation}
+and the map it carries is the graph reduction
+$R_G(X)=\sum_eL_eX^TL_e^*$.  Let $p=\ketbra00$ and $q=\ketbra11$ in $M_2$.
+Compressing the input to the $q$-corner and the output to the $p$-corner gives
+\begin{equation}
+\label{eq:corner}
+    (I_m\otimes\bra0)\,(\Phi_G\circ\tau)(X\otimes q)\,(I_m\otimes\ket0)=R_G(X),
+\end{equation}
+which looks like the wanted compression.  It is not, because the same
+compression annihilates the input:
+$(I_m\otimes\bra0)(X\otimes q)(I_m\otimes\ket0)=0$.  Hence the identity term of
+\cref{eq:theta} disappears and
+\begin{equation}
+\label{eq:corner-loss}
+    \Delta_{2m}-\tfrac1R\id\ \longmapsto\ \Delta_m .
+\end{equation}
+The one-layer pencil therefore certifies the \emph{unprotected} hierarchy: for
+regular $G$ containing an $s$-clique, $R_G+\lambda\Delta_m$ is $s$-positive
+exactly for $\lambda\ge s-1$.  That is a true statement, and after unital
+normalization an honest depolarizing mixture, but the protected direction --- the
+whole content of pair amplification --- has been compressed away.
+
+\section{The two-layer system}
+
+Keep both diagonal qubit layers.  With $\cD_2=\operatorname{span}\{p,q\}$ put
+\begin{equation}
+\label{eq:ug}
+    \cU_G:=\cS_G\otimes\cD_2
+    =\{X\otimes p+Y\otimes q:X,Y\in\cS_G\}
+    \cong\cS_G\oplus\cS_G,
+\end{equation}
+a unital self-adjoint operator system in $M_{2m}$.  Only \emph{diagonal} qubit
+coefficients appear; the off-diagonal $E_{01}$ enters the witness below, never
+the coefficient system.
+
+\begin{proposition}[Invariance and layer action]
+\label{prop:layers}
+$\Phi_G\circ\tau$, $\Delta_{2m}$ and $\id$ preserve $\cU_G$, and
+\begin{equation}
+\label{eq:layer}
+    (\Phi_G\circ\tau)(X\otimes p+Y\otimes q)
+    =R_G(Y)\otimes p+R_G(X)\otimes q .
+\end{equation}
+Under $\cU_G\cong\cS_G\oplus\cS_G$,
+\[
+    \Theta^G_{R,\lambda}(X,Y)
+    =\Bigl(R_G(Y)+\lambda(\Tr X+\Tr Y)I-\tfrac\lambda RX,\;
+           R_G(X)+\lambda(\Tr X+\Tr Y)I-\tfrac\lambda RY\Bigr).
+\]
+\end{proposition}
+
+\begin{proof}
+Since $L_e^*=-L_e$ one has $\sum_eL_eX^TL_e=-R_G(X)$, and a direct computation
+gives $JpJ=-q$ and $JqJ=-p$.  Hence
+$A_e(X\otimes p)^TA_e=(L_eX^TL_e)\otimes(JpJ)$, and the two signs cancel,
+leaving $R_G(X)\otimes q$; likewise for the $q$-layer.  The correction terms
+are immediate.
+\end{proof}
+
+The construction is equivariant under $\operatorname{Aut}(G)\times\mathbb Z_2$,
+the second factor exchanging layers.  If $G$ is $k$-regular then
+$R_G(I)=kI$, because $L_e^2=-(E_{ii}+E_{jj})$ and each vertex lies in $k$
+edges; consequently
+\begin{equation}
+\label{eq:unital}
+    \Theta^G_{R,\lambda}(I_{2m})=D_{G,R,\lambda}I_{2m},
+    \qquad
+    D_{G,R,\lambda}=k+\lambda\Bigl(2m-\tfrac1R\Bigr),
+\end{equation}
+so $T^G_{R,\lambda}:=D_{G,R,\lambda}^{-1}\Theta^G_{R,\lambda}|_{\cU_G}$ is
+unital and Hermiticity-preserving.  For $k$-regular $G$,
+\begin{equation}
+\label{eq:dim}
+    \dim_\C\cS_G=m+2\abs E=m(1+k),
+    \qquad
+    \dim_\C\cU_G=2m(1+k),
+\end{equation}
+so a monic pencil on a real basis of the traceless self-adjoint part of $\cU_G$
+uses $g=2m(1+k)-1$ variables rather than $(2m)^2-1$.
+
+\section{The inclusion dictionary}
+
+The bridge from positivity levels to spectrahedral inclusion is standard in the
+matrix-convexity literature (Davidson--Dor-On--Shalit--Solel,
+\href{https://arxiv.org/abs/1601.07993}{arXiv:1601.07993}); we record the form
+used here, which does not require a minimal pencil.
+
+\begin{lemma}[Inclusion dictionary]
+\label{lem:dict}
+Let $\cU\subseteq M_d$ be an operator system with $F_1,\dots,F_g$ a real basis
+of its traceless self-adjoint part, and let $T:\cU\to M_d$ be unital and
+Hermiticity-preserving.  With
+$L_F(X)=I_d\otimes I_n+\sum_aF_a\otimes X_a$ and
+$L_B(X)=I_d\otimes I_n+\sum_aT(F_a)\otimes X_a$, and $\cD_F(n),\cD_B(n)$ their
+positivity loci,
+\[
+    \cD_F(n)\subseteq\cD_B(n)
+    \quad\Longleftrightarrow\quad
+    T\ \text{is $n$-positive on }\cU .
+\]
+\end{lemma}
+
+\begin{proof}
+If $T$ is $n$-positive then $L_B(X)=(T\otimes\id_n)(L_F(X))$ and inclusion is
+immediate.  Conversely let $Y\in M_n(\cU)_+$, with its unique expansion
+$Y=I_d\otimes Y_0+\sum_aF_a\otimes Y_a$, where $Y_0=d^{-1}\Tr_{M_d}Y\succeq0$.
+If $Y_0$ is invertible, conjugating by $I_d\otimes Y_0^{-1/2}$ places $Y$ in
+the monic slice parametrized by $L_F$; inclusion and conjugating back give
+$(T\otimes\id_n)(Y)\succeq0$.  For singular $Y_0$ apply this to
+$Y+\varepsilon I_d\otimes I_n$ and let $\varepsilon\downarrow0$.
+\end{proof}
+
+\section{The witness survives the compression}
+
+This is the step the one-layer system fails.  Let $S=\{s_1,\dots,s_s\}$ be an
+$s$-clique, let $e_1,\dots,e_s$ be the standard basis of the level space
+$\C^s$, and let $f_i$ be the vertex basis of $\C^m$.  Put
+\begin{equation}
+\label{eq:witness}
+    \xi_S=\sum_{a=1}^se_a\otimes(f_{s_a}\otimes\ket1),
+    \qquad
+    \eta_S=\sum_{a=1}^se_a\otimes(f_{s_a}\otimes\ket0),
+\end{equation}
+so that
+$Y_S=\ketbra{\xi_S}{\xi_S}=\sum_{a,b}E_{ab}\otimes(E_{s_as_b}\otimes q)$
+lies in $M_s(\cU_G)_+$: it is positive of rank one, and it lies in
+$M_s(\cU_G)$ because a clique gives $P_S\cS_GP_S=M_s$.
+
+\begin{lemma}[Compressed clique expectation]
+\label{lem:witness}
+For every $R\ge1$ and $\lambda\ge0$,
+\begin{equation}
+\label{eq:witness-val}
+    \ip{\eta_S}{(\id_s\otimes\Theta^G_{R,\lambda})(Y_S)\,\eta_S}
+    =s\bigl(\lambda-(s-1)\bigr).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+By \cref{eq:layer} each ordered pair $a\neq b$ inside the clique contributes
+$-1$ and diagonal pairs contribute $0$, so the $\Phi_G\circ\tau$ term gives
+$-s(s-1)$.  The $\Delta_{2m}$ term gives $\lambda s$.  The identity term sends
+the input $q$-layer to the $q$-layer, whereas $\eta_S$ lies in the orthogonal
+$p$-layer, so the protected term $-\lambda R^{-1}\id$ contributes nothing.
+\end{proof}
+
+Note what \cref{eq:witness-val} does \emph{not} depend on: the value is
+independent of $R$.  The off-diagonal $E_{01}$ has been retained exactly where
+it is needed, as the transition between $\xi_S$ and $\eta_S$; it never had to
+enter the coefficient system.  Equivalently, \cref{lem:witness} is the rank-$s$
+Choi witness $C=P_S\otimes E_{01}$ of \cref{thm:clique}, read after
+compression.
+
+\begin{theorem}[Exact protected inclusion on $\cU_G$]
+\label{thm:inclusion}
+Let $G$ be $k$-regular and contain an $R$-clique, and let
+$B^{(R,\lambda)}_a=T^G_{R,\lambda}(F_a)$ for a traceless self-adjoint basis
+$\{F_a\}$ of $\cU_G$.  Then
+\begin{equation}
+\label{eq:exact}
+    \inf\bigl\{\lambda\ge0:\cD_F(R)\subseteq\cD_{B^{(R,\lambda)}}(R)\bigr\}
+    =R-1 .
+\end{equation}
+If moreover $G$ contains an $(R+1)$-clique, then at $\lambda=R-1$
+\begin{equation}
+\label{eq:levels}
+    \cD_F(n)\subseteq\cD_{B^{(R,R-1)}}(n)
+    \quad\Longleftrightarrow\quad
+    n\le R .
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+By \cref{lem:beta} and pair amplification, $\Theta^G_{R,R-1}$ is $R$-positive on
+all of $M_{2m}$, hence on $\cU_G$; raising $\lambda$ adds an $R$-positive map.
+For $\lambda<R-1$, \cref{lem:witness} with $s=R$ exhibits a positive element of
+$M_R(\cU_G)$ with negative image.  \Cref{lem:dict} converts both statements
+into \cref{eq:exact}.  At $\lambda=R-1$, $R$-positivity gives $n$-positivity for
+$n\le R$; an $(R+1)$-clique and \cref{lem:witness} with $s=R+1$ give the value
+$-(R+1)<0$, so $(R+1)$-positivity fails, and positivity levels are nested.
+\end{proof}
+
+\section{The rook graph}
+
+Let $G=H(2,q)$ on $V=[q]\times[q]$, two vertices adjacent when they agree in
+exactly one coordinate.  Then $m=q^2$, $k=2(q-1)$, the clique number is $q$
+(rows and columns), and the adjacency eigenvalues are $2(q-1)$, $q-2$, $-2$.
+
+\begin{corollary}
+\label{cor:rook}
+For every $1\le R\le q$, \cref{eq:exact} holds with $\lambda^*=R-1$, and for
+$1\le R<q$ the exact level separation \cref{eq:levels} holds.  The protected
+pencil uses
+\[
+    g_{\mathrm{prot}}(q)=2q^2(2q-1)-1
+\]
+traceless coefficients, against $4q^4-1$ for a tomographically complete
+dictionary on $M_{2q^2}$.
+\end{corollary}
+
+On $\cS_G$ the graph reduction $R_G$ acts with eigenvalue $k=2(q-1)$ on the
+identity and $\mu\in\{q-2,-2,-1\}$ on the traceless part, the value $-1$ being
+the edge-coefficient eigenvalue.  Writing
+$D^{\mathrm{prot}}_{q,R,\lambda}=2(q-1)+\lambda(2q^2-R^{-1})$, a traceless
+$X\in\cS_G$ with $R_G(X)=\mu X$ gives layer-even and layer-odd eigenvectors
+\[
+    T^G_{R,\lambda}(X,X)=\frac{\mu-\lambda/R}{D^{\mathrm{prot}}_{q,R,\lambda}}(X,X),
+    \qquad
+    T^G_{R,\lambda}(X,-X)=-\frac{\mu+\lambda/R}{D^{\mathrm{prot}}_{q,R,\lambda}}(X,-X),
+\]
+so the whole protected pencil is governed by a handful of association-scheme
+and layer-parity scalars.  The normalized map is the convex combination
+\[
+    T^G_{R,\lambda}
+    =(1-p)\,\frac{\Phi_G\circ\tau}{k}
+     +p\,\frac{\Delta_{2m}-R^{-1}\id}{2m-R^{-1}},
+    \qquad
+    p=\frac{\lambda(2m-R^{-1})}{k+\lambda(2m-R^{-1})} .
+\]
+
+\begin{remark}[The weight is not a noise probability]
+At $\lambda=R-1$ the weight is
+$p^{\mathrm{prot}}_R(q)=(R-1)(2q^2-R^{-1})\big/\bigl(2(q-1)+(R-1)(2q^2-R^{-1})\bigr)$.
+This is a protected-ray weight, not a depolarizing probability: the second
+summand is $R$-positive but not completely positive.  The one-layer corner of
+\cref{eq:corner-loss} \emph{does} give a genuine depolarizing mixture, with
+threshold $p^*_R(q)=q^2(R-1)/\bigl(2(q-1)+q^2(R-1)\bigr)$ and
+$g_{\mathrm{corner}}(q)=q^2(2q-1)-1$ coefficients.  The two should not be
+conflated: the smaller count certifies the unprotected corner.
+\end{remark}
+
+\section*{What is and is not established}
+
+Established: the exact constant $\beta_2(\Phi_G)=1$; attainment of the
+amplified coefficient $R-1$ for graphs with an $R$-clique, and the induced
+average-degree lower bound \cref{eq:avgdeg}; invariance of
+$\cU_G=\cS_G\otimes\cD_2$ with the layer action \cref{eq:layer}; a positive
+element of $M_R(\cU_G)$ witnessing sharpness after compression; and exact
+inclusion through level $R$ with failure at $R+1$.
+
+Not established.  Minimality of $\cU_G$ among operator systems retaining the
+witness is not claimed.  Neither is an exact graph invariant replacing clique
+number in general: \cref{eq:avgdeg} is a lower bound and $R-1$ an upper bound,
+and closing that gap for clique-free graphs is a separate extremal problem.
+The Bose--Mesner algebra alone does not suffice, being commutative, so that
+positivity of a map out of it already forces complete positivity.  Finally, we
+have not carried out a literature priority check for this formulation; targeted
+searches did not surface it, which is not the same thing.
+
+\section*{Numerical corroboration}
+
+\texttt{derivation-graph-inclusion-probe.py} builds $\Phi_G$, $\Theta^G$,
+$\cU_G$ and the witnesses explicitly.  For $G$ ranging over $K_4$ with a
+pendant, $C_5$, the Petersen graph and $H(2,3)$ it verifies, in every case to
+machine zero: the bound $s_1(K_c)^2+s_2(K_c)^2\le2$ over $2\cdot10^4$ random
+unit $c$, together with equality at each single-edge coefficient vector, so that
+$\beta_2(\Phi_G)=1$ is attained and not merely approached; the Choi form at
+$C=P_S\otimes E_{01}$ against every clique; the layer action \cref{eq:layer};
+$R_G(I)=kI$ for regular $G$; the compressed expectation \cref{eq:witness-val},
+including for $R\neq s$, confirming that its value does not depend on $R$; and
+that $Y_S$ is positive of rank one.  For $H(2,q)$ with $q\in\{3,4\}$ it confirms
+$\dim\cS_G=m(1+k)$ and that the spectrum of $R_G$ on $\cS_G$ is
+$\{2(q-1)\}\cup\{q-2,-2,-1\}$.
+
+The extremizer of \cref{lem:beta} is a coordinate direction, so a random search
+over $c$ converges to a strict underestimate --- $0.910$ for $H(2,3)$ --- and
+would test the wrong thing.  What is checked is the upper bound over random $c$
+\emph{together with} attainment at $c=\delta_e$.
+
+\end{document}
