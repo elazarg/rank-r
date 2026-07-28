@@ -1,0 +1,325 @@
+\documentclass[11pt,reqno]{amsart}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{braket}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=blue!55!black,
+  urlcolor=blue!55!black]{hyperref}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\usepackage[nameinlink,capitalize,noabbrev]{cleveref}
+
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\SR}{SR}
+\newcommand{\cL}{\mathcal L}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\ketbra}[2]{\lvert #1\rangle\!\langle #2\rvert}
+\newcommand{\ip}[2]{\langle #1,#2\rangle}
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+\newcommand{\C}{\mathbb C}
+
+\title{Exterior amplification}
+\author{Elazar Gershuni}
+\date{\today}
+
+\begin{document}
+\begin{abstract}
+Pair amplification bounds a completely positive map on the antisymmetric modes
+of a complete graph, at a cost equal to the vertex degree, using a single
+constant read off the Choi operator at Schmidt rank two.  We prove the
+$k$-uniform analogue: for a $k$-uniform hypergraph $\mathcal H$ on $[r]$, the
+map applied to the alternating modes indexed by hyperedges is bounded by
+$d^\uparrow_{k-1}(\mathcal H)\,\beta_k(\Phi)$, where $d^\uparrow_{k-1}$ is the
+largest number of hyperedges containing a common $(k-1)$-face.  Transpose
+symmetry of the Kraus operators protects a subspace of dimension
+$\binom r{k-2}$, indexed by $(k-2)$-faces.  At $k=2$ both statements reduce to
+pair amplification.  We also record why the hierarchy does \emph{not} produce
+$r$-positive maps for $k>2$.
+\end{abstract}
+\maketitle
+
+\section{Statement}
+
+Let $H$ be a finite-dimensional complex Hilbert space and let
+$\Phi(Y)=\sum_aA_aYA_a^*$ be completely positive on $\cL(H)$, with Choi operator
+$J(\Phi)=\sum_a\ketbra{\operatorname{vec}A_a}{\operatorname{vec}A_a}$.  For
+$k\ge1$ set
+\begin{equation}
+\label{eq:beta}
+    \beta_k(\Phi):=\frac1k\norm{J(\Phi)}_{S(k)}
+    =\frac1k\sup\bigl\{\ip z{J(\Phi)z}:\SR(z)\le k,\ \norm z=1\bigr\}.
+\end{equation}
+At $k=2$ this is the constant of pair amplification.  Write
+$S:c\mapsto\sum_ac_aA_a$ for the synthesis operator of the family, so that
+$SS^*=J(\Phi)$ under $\operatorname{vec}$.
+
+Fix $r\ge k$, an orthonormal family $e_1,\ldots,e_r$ in $H$, and an orthonormal
+basis $q_1,\ldots,q_r$ of $Q=\C^r$.  For a $(k-1)$-subset
+$J=\{j_1<\cdots<j_{k-1}\}$ write $q_J:=q_{j_1}\wedge\cdots\wedge q_{j_{k-1}}$;
+these form an orthonormal basis of $\bigwedge^{k-1}Q$.  For a $k$-subset
+$I\subseteq[r]$ and $v\in I$ let $\varepsilon(I,v):=(-1)^{\,\mathrm{pos}_I(v)-1}$,
+where $\mathrm{pos}_I(v)$ is the position of $v$ in the increasing enumeration
+of $I$, and define the \emph{exterior incidence mode}
+\begin{equation}
+\label{eq:eta}
+    \eta_I
+    :=
+    \frac1{\sqrt k}\sum_{v\in I}\varepsilon(I,v)\,
+    \overline e_v\otimes q_{I\setminus v}
+    \ \in\ H\otimes\textstyle\bigwedge^{k-1}Q .
+\end{equation}
+For a $k$-uniform hypergraph $\mathcal H\subseteq\binom{[r]}k$ put
+$P_{\mathcal H}:=\sum_{I\in\mathcal H}\ketbra{\eta_I}{\eta_I}$ and
+\begin{equation}
+\label{eq:updeg}
+    d^\uparrow_{k-1}(\mathcal H)
+    :=\max_{J\in\binom{[r]}{k-1}}\#\{I\in\mathcal H:J\subset I\} .
+\end{equation}
+Finally, for a $(k-2)$-subset $L$ let $N_L:=\#\{j\notin L\}=r-k+2$ and
+\begin{equation}
+\label{eq:delta}
+    \delta_L:=\frac1{\sqrt{N_L}}\sum_{j\notin L}e_j\otimes(q_j\wedge q_L),
+\end{equation}
+and let $\Pi$ be the orthogonal projection onto their span.
+
+\begin{theorem}[Exterior amplification]
+\label{thm:main}
+With the notation above,
+\begin{equation}
+\label{eq:A0}
+    (\Phi\otimes\id)(P_{\mathcal H})
+    \preceq
+    d^\uparrow_{k-1}(\mathcal H)\,\beta_k(\Phi)\,I .
+\end{equation}
+If moreover every $A_a$ satisfies $A_a^T=A_a$, then
+\begin{equation}
+\label{eq:A}
+    (\Phi\otimes\id)(P_{\mathcal H})
+    \preceq
+    d^\uparrow_{k-1}(\mathcal H)\,\beta_k(\Phi)\,(I-\Pi),
+\end{equation}
+and $\dim\operatorname{ran}\Pi=\binom r{k-2}$.
+\end{theorem}
+
+\section{Three lemmas}
+
+\begin{lemma}[Level-$k$ span bound]
+\label{lem:span}
+Let $K=\sum_ac_aA_a$ and let $x_1,\ldots,x_k\in H$ be orthonormal.  Then
+\[
+    \sum_{i=1}^k\norm{Kx_i}^2\le k\,\beta_k(\Phi)\norm c_2^2 .
+\]
+\end{lemma}
+
+\begin{proof}
+Let $P=\sum_i\ketbra{x_i}{x_i}$, so $\sum_i\norm{Kx_i}^2=\norm{KP}_F^2$ and
+$\rank(KP)\le k$.  Since $P$ is a self-adjoint idempotent,
+$\ip K{KP}_{\mathrm{HS}}=\norm{KP}_F^2$, so $M:=KP/\norm{KP}_F$ has
+$\rank M\le k$, $\norm M_F=1$ and $\ip MK_{\mathrm{HS}}=\norm{KP}_F$.  Hence
+\[
+    \norm{KP}_F=\abs{\ip M{Sc}}=\abs{\ip{S^*M}c}
+    \le\norm c_2\norm{S^*M}_F,
+\]
+and $\norm{S^*M}_F^2=\ip{\operatorname{vec}M}{J(\Phi)\operatorname{vec}M}
+\le\norm{J(\Phi)}_{S(k)}=k\beta_k(\Phi)$ because $\rank M\le k$.
+\end{proof}
+
+\begin{lemma}
+\label{lem:orth}
+The $\eta_I$, $I\in\binom{[r]}k$, are orthonormal, as are the $\delta_L$,
+$L\in\binom{[r]}{k-2}$.
+\end{lemma}
+
+\begin{proof}
+Conjugation preserves orthonormality, so
+$\ip{\overline e_u}{\overline e_v}=\delta_{uv}$.  A term of $\eta_I$ pairs with a
+term of $\eta_{I'}$ only if the two chosen vertices agree, say $=v$, and
+$I\setminus v=I'\setminus v$, which forces $I=I'$; then the $k$ diagonal terms
+each contribute $1/k$.  For $\delta_L$: writing
+$q_j\wedge q_L=\sigma(j,L)\,q_{L\cup j}$ with
+$\sigma(j,L)=(-1)^{\#\{l\in L:\,l<j\}}$, a term of $\delta_L$ pairs with one of
+$\delta_{L'}$ only if $j=j'$ and $L\cup j=L'\cup j$, forcing $L=L'$.
+\end{proof}
+
+\begin{lemma}[Face regrouping]
+\label{lem:regroup}
+Let $\mathcal T$ be the synthesis operator of the family
+$\{(A_a\otimes\id)\eta_I\}_{(a,I)\in\iota\times\mathcal H}$.  Then for every
+coefficient vector $c$,
+\[
+    \norm{\mathcal Tc}^2\le d^\uparrow_{k-1}(\mathcal H)\,\beta_k(\Phi)\norm c_2^2 .
+\]
+\end{lemma}
+
+\begin{proof}
+Write $K_I:=\sum_ac_{a,I}A_a$ and $c^{(I)}$ for the corresponding block, so that
+by \cref{eq:eta}
+\[
+    \mathcal Tc
+    =\sum_{I\in\mathcal H}(K_I\otimes\id)\eta_I
+    =\frac1{\sqrt k}\sum_{I\in\mathcal H}\sum_{v\in I}
+      \varepsilon(I,v)\,(K_I\overline e_v)\otimes q_{I\setminus v} .
+\]
+The map $(I,v)\mapsto J=I\setminus v$ is a bijection onto the pairs $(J,I)$ with
+$J\subset I$, so collecting the coefficient of each basis vector $q_J$ gives
+$\mathcal Tc=\sum_Jw_J\otimes q_J$ with
+\[
+    w_J=\frac1{\sqrt k}\sum_{I\in\mathcal H,\ I\supset J}
+        \varepsilon(I,I\setminus J)\,K_I\overline e_{I\setminus J},
+\]
+a sum of $d_J:=\#\{I\in\mathcal H:J\subset I\}$ terms.  Since the $q_J$ are
+orthonormal, Cauchy--Schwarz on each block gives
+\[
+    \norm{\mathcal Tc}^2=\sum_J\norm{w_J}^2
+    \le\frac1k\sum_Jd_J\!\!\sum_{I\supset J}\!\!
+       \norm{K_I\overline e_{I\setminus J}}^2
+    \le\frac{d^\uparrow_{k-1}}k\sum_{I\in\mathcal H}\sum_{v\in I}
+       \norm{K_I\overline e_v}^2 ,
+\]
+the last step by the same bijection.  For fixed $I$ the vectors
+$\{\overline e_v\}_{v\in I}$ are orthonormal and $k$ in number, so
+\cref{lem:span} bounds the inner sum by $k\beta_k(\Phi)\norm{c^{(I)}}_2^2$.
+Summing over $I$ gives the claim.
+\end{proof}
+
+\section{Proof of \texorpdfstring{\cref{thm:main}}{the theorem}}
+
+\begin{proof}
+Expanding the Kraus sum and then $P_{\mathcal H}$,
+$(\Phi\otimes\id)(P_{\mathcal H})=\mathcal T\mathcal T^*$, so
+\cref{eq:A0} is \cref{lem:regroup}.
+
+For \cref{eq:A} it suffices, since $\mathcal T\mathcal T^*\succeq0$, to show
+$\operatorname{ran}\mathcal T\subseteq(\operatorname{ran}\Pi)^\perp$; then
+$\mathcal T\mathcal T^*=(I-\Pi)\mathcal T\mathcal T^*(I-\Pi)$ and \cref{eq:A0}
+upgrades to \cref{eq:A}.  Fix $L$ and, with $\sigma$ as in \cref{lem:orth},
+compute from \cref{eq:delta} and the expression for $w_J$ above:
+\[
+    \ip{\delta_L}{\mathcal Tc}
+    =\frac1{\sqrt{N_L}\sqrt k}
+      \sum_{j\notin L}\ \sum_{\substack{I\in\mathcal H\\ I\supset L\cup j}}
+      \sigma(j,L)\,\varepsilon\bigl(I,I\setminus(L\cup j)\bigr)\,
+      \ip{e_j}{K_I\overline e_{I\setminus(L\cup j)}} .
+\]
+The pairs $(j,I)$ occurring are exactly those with $I\supseteq L$,
+$\abs{I\setminus L}=2$ and $j\in I\setminus L$; so each such $I$, say with
+$I\setminus L=\{u,v\}$ and $u<v$, contributes the two terms
+\[
+    \sigma(u,L)\,\varepsilon(I,v)\,\ip{e_u}{K_I\overline e_v}
+    +\sigma(v,L)\,\varepsilon(I,u)\,\ip{e_v}{K_I\overline e_u} .
+\]
+Now $\ip{e_u}{K\overline e_v}=\overline e_u^{\,T}K\overline e_v$, which is
+symmetric in $u,v$ whenever $K^T=K$; and $K_I^T=K_I$ because every $A_a$ is
+symmetric.  So the two terms cancel exactly when the signs are opposite.  Put
+$a:=\#\{l\in L:l<u\}$ and $b:=\#\{l\in L:l<v\}$.  Then
+$\sigma(u,L)=(-1)^a$ and $\sigma(v,L)=(-1)^b$, while the elements of $I$ below
+$u$ are the $a$ elements of $L$ below $u$, and those below $v$ are the $b$
+elements of $L$ below $v$ together with $u$; hence
+\[
+    \varepsilon(I,u)=(-1)^{a},
+    \qquad
+    \varepsilon(I,v)=(-1)^{b+1}.
+\]
+Therefore
+$\sigma(u,L)\varepsilon(I,v)=(-1)^{a+b+1}
+=-(-1)^{a+b}=-\sigma(v,L)\varepsilon(I,u)$, and every $I$ contributes zero.
+
+Finally $\dim\operatorname{ran}\Pi=\binom r{k-2}$ by \cref{lem:orth}.
+\end{proof}
+
+\section{Specializations}
+
+\begin{corollary}[$k=2$ is pair amplification]
+\label{cor:k2}
+For $k=2$ one has $\eta_{\{i<j\}}=(\overline e_i\otimes q_j-\overline e_j\otimes q_i)/\sqrt2$,
+the only $(k-2)$-subset is $L=\varnothing$ with
+$\delta_\varnothing=r^{-1/2}\sum_je_j\otimes q_j$, and
+$d^\uparrow_1\bigl(\binom{[r]}2\bigr)=r-1$.  So \cref{thm:main} for the complete
+graph reads
+\[
+    (\Phi\otimes\id)(P_-)\preceq(r-1)\beta_2(\Phi)\,I,
+    \qquad
+    (\Phi\otimes\id)(P_-)\preceq(r-1)\beta_2(\Phi)(I-\Pi_e),
+\]
+which are the two forms of pair amplification.
+\end{corollary}
+
+\begin{corollary}[Complete hypergraph]
+For $\mathcal H=\binom{[r]}k$ one has $d^\uparrow_{k-1}=r-k+1$, since a
+$(k-1)$-face extends to a $k$-face in exactly $r-k+1$ ways.
+\end{corollary}
+
+\begin{corollary}[Double-skew family]
+For $\Phi=\Lambda_U\otimes\Lambda_V$ one has $\beta_k=\min\{1,4/k\}$ for every
+$k\ge2$, so on the complete hypergraph
+\[
+    (\Phi\otimes\id)(P^{(k)})
+    \preceq
+    (r-k+1)\min\{1,4/k\}\,(I-\Pi).
+\]
+\end{corollary}
+
+The value of $\beta_k$ is proved separately; note that it is \emph{not} valid at
+$k=1$, so \cref{thm:main} should not be read there for that family.
+
+\section{Two remarks}
+
+\begin{remark}[No $r$-positivity hierarchy]
+\label{rem:nohier}
+\Cref{thm:main} does not yield $r$-positive maps for $k>2$.  For a pure state
+$\psi=\sum_i\sqrt{\lambda_i}\,e_i\otimes q_i$ the partial transpose on $H$ is
+$\sum_{i,j}\sqrt{\lambda_i\lambda_j}\,\ketbra{\overline e_j}{\overline e_i}\otimes\ketbra{q_i}{q_j}$,
+whose eigenvectors are
+$(\overline e_i\otimes q_j\pm\overline e_j\otimes q_i)/\sqrt2$ with eigenvalues
+$\pm\sqrt{\lambda_i\lambda_j}$.  The negative sector is therefore
+\emph{always} pair-indexed, whatever $r$, so there is no $k>2$ sector into which
+the exterior bound could be substituted.  Knowing $\beta_k$ gives only
+$\beta_2\le\frac k2\beta_k$ followed by the $k=2$ theorem.  What
+\cref{thm:main} governs is the exterior sector itself: compound matrices,
+antisymmetrized tests, and hypergraph frame bounds.
+\end{remark}
+
+\begin{remark}[Simplicial reading]
+Take $k=D+1$ and let $\mathcal H$ be the set of top simplices of a triangulated
+$D$-manifold.  Then hyperedges are $D$-simplices, $(k-1)$-faces are
+codimension-one faces, and the protected index set $\binom{[r]}{k-2}$ consists
+of codimension-two faces.  An interior codimension-one face of a manifold
+triangulation lies in exactly two top simplices, so
+$d^\uparrow_{k-1}(\mathcal H)=2$ there and \cref{eq:A} becomes
+\[
+    (\Phi\otimes\id)(P_{\mathcal H})\preceq2\beta_{D+1}(\Phi)\,(I-\Pi),
+\]
+a bound independent of the size of the triangulation.  Boundary faces lie in
+one simplex and give $d^\uparrow_{k-1}=1$; complexes that are not manifolds give
+larger values.  Whether any natural completely positive map with
+transpose-symmetric Kraus operators lives on such a complex is not addressed
+here.
+\end{remark}
+
+\section*{Numerical corroboration}
+
+\texttt{derivation-higher-arity-probe.py} builds $\eta_I$, $\delta_L$ and
+$P_{\mathcal H}$ explicitly for
+$(\dim H,r,k)\in\{(4,4,2),(4,4,3),(5,5,3),(6,6,4)\}$ and checks: the Gram matrix
+of $\{\eta_I\}$ is the identity to $10^{-15}$; $\dim\operatorname{ran}\Pi$ equals
+$\binom r{k-2}$; $\ip{\delta_L}{(A\otimes\id)\eta_I}$ vanishes to $10^{-16}$ for
+symmetric $A$ and is of order $1$ for non-symmetric $A$; and the largest
+eigenvalue of
+$(\Phi\otimes\id)(P_{\mathcal H})-d^\uparrow_{k-1}\beta_k(I-\Pi)$ is zero to
+$10^{-13}$, attained on the protected space.
+
+\end{document}
