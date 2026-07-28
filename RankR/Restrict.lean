@@ -58,10 +58,10 @@ theorem frame_le_sub_proj {w : ι → E} {z : E} {n : ℝ} (hn : 0 < n) (hzn : �
 
 end Ortho
 
-variable {U V : Type*} [Fintype U] [Fintype V] {s : ℕ}
+variable {W : Type*} [Fintype W] {s : ℕ}
 
 /-- `‖δ_e‖² = s` for an orthonormal frame. -/
-theorem norm_delta_orthonormal {e : Fin s → EuclideanSpace ℂ (U × V)}
+theorem norm_delta_orthonormal {e : Fin s → EuclideanSpace ℂ W}
     (he : Orthonormal ℂ e) : ‖delta e‖ ^ 2 = (s : ℝ) := by
   rw [norm_delta]
   simp [he.1]

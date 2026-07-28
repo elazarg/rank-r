@@ -2,8 +2,8 @@
 Lifting II: from the rank-two Choi bound of a Kraus family to the operator
 inequality on the negative sector.
 
-Fix a family `A : ι → L(U ⊗ V)` and let `Φ_A` be the Kraus sum it generates,
-acting trivially on the ancilla `Q = ℂ^s`.  Two hypotheses drive everything:
+Fix a family `A : ι → L(W)` and let `Φ_A` be the Kraus sum it generates, acting
+trivially on the ancilla `Q = ℂ^s`.  Two hypotheses drive everything:
 
 * `ChoiTwoBound (choiOf A) β` — the rank-two bound on the Choi operator, which
   `Choi.lean` turns into the edgewise estimate `‖K ēᵢ‖² + ‖K ēⱼ‖² ≤ 2β‖c‖²` for
@@ -24,10 +24,11 @@ which is `eq:Phi-Pminus-goal` with `β` in place of the double-skew `1`.  Since
 `Ppos − Pneg` is twice the partial transpose and Kraus sums preserve positivity,
 (A) gives the two-sided form
 
-  (B)   `⟪y, Φ_A(ρ₀^{T_UV}) y⟫ + β(s−1)(‖y‖² − |⟪δ_e, y⟫|²/s) ≥ 0`.
+  (B)   `⟪y, Φ_A(ρ₀^{T_W}) y⟫ + β(s−1)(‖y‖² − |⟪δ_e, y⟫|²/s) ≥ 0`.
 
 Here `s` is the rank parameter `r`, `s − 1` the degree of the frame, and the
-`1/s` inside the projection term the protected direction `δ_e`.
+`1/s` inside the projection term the protected direction `δ_e`.  The operators
+act on one space `W`; section 3 reads the chain at `W = U ⊗ V`.
 -/
 import RankR.Bessel
 import RankR.Choi
@@ -39,54 +40,48 @@ namespace RankR
 
 open Matrix Finset ComplexConjugate
 
-variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
-  {ι : Type*} [Fintype ι] {s : ℕ}
-
 /-! ## The amplified map and its frame -/
 
-/-- `Φ_A ⊗ id_Q`: the Kraus sum of a family on `U ⊗ V`, acting trivially on the
+section Amplified
+
+variable {W : Type*} [Fintype W] {ι : Type*} [Fintype ι] {s : ℕ}
+
+/-- `Φ_A ⊗ id_Q`: the Kraus sum of a family on `W`, acting trivially on the
 ancilla. -/
-noncomputable def krausQ (A : ι → Matrix (U × V) (U × V) ℂ)
-    (Y : Matrix ((U × V) × Fin s) ((U × V) × Fin s) ℂ) :
-    Matrix ((U × V) × Fin s) ((U × V) × Fin s) ℂ :=
+noncomputable def krausQ (A : ι → Matrix W W ℂ) (Y : Matrix (W × Fin s) (W × Fin s) ℂ) :
+    Matrix (W × Fin s) (W × Fin s) ℂ :=
   krausSum (fun f => placeQ (A f)) Y
 
-omit [DecidableEq U] [DecidableEq V] in
 /-- A Kraus sum preserves positive semidefiniteness. -/
-theorem qform_krausQ_nonneg (A : ι → Matrix (U × V) (U × V) ℂ)
-    {Y : Matrix ((U × V) × Fin s) ((U × V) × Fin s) ℂ}
-    (hY : ∀ z : EuclideanSpace ℂ ((U × V) × Fin s), 0 ≤ (qform Y z).re)
-    (x : EuclideanSpace ℂ ((U × V) × Fin s)) : 0 ≤ (qform (krausQ A Y) x).re :=
+theorem qform_krausQ_nonneg (A : ι → Matrix W W ℂ) {Y : Matrix (W × Fin s) (W × Fin s) ℂ}
+    (hY : ∀ z : EuclideanSpace ℂ (W × Fin s), 0 ≤ (qform Y z).re)
+    (x : EuclideanSpace ℂ (W × Fin s)) : 0 ≤ (qform (krausQ A Y) x).re :=
   qform_krausSum_nonneg _ hY x
 
-omit [DecidableEq U] [DecidableEq V] in
-theorem krausQ_sub (A : ι → Matrix (U × V) (U × V) ℂ)
-    (Y Z : Matrix ((U × V) × Fin s) ((U × V) × Fin s) ℂ) :
+/-- A Kraus sum commutes with subtraction. -/
+theorem krausQ_sub (A : ι → Matrix W W ℂ) (Y Z : Matrix (W × Fin s) (W × Fin s) ℂ) :
     krausQ A (Y - Z) = krausQ A Y - krausQ A Z := by
   simp only [krausQ, krausSum, Matrix.mul_sub, Matrix.sub_mul, Finset.sum_sub_distrib]
 
-omit [DecidableEq U] [DecidableEq V] in
-theorem krausQ_smul (A : ι → Matrix (U × V) (U × V) ℂ) (t : ℂ)
-    (Y : Matrix ((U × V) × Fin s) ((U × V) × Fin s) ℂ) :
+/-- A Kraus sum commutes with scalar multiplication. -/
+theorem krausQ_smul (A : ι → Matrix W W ℂ) (t : ℂ) (Y : Matrix (W × Fin s) (W × Fin s) ℂ) :
     krausQ A (t • Y) = t • krausQ A Y := by
   simp only [krausQ, krausSum, Matrix.mul_smul, Matrix.smul_mul, ← Finset.smul_sum]
 
 /-- The frame vectors: the images of the `ζ_p` under the Kraus operators,
 extended by zero off the edge set `p.1 < p.2`. -/
-noncomputable def wvec (A : ι → Matrix (U × V) (U × V) ℂ)
-    (e : Fin s → EuclideanSpace ℂ (U × V)) (f : ι) (p : Fin s × Fin s) :
-    EuclideanSpace ℂ ((U × V) × Fin s) :=
+noncomputable def wvec (A : ι → Matrix W W ℂ) (e : Fin s → EuclideanSpace ℂ W) (f : ι)
+    (p : Fin s × Fin s) : EuclideanSpace ℂ (W × Fin s) :=
   if p.1 < p.2 then mulVecE (placeQ (A f)) (zetaV e p.1 p.2) else 0
 
-omit [DecidableEq U] [DecidableEq V] in
 /-- The quadratic form of `Φ_A(P₋)` is the total squared overlap with the frame.
 
 Expanding the Kraus sum and then the rank-one sum defining `Pneg`, and moving the
 Kraus operator across the inner product, exhibits it as a Bessel sum; the
 synthesis bound below is then usable without ever forming the synthesis map as a
 matrix. -/
-theorem qform_krausQ_Pneg (A : ι → Matrix (U × V) (U × V) ℂ)
-    (e : Fin s → EuclideanSpace ℂ (U × V)) (y : EuclideanSpace ℂ ((U × V) × Fin s)) :
+theorem qform_krausQ_Pneg (A : ι → Matrix W W ℂ) (e : Fin s → EuclideanSpace ℂ W)
+    (y : EuclideanSpace ℂ (W × Fin s)) :
     qform (krausQ A (Pneg e)) y
       = ∑ f : ι, ∑ p : Fin s × Fin s,
           ((Complex.normSq (inner ℂ (wvec A e f p) y) : ℝ) : ℂ) := by
@@ -99,30 +94,36 @@ theorem qform_krausQ_Pneg (A : ι → Matrix (U × V) (U × V) ℂ)
     rw [inner_mulVecE_left, Matrix.conjTranspose_conjTranspose]
   · simp [h, wvec]
 
+end Amplified
+
 /-! ## Synthesis -/
+
+section Synthesis
+
+variable {W : Type*} {ι : Type*} [Fintype ι] {s : ℕ}
 
 /-- The edge matrix carried by the ordered pair `(i, j)`: the member of the Kraus
 span whose coefficients are `c` restricted to that pair. -/
-noncomputable def Kof (A : ι → Matrix (U × V) (U × V) ℂ)
-    (c : ι × (Fin s × Fin s) → ℂ) (i j : Fin s) : Matrix (U × V) (U × V) ℂ :=
+noncomputable def Kof (A : ι → Matrix W W ℂ) (c : ι × (Fin s × Fin s) → ℂ) (i j : Fin s) :
+    Matrix W W ℂ :=
   ∑ f, c (f, (i, j)) • A f
 
-omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
 /-- Contracting the Kraus operators against the coefficients of a single ordered
 pair produces the placed edge matrix. -/
-theorem sum_smul_placeQ (A : ι → Matrix (U × V) (U × V) ℂ)
-    (c : ι × (Fin s × Fin s) → ℂ) (p : Fin s × Fin s) :
+theorem sum_smul_placeQ (A : ι → Matrix W W ℂ) (c : ι × (Fin s × Fin s) → ℂ)
+    (p : Fin s × Fin s) :
     ∑ f : ι, c (f, p) • placeQ (s := s) (A f) = placeQ (Kof A c p.1 p.2) := by
   rw [Kof, placeQ_sum]
   exact Finset.sum_congr rfl fun f _ => by rw [placeQ_smul]
 
-omit [DecidableEq U] [DecidableEq V] in
+variable [Fintype W]
+
 /-- Synthesizing the frame with coefficients `c` produces exactly the vector `T`
 of the edge data `Kof A c`: summing over the Kraus index first assembles the
 member of the span, and the vanishing of `wvec` off the edge set restricts the
 remaining sum to the edges. -/
-theorem sum_smul_wvec (A : ι → Matrix (U × V) (U × V) ℂ)
-    (e : Fin s → EuclideanSpace ℂ (U × V)) (c : ι × (Fin s × Fin s) → ℂ) :
+theorem sum_smul_wvec (A : ι → Matrix W W ℂ) (e : Fin s → EuclideanSpace ℂ W)
+    (c : ι × (Fin s × Fin s) → ℂ) :
     ∑ k : ι × (Fin s × Fin s), c k • wvec A e k.1 k.2 = Tsyn e (Kof A c) := by
   rw [Fintype.sum_prod_type, Finset.sum_comm, Tsyn, Edges_def, Finset.sum_filter]
   refine Finset.sum_congr rfl fun p _ => ?_
@@ -132,16 +133,15 @@ theorem sum_smul_wvec (A : ι → Matrix (U × V) (U × V) ℂ)
     exact Finset.sum_congr rfl fun f _ => (mulVecE_smul _ _ _).symm
   · simp [wvec, h]
 
-omit [DecidableEq U] [DecidableEq V] in
 /-- **The uniform synthesis bound.**
 
 `Synth.lean` regroups the synthesized vector by vertex, at a cost of `s − 1`;
 Lifting I bounds each edge's contribution by `2β` times the squared coefficient
 mass carried by that edge.  When `s < 2` there are no edges and both sides
 vanish. -/
-theorem norm_sum_smul_wvec_le {A : ι → Matrix (U × V) (U × V) ℂ} {β : ℝ} (hβ : 0 ≤ β)
+theorem norm_sum_smul_wvec_le {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β)
     (hJ : ChoiTwoBound (choiOf A) β)
-    {e : Fin s → EuclideanSpace ℂ (U × V)} (he : Orthonormal ℂ e)
+    {e : Fin s → EuclideanSpace ℂ W} (he : Orthonormal ℂ e)
     (c : ι × (Fin s × Fin s) → ℂ) :
     ‖∑ k : ι × (Fin s × Fin s), c k • wvec A e k.1 k.2‖ ^ 2
       ≤ 2 * β * ((s : ℝ) - 1) * ∑ k : ι × (Fin s × Fin s), Complex.normSq (c k) := by
@@ -187,17 +187,22 @@ theorem norm_sum_smul_wvec_le {A : ι → Matrix (U × V) (U × V) ℂ} {β : �
           rw [hsum, ← Finset.mul_sum]
           ring
 
+end Synthesis
+
 /-! ## Orthogonality to the protected direction -/
 
-omit [DecidableEq U] [DecidableEq V] [Fintype ι] in
+section LiftingTwo
+
+variable {W : Type*} [Fintype W] {ι : Type*} {s : ℕ}
+
 /-- Transpose symmetry of the Kraus operators makes every frame vector orthogonal
 to `δ_e`.
 
 This is `eq:T-orthogonal`.  For an odd number of skew factors the Kraus
 operators are antisymmetric instead, the orthogonality fails, and the `1/s`
 correction below is lost; parity is what protects the dark state. -/
-theorem inner_delta_wvec {A : ι → Matrix (U × V) (U × V) ℂ} (hsym : ∀ f, (A f)ᵀ = A f)
-    (e : Fin s → EuclideanSpace ℂ (U × V)) (f : ι) (p : Fin s × Fin s) :
+theorem inner_delta_wvec {A : ι → Matrix W W ℂ} (hsym : ∀ f, (A f)ᵀ = A f)
+    (e : Fin s → EuclideanSpace ℂ W) (f : ι) (p : Fin s × Fin s) :
     inner ℂ (delta e) (wvec A e f p) = 0 := by
   rw [wvec]
   split
@@ -206,16 +211,17 @@ theorem inner_delta_wvec {A : ι → Matrix (U × V) (U × V) ℂ} (hsym : ∀ f
 
 /-! ## Lifting II -/
 
-omit [DecidableEq U] [DecidableEq V] in
+variable [Fintype ι]
+
 /-- **Lifting II, form (A)**: `(Φ_A ⊗ id)(P₋) ⪯ 2β(s−1)(I − Π_E)`.
 
 Bessel duality converts the synthesis bound into the analysis bound, and the
 orthogonality of the frame to `δ_e` sharpens it on the orthogonal complement of
 that vector.  At `β = 1` this is `eq:Phi-Pminus-goal`. -/
-theorem qform_krausQ_Pneg_le {A : ι → Matrix (U × V) (U × V) ℂ} {β : ℝ} (hβ : 0 ≤ β)
+theorem qform_krausQ_Pneg_le {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β)
     (hJ : ChoiTwoBound (choiOf A) β) (hsym : ∀ f, (A f)ᵀ = A f) (hs : 0 < s)
-    {e : Fin s → EuclideanSpace ℂ (U × V)} (he : Orthonormal ℂ e)
-    (y : EuclideanSpace ℂ ((U × V) × Fin s)) :
+    {e : Fin s → EuclideanSpace ℂ W} (he : Orthonormal ℂ e)
+    (y : EuclideanSpace ℂ (W × Fin s)) :
     (qform (krausQ A (Pneg e)) y).re
       ≤ 2 * β * ((s : ℝ) - 1) * (‖y‖ ^ 2 - Complex.normSq (inner ℂ (delta e) y) / s) := by
   have hM : (0 : ℝ) ≤ 2 * β * ((s : ℝ) - 1) := by
@@ -238,16 +244,15 @@ theorem qform_krausQ_Pneg_le {A : ι → Matrix (U × V) (U × V) ℂ} {β : ℝ
   rw [hre]
   exact hsharp
 
-omit [DecidableEq U] [DecidableEq V] in
-/-- **Lifting II, form (B)**: `(Φ_A ⊗ id)(ρ_E^{T_H}) + β(s−1)(I − Π_E) ⪰ 0`.
+/-- **Lifting II, form (B)**: `(Φ_A ⊗ id)(ρ_E^{T_W}) + β(s−1)(I − Π_E) ⪰ 0`.
 
 The partial transpose is half the difference of the two sector operators, the
 positive sector survives the Kraus sum, and the negative sector is controlled by
 form (A).  At `β = 1` this is `prop:operator_ineq`. -/
-theorem qform_krausQ_ptransposeUV_ge {A : ι → Matrix (U × V) (U × V) ℂ} {β : ℝ} (hβ : 0 ≤ β)
+theorem qform_krausQ_ptransposeUV_ge {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β)
     (hJ : ChoiTwoBound (choiOf A) β) (hsym : ∀ f, (A f)ᵀ = A f) (hs : 0 < s)
-    {e : Fin s → EuclideanSpace ℂ (U × V)} (he : Orthonormal ℂ e)
-    (y : EuclideanSpace ℂ ((U × V) × Fin s)) :
+    {e : Fin s → EuclideanSpace ℂ W} (he : Orthonormal ℂ e)
+    (y : EuclideanSpace ℂ (W × Fin s)) :
     0 ≤ (qform (krausQ A (ptransposeUV (rankOne (delta e) (delta e)))) y).re
         + β * ((s : ℝ) - 1) * (‖y‖ ^ 2 - Complex.normSq (inner ℂ (delta e) y) / s) := by
   have hpos : (0 : ℝ) ≤ (qform (krausQ A (Ppos e)) y).re :=
@@ -263,5 +268,7 @@ theorem qform_krausQ_ptransposeUV_ge {A : ι → Matrix (U × V) (U × V) ℂ} {
       Complex.im_ofNat, zero_mul, sub_zero] at h2
     linarith
   linarith
+
+end LiftingTwo
 
 end RankR

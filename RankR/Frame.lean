@@ -1,22 +1,21 @@
 /-
 The frame lemmas relating the negative sector `Pneg` to the synthesized vector.
 
-Three ingredients are collected here.  First the adjoint move
-`⟪z, A x⟫ = ⟪Aᴴ z, x⟫`, which is what lets a Kraus pullback be moved from one
-side of an inner product to the other.  Second the evaluation of the quadratic
-form of `Pneg` at an arbitrary test vector as the sum, over the edges `i < j`,
-of the squared moduli `|⟪ζ_{ij}, z⟫|²`.  Third the orthogonality
-`eq:T-orthogonal`: for a *symmetric* operator `N` on `U ⊗ V`, the vector
-`(N ⊗ I_Q) ζ_{ij}` is orthogonal to `δ`.  Since every element of
-`so(U) ⊗ so(V)` is symmetric, the orthogonality applies in particular to the
-elementary tensors `L ⊗ M` of skew matrices.
+Two ingredients are collected here.  First the evaluation of the quadratic form
+of `Pneg` at an arbitrary test vector as the sum, over the edges `i < j`, of the
+squared moduli `|⟪ζ_{ij}, z⟫|²`.  Second the orthogonality `eq:T-orthogonal`: for
+a *symmetric* operator `N`, the vector `(N ⊗ I_Q) ζ_{ij}` is orthogonal to `δ`.
+Since every element of `so(U) ⊗ so(V)` is symmetric, the orthogonality applies in
+particular to the elementary tensors `L ⊗ M` of skew matrices.
 
 The mechanism behind the orthogonality is that `(N ⊗ I_Q) ζ_{ij}` places
 `N ēᵢ` at `Q`-coordinate `j` and `-N ēⱼ` at `Q`-coordinate `i`, so pairing with
 `δ` produces the difference of the two bilinear expressions
 `∑_{p,q} conj(e_j p) N p q conj(e_i q)` and `∑_{p,q} conj(e_i p) N p q conj(e_j q)`,
 which coincide once the summation indices are exchanged.  No orthonormality of
-the family `e` is used.
+the family `e` is used, and `Nᵀ = N` for an operator on a single space `W` is the
+whole hypothesis; the tensor structure enters only in the specialization at the
+end.
 -/
 import RankR.Synth
 
@@ -25,26 +24,15 @@ namespace RankR
 open Matrix Finset ComplexConjugate
 open scoped Kronecker
 
-/-! ## The adjoint move -/
-
-section Adjoint
-
-variable {W : Type*} [Fintype W]
-
-
-end Adjoint
-
 section Frame
 
-variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] {s : ℕ}
+variable {W : Type*} [Fintype W] {s : ℕ}
 
 /-! ## The quadratic form of the negative sector -/
 
-omit [DecidableEq U] [DecidableEq V] in
 /-- The quadratic form of `Pneg` at `z` is the total edge weight
 `∑_{i < j} |⟪ζ_{ij}, z⟫|²`. -/
-theorem qform_Pneg_eq (e : Fin s → EuclideanSpace ℂ (U × V))
-    (z : EuclideanSpace ℂ ((U × V) × Fin s)) :
+theorem qform_Pneg_eq (e : Fin s → EuclideanSpace ℂ W) (z : EuclideanSpace ℂ (W × Fin s)) :
     qform (Pneg e) z
       = ∑ p ∈ Edges, ((Complex.normSq (inner ℂ (zetaV e p.1 p.2) z) : ℝ) : ℂ) := by
   rw [Pneg, qform_sum_finset, Edges_def]
@@ -52,10 +40,9 @@ theorem qform_Pneg_eq (e : Fin s → EuclideanSpace ℂ (U × V))
 
 /-! ## Orthogonality to `δ` -/
 
-omit [DecidableEq U] [DecidableEq V] in
 /-- Pairing `δ` with a vector placed at the single `Q`-coordinate `k` collapses
 the `Q`-sum and leaves the pairing of `e k` with the placed vector. -/
-theorem inner_delta_epsOf (e : Fin s → EuclideanSpace ℂ (U × V)) (v : EuclideanSpace ℂ (U × V))
+theorem inner_delta_epsOf (e : Fin s → EuclideanSpace ℂ W) (v : EuclideanSpace ℂ W)
     (k : Fin s) : inner ℂ (delta e) (epsOf v k) = inner ℂ (e k) v := by
   rw [PiLp.inner_apply, PiLp.inner_apply, Fintype.sum_prod_type]
   refine Finset.sum_congr rfl fun p _ => ?_
@@ -69,24 +56,21 @@ theorem inner_delta_epsOf (e : Fin s → EuclideanSpace ℂ (U × V)) (v : Eucli
   rw [Finset.sum_congr rfl fun m _ => h m, Finset.sum_ite_eq', if_pos (Finset.mem_univ k),
     RCLike.inner_apply']
 
-omit [DecidableEq U] [DecidableEq V] in
 /-- The bilinear expansion of `⟪e_a, N ē_b⟫` in the entries of `N`. -/
-theorem inner_mulVecE_ebar (e : Fin s → EuclideanSpace ℂ (U × V))
-    (N : Matrix (U × V) (U × V) ℂ) (a b : Fin s) :
+theorem inner_mulVecE_ebar (e : Fin s → EuclideanSpace ℂ W) (N : Matrix W W ℂ) (a b : Fin s) :
     inner ℂ (e a) (mulVecE N (ebar e b)) = ∑ p, ∑ q, conj (e a p) * N p q * conj (e b q) := by
   rw [PiLp.inner_apply]
   refine Finset.sum_congr rfl fun p _ => ?_
   rw [RCLike.inner_apply', mulVecE_apply, Finset.mul_sum]
   exact Finset.sum_congr rfl fun q _ => by rw [ebar_apply, mul_assoc]
 
-omit [DecidableEq U] [DecidableEq V] in
-/-- `eq:T-orthogonal`: for a symmetric operator `N` on `U ⊗ V`, the vector
-`(N ⊗ I_Q) ζ_{ij}` is orthogonal to `δ`.
+/-- `eq:T-orthogonal`: for a symmetric operator `N`, the vector `(N ⊗ I_Q) ζ_{ij}`
+is orthogonal to `δ`.
 
 The two placed blocks contribute the bilinear forms of `N` on the pairs
 `(ē_j, ē_i)` and `(ē_i, ē_j)`, which agree by symmetry of `N`. -/
-theorem inner_delta_placeQ_zetaV (e : Fin s → EuclideanSpace ℂ (U × V))
-    {N : Matrix (U × V) (U × V) ℂ} (hN : Nᵀ = N) (i j : Fin s) :
+theorem inner_delta_placeQ_zetaV (e : Fin s → EuclideanSpace ℂ W) {N : Matrix W W ℂ}
+    (hN : Nᵀ = N) (i j : Fin s) :
     inner ℂ (delta e) (mulVecE (placeQ N) (zetaV e i j)) = 0 := by
   rw [mulVecE_placeQ_zetaV e (fun _ _ => N) i j, inner_sub_right, inner_delta_epsOf,
     inner_delta_epsOf, sub_eq_zero, inner_mulVecE_ebar, inner_mulVecE_ebar, Finset.sum_comm]
@@ -95,6 +79,14 @@ theorem inner_delta_placeQ_zetaV (e : Fin s → EuclideanSpace ℂ (U × V))
     have hxy := congrFun (congrFun hN x) y
     rwa [Matrix.transpose_apply] at hxy
   rw [hsym]; ring
+
+end Frame
+
+/-! ## The double-skew specialization -/
+
+section DoubleSkew
+
+variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] {s : ℕ}
 
 /-- The double-skew specialization of `eq:T-orthogonal`: an elementary tensor of
 skew matrices is symmetric, hence its `Q`-placement sends every `ζ_{ij}` into the
@@ -105,6 +97,6 @@ theorem inner_delta_placeQ_kron_zetaV (e : Fin s → EuclideanSpace ℂ (U × V)
   inner_delta_placeQ_zetaV e
     (transpose_eq_self_of_mem_doubleSkew (kron_mem_doubleSkew hL hM)) i j
 
-end Frame
+end DoubleSkew
 
 end RankR

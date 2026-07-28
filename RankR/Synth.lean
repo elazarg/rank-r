@@ -1,7 +1,7 @@
 /-
 Synthesis of the sum-of-squares vector `T` from edge data on the complete graph.
 
-Each unordered pair `i < j` of indices carries a matrix `K_{ij}` on `U ⊗ V`; the
+Each unordered pair `i < j` of indices carries a matrix `K_{ij}` on `W`; the
 operator `K_{ij} ⊗ I_Q` is applied to the antisymmetric combination
 `ζ_{ij} = ε_{ij} - ε_{ji}` and the results are summed over all edges.  Because
 `ε_{jk}` is supported on the single `Q`-coordinate `k`, the edge `(i, j)`
@@ -10,6 +10,10 @@ Regrouping by `Q`-coordinate therefore turns the edge sum into a vector of the
 form `δ` whose `k`-th block is a signed sum over the `s - 1` edges incident to
 `k`.  Cauchy-Schwarz on each such block bounds `‖T‖²` by `(s - 1)` times the
 total edge weight.
+
+The combinatorics is that of the complete graph on the `s` ancilla coordinates,
+and the edge data is a family of operators on one space `W`.  Section 3 reads it
+at `W = U ⊗ V`.
 -/
 import RankR.Phi
 import RankR.Skew
@@ -19,11 +23,11 @@ namespace RankR
 open Matrix Finset ComplexConjugate
 open scoped Kronecker
 
-section Synth
-
-variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] {s : ℕ}
-
 /-! ## Generic tools -/
+
+section Tools
+
+variable {W : Type*} [Fintype W]
 
 /-- A finite sum in `EuclideanSpace` is computed coordinatewise. -/
 theorem sum_apply_euclidean {ι T : Type*} (t : Finset ι) (f : ι → EuclideanSpace ℂ T) (x : T) :
@@ -32,28 +36,34 @@ theorem sum_apply_euclidean {ι T : Type*} (t : Finset ι) (f : ι → Euclidean
   rw [WithLp.ofLp_sum, Finset.sum_apply]
 
 /-- `mulVecE` is additive in its vector argument, hence commutes with differences. -/
-theorem mulVecE_sub {W : Type*} [Fintype W] (A : Matrix W W ℂ) (x y : EuclideanSpace ℂ W) :
+theorem mulVecE_sub (A : Matrix W W ℂ) (x y : EuclideanSpace ℂ W) :
     mulVecE A (x - y) = mulVecE A x - mulVecE A y := by
   ext p
   simp [mul_sub, Finset.sum_sub_distrib]
 
 /-- Matrix-vector multiplication is additive in the matrix. -/
-theorem mulVecE_sum {W : Type*} [Fintype W] {ι : Type*} [Fintype ι] (A : ι → Matrix W W ℂ)
-    (x : EuclideanSpace ℂ W) : mulVecE (∑ i, A i) x = ∑ i, mulVecE (A i) x := by
+theorem mulVecE_sum {ι : Type*} [Fintype ι] (A : ι → Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
+    mulVecE (∑ i, A i) x = ∑ i, mulVecE (A i) x := by
   ext p
   rw [mulVecE_apply, sum_apply_euclidean]
   simp only [mulVecE_apply, Matrix.sum_apply, Finset.sum_mul]
   exact Finset.sum_comm
 
 /-- Matrix-vector multiplication is homogeneous in the matrix. -/
-theorem mulVecE_smul {W : Type*} [Fintype W] (c : ℂ) (A : Matrix W W ℂ)
-    (x : EuclideanSpace ℂ W) : mulVecE (c • A) x = c • mulVecE A x := by
+theorem mulVecE_smul (c : ℂ) (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
+    mulVecE (c • A) x = c • mulVecE A x := by
   ext p
   rw [mulVecE_apply]
   simp only [PiLp.smul_apply, mulVecE_apply, Matrix.smul_apply, smul_eq_mul, Finset.mul_sum,
     mul_assoc]
 
+end Tools
+
 /-! ## Edges of the complete graph -/
+
+section EdgeSet
+
+variable {s : ℕ}
 
 /-- The edge set of the complete graph on `Fin s`, realized as the ordered pairs
 `(i, j)` with `i < j`. -/
@@ -101,37 +111,45 @@ theorem sum_Edges_ite_fst {M : Type*} [AddCommMonoid M] (k : Fin s) (F : Fin s �
   rw [Finset.sum_congr rfl fun i _ => h i, Finset.sum_ite_eq]
   simp
 
+end EdgeSet
+
 /-! ## Conjugate vectors and `Q`-placed elementary vectors -/
 
+section Placed
+
+variable {W : Type*} {s : ℕ}
+
 /-- The entrywise complex conjugate `ēᵢ` of the vector `eᵢ`. -/
-def ebar (e : Fin s → EuclideanSpace ℂ (U × V)) (i : Fin s) : EuclideanSpace ℂ (U × V) :=
+def ebar (e : Fin s → EuclideanSpace ℂ W) (i : Fin s) : EuclideanSpace ℂ W :=
   WithLp.toLp 2 (fun p => conj (e i p))
 
-omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
-@[simp] theorem ebar_apply (e : Fin s → EuclideanSpace ℂ (U × V)) (i : Fin s) (p : U × V) :
+@[simp] theorem ebar_apply (e : Fin s → EuclideanSpace ℂ W) (i : Fin s) (p : W) :
     ebar e i p = conj (e i p) := rfl
 
-/-- `v ⊗ q_k`: the vector `v` on `U ⊗ V` placed at the `k`-th `Q`-coordinate. -/
-def epsOf (v : EuclideanSpace ℂ (U × V)) (k : Fin s) : EuclideanSpace ℂ ((U × V) × Fin s) :=
+/-- `v ⊗ q_k`: the vector `v` on `W` placed at the `k`-th `Q`-coordinate. -/
+def epsOf (v : EuclideanSpace ℂ W) (k : Fin s) : EuclideanSpace ℂ (W × Fin s) :=
   WithLp.toLp 2 (fun x => if x.2 = k then v x.1 else 0)
 
-omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
-@[simp] theorem epsOf_apply (v : EuclideanSpace ℂ (U × V)) (k : Fin s) (x : (U × V) × Fin s) :
+@[simp] theorem epsOf_apply (v : EuclideanSpace ℂ W) (k : Fin s) (x : W × Fin s) :
     epsOf v k x = if x.2 = k then v x.1 else 0 := rfl
 
-omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
 /-- `ε_{jk}` is the `k`-th placement of the conjugate vector `ē_j`. -/
-theorem eps_eq_epsOf (e : Fin s → EuclideanSpace ℂ (U × V)) (j k : Fin s) :
+theorem eps_eq_epsOf (e : Fin s → EuclideanSpace ℂ W) (j k : Fin s) :
     eps e j k = epsOf (ebar e j) k := rfl
 
-omit [DecidableEq U] [DecidableEq V] in
+end Placed
+
+section Synth
+
+variable {W : Type*} [Fintype W] {s : ℕ}
+
 /-- `(N ⊗ I_Q)(v ⊗ q_k) = (N v) ⊗ q_k`: an operator acting trivially on `Q`
 preserves the `Q`-coordinate of a placed vector. -/
-theorem mulVecE_placeQ_epsOf (N : Matrix (U × V) (U × V) ℂ) (v : EuclideanSpace ℂ (U × V))
-    (k : Fin s) : mulVecE (placeQ N) (epsOf v k) = epsOf (mulVecE N v) k := by
+theorem mulVecE_placeQ_epsOf (N : Matrix W W ℂ) (v : EuclideanSpace ℂ W) (k : Fin s) :
+    mulVecE (placeQ N) (epsOf v k) = epsOf (mulVecE N v) k := by
   ext x
   rw [mulVecE_apply, epsOf_apply, mulVecE_apply, Fintype.sum_prod_type]
-  have h : ∀ q : U × V, (∑ m, placeQ N x (q, m) * epsOf v k (q, m))
+  have h : ∀ q : W, (∑ m, placeQ N x (q, m) * epsOf v k (q, m))
       = if x.2 = k then N x.1 q * v q else 0 := by
     intro q
     have h' : ∀ m : Fin s, placeQ N x (q, m) * epsOf v k (q, m)
@@ -151,15 +169,14 @@ theorem mulVecE_placeQ_epsOf (N : Matrix (U × V) (U × V) ℂ) (v : EuclideanSp
 
 /-- `T = ∑_{i < j} (K_{ij} ⊗ I_Q) ζ_{ij}`, the vector synthesized from the edge
 data `K`. -/
-noncomputable def Tsyn (e : Fin s → EuclideanSpace ℂ (U × V))
-    (K : Fin s → Fin s → Matrix (U × V) (U × V) ℂ) : EuclideanSpace ℂ ((U × V) × Fin s) :=
+noncomputable def Tsyn (e : Fin s → EuclideanSpace ℂ W)
+    (K : Fin s → Fin s → Matrix W W ℂ) : EuclideanSpace ℂ (W × Fin s) :=
   ∑ p ∈ Edges, mulVecE (placeQ (K p.1 p.2)) (zetaV e p.1 p.2)
 
-omit [DecidableEq U] [DecidableEq V] in
 /-- The edge `(i, j)` contributes `+K_{ij} ēᵢ` at `Q`-coordinate `j` and
 `-K_{ij} ēⱼ` at `Q`-coordinate `i`. -/
-theorem mulVecE_placeQ_zetaV (e : Fin s → EuclideanSpace ℂ (U × V))
-    (K : Fin s → Fin s → Matrix (U × V) (U × V) ℂ) (i j : Fin s) :
+theorem mulVecE_placeQ_zetaV (e : Fin s → EuclideanSpace ℂ W)
+    (K : Fin s → Fin s → Matrix W W ℂ) (i j : Fin s) :
     mulVecE (placeQ (K i j)) (zetaV e i j)
       = epsOf (mulVecE (K i j) (ebar e i)) j - epsOf (mulVecE (K i j) (ebar e j)) i := by
   rw [zetaV, eps_eq_epsOf, eps_eq_epsOf, mulVecE_sub, mulVecE_placeQ_epsOf,
@@ -167,16 +184,15 @@ theorem mulVecE_placeQ_zetaV (e : Fin s → EuclideanSpace ℂ (U × V))
 
 /-- The `k`-th vertex block of `T`: the signed sum of the edge contributions of
 all edges incident to `k`. -/
-noncomputable def vtx (e : Fin s → EuclideanSpace ℂ (U × V))
-    (K : Fin s → Fin s → Matrix (U × V) (U × V) ℂ) (k : Fin s) : EuclideanSpace ℂ (U × V) :=
+noncomputable def vtx (e : Fin s → EuclideanSpace ℂ W)
+    (K : Fin s → Fin s → Matrix W W ℂ) (k : Fin s) : EuclideanSpace ℂ W :=
   (∑ i ∈ Finset.univ.filter (fun i => i < k), mulVecE (K i k) (ebar e i))
     - (∑ j ∈ Finset.univ.filter (fun j => k < j), mulVecE (K k j) (ebar e j))
 
-omit [DecidableEq U] [DecidableEq V] in
 /-- `eq:T-by-vertices`: regrouping the edge sum by `Q`-coordinate exhibits `T` as
 the vector `δ` assembled from the vertex blocks. -/
-theorem Tsyn_eq_delta_vtx (e : Fin s → EuclideanSpace ℂ (U × V))
-    (K : Fin s → Fin s → Matrix (U × V) (U × V) ℂ) : Tsyn e K = delta (vtx e K) := by
+theorem Tsyn_eq_delta_vtx (e : Fin s → EuclideanSpace ℂ W)
+    (K : Fin s → Fin s → Matrix W W ℂ) : Tsyn e K = delta (vtx e K) := by
   ext x
   rw [Tsyn, sum_apply_euclidean, delta_apply, vtx, PiLp.sub_apply, sum_apply_euclidean,
     sum_apply_euclidean]
@@ -193,20 +209,18 @@ theorem Tsyn_eq_delta_vtx (e : Fin s → EuclideanSpace ℂ (U × V))
 
 /-- The contribution of the edge `{k, m}` to the vertex block at `k`, with its
 sign; it vanishes when `m = k`. -/
-noncomputable def vtxTerm (e : Fin s → EuclideanSpace ℂ (U × V))
-    (K : Fin s → Fin s → Matrix (U × V) (U × V) ℂ) (k m : Fin s) : EuclideanSpace ℂ (U × V) :=
+noncomputable def vtxTerm (e : Fin s → EuclideanSpace ℂ W)
+    (K : Fin s → Fin s → Matrix W W ℂ) (k m : Fin s) : EuclideanSpace ℂ W :=
   if m < k then mulVecE (K m k) (ebar e m)
   else if k < m then -(mulVecE (K k m) (ebar e m)) else 0
 
-omit [DecidableEq U] [DecidableEq V] in
-@[simp] theorem vtxTerm_self (e : Fin s → EuclideanSpace ℂ (U × V))
-    (K : Fin s → Fin s → Matrix (U × V) (U × V) ℂ) (k : Fin s) : vtxTerm e K k k = 0 := by
+@[simp] theorem vtxTerm_self (e : Fin s → EuclideanSpace ℂ W)
+    (K : Fin s → Fin s → Matrix W W ℂ) (k : Fin s) : vtxTerm e K k k = 0 := by
   simp [vtxTerm]
 
-omit [DecidableEq U] [DecidableEq V] in
 /-- The vertex block at `k` is the sum of the `s - 1` incident edge terms. -/
-theorem vtx_eq_sum_vtxTerm (e : Fin s → EuclideanSpace ℂ (U × V))
-    (K : Fin s → Fin s → Matrix (U × V) (U × V) ℂ) (k : Fin s) :
+theorem vtx_eq_sum_vtxTerm (e : Fin s → EuclideanSpace ℂ W)
+    (K : Fin s → Fin s → Matrix W W ℂ) (k : Fin s) :
     vtx e K k = ∑ m, vtxTerm e K k m := by
   have h : ∀ m : Fin s, vtxTerm e K k m
       = (if m < k then mulVecE (K m k) (ebar e m) else 0)
@@ -219,10 +233,9 @@ theorem vtx_eq_sum_vtxTerm (e : Fin s → EuclideanSpace ℂ (U × V))
   rw [Finset.sum_congr rfl fun m _ => h m, Finset.sum_add_distrib, ← Finset.sum_filter,
     ← Finset.sum_filter, vtx, sub_eq_add_neg, Finset.sum_neg_distrib]
 
-omit [DecidableEq U] [DecidableEq V] in
 /-- Cauchy-Schwarz on the `s - 1` incident edge terms of a single vertex block. -/
-theorem norm_vtx_sq_le (e : Fin s → EuclideanSpace ℂ (U × V))
-    (K : Fin s → Fin s → Matrix (U × V) (U × V) ℂ) (k : Fin s) :
+theorem norm_vtx_sq_le (e : Fin s → EuclideanSpace ℂ W)
+    (K : Fin s → Fin s → Matrix W W ℂ) (k : Fin s) :
     ‖vtx e K k‖ ^ 2 ≤ ((s : ℝ) - 1) * ∑ m, ‖vtxTerm e K k m‖ ^ 2 := by
   have hs : 1 ≤ s := k.pos
   set T : Finset (Fin s) := Finset.univ.filter (fun m => m ≠ k) with hT
@@ -247,11 +260,10 @@ theorem norm_vtx_sq_le (e : Fin s → EuclideanSpace ℂ (U × V))
   rw [← hsum, ← hcard]
   nlinarith [norm_nonneg (vtx e K k)]
 
-omit [DecidableEq U] [DecidableEq V] in
 /-- Summing the squared edge terms over all vertices counts each edge twice, once
 through each of its endpoints. -/
-theorem sum_sum_vtxTerm_sq (e : Fin s → EuclideanSpace ℂ (U × V))
-    (K : Fin s → Fin s → Matrix (U × V) (U × V) ℂ) :
+theorem sum_sum_vtxTerm_sq (e : Fin s → EuclideanSpace ℂ W)
+    (K : Fin s → Fin s → Matrix W W ℂ) :
     ∑ k, ∑ m, ‖vtxTerm e K k m‖ ^ 2
       = ∑ p ∈ Edges, (‖mulVecE (K p.1 p.2) (ebar e p.1)‖ ^ 2
           + ‖mulVecE (K p.1 p.2) (ebar e p.2)‖ ^ 2) := by
@@ -272,11 +284,10 @@ theorem sum_sum_vtxTerm_sq (e : Fin s → EuclideanSpace ℂ (U × V))
   rw [Finset.sum_congr rfl fun k _ => hdiag k, Finset.sum_const_zero, zero_add,
     Finset.sum_congr rfl hoff]
 
-omit [DecidableEq U] [DecidableEq V] in
 /-- The sum-of-squares bound: `‖T‖²` is at most `s - 1` times the total edge
 weight, the vertex-variance terms of the exact identity being dropped. -/
-theorem norm_Tsyn_sq_le (e : Fin s → EuclideanSpace ℂ (U × V))
-    (K : Fin s → Fin s → Matrix (U × V) (U × V) ℂ) :
+theorem norm_Tsyn_sq_le (e : Fin s → EuclideanSpace ℂ W)
+    (K : Fin s → Fin s → Matrix W W ℂ) :
     ‖Tsyn e K‖ ^ 2
       ≤ ((s : ℝ) - 1) * ∑ p ∈ Edges, (‖mulVecE (K p.1 p.2) (ebar e p.1)‖ ^ 2
           + ‖mulVecE (K p.1 p.2) (ebar e p.2)‖ ^ 2) := by

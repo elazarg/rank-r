@@ -147,7 +147,7 @@ revision.
 | `Sectors` | doubled sectors, `Ppos − Pneg = 2·ρ₀ᵀ` |
 | `Phi` | the `Φ₄` kernel, `eq:Phi-expansion`, `eq:Phi-rhoT` |
 | `Synth` | the synthesis map, `eq:T-by-vertices`, the vertex bound |
-| `Frame` | adjoint move, `eq:T-orthogonal` |
+| `Frame` | `Pneg` as an edge sum, `eq:T-orthogonal` |
 | `Edge` | orthonormality of the conjugated frame |
 | `Choi` | `J(Φ) = ∑ₐ\|vec Aₐ⟩⟨vec Aₐ\|`, the constant `β₂`, and **Lifting I** for an arbitrary Kraus family |
 | `ChoiSkew` | **`J(Λ_U ⊗ Λ_V) = 16 Qm`**, hence `β₂ = 4` in the `Phi4` scaling |
@@ -176,8 +176,13 @@ The import graph has two independent halves that meet only in `Results`: the
 which knows nothing about partial traces. `Extend` hangs off the reduction and
 is no longer on any critical path.
 
-The seam between them is one number. `Choi.lean` and `Lifting.lean` are stated
-for an arbitrary completely positive `Φ` with transpose-symmetric Kraus
+Everything from `Sectors` through `Lifting` lives on a single space `W` tensored
+with the ancilla: the sectors, the placement `A ↦ A ⊗ I_Q`, the synthesis map and
+both operator forms of Lifting II index `W` atomically. The tensor factorization
+`W = U ⊗ V` is used only by the `Φ₄` kernel of `Phi.lean` and downstream of it.
+
+The seam between the two halves is one number. `Choi.lean` and `Lifting.lean` are
+stated for an arbitrary completely positive `Φ` with transpose-symmetric Kraus
 operators, and consume it only through
 
     ChoiTwoBound (choiOf A) β  —  ⟨z, J(Φ) z⟩ ≤ 2β‖z‖² for z of Schmidt rank ≤ 2,

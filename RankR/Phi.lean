@@ -11,6 +11,13 @@ Because the family is indexed by *all* of `U × U` and `V × V`, and because
 `L_{ba} = -L_{ab}` while `L_{aa} = 0`, each unordered pair is counted twice on
 each factor: the resulting map is four times the map obtained from a family
 indexed by ordered pairs `a < b`.  It is therefore named `Phi4`.
+
+The placement `A ↦ A ⊗ I_Q` that carries an operator onto the doubled space is
+recorded for a single space `W`, together with its linearity and the entries of
+the conjugation `Y ↦ (A ⊗ I_Q) Y (A ⊗ I_Q)ᴴ`.  `Φ` is the instance at
+`W = U ⊗ V`, and it is the kernel computation below — four terms carried by
+Kronecker deltas on the `U` and `V` labels separately — that is genuinely
+bipartite.
 -/
 import RankR.Sectors
 import RankR.Skew
@@ -19,37 +26,6 @@ namespace RankR
 
 open Matrix Finset ComplexConjugate
 open scoped Kronecker
-
-/-! ## Placing an operator on the `U ⊗ V` factor -/
-
-section PlaceQ
-
-variable {U V : Type*} {s : ℕ}
-
-/-- `A ⊗ I_Q`, for `A` on `U ⊗ V`, placed on `(U ⊗ V) ⊗ Q`. -/
-def placeQ (A : Matrix (U × V) (U × V) ℂ) :
-    Matrix ((U × V) × Fin s) ((U × V) × Fin s) ℂ :=
-  Matrix.of fun x y => if x.2 = y.2 then A x.1 y.1 else 0
-
-@[simp] theorem placeQ_apply (A : Matrix (U × V) (U × V) ℂ) (x y : (U × V) × Fin s) :
-    placeQ A x y = if x.2 = y.2 then A x.1 y.1 else 0 := rfl
-
-/-- Placing an operator on `Q` is additive: it commutes with finite sums. -/
-theorem placeQ_sum {ι : Type*} [Fintype ι] (A : ι → Matrix (U × V) (U × V) ℂ) :
-    placeQ (s := s) (∑ i, A i) = ∑ i, placeQ (s := s) (A i) := by
-  ext x y
-  simp only [placeQ_apply, Matrix.sum_apply]
-  split_ifs with h
-  · rfl
-  · exact Finset.sum_const_zero.symm
-
-/-- Placing an operator on `Q` is homogeneous: it commutes with scalar multiples. -/
-theorem placeQ_smul (c : ℂ) (A : Matrix (U × V) (U × V) ℂ) :
-    placeQ (s := s) (c • A) = c • placeQ (s := s) A := by
-  ext x y
-  simp only [placeQ_apply, Matrix.smul_apply, smul_eq_mul, mul_ite, mul_zero]
-
-end PlaceQ
 
 /-! ## Elementary sum manipulations -/
 
@@ -79,6 +55,80 @@ theorem mul_mul_conjTranspose_apply {W : Type*} [Fintype W] (A Y : Matrix W W �
   exact Finset.sum_comm
 
 end Sums
+
+/-! ## Placing an operator on the first factor -/
+
+section PlaceQ
+
+variable {W : Type*} {s : ℕ}
+
+/-- `A ⊗ I_Q`, for `A` on `W`, placed on `W ⊗ Q`. -/
+def placeQ (A : Matrix W W ℂ) : Matrix (W × Fin s) (W × Fin s) ℂ :=
+  Matrix.of fun x y => if x.2 = y.2 then A x.1 y.1 else 0
+
+@[simp] theorem placeQ_apply (A : Matrix W W ℂ) (x y : W × Fin s) :
+    placeQ A x y = if x.2 = y.2 then A x.1 y.1 else 0 := rfl
+
+/-- Placing an operator on `Q` is additive: it commutes with finite sums. -/
+theorem placeQ_sum {ι : Type*} [Fintype ι] (A : ι → Matrix W W ℂ) :
+    placeQ (s := s) (∑ i, A i) = ∑ i, placeQ (s := s) (A i) := by
+  ext x y
+  simp only [placeQ_apply, Matrix.sum_apply]
+  split_ifs with h
+  · rfl
+  · exact Finset.sum_const_zero.symm
+
+/-- Placing an operator on `Q` is homogeneous: it commutes with scalar multiples. -/
+theorem placeQ_smul (c : ℂ) (A : Matrix W W ℂ) :
+    placeQ (s := s) (c • A) = c • placeQ (s := s) A := by
+  ext x y
+  simp only [placeQ_apply, Matrix.smul_apply, smul_eq_mul, mul_ite, mul_zero]
+
+variable [Fintype W]
+
+/-- Contracting `placeQ N` on the left collapses the `Q` sum onto `x.2`. -/
+theorem sum_placeQ_left (N : Matrix W W ℂ) (x : W × Fin s) (F : W × Fin s → ℂ) :
+    ∑ u, placeQ N x u * F u = ∑ q : W, N x.1 q * F (q, x.2) := by
+  rw [Fintype.sum_prod_type]
+  refine Finset.sum_congr rfl fun q _ => ?_
+  simp only [placeQ_apply, ite_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+
+/-- Contracting `placeQ N` on the right collapses the `Q` sum onto `y.2`. -/
+theorem sum_placeQ_right (N : Matrix W W ℂ) (y : W × Fin s) (F : W × Fin s → ℂ) :
+    ∑ v, F v * conj (placeQ N y v) = ∑ q' : W, F (q', y.2) * conj (N y.1 q') := by
+  rw [Fintype.sum_prod_type]
+  refine Finset.sum_congr rfl fun q _ => ?_
+  simp only [placeQ_apply, apply_ite conj, map_zero, mul_ite, mul_zero, Finset.sum_ite_eq,
+    Finset.mem_univ, if_true]
+
+/-- Entries of `placeQ N · Y · (placeQ N)ᴴ`: the two `Q` sums collapse, leaving a
+double sum over `W`. -/
+theorem placeQ_conj_apply (N : Matrix W W ℂ) (Y : Matrix (W × Fin s) (W × Fin s) ℂ)
+    (x y : W × Fin s) :
+    (placeQ (s := s) N * Y * (placeQ (s := s) N)ᴴ) x y
+      = ∑ q : W, ∑ q' : W, N x.1 q * Y (q, x.2) (q', y.2) * conj (N y.1 q') := by
+  have h : ∀ u : W × Fin s, ∑ v, placeQ N x u * Y u v * conj (placeQ N y v)
+      = placeQ N x u * ∑ q' : W, Y u (q', y.2) * conj (N y.1 q') := by
+    intro u
+    have h2 := sum_placeQ_right N y (fun v => Y u v)
+    calc ∑ v, placeQ N x u * Y u v * conj (placeQ N y v)
+        = placeQ N x u * ∑ v, Y u v * conj (placeQ N y v) := by
+          rw [Finset.mul_sum]
+          exact Finset.sum_congr rfl fun v _ => by ring
+      _ = placeQ N x u * ∑ q' : W, Y u (q', y.2) * conj (N y.1 q') := by rw [h2]
+  calc (placeQ (s := s) N * Y * (placeQ (s := s) N)ᴴ) x y
+      = ∑ u, ∑ v, placeQ N x u * Y u v * conj (placeQ N y v) :=
+        mul_mul_conjTranspose_apply _ _ _ _
+    _ = ∑ u, placeQ N x u * ∑ q' : W, Y u (q', y.2) * conj (N y.1 q') :=
+        Finset.sum_congr rfl fun u _ => h u
+    _ = ∑ q : W, N x.1 q * ∑ q' : W, Y (q, x.2) (q', y.2) * conj (N y.1 q') :=
+        sum_placeQ_left N x _
+    _ = ∑ q : W, ∑ q' : W, N x.1 q * Y (q, x.2) (q', y.2) * conj (N y.1 q') :=
+        Finset.sum_congr rfl fun q _ => by
+          rw [Finset.mul_sum]
+          exact Finset.sum_congr rfl fun q' _ => by ring
+
+end PlaceQ
 
 /-! ## The Kraus coefficient of the double-skew family -/
 
@@ -142,53 +192,6 @@ omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
 /-- Entries of a Kronecker product, for indices that are not literal pairs. -/
 theorem kron_apply (A : Matrix U U ℂ) (B : Matrix V V ℂ) (u v : U × V) :
     (A ⊗ₖ B) u v = A u.1 v.1 * B u.2 v.2 := rfl
-
-omit [DecidableEq U] [DecidableEq V] in
-/-- Contracting `placeQ N` on the left collapses the `Q` sum onto `x.2`. -/
-theorem sum_placeQ_left (N : Matrix (U × V) (U × V) ℂ) (x : (U × V) × Fin s)
-    (F : (U × V) × Fin s → ℂ) :
-    ∑ u, placeQ N x u * F u = ∑ q : U × V, N x.1 q * F (q, x.2) := by
-  rw [Fintype.sum_prod_type]
-  refine Finset.sum_congr rfl fun q _ => ?_
-  simp only [placeQ_apply, ite_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true]
-
-omit [DecidableEq U] [DecidableEq V] in
-/-- Contracting `placeQ N` on the right collapses the `Q` sum onto `y.2`. -/
-theorem sum_placeQ_right (N : Matrix (U × V) (U × V) ℂ) (y : (U × V) × Fin s)
-    (F : (U × V) × Fin s → ℂ) :
-    ∑ v, F v * conj (placeQ N y v) = ∑ q' : U × V, F (q', y.2) * conj (N y.1 q') := by
-  rw [Fintype.sum_prod_type]
-  refine Finset.sum_congr rfl fun q _ => ?_
-  simp only [placeQ_apply, apply_ite conj, map_zero, mul_ite, mul_zero, Finset.sum_ite_eq,
-    Finset.mem_univ, if_true]
-
-omit [DecidableEq U] [DecidableEq V] in
-/-- Entries of `placeQ N · Y · (placeQ N)ᴴ`: the two `Q` sums collapse, leaving a
-double sum over `U ⊗ V`. -/
-theorem placeQ_conj_apply (N : Matrix (U × V) (U × V) ℂ)
-    (Y : Matrix ((U × V) × Fin s) ((U × V) × Fin s) ℂ) (x y : (U × V) × Fin s) :
-    (placeQ (s := s) N * Y * (placeQ (s := s) N)ᴴ) x y
-      = ∑ q : U × V, ∑ q' : U × V, N x.1 q * Y (q, x.2) (q', y.2) * conj (N y.1 q') := by
-  have h : ∀ u : (U × V) × Fin s, ∑ v, placeQ N x u * Y u v * conj (placeQ N y v)
-      = placeQ N x u * ∑ q' : U × V, Y u (q', y.2) * conj (N y.1 q') := by
-    intro u
-    have h2 := sum_placeQ_right N y (fun v => Y u v)
-    calc ∑ v, placeQ N x u * Y u v * conj (placeQ N y v)
-        = placeQ N x u * ∑ v, Y u v * conj (placeQ N y v) := by
-          rw [Finset.mul_sum]
-          exact Finset.sum_congr rfl fun v _ => by ring
-      _ = placeQ N x u * ∑ q' : U × V, Y u (q', y.2) * conj (N y.1 q') := by rw [h2]
-  calc (placeQ (s := s) N * Y * (placeQ (s := s) N)ᴴ) x y
-      = ∑ u, ∑ v, placeQ N x u * Y u v * conj (placeQ N y v) :=
-        mul_mul_conjTranspose_apply _ _ _ _
-    _ = ∑ u, placeQ N x u * ∑ q' : U × V, Y u (q', y.2) * conj (N y.1 q') :=
-        Finset.sum_congr rfl fun u _ => h u
-    _ = ∑ q : U × V, N x.1 q * ∑ q' : U × V, Y (q, x.2) (q', y.2) * conj (N y.1 q') :=
-        sum_placeQ_left N x _
-    _ = ∑ q : U × V, ∑ q' : U × V, N x.1 q * Y (q, x.2) (q', y.2) * conj (N y.1 q') :=
-        Finset.sum_congr rfl fun q _ => by
-          rw [Finset.mul_sum]
-          exact Finset.sum_congr rfl fun q' _ => by ring
 
 /-- The Kraus coefficient of the double-skew family: the product of two
 antisymmetrized Kronecker deltas, each carrying a factor `2`. -/
