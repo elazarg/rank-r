@@ -72,15 +72,30 @@ and the other at least $2$, and for nonzero $C$ equality forces
 $\rank C=r$.  This is the extension beyond normal matrices that Costa
 Rico and Wolf identify as open.
 
-The argument has two steps.  A two-vector action bound on the
-double-skew space $\mathfrak{so}(U)\otimes\mathfrak{so}(V)$ is proved
-from the Autonne--Takagi factorization, following the strategy of Fu,
-Gao, and Park's sharp Schmidt-rank-two projection estimate, to which
-that bound is equivalent.  An ancilla construction and a partial
-transpose then reduce the rank-$r$ inequality to pair-indexed
-antisymmetric modes controlled by the bound: a complete-graph
-summation costs only the vertex degree $r-1$, and a cancellation in
-one distinguished direction yields the sharp trace coefficient $1/r$.
+What the argument actually proves is an amplification theorem, of which
+the displayed inequality is one instance.  To a completely positive map
+$\Phi$ whose Kraus operators are transpose-symmetric, attach the single
+number $\beta_2(\Phi)=\frac12\norm{J(\Phi)}_{S(2)}$, the rank-two
+operator norm of its Choi operator.  Then
+$\Phi\circ\tau+(r-1)\beta_2(\Phi)\bigl(\Delta-\frac1r\id\bigr)$ is
+$r$-positive for every $r$, where $\Delta(X)=\Tr(X)I$ and $\tau$ is
+transposition.  Two things drive it: an ancilla construction and a
+partial transpose reduce the assertion to pair-indexed antisymmetric
+modes, over which a complete-graph summation costs only the vertex
+degree $r-1$; and transpose symmetry --- a $\Z/2$-degree condition on
+the Kraus space --- protects one distinguished direction, which is
+what yields the sharp trace coefficient $1/r$ rather than $1$.  Nothing
+else about $\Phi$ enters.
+
+The displayed inequality is the case $\Phi=\Lambda_U\otimes\Lambda_V$,
+where $\beta_2=1$ is a two-vector action bound on the double-skew space
+$\mathfrak{so}(U)\otimes\mathfrak{so}(V)$, proved here from the
+Autonne--Takagi factorization and equivalent to Fu, Gao, and Park's
+sharp Schmidt-rank-two projection estimate.  In that case the
+amplified map is $r\,\mathcal R_{-1/r}\otimes\mathcal R_{-1/r}$ for
+$\mathcal R_\alpha(X)=\Tr(X)I+\alpha X$, an identity that also fixes
+the meaning of both constants: $r-1$ is the vertex degree, and $1/r$ is
+the only coefficient a unitarily covariant correction is free to carry.
 
 The development is machine-checked in Lean~4 in full, proved end to
 end.  What is certified is the deduction, not the faithfulness of
@@ -491,17 +506,9 @@ $\norm{Q_-}_{S(2)}=\frac12$, so
 \begin{theorem}[Amplification]
 \label[theorem]{thm:amplification}
 Let $\Phi$ be completely positive on $\cL(U\otimes V)$ with
-\emph{transpose-symmetric} Kraus operators, $A_a^T=A_a$.  Then for every
-$r\ge1$ the map
-\[
-    \Psi_{r,\Phi}
-    :=
-    \Phi\circ\tau
-    +(r-1)\beta_2(\Phi)\left(\Delta-\tfrac1r\id\right)
-\]
-is $r$-positive, where $\Delta(X)=\Tr(X)I$ and $\tau$ is transposition.
-Equivalently, in the notation of \cref{prop:operator_ineq}, for every
-orthonormal family $e_1,\ldots,e_r$ in $U\otimes V$,
+\emph{transpose-symmetric} Kraus operators, $A_a^T=A_a$.  Then, in the notation
+of \cref{prop:operator_ineq}, for every $r\ge1$ and every orthonormal family
+$e_1,\ldots,e_r$ in $U\otimes V$,
 \begin{equation}
 \label{eq:amplification-A}
     (\Phi\otimes\id_Q)(P_-)
@@ -515,6 +522,23 @@ orthonormal family $e_1,\ldots,e_r$ in $U\otimes V$,
     \succeq0 .
 \end{equation}
 \end{theorem}
+
+Write $\Delta(X):=\Tr(X)I$ for the map that discards its argument and reprepares
+the identity, and $\tau$ for transposition.  Then \cref{eq:amplification-B} says
+that
+\[
+    \Psi_{r,\Phi}
+    :=
+    \Phi\circ\tau
+    +(r-1)\beta_2(\Phi)\left(\Delta-\tfrac1r\id\right)
+\]
+is \emph{$r$-positive}, meaning that
+$(\Psi_{r,\Phi}\otimes\id_{\C^r})(\rho)\succeq0$ for every positive
+semidefinite $\rho$ on $(U\otimes V)\otimes\C^r$ --- equivalently, by the
+Choi--Jamiołkowski correspondence used throughout \cref{sec:applications}, that
+its Choi operator has nonnegative expectation on every vector of Schmidt rank at
+most $r$.  \Cref{rem:operator-ineq-as-map} carries out that translation and
+identifies the resulting map.
 
 The proof occupies \cref{sec:proof}; \cref{eq:amplification-A} is
 \cref{eq:Phi-Pminus-goal} with $\beta_2$ in place of $1$, and
@@ -987,9 +1011,7 @@ the even-degree ones.
 
 \begin{remark}[The marginal inequality as an $r$-positivity statement]
 \label[remark]{rem:operator-ineq-as-map}
-Write $\Delta:=\eta\circ\varepsilon$ for discard-then-reprepare, where
-$\varepsilon=\Tr$ and $\eta(\lambda)=\lambda I$, so $\Delta(X)=\Tr(X)I$; let
-$\tau$ denote transposition; and recall
+Recall $\Delta$ and $\tau$ from \cref{thm:amplification}, and
 $\mathcal R_\alpha(X)=\Tr(X)I+\alpha X$ from \cref{cor:tensor-square}.  Put
 \[
     S:=\mathcal R_{-1}=\Delta-\id,
@@ -999,10 +1021,11 @@ $\mathcal R_\alpha(X)=\Tr(X)I+\alpha X$ from \cref{cor:tensor-square}.  Put
     \mathcal R_{-1/r}=S+t\,\id .
 \]
 
-Two facts suffice.  First, $\Delta$ is monoidal: discarding a composite system
-and repreparing it is discarding and repreparing each factor, so
-$\Delta_{U\otimes V}=\Delta_U\otimes\Delta_V$; and $\tau$ is monoidal too.
-Since $\Lambda(Y)=\Tr(Y)I-Y^T$ gives $\Lambda\circ\tau=\Delta-\id=S$ on a single
+Two facts suffice.  First, both $\Delta$ and $\tau$ factor across tensor
+products: $\tau_{U\otimes V}=\tau_U\otimes\tau_V$, and
+$\Delta_{U\otimes V}=\Delta_U\otimes\Delta_V$ because discarding a composite
+system and repreparing it is discarding and repreparing each factor.  Since
+$\Lambda(Y)=\Tr(Y)I-Y^T$ gives $\Lambda\circ\tau=\Delta-\id=S$ on a single
 factor,
 \begin{equation}
 \label{eq:lambda-tau-monoidal}
@@ -1064,7 +1087,7 @@ identifies what pins it, namely the protected direction $\delta_e$.  The
 correction term is not a choice.
 
 The collapse in \cref{eq:map-identity} is specific to two factors.  For $n$
-factors monoidality gives
+factors the same factorization gives
 $\Delta=\sum_{T\subseteq[n]}\bigotimes_{i\in T}S_i$, and matching against
 $c\bigotimes(S+t\,\id)$ forces $r-1=r\,t^{\,n-\abs T}$ for every $T$ with
 $\abs T<n$.  At $\abs T=n-1$ this reads $r-1=rt$, which holds; for $n=2$ the
