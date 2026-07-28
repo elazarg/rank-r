@@ -95,18 +95,19 @@ $\beta_k(\Lambda_U\otimes\Lambda_V)=\min\{1,4/k\}$.
 \end{theorem}
 
 \begin{proof}
-Normalize $\norm K_F=1$ and write $\Sigma=\sum_js_j^2=1$.
+Normalize $\norm K_F=1$.
 
-\emph{Upper bounds.}  For $k=2$, \cref{eq:pair} at $(a,b)=(1,2)$ gives
-$s_1^2+s_2^2\le\frac12$.  For $k=3$, apply \cref{eq:pair} at $(a,b)=(2,3)$:
-since $s_2\ge s_3$,
+\emph{Upper bounds.}  Summing \cref{eq:pair} over all $\binom k2$ pairs drawn
+from $\{1,\ldots,k\}$, and using that each index occurs in exactly $k-1$ of
+them,
 \[
-    2s_3^2\le s_2^2+s_3^2\le\tfrac12,
-    \qquad\text{so}\qquad
-    s_3^2\le\tfrac14 ,
+    (k-1)\sum_{j\le k}s_j^2
+    =\sum_{a<b\le k}\bigl(s_a^2+s_b^2\bigr)
+    \le\binom k2\cdot\tfrac12
+    =\frac{k(k-1)}4 ,
 \]
-and adding the $k=2$ bound gives $s_1^2+s_2^2+s_3^2\le\frac12+\frac14=\frac34$.
-For $k\ge4$ the bound $\sum_{j\le k}s_j^2\le1$ is trivial.
+so $\sum_{j\le k}s_j^2\le k/4$ for every $k\ge2$.  Together with the trivial
+$\sum_{j\le k}s_j^2\le1$ this gives $\kappa_k\le\min\{k,4\}/4$.
 
 \emph{Attainment.}  A single elementary tensor $L_{ab}\otimes M_{cd}$, with
 $L_{ab}=E_{ab}-E_{ba}$, has exactly four nonzero singular values, all equal, so
@@ -114,12 +115,27 @@ after normalization $\sum_{j\le k}s_j^2=\min\{k,4\}/4$ for every $k$.
 \end{proof}
 
 \begin{remark}
-The pairing estimate $\sum_{j\le k}s_j^2\le\lceil k/2\rceil(s_1^2+s_2^2)$ gives
-$\lceil k/2\rceil/2$, which is $k/4$ for even $k$ but $(k+1)/4$ for odd $k$ ---
-at $k=3$ it yields only the trivial bound $1$.  What closes the odd case is the
-availability of \cref{eq:pair} at the pair $(2,3)$.  That generality was
-introduced for a different reason, namely to avoid ordering the singular values
-before the final step of the double-skew lemma.
+\label{rem:everypair}
+The averaging step is where \cref{eq:pair} must hold for \emph{every} pair.  The
+weaker statement for the two largest singular values gives, by grouping into
+consecutive pairs, only $\sum_{j\le k}s_j^2\le\lceil k/2\rceil/2$ --- that is
+$k/4$ for even $k$ but $(k+1)/4$ for odd $k$, hence the trivial bound at $k=3$.
+The every-pair form was proved for an unrelated reason, namely to avoid ordering
+the singular values before the last step of the double-skew lemma.
+\end{remark}
+
+\begin{remark}
+\label{rem:action}
+Nothing above needs singular values.  Since $\sum_{j\le k}s_j(K)^2$ is the
+maximum of $\sum_{i\le k}\norm{Kx_i}^2$ over orthonormal $k$-tuples, and
+\cref{eq:pair} is exactly the two-vector action bound, the same averaging gives
+directly
+\[
+    \sum_{i=1}^k\norm{Kx_i}^2\le\frac k4\norm K_F^2
+    \qquad\text{for every orthonormal }x_1,\ldots,x_k ,
+\]
+which is the form the amplification argument consumes and the form in which the
+statement is machine-checked.
 \end{remark}
 
 \section{\texorpdfstring{$k=1$}{k = 1} is different}
