@@ -29,5 +29,6 @@ import RankR.Weights
 import RankR.Takagi
 import RankR.Autonne
 import RankR.Results
+import RankR.BlockPos
 import RankR.Equivalence
 import RankR.Axioms

@@ -22,6 +22,7 @@ otherwise match itself):
     grep -rn '^\s*axiom\s\|native_decide\|set_option\|\bsorry\b' \
       RankR/ RankR.lean --exclude=Axioms.lean
 -/
+import RankR.BlockPos
 import RankR.Extend
 import RankR.MapId
 import RankR.Optimal
@@ -164,6 +165,19 @@ tensor square `r · R_{−1/r} ⊗ R_{−1/r}`. -/
 /-- info: 'RankR.Psi_eq_tensor_square' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms Psi_eq_tensor_square
+
+/-! ## Theorem 1.1 as block positivity
+
+The quadratic form of `J(Ψ_r)` at `vec C` is the deficit in Theorem 1.1, so the
+theorem and the `r`-block positivity of that operator are the same statement. -/
+
+/-- info: 'RankR.re_qform_psiChoi' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms re_qform_psiChoi
+
+/-- info: 'RankR.isBlockPositive_psiChoi' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms isBlockPositive_psiChoi
 
 /-! ## The one-sided bound, also unconditional -/
 
