@@ -106,6 +106,45 @@ development contains no definition of Schmidt rank at all. The estimate itself
 *is* proved (`fgpBound_holds`). Also not proved: any of the applications in §4
 or the appendices of the manuscript.
 
+### Two sharpenings not in the manuscript
+
+**The symmetry hypothesis is a condition on the compression, not on the operator.**
+`Frame.lean` defines `IsFrameSymmetric e N` — the compression `E^*NĒ` of `N` to the
+frame `E : q_i ↦ e_i` is a symmetric matrix — and `Lifting.lean`, `HigherArity.lean`
+now take that in place of `Nᵀ = N`. It is what the orthogonality actually consumes:
+in the fermionic notation of `HigherArity.lean`, `ε_E^*(N ⊗ I)∂_E = ι_{Alt(E^*NĒ)}`,
+so the Koszul cancellation is the vanishing of the alternating part of the
+compression and nothing more. Transpose symmetry is the frame-independent
+strengthening, and that characterization is itself checked, in both directions:
+`isFrameSymmetric_of_transpose_eq` gives one, and
+`transpose_eq_of_forall_isFrameSymmetric` gives the other — quantifying over
+frames recovers `Nᵀ = N`, and two-element frames already suffice. The double-skew
+family supplies the hypothesis through the first of those, applied at
+`skewKraus_transpose`. Theorem 1.1 is unaffected: `skewKraus` is transpose-symmetric
+anyway. What changes is the class the liftings apply to, and the honesty of the
+statement about which property does the work.
+
+**Exterior amplification holds in a weighted form.** `HigherArity.lean` states
+Theorems A and B for a hypergraph whose every hyperedge carries its *own* Kraus
+family `A_I` and its own constant `β_I`:
+
+    ∑_{I ∈ H} (Φ_{A_I} ⊗ id)(|η_I⟩⟨η_I|)  ⪯  Γ (I − Π),
+    Γ ≥ max_J ∑_{I ∈ H, J ⊆ I} β_I,
+
+as `qform_PhypAmp_le_of_norm` and `qform_PhypAmp_le`. The coefficient is the
+weighted modulus of the incidence correspondence; the uniform theorems are the
+constant-weight case, where that modulus is the largest fibre `d↑_{k-1}(H) β`, and
+`qform_krausF_Phyp_le_of_weighted` derives Theorem B from the weighted form to
+check the two agree. The one hypothesis the weighted route adds is `0 < β_I`,
+because the weighted regrouping divides by the weight; `qform_krausF_Phyp_le`
+still covers `β = 0` directly.
+
+**Not proved:** the *support-adapted* protected space of the same generalization —
+restricting the star of each `(k-2)`-face to the facets actually present in `H`,
+so that `Π` has rank the number of actual hinges rather than `binom(r, k-2)`, and
+`I` is replaced by the projection onto actual facets. The same Koszul cancellation
+applies, but the modes change and their orthonormality has to be redone.
+
 Two labelled equations of the manuscript, `eq:Phi-Pminus-TTstar` and
 `eq:sos-complete-graph`, are **bypassed rather than proved**: the Bessel-duality
 route in `Bessel.lean` never forms the synthesis map as a matrix, which removes
@@ -153,7 +192,7 @@ revision.
 | `ChoiSkew` | **`J(Λ_U ⊗ Λ_V) = 16 Qm`**, hence `β₂ = 4` in the `Phi4` scaling |
 | `MapId` | `Δ` monoidal, `(Λ_U⊗Λ_V)∘τ = S_U⊗S_V`, and **the map identity** `Ψ_r = r·R_{−1/r}⊗R_{−1/r}` |
 | `Bessel`, `Restrict` | Bessel duality, and its sharpening on `δ_e^⊥` |
-| `Lifting` | **Lifting II** in both operator forms, for an arbitrary Kraus family and sharpened on `δ_e` for a transpose-symmetric one |
+| `Lifting` | **Lifting II** in both operator forms, for an arbitrary Kraus family and sharpened on `δ_e` for a frame-symmetric one |
 | `Theorem` | Proposition 2.2 and Theorem 1.1 given the rank-two Choi bound |
 | `Antisym`, `FGP`, `Extend` | the antisymmetrizer, and Theorem 1.1 from Fu–Gao–Park as published (retained, no longer on the critical path) |
 | `Optimal` | the extremizer, and optimality of the coefficients `r`, `1/r` |

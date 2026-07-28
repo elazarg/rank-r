@@ -167,10 +167,12 @@ The two families of modes attached to the faces of `Fin r`. -/
 
 /-! ## Exterior amplification
 
-Theorem A needs only the level-`k` Choi bound; Theorem B adds transpose symmetry
-of the Kraus operators and gains the span of the protected modes.  `upDeg_univ`
-gives the complete hypergraph its degree `r - k + 1`, and the two pair-level
-corollaries are the `k = 2` reading. -/
+Theorem A needs only the level-`k` Choi bound; Theorem B adds frame symmetry of
+the Kraus operators and gains the span of the protected modes.  Both hold in a
+weighted form, one Kraus family and one constant per hyperedge, whose coefficient
+is the weighted modulus of the incidence correspondence; `upDeg_univ` gives the
+complete hypergraph its degree `r - k + 1`, and the two pair-level corollaries
+are the `k = 2` reading. -/
 
 /--
 info: 'RankR.qform_krausF_Phyp_le_of_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -197,6 +199,32 @@ info: 'RankR.qform_krausF_Phyp_le_of_choiTwoBound_sub' depends on axioms: [prope
 -/
 #guard_msgs in
 #print axioms qform_krausF_Phyp_le_of_choiTwoBound_sub
+
+/--
+info: 'RankR.qform_PhypAmp_le_of_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms qform_PhypAmp_le_of_norm
+
+/-- info: 'RankR.qform_PhypAmp_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_PhypAmp_le
+
+/--
+info: 'RankR.qform_krausF_Phyp_le_of_weighted' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms qform_krausF_Phyp_le_of_weighted
+
+/-- info: 'RankR.isFrameSymmetric_of_transpose_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms isFrameSymmetric_of_transpose_eq
+
+/--
+info: 'RankR.transpose_eq_of_forall_isFrameSymmetric' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms transpose_eq_of_forall_isFrameSymmetric
 
 /-! ## The abstract liftings
 

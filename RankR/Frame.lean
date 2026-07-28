@@ -13,8 +13,11 @@ The mechanism behind the orthogonality is that `(N ⊗ I_Q) ζ_{ij}` places
 `δ` produces the difference of the two bilinear expressions
 `∑_{p,q} conj(e_j p) N p q conj(e_i q)` and `∑_{p,q} conj(e_i p) N p q conj(e_j q)`,
 which coincide once the summation indices are exchanged.  No orthonormality of
-the family `e` is used, and `Nᵀ = N` for an operator on a single space `W` is the
-whole hypothesis; the tensor structure enters only in the specialization at the
+the family `e` is used, and the whole hypothesis is that those two expressions
+coincide — that is, that the compression `E^*NĒ` of `N` to the frame is a
+symmetric matrix, `IsFrameSymmetric e N` below.  Transpose symmetry `Nᵀ = N` is
+the frame-independent strengthening of that condition and is what the double-skew
+family supplies; the tensor structure enters only in the specialization at the
 end.
 -/
 import RankR.Synth
@@ -64,21 +67,61 @@ theorem inner_mulVecE_ebar (e : Fin s → EuclideanSpace ℂ W) (N : Matrix W W 
   rw [RCLike.inner_apply', mulVecE_apply, Finset.mul_sum]
   exact Finset.sum_congr rfl fun q _ => by rw [ebar_apply, mul_assoc]
 
-/-- `eq:T-orthogonal`: for a symmetric operator `N`, the vector `(N ⊗ I_Q) ζ_{ij}`
-is orthogonal to `δ`.
+/-- `N` is **symmetric on the frame `e`**: the compression `E^*NĒ` of `N` by the
+synthesis map `E : q_i ↦ e_i` is a symmetric matrix.  No orthonormality of `e` is
+required, so `E` need not be an isometry.
 
-The two placed blocks contribute the bilinear forms of `N` on the pairs
-`(ē_j, ē_i)` and `(ē_i, ē_j)`, which agree by symmetry of `N`. -/
-theorem inner_delta_placeQ_zetaV (e : Fin s → EuclideanSpace ℂ W) {N : Matrix W W ℂ}
-    (hN : Nᵀ = N) (i j : Fin s) :
-    inner ℂ (delta e) (mulVecE (placeQ N) (zetaV e i j)) = 0 := by
-  rw [mulVecE_placeQ_zetaV e (fun _ _ => N) i j, inner_sub_right, inner_delta_epsOf,
-    inner_delta_epsOf, sub_eq_zero, inner_mulVecE_ebar, inner_mulVecE_ebar, Finset.sum_comm]
+This, and not `Nᵀ = N`, is what `eq:T-orthogonal` and its higher-arity form
+actually consume.  The two conditions are not equivalent for a fixed frame:
+`Nᵀ = N` is the frame-independent strengthening, recovered by quantifying over
+every frame (`transpose_eq_of_forall_isFrameSymmetric`).  The weaker one suffices
+because the frame is fixed — it comes from the range factorization of `C` —
+before any Kraus operator is chosen.
+
+In the Koszul language of the exterior development, the composite
+`ε_E^* (N ⊗ I) ∂_E` is contraction by the alternating part of `E^*NĒ`, and this
+predicate is the vanishing of that alternating part; the direction used
+downstream is that it forces the composite to vanish. -/
+def IsFrameSymmetric (e : Fin s → EuclideanSpace ℂ W) (N : Matrix W W ℂ) : Prop :=
+  ∀ a b, inner ℂ (e a) (mulVecE N (ebar e b)) = inner ℂ (e b) (mulVecE N (ebar e a))
+
+/-- A transpose-symmetric operator is symmetric on every frame: a compression of
+a symmetric matrix is symmetric. -/
+theorem isFrameSymmetric_of_transpose_eq {N : Matrix W W ℂ} (hN : Nᵀ = N)
+    (e : Fin s → EuclideanSpace ℂ W) : IsFrameSymmetric e N := fun a b => by
+  rw [inner_mulVecE_ebar, inner_mulVecE_ebar, Finset.sum_comm]
   refine Finset.sum_congr rfl fun x _ => Finset.sum_congr rfl fun y _ => ?_
   have hsym : N y x = N x y := by
     have hxy := congrFun (congrFun hN x) y
     rwa [Matrix.transpose_apply] at hxy
   rw [hsym]; ring
+
+/-- **Frame symmetry over all frames is transpose symmetry.**  Reading the
+predicate off at the two-element frame `(δ_p, δ_q)` of standard basis vectors
+gives `N p q = N q p`, so quantifying over frames recovers `Nᵀ = N`.
+
+Together with `isFrameSymmetric_of_transpose_eq` this pins down the relation
+between the two hypotheses: frame symmetry is the frame-local shadow of transpose
+symmetry, and all that separates them is the choice of a single frame.  Two
+vectors already suffice. -/
+theorem transpose_eq_of_forall_isFrameSymmetric [DecidableEq W] {N : Matrix W W ℂ}
+    (h : ∀ e : Fin 2 → EuclideanSpace ℂ W, IsFrameSymmetric e N) : Nᵀ = N := by
+  ext p q
+  have h2 := h ![EuclideanSpace.single p 1, EuclideanSpace.single q 1] 0 1
+  rw [inner_mulVecE_ebar, inner_mulVecE_ebar] at h2
+  simpa [PiLp.single_apply, Matrix.transpose_apply, eq_comm] using h2.symm
+
+/-- `eq:T-orthogonal`: for an operator symmetric on the frame, the vector
+`(N ⊗ I_Q) ζ_{ij}` is orthogonal to `δ`.
+
+The two placed blocks contribute the bilinear forms of `N` on the pairs
+`(ē_j, ē_i)` and `(ē_i, ē_j)`, which agree precisely by that symmetry. -/
+theorem inner_delta_placeQ_zetaV (e : Fin s → EuclideanSpace ℂ W) {N : Matrix W W ℂ}
+    (hN : IsFrameSymmetric e N) (i j : Fin s) :
+    inner ℂ (delta e) (mulVecE (placeQ N) (zetaV e i j)) = 0 := by
+  rw [mulVecE_placeQ_zetaV e (fun _ _ => N) i j, inner_sub_right, inner_delta_epsOf,
+    inner_delta_epsOf, sub_eq_zero]
+  exact hN _ _
 
 end Frame
 
@@ -95,7 +138,8 @@ theorem inner_delta_placeQ_kron_zetaV (e : Fin s → EuclideanSpace ℂ (U × V)
     {L : Matrix U U ℂ} {M : Matrix V V ℂ} (hL : IsSkew L) (hM : IsSkew M) (i j : Fin s) :
     inner ℂ (delta e) (mulVecE (placeQ (L ⊗ₖ M)) (zetaV e i j)) = 0 :=
   inner_delta_placeQ_zetaV e
-    (transpose_eq_self_of_mem_doubleSkew (kron_mem_doubleSkew hL hM)) i j
+    (isFrameSymmetric_of_transpose_eq
+      (transpose_eq_self_of_mem_doubleSkew (kron_mem_doubleSkew hL hM)) e) i j
 
 end DoubleSkew
 

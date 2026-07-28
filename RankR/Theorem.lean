@@ -30,7 +30,8 @@ theorem qform_Phi4_Pneg_le (hβ : ChoiTwoBound (choiOf (skewKraus (U := U) (V :=
     (qform (Phi4 (Pneg e)) y).re
       ≤ 8 * ((s : ℝ) - 1) * (‖y‖ ^ 2 - Complex.normSq (inner ℂ (delta e) y) / s) := by
   rw [Phi4_eq_krausQ]
-  refine (qform_krausQ_Pneg_le (by norm_num) hβ skewKraus_transpose hs he y).trans
+  refine (qform_krausQ_Pneg_le (by norm_num) hβ
+      (fun f => isFrameSymmetric_of_transpose_eq (skewKraus_transpose f) e) hs he y).trans
     (le_of_eq ?_)
   ring
 

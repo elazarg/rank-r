@@ -8,8 +8,10 @@ trivially on the ancilla `Q = ℂ^s`.  Two hypotheses drive everything:
 * `ChoiTwoBound (choiOf A) β` — the rank-two bound on the Choi operator, which
   `Choi.lean` turns into the edgewise estimate `‖K ēᵢ‖² + ‖K ēⱼ‖² ≤ 2β‖c‖²` for
   every `K` in the span of the family;
-* `(A f)ᵀ = A f` — transpose symmetry of the Kraus operators, which makes every
-  frame vector orthogonal to `δ_e`.
+* `IsFrameSymmetric e (A f)` — symmetry of the compression `E^*A_fĒ` of each Kraus
+  operator to the frame, which makes every frame vector orthogonal to `δ_e`.
+  Transpose symmetry `(A f)ᵀ = A f` is the frame-independent strengthening, and is
+  how the double-skew family supplies it (`isFrameSymmetric_of_transpose_eq`).
 
 The frame vectors are the images `(A_f ⊗ I_Q) ζ_{ij}` of the antisymmetric
 combinations, one per Kraus index and edge.  Synthesizing them with coefficients
@@ -231,14 +233,14 @@ section LiftingTwo
 
 variable {W : Type*} [Fintype W] {ι : Type*} {s : ℕ}
 
-/-- Transpose symmetry of the Kraus operators makes every frame vector orthogonal
+/-- Frame symmetry of the Kraus operators makes every frame vector orthogonal
 to `δ_e`.
 
 This is `eq:T-orthogonal`.  For an odd number of skew factors the Kraus
 operators are antisymmetric instead, the orthogonality fails, and the `1/s`
 correction below is lost; parity is what protects the dark state. -/
-theorem inner_delta_wvec {A : ι → Matrix W W ℂ} (hsym : ∀ f, (A f)ᵀ = A f)
-    (e : Fin s → EuclideanSpace ℂ W) (f : ι) (p : Fin s × Fin s) :
+theorem inner_delta_wvec {A : ι → Matrix W W ℂ} (e : Fin s → EuclideanSpace ℂ W)
+    (hsym : ∀ f, IsFrameSymmetric e (A f)) (f : ι) (p : Fin s × Fin s) :
     inner ℂ (delta e) (wvec A e f p) = 0 := by
   rw [wvec]
   split
@@ -269,16 +271,18 @@ theorem qform_krausQ_Pneg_le_of_norm {A : ι → Matrix W W ℂ} {β : ℝ} (hβ
 
 /-- **Lifting II, form (A)**: `(Φ_A ⊗ id)(P₋) ⪯ 2β(s−1)(I − Π_E)`.
 
-This improves on form (A₀) by exactly one direction, and transpose symmetry of
-the Kraus operators is what supplies it: for `(A f)ᵀ = A f` every frame vector is
-orthogonal to `δ_e`, so the Bessel sum sees only the component of `y` off that
-vector.  The dichotomy is the `ℤ/2`-degree of the family under transposition —
-degree `0` pairs `δ_e` against a frame vector as a difference of two equal
-bilinear forms and protects it, degree `1` pairs it as their sum and leaves the
-full `‖y‖²` of form (A₀).  At `β = 1` this is `eq:Phi-Pminus-goal`. -/
-theorem qform_krausQ_Pneg_le {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β)
-    (hJ : ChoiTwoBound (choiOf A) β) (hsym : ∀ f, (A f)ᵀ = A f) (hs : 0 < s)
-    {e : Fin s → EuclideanSpace ℂ W} (he : Orthonormal ℂ e)
+This improves on form (A₀) by exactly one direction, and frame symmetry of the
+Kraus operators is what supplies it: for `IsFrameSymmetric e (A f)` every frame
+vector is orthogonal to `δ_e`, so the Bessel sum sees only the component of `y`
+off that vector.  The dichotomy is the `ℤ/2`-degree of the family under
+transposition — degree `0` pairs `δ_e` against a frame vector as a difference of
+two equal bilinear forms and protects it, degree `1` pairs it as their sum and
+leaves the full `‖y‖²` of form (A₀).  At `β = 1` this is
+`eq:Phi-Pminus-goal`. -/
+theorem qform_krausQ_Pneg_le {A : ι → Matrix W W ℂ} {β : ℝ}
+    {e : Fin s → EuclideanSpace ℂ W} (hβ : 0 ≤ β)
+    (hJ : ChoiTwoBound (choiOf A) β) (hsym : ∀ f, IsFrameSymmetric e (A f)) (hs : 0 < s)
+    (he : Orthonormal ℂ e)
     (y : EuclideanSpace ℂ (W × Fin s)) :
     (qform (krausQ A (Pneg e)) y).re
       ≤ 2 * β * ((s : ℝ) - 1) * (‖y‖ ^ 2 - Complex.normSq (inner ℂ (delta e) y) / s) := by
@@ -291,7 +295,7 @@ theorem qform_krausQ_Pneg_le {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤
   rw [re_qform_krausQ_Pneg]
   exact frame_le_sub_proj (w := fun k : ι × (Fin s × Fin s) => wvec A e k.1 k.2)
     (z := delta e) hsr (norm_delta_orthonormal he)
-    (fun k => inner_delta_wvec hsym e k.1 k.2) hbess y
+    (fun k => inner_delta_wvec e hsym k.1 k.2) hbess y
 
 /-- **Lifting II, form (B₀)**: `(Φ_A ⊗ id)(ρ_E^{T_W}) + β(s−1) I ⪰ 0`.
 
@@ -312,12 +316,13 @@ theorem qform_krausQ_ptransposeUV_ge_of_norm {A : ι → Matrix W W ℂ} {β : �
 
 /-- **Lifting II, form (B)**: `(Φ_A ⊗ id)(ρ_E^{T_W}) + β(s−1)(I − Π_E) ⪰ 0`.
 
-The assembly of form (B₀) run with the sharpened negative-sector bound: transpose
+The assembly of form (B₀) run with the sharpened negative-sector bound: frame
 symmetry of the Kraus operators trades `‖y‖²` for the squared norm of the
 component of `y` off `δ_e`.  At `β = 1` this is `prop:operator_ineq`. -/
-theorem qform_krausQ_ptransposeUV_ge {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β)
-    (hJ : ChoiTwoBound (choiOf A) β) (hsym : ∀ f, (A f)ᵀ = A f) (hs : 0 < s)
-    {e : Fin s → EuclideanSpace ℂ W} (he : Orthonormal ℂ e)
+theorem qform_krausQ_ptransposeUV_ge {A : ι → Matrix W W ℂ} {β : ℝ}
+    {e : Fin s → EuclideanSpace ℂ W} (hβ : 0 ≤ β)
+    (hJ : ChoiTwoBound (choiOf A) β) (hsym : ∀ f, IsFrameSymmetric e (A f)) (hs : 0 < s)
+    (he : Orthonormal ℂ e)
     (y : EuclideanSpace ℂ (W × Fin s)) :
     0 ≤ (qform (krausQ A (ptransposeUV (rankOne (delta e) (delta e)))) y).re
         + β * ((s : ℝ) - 1) * (‖y‖ ^ 2 - Complex.normSq (inner ℂ (delta e) y) / s) := by
