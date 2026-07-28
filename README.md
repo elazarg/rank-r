@@ -153,7 +153,7 @@ revision.
 | `ChoiSkew` | **`J(Λ_U ⊗ Λ_V) = 16 Qm`**, hence `β₂ = 4` in the `Phi4` scaling |
 | `MapId` | `Δ` monoidal, `(Λ_U⊗Λ_V)∘τ = S_U⊗S_V`, and **the map identity** `Ψ_r = r·R_{−1/r}⊗R_{−1/r}` |
 | `Bessel`, `Restrict` | Bessel duality, and its sharpening on `δ_e^⊥` |
-| `Lifting` | **Lifting II** for an arbitrary transpose-symmetric Kraus family, in both operator forms |
+| `Lifting` | **Lifting II** in both operator forms, for an arbitrary Kraus family and sharpened on `δ_e` for a transpose-symmetric one |
 | `Theorem` | Proposition 2.2 and Theorem 1.1 given the rank-two Choi bound |
 | `Antisym`, `FGP`, `Extend` | the antisymmetrizer, and Theorem 1.1 from Fu–Gao–Park as published (retained, no longer on the critical path) |
 | `Optimal` | the extremizer, and optimality of the coefficients `r`, `1/r` |
