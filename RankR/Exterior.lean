@@ -50,6 +50,9 @@ theorem esign_mul_self (I : Finset (Fin r)) (v : Fin r) : esign I v * esign I v 
   norm_num
 
 /-- Position signs are real. -/
+theorem norm_esign (I : Finset (Fin r)) (v : Fin r) : ‖esign I v‖ = 1 := by
+  rw [esign, norm_pow, norm_neg, norm_one, one_pow]
+
 theorem conj_esign (I : Finset (Fin r)) (v : Fin r) : conj (esign I v) = esign I v := by
   rw [esign, map_pow, map_neg, map_one]
 
@@ -325,7 +328,6 @@ theorem inner_placeAt_insert {e : Fin r → EuclideanSpace ℂ W} (he : Orthonor
 theorem inner_deltaMode {e : Fin r → EuclideanSpace ℂ W} (he : Orthonormal ℂ e)
     (hk : 2 ≤ k) (hkr : k ≤ r) (L L' : Face r (k - 2)) :
     inner ℂ (deltaMode e L) (deltaMode (k := k) e L') = if L = L' then 1 else 0 := by
-  have hN : 1 ≤ r - k + 2 := by omega
   have hNR : (((r - k + 2 : ℕ) : ℝ) : ℂ) ≠ 0 := by
     have : ((r - k + 2 : ℕ) : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
     exact_mod_cast this

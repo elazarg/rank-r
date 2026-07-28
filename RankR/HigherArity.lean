@@ -55,10 +55,6 @@ section Tools
 
 variable {W : Type*} {r m : ℕ}
 
-/-- Position signs have modulus one. -/
-theorem norm_esign (I : Finset (Fin r)) (v : Fin r) : ‖esign I v‖ = 1 := by
-  rw [esign, norm_pow, norm_neg, norm_one, one_pow]
-
 /-- Placement is homogeneous in the placed vector. -/
 theorem placeAt_smul (c : ℂ) (u : EuclideanSpace ℂ W) (t : Finset (Fin r)) :
     (placeAt (c • u) t : EuclideanSpace ℂ (W × Face r m)) = c • placeAt u t := by
@@ -397,11 +393,10 @@ theorem norm_sum_smul_wvecF_le {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 �
         Finset.mul_sum]
       exact Finset.sum_congr (by simp) fun v _ => rfl
     rw [hrestrict, Kface]
-    have h := sum_face_norm_sq_le hβ hJ he (fun f => c (f, I)) I
-    have hnn : (0 : ℝ) ≤ (k : ℝ)⁻¹ := by positivity
-    have h2 := mul_le_mul_of_nonneg_left h hnn
     calc (k : ℝ)⁻¹ * ∑ v ∈ I.val, ‖mulVecE (∑ f, c (f, I) • A f) (ebar e v)‖ ^ 2
-        ≤ (k : ℝ)⁻¹ * ((k : ℝ) * β * ∑ f : ι, Complex.normSq (c (f, I))) := h2
+        ≤ (k : ℝ)⁻¹ * ((k : ℝ) * β * ∑ f : ι, Complex.normSq (c (f, I))) :=
+          mul_le_mul_of_nonneg_left
+            (sum_face_norm_sq_le hβ hJ he (fun f => c (f, I)) I) (by positivity)
       _ = β * ∑ f : ι, Complex.normSq (c (f, I)) := by field_simp
   -- the total mass
   have htotal : ∑ x ∈ H ×ˢ (Finset.univ : Finset (Fin r)), ‖uterm A e c x‖ ^ 2
@@ -413,15 +408,14 @@ theorem norm_sum_smul_wvecF_le {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 �
     exact mul_nonneg hβ (Finset.sum_nonneg fun _ _ => Complex.normSq_nonneg _)
   -- the regrouping
   rw [sum_smul_wvecF hk]
-  have hreg := norm_sq_sum_placeAt_le (m := k - 1) (H ×ˢ (Finset.univ : Finset (Fin r)))
-    (uterm A e c) (fun x => x.1.val.erase x.2) (card_fibre_le_upDeg hk H)
-  have hD : (0 : ℝ) ≤ (upDeg H : ℝ) := Nat.cast_nonneg _
   calc ‖∑ x ∈ H ×ˢ (Finset.univ : Finset (Fin r)),
           (placeAt (uterm A e c x) (x.1.val.erase x.2) :
             EuclideanSpace ℂ (W × Face r (k - 1)))‖ ^ 2
-      ≤ (upDeg H : ℝ) * ∑ x ∈ H ×ˢ (Finset.univ : Finset (Fin r)), ‖uterm A e c x‖ ^ 2 := hreg
+      ≤ (upDeg H : ℝ) * ∑ x ∈ H ×ˢ (Finset.univ : Finset (Fin r)), ‖uterm A e c x‖ ^ 2 :=
+        norm_sq_sum_placeAt_le (m := k - 1) (H ×ˢ (Finset.univ : Finset (Fin r)))
+          (uterm A e c) (fun x => x.1.val.erase x.2) (card_fibre_le_upDeg hk H)
     _ ≤ (upDeg H : ℝ) * (β * ∑ z : ι × Face r k, Complex.normSq (c z)) :=
-        mul_le_mul_of_nonneg_left htotal hD
+        mul_le_mul_of_nonneg_left htotal (Nat.cast_nonneg _)
     _ = (upDeg H : ℝ) * β * ∑ z : ι × Face r k, Complex.normSq (c z) := by ring
 
 /-- **Theorem A.**  `(Φ_A ⊗ id)(P_H) ⪯ d↑_{k-1}(H) β I`, for any Kraus family
