@@ -18,13 +18,25 @@ to more `K` — but it is no harder to prove, because everything the argument of
 `Takagi.lean` needs is derivable from `Qm (vec K) = vec K`: that hypothesis
 already forces `Kᵀ = K`, by `transpose_eq_self_of_Qm_fixed` below.
 -/
+import RankR.Autonne
 import RankR.Takagi
-import RankR.Results
 import RankR.FGP
 
 namespace RankR
 
 open Matrix Finset ComplexConjugate
+
+section Interface
+
+variable {W : Type*} [Fintype W] [DecidableEq W]
+
+/-- **Autonne-Takagi holds**, so the hypothesis carried through `Takagi.lean` is
+discharged.  This is `Matrix.exists_takagi` repackaged as the `Prop` that file
+assumes. -/
+theorem takagiFactorization_holds : TakagiFactorization W :=
+  fun _K hK => Matrix.exists_takagi _K hK
+
+end Interface
 
 variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
 
@@ -113,6 +125,10 @@ theorem doubleSkewBoundQm_of_takagi (hT : TakagiFactorization (U × V)) :
 /-- **The double-skew bound in fixed-point form**, unconditionally. -/
 theorem doubleSkewBoundQm_holds : DoubleSkewBoundQm U V :=
   doubleSkewBoundQm_of_takagi takagiFactorization_holds
+
+/-- **The double-skew action bound** (`lem:double-skew`), unconditionally. -/
+theorem doubleSkewBound_holds : DoubleSkewBound U V :=
+  doubleSkewBound_of_Qm doubleSkewBoundQm_holds
 
 /-! ## The converse -/
 

@@ -12,9 +12,10 @@ import RankR.Synth
 import RankR.Frame
 import RankR.Edge
 import RankR.Bessel
-import RankR.Assemble
 import RankR.Restrict
-import RankR.Synthesis
+import RankR.Choi
+import RankR.ChoiSkew
+import RankR.Lifting
 import RankR.Theorem
 import RankR.Antisym
 import RankR.FGP

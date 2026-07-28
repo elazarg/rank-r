@@ -5,12 +5,11 @@ If every member of a finite family is orthogonal to `z`, the family's Bessel sum
 against `y` sees only the component of `y` off `z`, so the bound improves from
 `M‖y‖²` to `M(‖y‖² − |⟪z,y⟫|²/‖z‖²)`.
 -/
-import RankR.Assemble
+import RankR.Elementary
 
 namespace RankR
 
 open Matrix Finset ComplexConjugate
-open scoped Kronecker
 
 section Ortho
 
@@ -59,18 +58,8 @@ theorem frame_le_sub_proj {w : ι → E} {z : E} {n : ℝ} (hn : 0 < n) (hzn : �
 
 end Ortho
 
-variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] {s : ℕ}
+variable {U V : Type*} [Fintype U] [Fintype V] {s : ℕ}
 
-/-- The frame vectors are orthogonal to `δ_e`. -/
-theorem inner_delta_wvec (e : Fin s → EuclideanSpace ℂ (U × V))
-    (f : KIdx U V) (p : Fin s × Fin s) :
-    inner ℂ (delta e) (wvec e f p) = 0 := by
-  rw [wvec]
-  split
-  · exact inner_delta_placeQ_kron_zetaV e (skewUnit_isSkew _ _) (skewUnit_isSkew _ _) _ _
-  · simp
-
-omit [DecidableEq U] [DecidableEq V] in
 /-- `‖δ_e‖² = s` for an orthonormal frame. -/
 theorem norm_delta_orthonormal {e : Fin s → EuclideanSpace ℂ (U × V)}
     (he : Orthonormal ℂ e) : ‖delta e‖ ^ 2 = (s : ℝ) := by

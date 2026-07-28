@@ -8,67 +8,12 @@ rank-one operators `|Kx⟩⟨x|` and `|Ky⟩⟨y|`.  The estimate therefore appl
 `vec (KP)` directly, and singular values play no part.
 -/
 import RankR.Antisym
+import RankR.Choi
 import RankR.Theorem
 
 namespace RankR
 
 open Matrix Finset ComplexConjugate
-
-section HsAlgebra
-
-variable {W : Type*} [Fintype W]
-
-
-
-omit [Fintype W] in
-/-- `(|u⟩⟨v|)ᴴ = |v⟩⟨u|`. -/
-theorem rankOne_conjTranspose (u v : EuclideanSpace ℂ W) :
-    (rankOne u v)ᴴ = rankOne v u := by
-  ext p q
-  simp [rankOne, Matrix.conjTranspose_apply, RCLike.star_def, mul_comm]
-
-/-- `K |u⟩⟨v| = |Ku⟩⟨v|`. -/
-theorem mul_rankOne (K : Matrix W W ℂ) (u v : EuclideanSpace ℂ W) :
-    K * rankOne u v = rankOne (mulVecE K u) v := by
-  ext p q
-  simp [rankOne, Matrix.mul_apply, mulVecE_apply, Finset.sum_mul, mul_assoc]
-
-
-/-- `|u⟩⟨v| |z⟩⟨w| = ⟪v,z⟫ · |u⟩⟨w|`. -/
-theorem rankOne_mul_rankOne (u v z w : EuclideanSpace ℂ W) :
-    rankOne u v * rankOne z w = (inner ℂ v z : ℂ) • rankOne u w := by
-  ext p q
-  simp only [rankOne, Matrix.mul_apply, Matrix.of_apply, Matrix.smul_apply,
-    smul_eq_mul, PiLp.inner_apply, RCLike.inner_apply', Finset.sum_mul]
-  exact Finset.sum_congr rfl fun r _ => by ring
-
-end HsAlgebra
-
-section Projection
-
-variable {W : Type*} [Fintype W] {x y : EuclideanSpace ℂ W}
-
-/-- The rank-two orthogonal projection onto `span {x, y}`. -/
-noncomputable def proj2 (x y : EuclideanSpace ℂ W) : Matrix W W ℂ :=
-  rankOne x x + rankOne y y
-
-omit [Fintype W] in
-theorem proj2_conjTranspose : (proj2 x y)ᴴ = proj2 x y := by
-  simp [proj2, Matrix.conjTranspose_add, rankOne_conjTranspose]
-
-theorem proj2_mul_self (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) (hxy : inner ℂ x y = (0 : ℂ)) :
-    proj2 x y * proj2 x y = proj2 x y := by
-  have hyx : (inner ℂ y x : ℂ) = 0 := by
-    rw [← inner_conj_symm, hxy, map_zero]
-  have hxx : (inner ℂ x x : ℂ) = 1 := by
-    rw [inner_self_eq_norm_sq_to_K, hx]; norm_num
-  have hyy : (inner ℂ y y : ℂ) = 1 := by
-    rw [inner_self_eq_norm_sq_to_K, hy]; norm_num
-  simp only [proj2, Matrix.add_mul, Matrix.mul_add, rankOne_mul_rankOne,
-    hxx, hyy, hxy, hyx, one_smul, zero_smul]
-  abel
-
-end Projection
 
 variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
 
@@ -86,6 +31,25 @@ def FGPBound (U V : Type*) [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq 
     (qform Qm (vec (rankOne u₁ v₁ + rankOne u₂ v₂))).re
       ≤ hsNormSq (rankOne u₁ v₁ + rankOne u₂ v₂) / 2
 
+/-- **Fu–Gao–Park's estimate is the rank-two Choi bound at `β = ¼`.**
+
+`FGPBound` bounds `‖Qm‖_{S(2)}` by `½`, which is `β = ¼` for the projection
+itself.  The double-skew Kraus family has Choi operator `16 Qm`
+(`choiOf_skewKraus`), hence `β = 4`: the constant `8 = 2β` of
+`norm_sum_smul_wvec_le` is read off the Choi operator. -/
+theorem choiTwoBound_Qm_iff :
+    ChoiTwoBound (Qm : Matrix (Idx U V) (Idx U V) ℂ) (1 / 4) ↔ FGPBound U V := by
+  constructor <;> · intro h u₁ v₁ u₂ v₂; have := h u₁ v₁ u₂ v₂; linarith
+
+/-- The constant of the double-skew family, from Fu–Gao–Park. -/
+theorem choiTwoBound_of_FGP (hFGP : FGPBound U V) :
+    ChoiTwoBound (choiOf (skewKraus (U := U) (V := V))) 4 :=
+  choiTwoBound_skewKraus (choiTwoBound_Qm_iff.mpr hFGP)
+
+/-- **Proposition 2.2** (`prop:operator_ineq`), from Fu–Gao–Park. -/
+theorem operatorIneq_of_FGP (hFGP : FGPBound U V) : OperatorIneq U V :=
+  operatorIneq_of_choiTwoBound (choiTwoBound_of_FGP hFGP)
+
 /-- The double-skew action bound, from Fu–Gao–Park. -/
 theorem doubleSkewBound_of_FGP (hFGP : FGPBound U V) : DoubleSkewBound U V := by
   intro K hK x y hx hy hxy
@@ -96,32 +60,13 @@ theorem doubleSkewBound_of_FGP (hFGP : FGPBound U V) : DoubleSkewBound U V := by
   have hyy : (inner ℂ y y : ℂ) = 1 := by
     rw [inner_self_eq_norm_sq_to_K, hy]; norm_num
   have hKP : K * proj2 x y
-      = rankOne (mulVecE K x) x + rankOne (mulVecE K y) y := by
-    rw [proj2, Matrix.mul_add, mul_rankOne, mul_rankOne]
+      = rankOne (mulVecE K x) x + rankOne (mulVecE K y) y := mul_proj2 K x y
   -- the action equals the Hilbert–Schmidt norm of `K P`
   have hact : hsNormSq (K * proj2 x y)
-      = ‖mulVecE K x‖ ^ 2 + ‖mulVecE K y‖ ^ 2 := by
-    rw [hKP, ← Complex.ofReal_inj, ← hsInner_self, hsInner_add_left,
-      hsInner_add_right, hsInner_add_right, hsInner_rankOne, hsInner_rankOne,
-      hsInner_rankOne, hsInner_rankOne, hxy, hyx, hxx, hyy,
-      inner_self_eq_norm_sq_to_K, inner_self_eq_norm_sq_to_K]
-    push_cast
-    simp
+      = ‖mulVecE K x‖ ^ 2 + ‖mulVecE K y‖ ^ 2 := hsNormSq_mul_proj2 K hx hy hxy
   -- `⟪K, K P⟫ = ‖K P‖₂²`, using that `P` is a self-adjoint idempotent
-  have hKM : hsInner K (K * proj2 x y) = (hsNormSq (K * proj2 x y) : ℂ) := by
-    rw [← hsInner_self]
-    have e1 : hsInner K (K * proj2 x y) = (Kᴴ * K * proj2 x y).trace := by
-      rw [hsInner, Matrix.mul_assoc]
-    have e2 : hsInner (K * proj2 x y) (K * proj2 x y)
-        = (Kᴴ * K * proj2 x y).trace := by
-      rw [hsInner, Matrix.conjTranspose_mul, proj2_conjTranspose,
-        show proj2 x y * Kᴴ * (K * proj2 x y)
-            = proj2 x y * (Kᴴ * K * proj2 x y) by simp only [Matrix.mul_assoc],
-        Matrix.trace_mul_comm,
-        show Kᴴ * K * proj2 x y * proj2 x y
-            = Kᴴ * K * (proj2 x y * proj2 x y) by simp only [Matrix.mul_assoc],
-        proj2_mul_self hx hy hxy]
-    rw [e1, e2]
+  have hKM : hsInner K (K * proj2 x y) = (hsNormSq (K * proj2 x y) : ℂ) :=
+    hsInner_mul_proj2 K hx hy hxy
   -- Cauchy–Schwarz against `Qm (vec (K P))`
   have hA0 : 0 ≤ hsNormSq (K * proj2 x y) := hsNormSq_nonneg _
   have hQsa : (Qm (U := U) (V := V))ᴴ = Qm := Qm_conjTranspose
@@ -157,21 +102,21 @@ theorem rank_r_partial_trace_of_FGP (hFGP : FGPBound U V)
     (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (hr : 0 < r) (hrank : C.rank ≤ r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
-  rank_r_partial_trace_of_doubleSkew (doubleSkewBound_of_FGP hFGP) C r hr hrank
+  rank_r_partial_trace_of_choiTwoBound (choiTwoBound_of_FGP hFGP) C r hr hrank
 
 /-- **The exact-rank form** (`eq:main-bound-exact-rank`), from Fu–Gao–Park. -/
 theorem rank_r_partial_trace_of_FGP_exact (hFGP : FGPBound U V)
     (C : Matrix (U × V) (U × V) ℂ) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ (C.rank : ℝ) * hsNormSq C + (1 / (C.rank : ℝ)) * Complex.normSq C.trace :=
-  rank_r_partial_trace_exact_of_doubleSkew (doubleSkewBound_of_FGP hFGP) C
+  rank_r_partial_trace_exact_of_choiTwoBound (choiTwoBound_of_FGP hFGP) C
 
 /-- **Strictness below the exact rank**, from Fu–Gao–Park. -/
 theorem rank_r_partial_trace_of_FGP_strict (hFGP : FGPBound U V)
     (C : Matrix (U × V) (U × V) ℂ) (hC : C ≠ 0) (r : ℕ) (hrank : C.rank < r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       < r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
-  rank_r_partial_trace_strict_of_doubleSkew (doubleSkewBound_of_FGP hFGP) C hC r hrank
+  rank_r_partial_trace_strict_of_choiTwoBound (choiTwoBound_of_FGP hFGP) C hC r hrank
 
 /-- **Equality forces the exact rank**, from Fu–Gao–Park. -/
 theorem rank_eq_of_eq_rank_r_partial_trace_of_FGP (hFGP : FGPBound U V)
@@ -179,6 +124,6 @@ theorem rank_eq_of_eq_rank_r_partial_trace_of_FGP (hFGP : FGPBound U V)
     (heq : hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       = r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace) :
     C.rank = r :=
-  rank_eq_of_eq_rank_r_partial_trace_of_doubleSkew (doubleSkewBound_of_FGP hFGP) C hC r hrank heq
+  rank_eq_of_eq_rank_r_partial_trace_of_choiTwoBound (choiTwoBound_of_FGP hFGP) C hC r hrank heq
 
 end RankR

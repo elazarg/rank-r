@@ -100,9 +100,10 @@ longer on the critical path. -/
 #guard_msgs in
 #print axioms rank_eq_of_eq_rank_r_partial_trace_of_FGP_square
 
-/-! ## The three steps of the conditional chain
+/-! ## The steps of the conditional chain
 
-`FGPBound` as published, then Lemma 2.1, then Proposition 2.2. -/
+`FGPBound` as published, then Lemma 2.1, then the constant `β`, then
+Proposition 2.2. -/
 
 /-- info: 'RankR.FGPBound_of_card_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
@@ -112,9 +113,39 @@ longer on the critical path. -/
 #guard_msgs in
 #print axioms doubleSkewBound_of_FGP
 
-/-- info: 'RankR.operatorIneq_of_doubleSkew' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'RankR.choiOf_skewKraus' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
-#print axioms operatorIneq_of_doubleSkew
+#print axioms choiOf_skewKraus
+
+/-- info: 'RankR.choiTwoBound_of_FGP' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiTwoBound_of_FGP
+
+/-- info: 'RankR.operatorIneq_of_choiTwoBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms operatorIneq_of_choiTwoBound
+
+/-- info: 'RankR.operatorIneq_of_FGP' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms operatorIneq_of_FGP
+
+/-! ## The abstract liftings
+
+Neither depends on the double-skew subspace: `norm_sq_pair_le_of_choiTwoBound`
+is stated for an arbitrary Kraus family and an arbitrary member of its span,
+`qform_krausQ_ptransposeUV_ge` for an arbitrary transpose-symmetric one. -/
+
+/-- info: 'RankR.norm_sq_pair_le_of_choiTwoBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms norm_sq_pair_le_of_choiTwoBound
+
+/-- info: 'RankR.qform_krausQ_Pneg_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_krausQ_Pneg_le
+
+/-- info: 'RankR.qform_krausQ_ptransposeUV_ge' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_krausQ_ptransposeUV_ge
 
 /-! ## The one-sided bound, also unconditional -/
 

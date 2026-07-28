@@ -37,6 +37,22 @@ theorem mulVecE_sub {W : Type*} [Fintype W] (A : Matrix W W ℂ) (x y : Euclidea
   ext p
   simp [mul_sub, Finset.sum_sub_distrib]
 
+/-- Matrix-vector multiplication is additive in the matrix. -/
+theorem mulVecE_sum {W : Type*} [Fintype W] {ι : Type*} [Fintype ι] (A : ι → Matrix W W ℂ)
+    (x : EuclideanSpace ℂ W) : mulVecE (∑ i, A i) x = ∑ i, mulVecE (A i) x := by
+  ext p
+  rw [mulVecE_apply, sum_apply_euclidean]
+  simp only [mulVecE_apply, Matrix.sum_apply, Finset.sum_mul]
+  exact Finset.sum_comm
+
+/-- Matrix-vector multiplication is homogeneous in the matrix. -/
+theorem mulVecE_smul {W : Type*} [Fintype W] (c : ℂ) (A : Matrix W W ℂ)
+    (x : EuclideanSpace ℂ W) : mulVecE (c • A) x = c • mulVecE A x := by
+  ext p
+  rw [mulVecE_apply]
+  simp only [PiLp.smul_apply, mulVecE_apply, Matrix.smul_apply, smul_eq_mul, Finset.mul_sum,
+    mul_assoc]
+
 /-! ## Edges of the complete graph -/
 
 /-- The edge set of the complete graph on `Fin s`, realized as the ordered pairs

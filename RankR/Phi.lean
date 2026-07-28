@@ -34,6 +34,21 @@ def placeQ (A : Matrix (U × V) (U × V) ℂ) :
 @[simp] theorem placeQ_apply (A : Matrix (U × V) (U × V) ℂ) (x y : (U × V) × Fin s) :
     placeQ A x y = if x.2 = y.2 then A x.1 y.1 else 0 := rfl
 
+/-- Placing an operator on `Q` is additive: it commutes with finite sums. -/
+theorem placeQ_sum {ι : Type*} [Fintype ι] (A : ι → Matrix (U × V) (U × V) ℂ) :
+    placeQ (s := s) (∑ i, A i) = ∑ i, placeQ (s := s) (A i) := by
+  ext x y
+  simp only [placeQ_apply, Matrix.sum_apply]
+  split_ifs with h
+  · rfl
+  · exact Finset.sum_const_zero.symm
+
+/-- Placing an operator on `Q` is homogeneous: it commutes with scalar multiples. -/
+theorem placeQ_smul (c : ℂ) (A : Matrix (U × V) (U × V) ℂ) :
+    placeQ (s := s) (c • A) = c • placeQ (s := s) A := by
+  ext x y
+  simp only [placeQ_apply, Matrix.smul_apply, smul_eq_mul, mul_ite, mul_zero]
+
 end PlaceQ
 
 /-! ## Elementary sum manipulations -/
