@@ -32,4 +32,5 @@ import RankR.Results
 import RankR.BlockPos
 import RankR.Equivalence
 import RankR.KyFanAction
+import RankR.Exterior
 import RankR.Axioms

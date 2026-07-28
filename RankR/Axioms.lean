@@ -30,6 +30,7 @@ import RankR.OneSided
 import RankR.Results
 import RankR.Equivalence
 import RankR.KyFanAction
+import RankR.Exterior
 
 namespace RankR
 
@@ -150,6 +151,18 @@ info: 'RankR.sum_norm_sq_le_min_of_doubleSkewQm' depends on axioms: [propext, Cl
 -/
 #guard_msgs in
 #print axioms sum_norm_sq_le_min_of_doubleSkewQm
+
+/-! ## Exterior indexing
+
+The two families of modes attached to the faces of `Fin r`. -/
+
+/-- info: 'RankR.orthonormal_etaMode' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms orthonormal_etaMode
+
+/-- info: 'RankR.orthonormal_deltaMode' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms orthonormal_deltaMode
 
 /-! ## The abstract liftings
 
