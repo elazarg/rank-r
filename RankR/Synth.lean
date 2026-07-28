@@ -29,20 +29,11 @@ section Tools
 
 variable {W : Type*} [Fintype W]
 
-/-- A finite sum in `EuclideanSpace` is computed coordinatewise. -/
-theorem sum_apply_euclidean {ι T : Type*} (t : Finset ι) (f : ι → EuclideanSpace ℂ T) (x : T) :
-    (∑ a ∈ t, f a) x = ∑ a ∈ t, f a x := by
-  show WithLp.ofLp (∑ a ∈ t, f a) x = _
-  rw [WithLp.ofLp_sum, Finset.sum_apply]
-
-/-- `mulVecE` is additive in its vector argument, hence commutes with differences. -/
-theorem mulVecE_sub (A : Matrix W W ℂ) (x y : EuclideanSpace ℂ W) :
-    mulVecE A (x - y) = mulVecE A x - mulVecE A y := by
-  ext p
-  simp [mul_sub, Finset.sum_sub_distrib]
+/-! The two lemmas below push an operation through the *matrix* slot of
+`mulVecE`; the vector-slot family lives in `Kraus.lean`, at the definition. -/
 
 /-- Matrix-vector multiplication is additive in the matrix. -/
-theorem mulVecE_sum {ι : Type*} [Fintype ι] (A : ι → Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
+theorem sum_mulVecE {ι : Type*} [Fintype ι] (A : ι → Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
     mulVecE (∑ i, A i) x = ∑ i, mulVecE (A i) x := by
   ext p
   rw [mulVecE_apply, sum_apply_euclidean]
@@ -50,7 +41,7 @@ theorem mulVecE_sum {ι : Type*} [Fintype ι] (A : ι → Matrix W W ℂ) (x : E
   exact Finset.sum_comm
 
 /-- Matrix-vector multiplication is homogeneous in the matrix. -/
-theorem mulVecE_smul (c : ℂ) (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
+theorem smul_mulVecE (c : ℂ) (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
     mulVecE (c • A) x = c • mulVecE A x := by
   ext p
   rw [mulVecE_apply]

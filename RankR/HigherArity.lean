@@ -61,26 +61,6 @@ theorem placeAt_smul (c : ℂ) (u : EuclideanSpace ℂ W) (t : Finset (Fin r)) :
   ext x
   simp only [placeAt_apply, PiLp.smul_apply, smul_eq_mul, mul_ite, mul_zero]
 
-variable [Fintype W]
-
-/-- The matrix action is homogeneous in the vector. -/
-theorem mulVecE_smul_vec (A : Matrix W W ℂ) (c : ℂ) (x : EuclideanSpace ℂ W) :
-    mulVecE A (c • x) = c • mulVecE A x := by
-  ext p
-  simp only [mulVecE_apply, PiLp.smul_apply, smul_eq_mul, Finset.mul_sum]
-  exact Finset.sum_congr rfl fun q _ => by ring
-
-/-- The matrix action is additive in the vector. -/
-theorem mulVecE_sum_vec {M : Type*} (s : Finset M) (A : Matrix W W ℂ)
-    (x : M → EuclideanSpace ℂ W) :
-    mulVecE A (∑ i ∈ s, x i) = ∑ i ∈ s, mulVecE A (x i) := by
-  ext p
-  rw [mulVecE_apply, sum_apply_euclidean]
-  have h : ∀ q : W, A p q * (∑ i ∈ s, x i) q = ∑ i ∈ s, A p q * x i q := fun q => by
-    rw [sum_apply_euclidean, Finset.mul_sum]
-  rw [Finset.sum_congr rfl fun q _ => h q, Finset.sum_comm]
-  exact Finset.sum_congr rfl fun i _ => (mulVecE_apply _ _ _).symm
-
 end Tools
 
 /-! ## Blocks and the face regrouping
@@ -266,9 +246,9 @@ theorem mulVecE_placeT_etaMode_raw (N : Matrix W W ℂ) (e : Fin r → Euclidean
     mulVecE (placeT (T := Face r (k - 1)) N) (etaMode e I)
       = ((Real.sqrt k : ℝ) : ℂ)⁻¹ •
           ∑ v : Fin r, esign I.val v • placeAt (mulVecE N (ebar e v)) (I.val.erase v) := by
-  rw [etaMode, mulVecE_smul_vec, mulVecE_sum_vec]
+  rw [etaMode, mulVecE_smul, mulVecE_sum]
   refine congrArg _ (Finset.sum_congr rfl fun v _ => ?_)
-  rw [mulVecE_smul_vec, mulVecE_placeT_placeAt]
+  rw [mulVecE_smul, mulVecE_placeT_placeAt]
 
 /-- The same contributions with the scalar pushed inside and the vanishing terms
 made explicit: a vertex outside `I` leaves `I` unchanged, and a set of
@@ -304,8 +284,8 @@ theorem sum_smul_wvecF (hk : 1 ≤ k) (A : ι → Matrix W W ℂ)
     · rw [if_pos h]
       have hstep : ∀ f : ι, c (f, I) • wvecF A e H f I
           = mulVecE (placeT (T := Face r (k - 1)) (c (f, I) • A f)) (etaMode e I) := fun f => by
-        rw [wvecF, if_pos h, placeT_smul, mulVecE_smul]
-      rw [Finset.sum_congr rfl fun f _ => hstep f, ← mulVecE_sum, ← placeT_sum,
+        rw [wvecF, if_pos h, placeT_smul, smul_mulVecE]
+      rw [Finset.sum_congr rfl fun f _ => hstep f, ← sum_mulVecE, ← placeT_sum,
         mulVecE_placeT_etaMode hk]
       exact Finset.sum_congr rfl fun v _ => rfl
     · rw [if_neg h]

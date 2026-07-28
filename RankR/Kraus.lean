@@ -25,6 +25,44 @@ def mulVecE (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) : EuclideanSpace ℂ
 theorem mulVecE_apply (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) (p : W) :
     mulVecE A x p = ∑ q, A p q * x q := rfl
 
+/-! ### Linearity in the vector
+
+`mulVecE` is linear in each of its two arguments, and the two families are
+distinguished by where the operation sits in the name: `mulVecE_add` and its
+companions push an operation through the *vector* slot, while `sum_mulVecE` and
+`smul_mulVecE` in `Synth.lean` push one through the *matrix* slot.  The vector
+family is collected here, at the definition, so that arguments by linearity over
+a spanning set can invoke it directly. -/
+
+theorem mulVecE_zero (A : Matrix W W ℂ) : mulVecE A 0 = 0 := by
+  ext p
+  simp [mulVecE_apply]
+
+theorem mulVecE_add (A : Matrix W W ℂ) (x y : EuclideanSpace ℂ W) :
+    mulVecE A (x + y) = mulVecE A x + mulVecE A y := by
+  ext p
+  simp [mulVecE_apply, mul_add, Finset.sum_add_distrib]
+
+theorem mulVecE_sub (A : Matrix W W ℂ) (x y : EuclideanSpace ℂ W) :
+    mulVecE A (x - y) = mulVecE A x - mulVecE A y := by
+  ext p
+  simp [mul_sub, Finset.sum_sub_distrib]
+
+theorem mulVecE_smul (c : ℂ) (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
+    mulVecE A (c • x) = c • mulVecE A x := by
+  ext p
+  simp [mulVecE_apply, Finset.mul_sum, mul_left_comm]
+
+theorem mulVecE_sum {ι : Type*} (t : Finset ι) (A : Matrix W W ℂ)
+    (x : ι → EuclideanSpace ℂ W) :
+    mulVecE A (∑ i ∈ t, x i) = ∑ i ∈ t, mulVecE A (x i) := by
+  ext p
+  rw [mulVecE_apply, sum_apply_euclidean]
+  have h : ∀ q : W, A p q * (∑ i ∈ t, x i) q = ∑ i ∈ t, A p q * x i q := fun q => by
+    rw [sum_apply_euclidean, Finset.mul_sum]
+  rw [Finset.sum_congr rfl fun q _ => h q, Finset.sum_comm]
+  exact Finset.sum_congr rfl fun i _ => (mulVecE_apply _ _ _).symm
+
 /-- Exchange of the outer and inner pairs of indices in a four-fold sum. -/
 theorem sum_comm₄ (F : W → W → W → W → ℂ) :
     ∑ p, ∑ q, ∑ u, ∑ v, F p q u v = ∑ u, ∑ v, ∑ p, ∑ q, F p q u v :=

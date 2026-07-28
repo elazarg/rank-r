@@ -25,16 +25,20 @@ namespace RankR
 
 open Matrix Finset ComplexConjugate
 
+/-! ## The two partial transposes
+
+Rearrangements of the four indices, matching the swaps of `Antisym.lean` entry by
+entry, so this section carries no instances. -/
+
 section Flip
 
-variable {U V : Type*} [Fintype U] [Fintype V]
+variable {U V : Type*}
 
 /-- Partial transposition on the `U` factor: exchange the two `U` indices,
 keeping the two `V` indices in place. -/
 def flipU (N : Matrix (U × V) (U × V) ℂ) : Matrix (U × V) (U × V) ℂ :=
   Matrix.of fun p q => N (q.1, p.2) (p.1, q.2)
 
-omit [Fintype U] [Fintype V] in
 @[simp] theorem flipU_apply (N : Matrix (U × V) (U × V) ℂ) (p q : U × V) :
     flipU N p q = N (q.1, p.2) (p.1, q.2) := rfl
 
@@ -42,30 +46,30 @@ omit [Fintype U] [Fintype V] in
 def flipV (N : Matrix (U × V) (U × V) ℂ) : Matrix (U × V) (U × V) ℂ :=
   Matrix.of fun p q => N (p.1, q.2) (q.1, p.2)
 
-omit [Fintype U] [Fintype V] in
 @[simp] theorem flipV_apply (N : Matrix (U × V) (U × V) ℂ) (p q : U × V) :
     flipV N p q = N (p.1, q.2) (q.1, p.2) := rfl
 
-omit [Fintype U] [Fintype V] in
 /-- The vectorization of `flipU N` is that of `N` precomposed with `swU`. -/
 theorem vec_flipU (N : Matrix (U × V) (U × V) ℂ) (X : Idx U V) :
     vec (flipU N) X = vec N (swU X) := rfl
 
-omit [Fintype U] [Fintype V] in
 /-- The vectorization of `flipV N` is that of `N` precomposed with `swV`. -/
 theorem vec_flipV (N : Matrix (U × V) (U × V) ℂ) (X : Idx U V) :
     vec (flipV N) X = vec N (swV X) := rfl
 
-omit [Fintype U] [Fintype V] in
 /-- The composite of the two swaps is the ordinary transpose. -/
 theorem vec_transpose (N : Matrix (U × V) (U × V) ℂ) (X : Idx U V) :
     vec Nᵀ X = vec N (swV (swU X)) := rfl
 
-/-- `hsInner` as a single sum over the vectorization index. -/
-theorem hsInner_eq_sum_vec (A B : Matrix (U × V) (U × V) ℂ) :
-    hsInner A B = ∑ X : Idx U V, conj (vec A X) * vec B X := by
-  rw [hsInner_eq_inner, PiLp.inner_apply]
-  exact Finset.sum_congr rfl fun X _ => RCLike.inner_apply' _ _
+/-- For a symmetric `N` the two partial transposes agree. -/
+theorem flipV_eq_flipU {N : Matrix (U × V) (U × V) ℂ} (hN : Nᵀ = N) :
+    flipV N = flipU N := by
+  have h : ∀ x y : U × V, N x y = N y x := fun x y => by
+    have hxy := congrFun (congrFun hN y) x
+    rwa [Matrix.transpose_apply] at hxy
+  ext p q
+  simp only [flipV_apply, flipU_apply]
+  exact h _ _
 
 end Flip
 
@@ -86,17 +90,6 @@ theorem qform_Qm_vec (N : Matrix (U × V) (U × V) ℂ) :
   refine congrArg _ (Finset.sum_congr rfl fun X _ => ?_)
   rw [vec_flipU, vec_flipV, vec_transpose]
   ring
-
-omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
-/-- For a symmetric `N` the two partial transposes agree. -/
-theorem flipV_eq_flipU {N : Matrix (U × V) (U × V) ℂ} (hN : Nᵀ = N) :
-    flipV N = flipU N := by
-  have h : ∀ x y : U × V, N x y = N y x := fun x y => by
-    have hxy := congrFun (congrFun hN y) x
-    rwa [Matrix.transpose_apply] at hxy
-  ext p q
-  simp only [flipV_apply, flipU_apply]
-  exact h _ _
 
 /-- **Fu-Gao-Park Lemma 2.3, matrix form.**  For symmetric `N`,
 `⟨N, Π N⟩ = ½ (‖N‖₂² − ⟨N, N^{T_U}⟩)`, so the projection bound

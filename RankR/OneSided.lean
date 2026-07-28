@@ -141,15 +141,6 @@ section Factorization
 
 variable {U V : Type*} [Fintype U] [Fintype V] {s : ℕ}
 
-private theorem vec_sum' {m n ι : Type*} [Fintype m] [Fintype n] [Fintype ι]
-    (A : ι → Matrix m n ℂ) : vec (∑ i, A i) = ∑ i, vec (A i) := by
-  ext p
-  show (∑ i, A i) p.1 p.2 = (∑ i, vec (A i)) p
-  rw [Matrix.sum_apply]
-  show _ = WithLp.ofLp (∑ i, vec (A i)) p
-  rw [WithLp.ofLp_sum, Finset.sum_apply]
-  rfl
-
 /-- The common core of the two one-sided bounds: if each summand of a finite
 family of matrices has `‖·‖₂ ≤ ‖dᵢ‖`, the sum has `‖·‖₂² ≤ s ∑ᵢ ‖dᵢ‖²`. -/
 private theorem hsNormSq_sum_le {m n : Type*} [Fintype m] [Fintype n]
@@ -163,7 +154,7 @@ private theorem hsNormSq_sum_le {m n : Type*} [Fintype m] [Fintype n]
     have h2 : (0 : ℝ) ≤ ‖d i‖ := norm_nonneg _
     nlinarith [norm_nonneg (vec (A i))]
   have htri : ‖vec (∑ i, A i)‖ ≤ ∑ i, ‖d i‖ := by
-    rw [vec_sum']
+    rw [vec_sum]
     exact (norm_sum_le _ _).trans (Finset.sum_le_sum fun i _ => hstep i)
   have hsq : (∑ i, ‖d i‖) ^ 2 ≤ (s : ℝ) * ∑ i, ‖d i‖ ^ 2 := by
     simpa using sq_sum_le_card_mul_sum_sq (s := (Finset.univ : Finset (Fin s)))

@@ -165,8 +165,8 @@ theorem sum_smul_wvec (A : ι → Matrix W W ℂ) (e : Fin s → EuclideanSpace 
   refine Finset.sum_congr rfl fun p _ => ?_
   by_cases h : p.1 < p.2
   · simp only [wvec, h, if_true]
-    rw [← sum_smul_placeQ A c p, mulVecE_sum]
-    exact Finset.sum_congr rfl fun f _ => (mulVecE_smul _ _ _).symm
+    rw [← sum_smul_placeQ A c p, sum_mulVecE]
+    exact Finset.sum_congr rfl fun f _ => (smul_mulVecE _ _ _).symm
   · simp [wvec, h]
 
 /-- **The uniform synthesis bound.**
