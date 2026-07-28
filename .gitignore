@@ -24,6 +24,9 @@ Physics.html
 # Working notes and the numerical pre-flight harness: process, not result
 ephemeral/
 
+# Agent worktrees and local Claude Code state
+/.claude/
+
 # Lean / Lake
 /.lake/
 # lake-manifest.json is deliberately NOT ignored: it pins the exact Mathlib

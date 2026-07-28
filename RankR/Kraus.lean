@@ -88,6 +88,57 @@ theorem qform_rankOne_nonneg (y x : EuclideanSpace ℂ W) : 0 ≤ (qform (rankOn
   rw [qform_rankOne, Complex.ofReal_re]
   exact Complex.normSq_nonneg _
 
+/-! ## The action as a linear map
+
+These three say nothing about Kraus sums; they belong with `mulVecE` because
+that is what they are about.  Everything downstream that needs the adjoint move
+or the `qform`/`inner` bridge gets them from here. -/
+
+theorem mulVecE_mul (A B : Matrix W W ℂ) (v : EuclideanSpace ℂ W) :
+    mulVecE A (mulVecE B v) = mulVecE (A * B) v := by
+  ext p
+  simp only [mulVecE_apply, Matrix.mul_apply, Finset.mul_sum, Finset.sum_mul]
+  rw [Finset.sum_comm]
+  exact Finset.sum_congr rfl fun q _ => Finset.sum_congr rfl fun r _ => by ring
+
+/-- `⟪z, A x⟫ = ⟪Aᴴ z, x⟫`: both sides equal the double sum
+`∑_p ∑_q conj(z p) A_{pq} x_q`. -/
+theorem inner_mulVecE_left (A : Matrix W W ℂ) (z x : EuclideanSpace ℂ W) :
+    inner ℂ z (mulVecE A x) = inner ℂ (mulVecE Aᴴ z) x := by
+  have hL : (inner ℂ z (mulVecE A x) : ℂ) = ∑ p, ∑ q, conj (z p) * A p q * x q := by
+    rw [PiLp.inner_apply]
+    refine Finset.sum_congr rfl fun p _ => ?_
+    rw [RCLike.inner_apply', mulVecE_apply, Finset.mul_sum]
+    exact Finset.sum_congr rfl fun q _ => (mul_assoc _ _ _).symm
+  have hR : (inner ℂ (mulVecE Aᴴ z) x : ℂ) = ∑ q, ∑ p, conj (z p) * A p q * x q := by
+    rw [PiLp.inner_apply]
+    refine Finset.sum_congr rfl fun q _ => ?_
+    rw [RCLike.inner_apply', mulVecE_apply, map_sum, Finset.sum_mul]
+    refine Finset.sum_congr rfl fun p _ => ?_
+    rw [map_mul, Matrix.conjTranspose_apply, RCLike.star_def, Complex.conj_conj]
+    ring
+  rw [hL, hR, Finset.sum_comm]
+
+/-- `qform` is the inner product against the matrix action. -/
+theorem qform_eq_inner (A : Matrix W W ℂ) (v : EuclideanSpace ℂ W) :
+    qform A v = inner ℂ v (mulVecE A v) := by
+  rw [PiLp.inner_apply, qform]
+  refine Finset.sum_congr rfl fun p _ => ?_
+  rw [RCLike.inner_apply', mulVecE_apply, Finset.mul_sum]
+  exact Finset.sum_congr rfl fun q _ => by ring
+
 end Kraus
+
+section ToEuclideanLin
+
+variable {W : Type*} [Fintype W] [DecidableEq W]
+
+/-- `mulVecE` is Mathlib's `Matrix.toEuclideanLin`, definitionally.  `mulVecE`
+exists so that the development never needs the `DecidableEq` that
+`toEuclideanLin` carries; this is the bridge for the places that do. -/
+theorem mulVecE_eq_toEuclideanLin (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
+    mulVecE A x = Matrix.toEuclideanLin A x := rfl
+
+end ToEuclideanLin
 
 end RankR

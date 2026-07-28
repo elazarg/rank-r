@@ -25,10 +25,64 @@ otherwise match itself):
 import RankR.Extend
 import RankR.Optimal
 import RankR.OneSided
+import RankR.Results
+import RankR.Equivalence
 
 namespace RankR
 
-/-! ## Theorem 1.1 and its refinements, conditional on Fu-Gao-Park -/
+/-! ## Theorem 1.1, unconditionally
+
+Nothing below assumes anything.  `Autonne.lean` proves the Autonne-Takagi
+factorization, `Takagi.lean` derives the double-skew action bound from it, and
+`Results.lean` composes the two.  In particular the Fu-Gao-Park estimate
+is no longer a hypothesis of the main theorem. -/
+
+/-- info: 'Matrix.exists_takagi' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Matrix.exists_takagi
+
+/-- info: 'RankR.doubleSkewBound_holds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms doubleSkewBound_holds
+
+/-- info: 'RankR.operatorIneq_holds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms operatorIneq_holds
+
+/-- info: 'RankR.rank_r_partial_trace' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rank_r_partial_trace
+
+/-- info: 'RankR.rank_r_partial_trace_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rank_r_partial_trace_exact
+
+/-- info: 'RankR.rank_r_partial_trace_strict' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rank_r_partial_trace_strict
+
+/-- info: 'RankR.rank_eq_of_eq_rank_r_partial_trace' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rank_eq_of_eq_rank_r_partial_trace
+
+/-! ## Fu-Gao-Park's Theorem 2.4, proved
+
+`Equivalence.lean` supplies the converse of `doubleSkewBound_of_FGP`, so the
+manuscript's Lemma 2.1 and the imported estimate are equivalent -- and, both
+being consequences of Autonne-Takagi, both are proved. -/
+
+/-- info: 'RankR.fgpBound_holds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms fgpBound_holds
+
+/-- info: 'RankR.doubleSkewBoundQm_holds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms doubleSkewBoundQm_holds
+
+/-! ## Theorem 1.1 from Fu-Gao-Park as published
+
+Retained as the bridge to the manuscript's original standing hypothesis; no
+longer on the critical path. -/
 
 /-- info: 'RankR.rank_r_partial_trace_of_FGP_square' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

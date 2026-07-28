@@ -21,4 +21,11 @@ import RankR.FGP
 import RankR.Extend
 import RankR.Optimal
 import RankR.OneSided
+import RankR.Flip
+import RankR.SymOuter
+import RankR.Weights
+import RankR.Takagi
+import RankR.Autonne
+import RankR.Results
+import RankR.Equivalence
 import RankR.Axioms

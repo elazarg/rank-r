@@ -31,23 +31,6 @@ section Adjoint
 
 variable {W : Type*} [Fintype W]
 
-/-- `⟪z, A x⟫ = ⟪Aᴴ z, x⟫`: both sides equal the double sum
-`∑_p ∑_q conj(z p) A_{pq} x_q`. -/
-theorem inner_mulVecE_left (A : Matrix W W ℂ) (z x : EuclideanSpace ℂ W) :
-    inner ℂ z (mulVecE A x) = inner ℂ (mulVecE Aᴴ z) x := by
-  have hL : (inner ℂ z (mulVecE A x) : ℂ) = ∑ p, ∑ q, conj (z p) * A p q * x q := by
-    rw [PiLp.inner_apply]
-    refine Finset.sum_congr rfl fun p _ => ?_
-    rw [RCLike.inner_apply', mulVecE_apply, Finset.mul_sum]
-    exact Finset.sum_congr rfl fun q _ => (mul_assoc _ _ _).symm
-  have hR : (inner ℂ (mulVecE Aᴴ z) x : ℂ) = ∑ q, ∑ p, conj (z p) * A p q * x q := by
-    rw [PiLp.inner_apply]
-    refine Finset.sum_congr rfl fun q _ => ?_
-    rw [RCLike.inner_apply', mulVecE_apply, map_sum, Finset.sum_mul]
-    refine Finset.sum_congr rfl fun p _ => ?_
-    rw [map_mul, Matrix.conjTranspose_apply, RCLike.star_def, Complex.conj_conj]
-    ring
-  rw [hL, hR, Finset.sum_comm]
 
 end Adjoint
 

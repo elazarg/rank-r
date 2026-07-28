@@ -18,21 +18,7 @@ section HsAlgebra
 
 variable {W : Type*} [Fintype W]
 
-theorem hsInner_add_left (A B C : Matrix W W ℂ) :
-    hsInner (A + B) C = hsInner A C + hsInner B C := by
-  simp [hsInner, Matrix.conjTranspose_add, Matrix.add_mul, Matrix.trace_add]
 
-theorem hsInner_add_right (A B C : Matrix W W ℂ) :
-    hsInner A (B + C) = hsInner A B + hsInner A C := by
-  simp [hsInner, Matrix.mul_add, Matrix.trace_add]
-
-/-- `qform` is the inner product against the matrix action. -/
-theorem qform_eq_inner (A : Matrix W W ℂ) (v : EuclideanSpace ℂ W) :
-    qform A v = inner ℂ v (mulVecE A v) := by
-  rw [PiLp.inner_apply, qform]
-  refine Finset.sum_congr rfl fun p _ => ?_
-  rw [RCLike.inner_apply', mulVecE_apply, Finset.mul_sum]
-  exact Finset.sum_congr rfl fun q _ => by ring
 
 omit [Fintype W] in
 /-- `(|u⟩⟨v|)ᴴ = |v⟩⟨u|`. -/
@@ -47,12 +33,6 @@ theorem mul_rankOne (K : Matrix W W ℂ) (u v : EuclideanSpace ℂ W) :
   ext p q
   simp [rankOne, Matrix.mul_apply, mulVecE_apply, Finset.sum_mul, mul_assoc]
 
-theorem mulVecE_mul (A B : Matrix W W ℂ) (v : EuclideanSpace ℂ W) :
-    mulVecE A (mulVecE B v) = mulVecE (A * B) v := by
-  ext p
-  simp only [mulVecE_apply, Matrix.mul_apply, Finset.mul_sum, Finset.sum_mul]
-  rw [Finset.sum_comm]
-  exact Finset.sum_congr rfl fun q _ => Finset.sum_congr rfl fun r _ => by ring
 
 /-- `|u⟩⟨v| |z⟩⟨w| = ⟪v,z⟫ · |u⟩⟨w|`. -/
 theorem rankOne_mul_rankOne (u v z w : EuclideanSpace ℂ W) :
@@ -177,21 +157,21 @@ theorem rank_r_partial_trace_of_FGP (hFGP : FGPBound U V)
     (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (hr : 0 < r) (hrank : C.rank ≤ r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
-  rank_r_partial_trace (doubleSkewBound_of_FGP hFGP) C r hr hrank
+  rank_r_partial_trace_of_doubleSkew (doubleSkewBound_of_FGP hFGP) C r hr hrank
 
 /-- **The exact-rank form** (`eq:main-bound-exact-rank`), from Fu–Gao–Park. -/
 theorem rank_r_partial_trace_of_FGP_exact (hFGP : FGPBound U V)
     (C : Matrix (U × V) (U × V) ℂ) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ (C.rank : ℝ) * hsNormSq C + (1 / (C.rank : ℝ)) * Complex.normSq C.trace :=
-  rank_r_partial_trace_exact (doubleSkewBound_of_FGP hFGP) C
+  rank_r_partial_trace_exact_of_doubleSkew (doubleSkewBound_of_FGP hFGP) C
 
 /-- **Strictness below the exact rank**, from Fu–Gao–Park. -/
 theorem rank_r_partial_trace_of_FGP_strict (hFGP : FGPBound U V)
     (C : Matrix (U × V) (U × V) ℂ) (hC : C ≠ 0) (r : ℕ) (hrank : C.rank < r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       < r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
-  rank_r_partial_trace_strict (doubleSkewBound_of_FGP hFGP) C hC r hrank
+  rank_r_partial_trace_strict_of_doubleSkew (doubleSkewBound_of_FGP hFGP) C hC r hrank
 
 /-- **Equality forces the exact rank**, from Fu–Gao–Park. -/
 theorem rank_eq_of_eq_rank_r_partial_trace_of_FGP (hFGP : FGPBound U V)
@@ -199,6 +179,6 @@ theorem rank_eq_of_eq_rank_r_partial_trace_of_FGP (hFGP : FGPBound U V)
     (heq : hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       = r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace) :
     C.rank = r :=
-  rank_eq_of_eq_rank_r_partial_trace (doubleSkewBound_of_FGP hFGP) C hC r hrank heq
+  rank_eq_of_eq_rank_r_partial_trace_of_doubleSkew (doubleSkewBound_of_FGP hFGP) C hC r hrank heq
 
 end RankR

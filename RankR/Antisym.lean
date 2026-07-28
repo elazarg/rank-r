@@ -112,6 +112,19 @@ theorem Qm_mul_self : (Qm (U := U) (V := V)) * Qm = Qm := by
   simp only [Qm_apply, swU_swU, swV_swV, swU_swV]
   split_ifs <;> ring
 
+/-- The quadratic form of the double antisymmetrizer, written pointwise as a single
+sum over the Klein four-group orbit of each index. -/
+theorem qform_Qm_eq (v : EuclideanSpace ℂ (Idx U V)) :
+    qform Qm v = (4 : ℂ)⁻¹ *
+      ∑ X, conj (v X) * (v X - v (swU X) - v (swV X) + v (swV (swU X))) := by
+  rw [Finset.mul_sum]
+  simp only [qform]
+  refine Finset.sum_congr rfl fun X _ => ?_
+  have h : ∑ q, conj (v X) * Qm X q * v q = conj (v X) * mulVecE Qm v X := by
+    rw [mulVecE_apply, Finset.mul_sum]
+    exact Finset.sum_congr rfl fun q _ => mul_assoc _ _ _
+  rw [h, mulVecE_Qm, mul_left_comm]
+
 /-! ## Invariance of the double-skew subspace -/
 
 omit [DecidableEq U] [DecidableEq V] in

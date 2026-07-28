@@ -12,10 +12,6 @@ open scoped Kronecker
 
 variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] {s : ℕ}
 
-/-- `mulVecE` and `Matrix.toEuclideanLin` are the same map. -/
-theorem mulVecE_eq_toEuclideanLin (A : Matrix (U × V) (U × V) ℂ)
-    (x : EuclideanSpace ℂ (U × V)) :
-    mulVecE A x = Matrix.toEuclideanLin A x := rfl
 
 omit [DecidableEq U] [DecidableEq V] in
 /-- `ebar` is the conjugated frame, so it is orthonormal whenever `e` is. -/

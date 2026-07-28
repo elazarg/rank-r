@@ -12,30 +12,58 @@ claim is deliberately narrow, and what follows spells out its limits.
 ## What is proved, and what it rests on
 
 ```lean
-theorem RankR.rank_r_partial_trace_of_FGP_square
-    (hU : Fintype.card U ≤ d) (hV : Fintype.card V ≤ d)
-    (hFGP : FGPBound (Fin d) (Fin d))
+theorem RankR.rank_r_partial_trace
     (C : Matrix (U × V) (U × V) ℂ) (r : ℕ) (hr : 0 < r) (hrank : C.rank ≤ r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace
 ```
 
-`#print axioms RankR.rank_r_partial_trace_of_FGP_square` reports only
+**There are no hypotheses.** Earlier revisions carried the Fu–Gao–Park estimate
+as a standing assumption; it has since been discharged. The chain is
+
+    Autonne–Takagi  →  Lemma 2.1  →  Proposition 2.2  →  Theorem 1.1
+
+with `Matrix.exists_takagi` in `RankR/Autonne.lean` supplying the first step.
+
+`#print axioms RankR.rank_r_partial_trace` reports only
 `propext, Classical.choice, Quot.sound`, and no declaration uses `sorry`,
 `axiom`, `native_decide` or `set_option`. The axiom half of that claim is not
 merely asserted: `RankR/Axioms.lean` wraps `#print axioms` in `#guard_msgs`
 for each headline theorem, so the build fails if it ever stops holding.
 
-The sole hypothesis is `FGPBound (Fin d) (Fin d)`: the double-antisymmetric
-projection estimate of Fu–Gao–Park [arXiv:2607.21367] on $(\mathbb C^d)^{\otimes4}$,
-all four tensor factors the same space, which is the form they state. It is
-carried as a hypothesis rather than an `axiom` precisely so that
-`#print axioms` stays meaningful and the dependency is visible in the type.
+### How the hypothesis was discharged, and whose argument it is
 
-Lemma 2.1 of the manuscript (`DoubleSkewBound`) is **derived**, not assumed —
-`RankR/FGP.lean` proves it from `FGPBound` without singular values, the
-best-rank-2 approximation identity, or Ky Fan, and `RankR/Extend.lean` reduces
-the general `U, V` case to the square one by zero-extension.
+`RankR/Autonne.lean` proves the **Autonne–Takagi factorization** — every complex
+symmetric matrix is $UDU^T$ with $U$ unitary and $D$ diagonal nonnegative
+(Horn–Johnson, *Matrix Analysis*, 2nd ed., Thm 4.4.16). It is absent from
+Mathlib, and is stated coordinate-free
+(`LinearMap.IsConjSymmetric.exists_orthonormalBasis`) with the matrix form as a
+specialization. `RankR/Takagi.lean` then derives Lemma 2.1 from it.
+
+**The mathematics is Fu–Gao–Park's.** This is not an independent route: it is
+their §2 argument — their Prop. 2.1, Lemma 2.2, Lemma 2.3 — restructured so that
+Autonne–Takagi enters directly and their Theorem 2.4 is never invoked. What is
+new here is the observation that their duality step and their use of
+Johnston–Kribs are avoidable, plus the machine checking. Their preprint remains
+the source of the argument.
+
+**Fu–Gao–Park's Theorem 2.4 is proved too.** `RankR/Equivalence.lean` supplies
+the converse of `doubleSkewBound_of_FGP`, so the double-skew bound and the
+imported estimate are *equivalent*; both then follow from Autonne–Takagi, and
+`fgpBound_holds` is `FGPBound` with no hypotheses.
+
+The converse looks harder than it is. Stated as `K ∈ doubleSkew U V` — the span
+of the elementary tensors — it would need `ran Qm ⊆ vec (doubleSkew U V)`, a
+spanning argument dragging a linear order on `U` and `V` into the development.
+Restating the bound with the fixed-point hypothesis `Qm (vec K) = vec K`
+(`DoubleSkewBoundQm`) avoids that entirely: the new form is formally *stronger*,
+yet no harder to prove, because `Qm (vec K) = vec K` already forces `Kᵀ = K`.
+
+What remains a rendering rather than a transcription is that `FGPBound` is
+stated in homogeneous form over `|u₁⟩⟨v₁| + |u₂⟩⟨v₂|` rather than over unit
+vectors of Schmidt rank at most two. By `eq:SR-vec-rank` those are the same
+statement, but that identification is a reading of the definitions, not a
+theorem here.
 
 **What this does and does not certify.** Lean checks the *deduction* — that the
 conclusion follows from the hypothesis, given the formal definitions in
@@ -51,9 +79,9 @@ implicit. One rendering is worth singling out:
 unrolled rather than a theorem about it.
 
 The sharpness claims around Theorem 1.1 are covered too.
-`rank_r_partial_trace_of_FGP_square_exact` is the exact-rank form (`r = rank C`),
-`rank_r_partial_trace_of_FGP_square_strict` says the bound is *strict* for
-nonzero `C` with `rank C < r`, and `rank_eq_of_eq_rank_r_partial_trace_of_FGP_square`
+`rank_r_partial_trace_exact` is the exact-rank form (`r = rank C`),
+`rank_r_partial_trace_strict` says the bound is *strict* for
+nonzero `C` with `rank C < r`, and `rank_eq_of_eq_rank_r_partial_trace`
 is the stated consequence: equality for nonzero `C` forces `rank C = r`.
 
 `RankR/OneSided.lean` adds the one-sided bound `‖Tr_j C‖₂² ≤ r‖C‖₂²`
@@ -62,8 +90,7 @@ trace-norm duality; here a partial trace of a rank-one operator is a matrix
 product, so Hilbert–Schmidt submultiplicativity and Cauchy–Schwarz over the range
 factorization suffice, and the Schatten-1 norm appears nowhere.
 
-`RankR/Optimal.lean` closes the other half, and needs no hypothesis at all —
-not even Fu–Gao–Park. It builds the extremizer `projWit = P_r ⊗ |v⟩⟨w|`,
+`RankR/Optimal.lean` closes the other half. It builds the extremizer `projWit = P_r ⊗ |v⟩⟨w|`,
 computes its rank (`rank_projWit`, exactly `r`) and its four quantities
 (`‖C‖₂² = r`, `|Tr C|² = r²|⟨w,v⟩|²`, `‖Tr_U C‖₂² = r²`, `‖Tr_V C‖₂² = r|⟨w,v⟩|²`),
 shows it attains equality (`projWit_bound_eq`), and derives the two optimality
@@ -71,7 +98,13 @@ statements: any bound `‖Tr_U C‖₂² + ‖Tr_V C‖₂² ≤ a‖C‖₂² +
 rank `r` has `a ≥ r` (`le_coeff_hsNormSq_of_bound`), and once `a = r` is fixed,
 `b ≥ 1/r` (`inv_le_coeff_trace_of_bound`).
 
-**Not proved here:** Fu–Gao–Park's estimate itself. Nothing else.
+**Not proved here:** the identification of `FGPBound` with Theorem 2.4 as stated
+via an abstract Schmidt-rank predicate. `FGPBound` quantifies over the explicit
+two-term form; that this is the same condition as "Schmidt rank ≤ 2" is
+`eq:SR-vec-rank`, a definitional reading rather than a formalized theorem — the
+development contains no definition of Schmidt rank at all. The estimate itself
+*is* proved (`fgpBound_holds`). Also not proved: any of the applications in §4
+or the appendices of the manuscript.
 
 Two labelled equations of the manuscript, `eq:Phi-Pminus-TTstar` and
 `eq:sos-complete-graph`, are **bypassed rather than proved**: the Bessel-duality
@@ -96,7 +129,7 @@ revision.
 
 | Path | Contents |
 | --- | --- |
-| `RankR/` | the formalization (24 files) |
+| `RankR/` | the formalization (31 files) |
 | `paper/` | the manuscript |
 
 ### The formalization, bottom-up
@@ -115,18 +148,38 @@ revision.
 | `Phi` | the `Φ₄` kernel, `eq:Phi-expansion`, `eq:Phi-rhoT` |
 | `Synth` | the synthesis map, `eq:T-by-vertices`, the vertex bound |
 | `Frame` | adjoint move, `eq:T-orthogonal` |
-| `Edge` | the edgewise double-skew bound — the sole consumer of `hFGP` |
+| `Edge` | the edgewise double-skew bound — the sole consumer of `DoubleSkewBound` |
 | `Assemble`, `Bessel`, `Restrict`, `Synthesis` | the Bessel-duality chain |
 | `Theorem` | Proposition 2.2 and Theorem 1.1 given the double-skew bound |
-| `Antisym`, `FGP`, `Extend` | the antisymmetrizer, **Theorem 1.1 from Fu–Gao–Park** |
+| `Antisym`, `FGP`, `Extend` | the antisymmetrizer, and Theorem 1.1 from Fu–Gao–Park as published (retained, no longer on the critical path) |
 | `Optimal` | the extremizer, and optimality of the coefficients `r`, `1/r` |
 | `OneSided` | HS submultiplicativity, and `lem:one-sided-partial-trace` |
+| `Flip` | the two partial transposes, and `⟨N, Π N⟩ = ½(‖N‖₂² − ⟨N, N^{T_U}⟩)` |
+| `SymOuter` | `w wᵀ` and its pairings; the flip trace identity; two HS estimates |
+| `Weights` | Ky Fan at `k = 2`, in weight form |
+| `Takagi` | the Autonne–Takagi interface, Lemma 2.3, and the truncation chain |
+| `Autonne` | **the Autonne–Takagi factorization itself** |
+| `Results` | joins the two halves: Theorem 1.1 with no hypotheses |
+| `Equivalence` | the converse, and **Fu–Gao–Park's Theorem 2.4** |
+
+The import graph has two independent halves that meet only in `Results`: the
+*reduction* (`Conventions` … `Theorem`), which is parametrized by the
+double-skew bound and knows nothing about where it comes from, and the *bound*
+(`Antisym`, `Flip`, `SymOuter`, `Weights`, `Takagi`, `Autonne`), which knows
+nothing about partial traces. `FGP` and `Extend` hang off the reduction and are
+no longer on any critical path.
 | `Axioms` | the axiom surface, checked by the build |
 
 ## A note on provenance
 
 `paper/rank-r.tex` states that its arguments were generated by GPT-5.6, that the
 author did not independently derive them, and that no expert has reviewed them.
-Fu–Gao–Park was posted three days before the manuscript and is itself
-unreviewed. This formalization is therefore a *measuring instrument*, not a
-victory lap.
+Fu–Gao–Park was posted three days before the manuscript and is itself unreviewed.
+This formalization is therefore a *measuring instrument*, not a victory lap.
+
+Discharging the standing hypothesis narrows what is being measured but does not
+change that. Lean checks deductions; it does not check that
+`RankR/Conventions.lean` renders the manuscript's informal definitions
+faithfully, and with the hypothesis gone that definitional-fidelity question is
+the *only* thing left between the formal result and the informal claim. It
+deserves more scrutiny now, not less.

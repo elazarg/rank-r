@@ -26,6 +26,16 @@ theorem hsInner_eq_inner (A B : Matrix m n ℂ) :
     RCLike.star_def]
   exact Finset.sum_comm
 
+/-- `hsInner` is additive in its first argument. -/
+theorem hsInner_add_left (A B C : Matrix m n ℂ) :
+    hsInner (A + B) C = hsInner A C + hsInner B C := by
+  simp [hsInner, Matrix.conjTranspose_add, Matrix.add_mul, Matrix.trace_add]
+
+/-- `hsInner` is additive in its second argument. -/
+theorem hsInner_add_right (A B C : Matrix m n ℂ) :
+    hsInner A (B + C) = hsInner A B + hsInner A C := by
+  simp [hsInner, Matrix.mul_add, Matrix.trace_add]
+
 theorem hsInner_self (A : Matrix m n ℂ) : hsInner A A = (hsNormSq A : ℂ) := by
   simp only [hsInner, hsNormSq, Matrix.trace, Matrix.diag_apply, Matrix.mul_apply,
     Matrix.conjTranspose_apply, RCLike.star_def, Complex.ofReal_sum,
