@@ -29,6 +29,7 @@ import RankR.Optimal
 import RankR.OneSided
 import RankR.Results
 import RankR.Equivalence
+import RankR.KyFanAction
 
 namespace RankR
 
@@ -130,6 +131,25 @@ Proposition 2.2. -/
 /-- info: 'RankR.operatorIneq_of_FGP' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms operatorIneq_of_FGP
+
+/-! ## The level-`k` action bound
+
+The averaged pair bound, the Bessel bound that competes with it, and the two
+combined into `min(k/4, 1)`. -/
+
+/-- info: 'RankR.sum_norm_sq_le_hsNormSq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms sum_norm_sq_le_hsNormSq
+
+/-- info: 'RankR.sum_norm_sq_le_of_doubleSkewQm' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms sum_norm_sq_le_of_doubleSkewQm
+
+/--
+info: 'RankR.sum_norm_sq_le_min_of_doubleSkewQm' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms sum_norm_sq_le_min_of_doubleSkewQm
 
 /-! ## The abstract liftings
 
