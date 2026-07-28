@@ -31,8 +31,3 @@ ephemeral/
 /.lake/
 # lake-manifest.json is deliberately NOT ignored: it pins the exact Mathlib
 # revision, which is what makes the build reproducible.
-ephemeral/*.aux
-ephemeral/*.fdb_latexmk
-ephemeral/*.fls
-ephemeral/*.log
-ephemeral/*.out
