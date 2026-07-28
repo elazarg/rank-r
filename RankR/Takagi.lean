@@ -4,7 +4,7 @@ The Autonne-Takagi interface, and the double-skew action bound derived from it.
 This replaces the Fu-Gao-Park estimate as the development's trusted input.  What
 is assumed here is Autonne-Takagi: every complex symmetric matrix is `U D Uᵀ`
 with `U` unitary and `D` diagonal nonnegative (Horn-Johnson, *Matrix Analysis*,
-2nd ed., Thm 4.4.16).  It is absent from Mathlib, so it is carried as a
+2nd ed., Cor. 4.4.4(c)).  It is absent from Mathlib, so it is carried as a
 `Prop`-valued hypothesis, exactly as `FGPBound` is, and `#print axioms` stays
 meaningful.
 

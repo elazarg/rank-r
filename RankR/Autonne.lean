@@ -15,8 +15,8 @@ import Mathlib.RingTheory.SimpleRing.Principal
 
 Every complex **symmetric** matrix `K` (that is, `Kᵀ = K`, *not* `Kᴴ = K`) can be written as
 `K = U * diagonal d * Uᵀ` with `U` unitary and `d` a nonnegative real vector.  This is the
-Autonne-Takagi factorization; see Horn-Johnson, *Matrix Analysis*, 2nd ed., Corollary 4.4.4 and
-Theorem 4.4.16.
+Autonne-Takagi factorization; it is Horn-Johnson, *Matrix Analysis*, 2nd ed., Corollary 4.4.4(c),
+where it is attributed to Autonne.
 
 Note the plain transpose `Uᵀ` in the conclusion: this is what distinguishes the statement from the
 spectral theorem, and the `d i` are the singular values of `K`, not its eigenvalues.
@@ -305,7 +305,7 @@ as `K = U * diagonal d * Uᵀ` with `U` unitary and `d` nonnegative real.
 
 Note the plain transpose `Uᵀ`, not the conjugate transpose: this is what distinguishes the
 statement from the spectral theorem.  See Horn-Johnson, *Matrix Analysis*, 2nd ed.,
-Corollary 4.4.4. -/
+Corollary 4.4.4(c). -/
 theorem exists_takagi (K : Matrix W W ℂ) (hK : Kᵀ = K) :
     ∃ (U : Matrix W W ℂ) (d : W → ℝ),
       U ∈ Matrix.unitaryGroup W ℂ ∧ (∀ i, 0 ≤ d i) ∧
