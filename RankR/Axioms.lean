@@ -31,6 +31,7 @@ import RankR.Results
 import RankR.Equivalence
 import RankR.KyFanAction
 import RankR.Exterior
+import RankR.HigherArity
 
 namespace RankR
 
@@ -163,6 +164,39 @@ The two families of modes attached to the faces of `Fin r`. -/
 /-- info: 'RankR.orthonormal_deltaMode' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms orthonormal_deltaMode
+
+/-! ## Exterior amplification
+
+Theorem A needs only the level-`k` Choi bound; Theorem B adds transpose symmetry
+of the Kraus operators and gains the span of the protected modes.  `upDeg_univ`
+gives the complete hypergraph its degree `r - k + 1`, and the two pair-level
+corollaries are the `k = 2` reading. -/
+
+/--
+info: 'RankR.qform_krausF_Phyp_le_of_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms qform_krausF_Phyp_le_of_norm
+
+/-- info: 'RankR.qform_krausF_Phyp_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_krausF_Phyp_le
+
+/-- info: 'RankR.upDeg_univ' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms upDeg_univ
+
+/--
+info: 'RankR.qform_krausF_Phyp_le_of_choiTwoBound' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms qform_krausF_Phyp_le_of_choiTwoBound
+
+/--
+info: 'RankR.qform_krausF_Phyp_le_of_choiTwoBound_sub' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms qform_krausF_Phyp_le_of_choiTwoBound_sub
 
 /-! ## The abstract liftings
 
