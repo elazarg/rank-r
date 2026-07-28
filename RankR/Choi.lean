@@ -201,7 +201,14 @@ at most two": a matrix has rank at most two precisely when it is a sum of two
 rank-one operators, so quantifying over the four vectors is the condition itself
 and no separate notion of Schmidt rank is needed.
 
-The least such `β` is `½‖J‖_{S(2)}`, a quantity of the map alone. -/
+The least such `β` is `½‖J‖_{S(2)}`, a quantity of the map alone.  For
+`J = choiOf A` it is also `½ sup { s₁(K_c)² + s₂(K_c)² : ‖c‖ = 1 }` over the
+Kraus span, which is the `k = 2` case of the `S(k)`-norm projection duality of
+Johnston and Kribs, *A family of norms with applications in quantum information
+theory*, J. Math. Phys. 51:082202 (2010); and `2β` is the threshold `a₂`
+characterizing `2`-positivity of `a·Tr(·)I − Φ` in Młynik, Osaka and Marciniak,
+*Characterization of k-positive maps*, Comm. Math. Phys. 406(3):62 (2025),
+Thm. 3.2. -/
 def ChoiTwoBound (J : Matrix (W × W) (W × W) ℂ) (β : ℝ) : Prop :=
   ∀ u₁ v₁ u₂ v₂ : EuclideanSpace ℂ W,
     (qform J (vec (rankOne u₁ v₁ + rankOne u₂ v₂))).re
@@ -241,7 +248,13 @@ Writing `P` for the projection onto `span {x, y}` and `A = ‖K P‖₂²`, the 
 after which one factor of `A` cancels.  The first equality is idempotence and
 self-adjointness of `P`; the inequality is Cauchy-Schwarz on the Kraus index; the
 last step is the rank-two bound applied to `K P`, whose two-term form
-`|Kx⟩⟨x| + |Ky⟩⟨y|` is `mul_proj2`. -/
+`|Kx⟩⟨x| + |Ky⟩⟨y|` is `mul_proj2`.
+
+Read through `vec`, this is `‖S‖² ≤ ‖S S*‖` for the synthesis operator
+`S : c ↦ ∑ₐ cₐ Aₐ` in the `S(2)`-norm, the elementary half of the Johnston-Kribs
+duality; that a rank-two compression suffices to test an orthonormal pair is
+Takasaki and Tomiyama, *On the geometry of positive maps in matrix algebras*,
+Math. Z. 184:101--108 (1983), Prop. 1.1. -/
 theorem norm_sq_pair_le_of_choiTwoBound {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β)
     (hJ : ChoiTwoBound (choiOf A) β) (c : ι → ℂ)
     {x y : EuclideanSpace ℂ W} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1)

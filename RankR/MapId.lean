@@ -246,7 +246,13 @@ noncomputable def Psi (r : ℕ) (X : Matrix (U × V) (U × V) ℂ) : Matrix (U �
 `Ψ_r = r · R^U_{−1/r} ⊗ R^V_{−1/r}`, the binomial expansion of `(S + t·id)^{⊗2}`
 at `t = (r−1)/r`.  Both `r−1` and the `1/r` acquire meanings: the first is the
 degree of the frame, the second the single coefficient a `U(d)`-covariant
-correction to `Φ∘τ` is free to have. -/
+correction to `Φ∘τ` is free to have.
+
+On one factor `R_{−1/r}` is the boundary of the `r`-positive cone along the
+pencil from `id` to `Δ`: `Δ − t·id` is `k`-positive exactly for `t ≤ 1/k`, by
+Tomiyama, *On the geometry of positive maps in matrix algebras II*, Linear
+Algebra Appl. 69:169--177 (1985), Thm. 2(i), where it appears as `τ_k`.  That
+the tensor square keeps the same level is not implied by it. -/
 theorem Psi_eq_tensor_square {r : ℕ} (hr : 0 < r) (X : Matrix (U × V) (U × V) ℂ) :
     Psi r X = (4 * (r : ℂ)) • RV ((r : ℂ))⁻¹ (RU ((r : ℂ))⁻¹ X) := by
   have hr0 : (r : ℂ) ≠ 0 := Nat.cast_ne_zero.mpr hr.ne'
