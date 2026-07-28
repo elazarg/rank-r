@@ -159,7 +159,15 @@ controlled by that bound. Grouping the modes by the vertices of the
 complete graph $K_r$, rather than estimating its $\binom r2$ edges
 independently, costs only the vertex degree $r-1$; a cancellation in
 the distinguished code direction then improves the coefficient of
-$\abs{\Tr C}^2$ from $1$ to the sharp $1/r$. Beyond threshold statements, the applications determine the exact
+$\abs{\Tr C}^2$ from $1$ to the sharp $1/r$.
+
+That mechanism never looks at the double-skew space, and
+\cref{sec:amplification} states it separately as \cref{thm:amplification},
+\emph{pair amplification}.  Its inputs are two: a completely positive $\Phi$
+whose Kraus operators are transpose-symmetric, and the single number
+$\beta_2(\Phi)$ of \cref{def:beta2}.  \Cref{thm:rank_r} is the instance
+$\Phi=\Lambda_U\otimes\Lambda_V$, where $\beta_2=1$; \cref{rem:scope} records
+what the two obvious further instances need. Beyond threshold statements, the applications determine the exact
 rank-constrained score curves --- the minimum of the normalized
 two-copy filter form over nonzero matrices of rank at most $r$, as in
 \cref{eq:exact-q2-score} --- for both symmetric and asymmetric
@@ -495,8 +503,23 @@ be its Choi operator.  Set
 $J(\Phi)$ is the same operator for every Kraus family of $\Phi$, so
 $\beta_2$ depends on $\Phi$ alone --- no minimality and no orthogonality of the
 family is required.  It is linear in $\Phi$, so a map and its constant always
-carry the same scale, and no normalization convention has to be tracked.  By
-\cref{rem:fgp-equivalence}, $J(\Lambda_U\otimes\Lambda_V)$ is $4Q_-$ and
+carry the same scale, and no normalization convention has to be tracked.
+
+Writing $K_\zeta:=\sum_a\zeta_aA_a$ and $s_i$ for singular values, three
+descriptions coincide:
+\begin{equation}
+\label{eq:beta2-three-ways}
+    2\beta_2(\Phi)
+    =\norm{J(\Phi)}_{S(2)}
+    =\sup_{\norm\zeta=1}\bigl(s_1(K_\zeta)^2+s_2(K_\zeta)^2\bigr)
+    =\sup_{\norm\zeta=1}\bigl\Vert K_\zeta K_\zeta^*\bigr\Vert_{(2)},
+\end{equation}
+$\norm\cdot_{(k)}$ being the Ky Fan $k$-norm; any of the three may serve as the
+definition.  The middle equality is the $S(k)$-norm projection duality of
+\cite{JohnstonKribs2010} at $k=2$, and the right-hand quantity is the threshold
+characterizing $k$-positivity of $a\Tr(\cdot)I-\Phi$ in
+\cite[Thm.~1]{MlynikOsakaMarciniak2025}, so $2\beta_2$ is their $a_2$.
+By \cref{rem:fgp-equivalence}, $J(\Lambda_U\otimes\Lambda_V)$ is $4Q_-$ and
 $\norm{Q_-}_{S(2)}=\frac12$, so
 \begin{equation}
 \label{eq:beta2-double-skew}
@@ -853,35 +876,34 @@ Cauchy--Schwarz yields
 Each parenthesized expression is bounded by $\beta_2(\Phi)$ directly, without
 \cref{eq:Kc-norm} and without any property of
 $\mathfrak{so}(U)\otimes\mathfrak{so}(V)$.  Write $\{A_a\}$ for the Kraus family
-of $\Phi$ on $\cL(U\otimes V)$, here $A_{\alpha\beta}=L_\alpha\otimes M_\beta$;
-fix an edge and put $K:=K_c^{(ij)}$, $c:=c^{(ij)}$, so that $K=\sum_ac_aA_a$.
-Let $x,y$ be an orthonormal pair and $P:=\ketbra xx+\ketbra yy$, so that
-$A:=\norm{KP}_2^2=\norm{Kx}^2+\norm{Ky}^2$ and $\rank(KP)\le2$.  Because $P$ is
-a self-adjoint idempotent, $\ip K{KP}_{\mathrm{HS}}=A$; expanding $K$ along the
-Kraus family and applying Cauchy--Schwarz on the Kraus index,
+of $\Phi$ on $\cL(U\otimes V)$, here $A_{\alpha\beta}=L_\alpha\otimes M_\beta$,
+and let $S:c\mapsto\sum_ac_aA_a$ be its synthesis operator, so that
+$SS^*=J(\Phi)$ under $\operatorname{vec}$.  For an orthonormal pair $x,y$ and
+$P:=\ketbra xx+\ketbra yy$, self-adjoint idempotence of $P$ gives
+$\norm{KP}_2=\sup\{\abs{\ip MK_{\mathrm{HS}}}:\rank M\le2,\ \norm M_2=1\}$,
+so with $K=Sc$,
 \begin{equation}
 \label{eq:kraus-cauchy-schwarz}
-    A
-    =\sum_a\overline{c_a}\,\ip{A_a}{KP}_{\mathrm{HS}}
-    \le\norm c_2
-      \Bigl(\sum_a\bigl|\ip{A_a}{KP}_{\mathrm{HS}}\bigr|^2\Bigr)^{1/2}
-    =\norm c_2\,
-      \ip{\operatorname{vec}(KP)}{J(\Phi)\operatorname{vec}(KP)}^{1/2}
-    \le\norm c_2\bigl(2\beta_2(\Phi)A\bigr)^{1/2},
+    \norm{Kx}^2+\norm{Ky}^2
+    =\norm{KP}_2^2
+    =\sup_M\abs{\ip{S^*M}{c}}^2
+    \le\norm c_2^2\,\sup_M\norm{S^*M}_2^2
+    =\norm c_2^2\,\norm{J(\Phi)}_{S(2)},
 \end{equation}
-the middle equality by \cref{def:beta2} and the last step because
-$\rank(KP)\le2$.  If $A=0$ there is nothing to prove; otherwise one factor of
-$A$ cancels, giving
+the suprema being over $\rank M\le2$, $\norm M_2=1$.  Hence
 \begin{equation}
 \label{eq:kraus-pair-bound}
     \norm{Kx}^2+\norm{Ky}^2
     \le
     2\beta_2(\Phi)\norm c_2^2 .
 \end{equation}
-Neither minimality nor orthogonality of $\{A_a\}$ is used; the projection $Q_-$
-enters only through the number $\beta_2(\Phi)$, and $\Pi K=K$ is replaced by
-membership of $K$ in the Kraus span.  Substituting
-\cref{eq:kraus-pair-bound} into \cref{eq:T-Cauchy},
+This is $\norm S^2\le\norm{SS^*}$ in the $S(2)$-norm, and is the elementary
+half of the projection duality of \cite{JohnstonKribs2010}; that a rank-two
+compression suffices to test the pair is
+\cite[Prop.~1.1]{TakasakiTomiyama1983}.  Neither minimality nor orthogonality of
+$\{A_a\}$ is used --- the projection $Q_-$ enters only through the number
+$\beta_2(\Phi)$, and $\Pi K=K$ is replaced by membership of $K$ in the Kraus
+span.  Substituting \cref{eq:kraus-pair-bound} into \cref{eq:T-Cauchy},
 \begin{align}
     \norm{\mathcal Tc}^2
     &\le
@@ -1084,7 +1106,10 @@ acting as $d-a$ on $\C I$ and as $-a$ on the traceless part.  A covariant
 correction to $\Phi\circ\tau$ therefore lies in a one-parameter pencil once its
 scale is fixed, and $1/r$ is the single free coefficient; \cref{rem:parity}
 identifies what pins it, namely the protected direction $\delta_e$.  The
-correction term is not a choice.
+correction term is not a choice.  The geometry of that pencil --- the segment
+from $\id$ to $\Delta$, its extension, and the nested $k$-positive cones along
+it --- is the subject of \cite{Tomiyama1985}, and $\mathcal R_{-1/r}$ is its
+$r$-positivity boundary.
 
 The collapse in \cref{eq:map-identity} is specific to two factors.  For $n$
 factors the same factorization gives
@@ -1788,6 +1813,15 @@ is $r$-positive if and only if
     -\frac1{\min\{r,d\}}.
 \]
 \end{corollary}
+
+The single factor is classical: $\mathcal R_\alpha$ on $M_d$ is $k$-positive
+exactly when $\alpha\ge-1/k$, which is
+\cite[Thm.~2(i)]{Tomiyama1985} after reparametrization, and
+$\mathcal R_{-1/k}$ is the boundary map he denotes $\tau_k$.  The tensor square
+does not follow from it, since $k$-positivity is not preserved under tensor
+products \cite{MullerHermesReebWolf2016}; for $r\ge d$ the statement is
+immediate because each factor is then completely positive, and the content is
+the range $r<d$.
 
 \subsection{Exact asymmetric tensor-product theorem}
 
@@ -2977,6 +3011,26 @@ Nathaniel Johnston and David W. Kribs.
 ``A family of norms with applications in quantum information theory.''
 \newblock Journal of Mathematical Physics, 51:082202, 2010.
 \newblock \url{https://doi.org/10.1063/1.3459068}
+
+\bibitem{TakasakiTomiyama1983}
+Toshiyuki Takasaki and Jun Tomiyama.
+``On the geometry of positive maps in matrix algebras.''
+\newblock Mathematische Zeitschrift, 184:101--108, 1983.
+
+\bibitem{Tomiyama1985}
+Jun Tomiyama.
+``On the geometry of positive maps in matrix algebras.~II.''
+\newblock Linear Algebra and its Applications, 69:169--177, 1985.
+
+\bibitem{MlynikOsakaMarciniak2025}
+Tomasz M{\l}ynik, Hiroyuki Osaka, and Marcin Marciniak.
+``Characterization of $k$-positive maps.''
+\newblock Communications in Mathematical Physics, 406(3):62, 2025.
+
+\bibitem{MullerHermesReebWolf2016}
+Alexander M\"uller-Hermes, David Reeb, and Michael M. Wolf.
+``Positivity of linear maps under tensor powers.''
+\newblock Journal of Mathematical Physics, 57:015202, 2016.
 
 \bibitem{TerhalHorodecki2000}
 Barbara M. Terhal and Pawe\l{} Horodecki.
