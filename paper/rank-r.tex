@@ -25,6 +25,7 @@
 \newtheorem{remark}[theorem]{Remark}
 \newtheorem*{hypothesis}{Hypothesis}
 
+\usepackage{longtable}
 \usepackage[nameinlink,capitalize,noabbrev]{cleveref}
 
 \DeclareMathOperator{\Tr}{Tr}
@@ -2552,11 +2553,22 @@ in the square form they publish, yields the same conclusion.  They are no
 longer on the critical path.  The correspondence with the results of the main
 text is as follows.
 
-\begin{center}
-\begin{tabular}{ll}
+\begin{longtable}{ll}
 \hline
 Manuscript & Lean\\
 \hline
+\endfirsthead
+\hline
+\multicolumn{2}{l}{\footnotesize\itshape continued from the previous page}\\
+\hline
+Manuscript & Lean\\
+\hline
+\endhead
+\hline
+\multicolumn{2}{r}{\footnotesize\itshape continued on the next page}\\
+\endfoot
+\hline
+\endlastfoot
 \cref{thm:rank_r} & \texttt{rank\_r\_partial\_trace}\\
 Autonne--Takagi, \cite[Cor.~4.4.4(c)]{HornJohnson} & \texttt{Matrix.exists\_takagi}\\
 \cref{lem:double-skew} & \texttt{doubleSkewBound\_of\_takagi}\\
@@ -2626,9 +2638,7 @@ equality at the extremizer & \texttt{projWit\_bound\_eq}\\
 $J(\Psi_r)$ attained at it & \texttt{re\_qform\_psiChoi\_projWit}\\
 optimality of $a=r$ & \texttt{le\_coeff\_hsNormSq\_of\_bound}\\
 optimality of $b=1/r$ & \texttt{inv\_le\_coeff\_trace\_of\_bound}\\
-\hline
-\end{tabular}
-\end{center}
+\end{longtable}
 
 Three respects in which the formal statements are renderings rather than
 transcriptions should be recorded.  First, \texttt{FGPBound} --- used only for
