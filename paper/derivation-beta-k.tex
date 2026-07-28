@@ -1,0 +1,216 @@
+\documentclass[11pt,reqno]{amsart}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{braket}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=blue!55!black,
+  urlcolor=blue!55!black]{hyperref}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\usepackage[nameinlink,capitalize,noabbrev]{cleveref}
+
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\rank}{rank}
+\newcommand{\cL}{\mathcal L}
+\newcommand{\ketbra}[2]{\lvert #1\rangle\!\langle #2\rvert}
+\newcommand{\ip}[2]{\langle #1,#2\rangle}
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+\newcommand{\C}{\mathbb C}
+
+\title{The higher Choi constants of the double-skew space}
+\author{Elazar Gershuni}
+\date{\today}
+
+\begin{document}
+\begin{abstract}
+For the double-skew space $\mathfrak{so}(U)\otimes\mathfrak{so}(V)$ we
+determine the quantities
+$\kappa_k=\max\{\sum_{j\le k}s_j(K)^2:\norm K_F=1\}$, equivalently the
+Johnston--Kribs $S(k)$-norms of the orthogonal projection onto it, equivalently
+the Ky Fan thresholds $a_k$ of M\l ynik--Osaka--Marciniak for that space.  We
+show $\kappa_k=\min\{k,4\}/4$ for every $k\ge2$, so that the associated Choi
+constant is $\beta_k=\min\{1,4/k\}$; and we show that this formula
+\emph{fails} at $k=1$, by exhibiting an explicit element attaining
+$\kappa_1\ge(m-1)/2m$ where $m=\min\{\dim U,\dim V\}$.  Numerically that value
+is exact.
+\end{abstract}
+\maketitle
+
+\section{Setting}
+
+Fix orthonormal bases of $U$ and $V$, write
+$\mathfrak{so}(W)=\{L:L^T=-L\}$, and let
+\[
+    \mathcal A:=\mathfrak{so}(U)\otimes\mathfrak{so}(V)\subseteq\cL(U\otimes V)
+\]
+be the linear span of the elementary tensors $L\otimes M$.  For $k\ge1$ put
+\begin{equation}
+\label{eq:kappa}
+    \kappa_k
+    :=
+    \max\Bigl\{\textstyle\sum_{j\le k}s_j(K)^2
+      :K\in\mathcal A,\ \norm K_F=1\Bigr\},
+\end{equation}
+$s_1\ge s_2\ge\cdots$ being singular values.  Three readings coincide.  By the
+$k$-th case of Johnston--Kribs projection duality, $\kappa_k$ is the $S(k)$-norm
+of the Frobenius-orthogonal projection $\Pi$ onto $\mathcal A$.  By
+M\l ynik--Osaka--Marciniak, $4\kappa_k$ is the threshold $a_k$ characterizing
+$k$-positivity of $a\Tr(\cdot)I-\Phi_{\mathcal A}$.  And in the normalization in
+which the Kraus operators $L_\alpha\otimes M_\beta$ of
+$\Lambda_U\otimes\Lambda_V$ have $\norm{\cdot}_F^2=4$, the Choi constant is
+\begin{equation}
+\label{eq:beta-kappa}
+    \beta_k(\Lambda_U\otimes\Lambda_V)=\frac{4\kappa_k}{k}.
+\end{equation}
+
+The single input below is the pair bound established in the proof of the
+double-skew action lemma, in the form proved there --- for \emph{every} pair,
+not merely for the two largest:
+\begin{equation}
+\label{eq:pair}
+    s_a(K)^2+s_b(K)^2\le\tfrac12\norm K_F^2
+    \qquad\text{for all }a\ne b,\ K\in\mathcal A .
+\end{equation}
+
+\section{\texorpdfstring{$k\ge2$}{k >= 2}}
+
+\begin{theorem}
+\label{thm:kappa}
+For every $k\ge2$, $\kappa_k=\min\{k,4\}/4$, and hence
+$\beta_k(\Lambda_U\otimes\Lambda_V)=\min\{1,4/k\}$.
+\end{theorem}
+
+\begin{proof}
+Normalize $\norm K_F=1$ and write $\Sigma=\sum_js_j^2=1$.
+
+\emph{Upper bounds.}  For $k=2$, \cref{eq:pair} at $(a,b)=(1,2)$ gives
+$s_1^2+s_2^2\le\frac12$.  For $k=3$, apply \cref{eq:pair} at $(a,b)=(2,3)$:
+since $s_2\ge s_3$,
+\[
+    2s_3^2\le s_2^2+s_3^2\le\tfrac12,
+    \qquad\text{so}\qquad
+    s_3^2\le\tfrac14 ,
+\]
+and adding the $k=2$ bound gives $s_1^2+s_2^2+s_3^2\le\frac12+\frac14=\frac34$.
+For $k\ge4$ the bound $\sum_{j\le k}s_j^2\le1$ is trivial.
+
+\emph{Attainment.}  A single elementary tensor $L_{ab}\otimes M_{cd}$, with
+$L_{ab}=E_{ab}-E_{ba}$, has exactly four nonzero singular values, all equal, so
+after normalization $\sum_{j\le k}s_j^2=\min\{k,4\}/4$ for every $k$.
+\end{proof}
+
+\begin{remark}
+The pairing estimate $\sum_{j\le k}s_j^2\le\lceil k/2\rceil(s_1^2+s_2^2)$ gives
+$\lceil k/2\rceil/2$, which is $k/4$ for even $k$ but $(k+1)/4$ for odd $k$ ---
+at $k=3$ it yields only the trivial bound $1$.  What closes the odd case is the
+availability of \cref{eq:pair} at the pair $(2,3)$.  That generality was
+introduced for a different reason, namely to avoid ordering the singular values
+before the final step of the double-skew lemma.
+\end{remark}
+
+\section{\texorpdfstring{$k=1$}{k = 1} is different}
+
+Extrapolating \cref{thm:kappa} to $k=1$ would give $\kappa_1=\frac14$ and
+$\beta_1=1$.  Both are false as soon as both factors have dimension at least
+three.  Write $m:=\min\{\dim U,\dim V\}$.
+
+\begin{theorem}
+\label{thm:k1}
+Let $\dim U=\dim V=m\ge2$, let $\{L_\alpha\}$ be a Frobenius-orthonormal basis
+of $\mathfrak{so}(m)$, and set
+\[
+    K_m:=\sum_\alpha L_\alpha\otimes L_\alpha\in\mathcal A .
+\]
+Then
+\begin{equation}
+\label{eq:Km}
+    K_m=\tfrac12\bigl(m\ketbra\omega\omega-F\bigr),
+\end{equation}
+where $F$ is the flip on $\C^m\otimes\C^m$ and
+$\omega=m^{-1/2}\sum_ae_a\otimes e_a$.  Consequently $K_m$ has eigenvalue
+$\frac{m-1}2$ with multiplicity one and eigenvalues $\pm\frac12$ on the
+orthogonal complement, so
+\[
+    \frac{s_1(K_m)^2}{\norm{K_m}_F^2}
+    =\frac{(m-1)^2/4}{m(m-1)/2}
+    =\frac{m-1}{2m},
+    \qquad\text{whence}\qquad
+    \kappa_1\ge\frac{m-1}{2m} .
+\]
+In particular $\kappa_1>\frac14$ and $\beta_1=4\kappa_1>1$ for every $m\ge3$.
+\end{theorem}
+
+\begin{proof}
+Take $L_\alpha=(E_{ab}-E_{ba})/\sqrt2$ for $a<b$.  The summand of
+$\sum_{a<b}(E_{ab}-E_{ba})\otimes(E_{ab}-E_{ba})$ is invariant under $a\leftrightarrow b$,
+so
+\[
+    K_m
+    =\tfrac12\sum_{a<b}(E_{ab}-E_{ba})^{\otimes2}
+    =\tfrac14\sum_{a,b}(E_{ab}-E_{ba})^{\otimes2}
+    =\tfrac12\Bigl(\sum_{a,b}E_{ab}\otimes E_{ab}
+                  -\sum_{a,b}E_{ab}\otimes E_{ba}\Bigr).
+\]
+The second sum is $F$.  For the first, $E_{ab}e_c=\delta_{bc}e_a$ gives
+$\sum_{a,b}E_{ab}\otimes E_{ab}\,(e_c\otimes e_d)=\delta_{cd}\sum_ae_a\otimes e_a$,
+which is $m\ketbra\omega\omega$.  This is \cref{eq:Km}.
+
+Now $F$ is $+1$ on $\operatorname{Sym}^2$ and $-1$ on $\wedge^2$, and
+$\omega\in\operatorname{Sym}^2$ with $F\omega=\omega$.  Hence $K_m$ acts as
+$\frac12(m-1)$ on $\C\omega$, as $-\frac12$ on
+$\operatorname{Sym}^2\ominus\C\omega$, and as $+\frac12$ on $\wedge^2$.  Its
+squared Frobenius norm is therefore
+\[
+    \frac{(m-1)^2}4+\frac{m^2-1}4=\frac{m(m-1)}2,
+\]
+and $s_1=\frac{m-1}2$ since $\frac{m-1}2\ge\frac12$ for $m\ge2$.  Dividing gives
+the stated ratio.  For $m\ge3$ it exceeds $\frac14$; unequal factor dimensions
+only enlarge $\mathcal A$, so the bound persists with $m=\min\{\dim U,\dim V\}$.
+\end{proof}
+
+\begin{conjecture}
+\label{conj:k1}
+$\kappa_1=(m-1)/2m$, so that $\beta_1=2(m-1)/m$.
+\end{conjecture}
+
+Alternating maximization of $\norm{\Pi(M)}_F^2$ over rank-one $M$ agrees to five
+decimals at
+$(\dim U,\dim V)\in\{(2,2),(3,2),(5,2),(3,3),(4,3),(5,3),(4,4),(5,5),(6,6)\}$,
+in each case reproducing $(m-1)/2m$ with $m=\min\{\dim U,\dim V\}$.  Only the
+upper bound is open: \cref{eq:pair} applied to a pair $(1,b)$ with $s_b=0$ gives
+$\kappa_1\le\frac12$, and $(m-1)/2m\to\frac12$, so that estimate is
+asymptotically sharp.
+
+\begin{remark}[Why the extremizer changes]
+An elementary tensor $L\otimes M$ has four \emph{equal} singular values, which
+is what makes it optimal for every $k\ge2$ at once.  At $k=1$ the mass should
+instead be concentrated in a single singular value, and $K_m$ does that: it
+places $(m-1)^2/4$ of the total $m(m-1)/2$ on one eigenvector, the invariant
+$\omega$.  Equivalently, the top singular value of an element of $\mathcal A$ is
+not forced to be doubly degenerate --- an assumption which, if it held, would
+turn \cref{eq:pair} into $\kappa_1\le\frac14$.  It fails from $m=3$.
+\end{remark}
+
+\begin{remark}[On product testers]
+For $u=a\otimes b$ and $v=c\otimes d$ one has
+$\Pi(\ketbra uv)=P_\wedge(\ketbra ac)\otimes P_\wedge(\ketbra bd)$ with
+$P_\wedge(X)=\frac12(X-X^T)$, and the resulting ratio never exceeds $\frac14$.
+So the extremizers of \cref{thm:k1} are necessarily entangled across the
+$U:V$ cut, and $m=2$ is exactly the case where product testers suffice.
+\end{remark}
+
+\end{document}
