@@ -153,9 +153,19 @@ info: 'RankR.sum_norm_sq_le_min_of_doubleSkewQm' depends on axioms: [propext, Cl
 
 /-! ## The abstract liftings
 
-Neither depends on the double-skew subspace: `norm_sq_pair_le_of_choiTwoBound`
-is stated for an arbitrary Kraus family and an arbitrary member of its span,
+None depends on the double-skew subspace: `norm_sq_le_of_choiKBound` is stated
+for an arbitrary Kraus family and an arbitrary member of its span,
 `qform_krausQ_ptransposeUV_ge` for an arbitrary transpose-symmetric one. -/
+
+/-- info: 'RankR.norm_sq_le_of_choiKBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms norm_sq_le_of_choiKBound
+
+/--
+info: 'RankR.choiTwoBound_iff_choiKBound_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms choiTwoBound_iff_choiKBound_two
 
 /-- info: 'RankR.norm_sq_pair_le_of_choiTwoBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

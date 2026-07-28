@@ -13,13 +13,21 @@ recorded as `β`:
 so that `β = ½‖J(Φ)‖_{S(2)}`.  Since `J` is linear in `Φ`, so is `β`, and a map
 and its constant always carry the same scale.
 
-Three hypotheses suffice for the amplification step of `lem:double-skew`: that
-`K` lies in the span of the family, that `J(Φ)` obeys `ChoiTwoBound _ β`, and
-that `x, y` are orthonormal.  The compression `K P` onto `span {x, y}` pairs with
-`K` to `‖K P‖₂²`, expands along the Kraus index by Cauchy-Schwarz, and is
-rank-two, so the three combine into
+The same reading at every level `k` records `β_k = (1/k)‖J(Φ)‖_{S(k)}` as
+`ChoiKBound J k β`, and `ChoiTwoBound` is the case `k = 2`
+(`choiTwoBound_iff_choiKBound_two`).
 
-  `‖K x‖² + ‖K y‖² ≤ 2β ∑ₐ |cₐ|²`     (`norm_sq_pair_le_of_choiTwoBound`).
+Three hypotheses suffice for the amplification step of `lem:double-skew`: that
+`K` lies in the span of the family, that `J(Φ)` obeys `ChoiKBound _ k β`, and
+that `x` is an orthonormal `k`-tuple.  The compression `K P` onto the span of the
+tuple pairs with `K` to `‖K P‖₂²`, expands along the Kraus index by
+Cauchy-Schwarz, and has rank at most `k`, so the three combine into
+
+  `∑ᵢ ‖K xᵢ‖² ≤ kβ ∑ₐ |cₐ|²`     (`norm_sq_le_of_choiKBound`),
+
+of which the two-term form `‖K x‖² + ‖K y‖² ≤ 2β ∑ₐ |cₐ|²` is the case `k = 2`.
+Only self-adjoint idempotence of the projection and the rank bound are used, so
+the tuple length enters solely through the constant.
 
 For the double-skew family `J` is `16 Qm` (`RankR.choiOf_skewKraus`), so
 Fu-Gao-Park's `‖Qm‖_{S(2)} = ½` reads `β = 4`.
@@ -157,6 +165,85 @@ theorem hsInner_mul_proj2 (K : Matrix W W ℂ) (hx : ‖x‖ = 1) (hy : ‖y‖ 
 
 end Projection
 
+/-! ## The rank-`k` projection
+
+`projK x` is the orthogonal projection onto the span of an orthonormal `k`-tuple.
+Everything the amplification step asks of `proj2` is asked of a self-adjoint
+idempotent of rank at most `k`, and the two-term structure is never used, so the
+same four identities hold verbatim one index at a time. -/
+
+section ProjectionK
+
+variable {W : Type*} [Fintype W] {k : ℕ} {x : Fin k → EuclideanSpace ℂ W}
+
+/-- The orthogonal projection onto the span of an orthonormal `k`-tuple. -/
+noncomputable def projK {k : ℕ} (x : Fin k → EuclideanSpace ℂ W) : Matrix W W ℂ :=
+  ∑ i, rankOne (x i) (x i)
+
+omit [Fintype W] in
+/-- A sum of rank-one projectors is self-adjoint. -/
+theorem projK_conjTranspose : (projK x)ᴴ = projK x := by
+  rw [projK, Matrix.conjTranspose_sum]
+  exact Finset.sum_congr rfl fun i _ => rankOne_conjTranspose _ _
+
+/-- Orthonormality of the tuple makes the projection idempotent: the cross terms
+carry the vanishing overlaps and the diagonal terms reproduce the sum. -/
+theorem projK_mul_self (hx : Orthonormal ℂ x) : projK x * projK x = projK x := by
+  rw [projK, Matrix.sum_mul]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  rw [Matrix.mul_sum]
+  have h : ∀ j : Fin k, rankOne (x i) (x i) * rankOne (x j) (x j)
+      = if i = j then rankOne (x i) (x i) else 0 := fun j => by
+    rw [rankOne_mul_rankOne, orthonormal_iff_ite.mp hx i j]
+    by_cases hij : i = j
+    · subst hij; rw [if_pos rfl, if_pos rfl, one_smul]
+    · rw [if_neg hij, if_neg hij, zero_smul]
+  rw [Finset.sum_congr rfl fun j _ => h j, Finset.sum_ite_eq]
+  simp
+
+/-- `K P` is the `k`-term operator `∑ᵢ |K xᵢ⟩⟨xᵢ|`; this is the unrolling of
+"rank at most `k`" that `ChoiKBound` quantifies over. -/
+theorem mul_projK (K : Matrix W W ℂ) (x : Fin k → EuclideanSpace ℂ W) :
+    K * projK x = ∑ i, rankOne (mulVecE K (x i)) (x i) := by
+  rw [projK, Matrix.mul_sum]
+  exact Finset.sum_congr rfl fun i _ => mul_rankOne _ _ _
+
+/-- `‖K P‖₂²` is the action of `K` on the orthonormal tuple. -/
+theorem hsNormSq_mul_projK (K : Matrix W W ℂ) (hx : Orthonormal ℂ x) :
+    hsNormSq (K * projK x) = ∑ i, ‖mulVecE K (x i)‖ ^ 2 := by
+  rw [mul_projK, ← Complex.ofReal_inj, ← hsInner_self, hsInner_sum_sum, Complex.ofReal_sum]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  have h : ∀ j : Fin k,
+      hsInner (rankOne (mulVecE K (x i)) (x i)) (rankOne (mulVecE K (x j)) (x j))
+        = if i = j then ((‖mulVecE K (x i)‖ ^ 2 : ℝ) : ℂ) else 0 := fun j => by
+    rw [hsInner_rankOne, orthonormal_iff_ite.mp hx i j]
+    by_cases hij : i = j
+    · subst hij
+      rw [if_pos rfl, if_pos rfl, map_one, mul_one, inner_self_eq_norm_sq_to_K]
+      norm_cast
+    · rw [if_neg hij, if_neg hij, map_zero, mul_zero]
+  rw [Finset.sum_congr rfl fun j _ => h j, Finset.sum_ite_eq]
+  simp
+
+/-- `⟪K, K P⟫ = ‖K P‖₂²`, because `P` is a self-adjoint idempotent.  This is what
+lets the compressed operator be tested against `K` itself. -/
+theorem hsInner_mul_projK (K : Matrix W W ℂ) (hx : Orthonormal ℂ x) :
+    hsInner K (K * projK x) = (hsNormSq (K * projK x) : ℂ) := by
+  rw [← hsInner_self]
+  have e1 : hsInner K (K * projK x) = (Kᴴ * K * projK x).trace := by
+    rw [hsInner, Matrix.mul_assoc]
+  have e2 : hsInner (K * projK x) (K * projK x) = (Kᴴ * K * projK x).trace := by
+    rw [hsInner, Matrix.conjTranspose_mul, projK_conjTranspose,
+      show projK x * Kᴴ * (K * projK x) = projK x * (Kᴴ * K * projK x) by
+        simp only [Matrix.mul_assoc],
+      Matrix.trace_mul_comm,
+      show Kᴴ * K * projK x * projK x = Kᴴ * K * (projK x * projK x) by
+        simp only [Matrix.mul_assoc],
+      projK_mul_self hx]
+  rw [e1, e2]
+
+end ProjectionK
+
 /-! ## The Choi operator of a Kraus family -/
 
 section Choi
@@ -224,6 +311,40 @@ theorem choiTwoBound_smul {J : Matrix (W × W) (W × W) ℂ} {β t : ℝ} (ht : 
     sub_zero]
   nlinarith [hq]
 
+/-- `β` bounds the `S(k)`-norm of `J` up to the factor `k`: the quadratic form of
+`J` at the vectorization of a matrix of rank at most `k` is at most `kβ` times its
+squared Hilbert-Schmidt norm.
+
+The rank-`k` hypothesis is unrolled the same way `ChoiTwoBound` unrolls rank two:
+a matrix has rank at most `k` precisely when it is a sum of `k` rank-one
+operators, so quantifying over the two `k`-tuples of vectors is the condition
+itself.
+
+The least such `β` is `β_k = (1/k)‖J‖_{S(k)}`, the level-`k` Choi constant; the
+normalization by `k` is what makes `β_k` decrease as `k` grows and keeps `β_2`
+equal to the constant of pair amplification. -/
+def ChoiKBound (J : Matrix (W × W) (W × W) ℂ) (k : ℕ) (β : ℝ) : Prop :=
+  ∀ u v : Fin k → EuclideanSpace ℂ W,
+    (qform J (vec (∑ i, rankOne (u i) (v i)))).re
+      ≤ k * β * hsNormSq (∑ i, rankOne (u i) (v i))
+
+/-- **The rank-two bound is the level-two bound.**  A sum of two rank-one
+operators is a `Fin 2`-indexed sum of rank-one operators, and `k = 2` makes the
+two constants agree. -/
+theorem choiTwoBound_iff_choiKBound_two {J : Matrix (W × W) (W × W) ℂ} {β : ℝ} :
+    ChoiTwoBound J β ↔ ChoiKBound J 2 β := by
+  constructor
+  · intro h u v
+    have hu := h (u 0) (v 0) (u 1) (v 1)
+    rw [Fin.sum_univ_two]
+    push_cast
+    exact hu
+  · intro h u₁ v₁ u₂ v₂
+    have hu := h ![u₁, u₂] ![v₁, v₂]
+    rw [Fin.sum_univ_two] at hu
+    push_cast at hu
+    simpa using hu
+
 end TwoBound
 
 /-! ## Lifting I
@@ -235,65 +356,79 @@ section LiftingOne
 
 variable {W ι : Type*} [Fintype W] [Fintype ι]
 
-/-- **Lifting I.**  For `K = ∑ₐ cₐ Aₐ` in the span of a Kraus family whose Choi
-operator obeys `ChoiTwoBound _ β`, and any orthonormal pair `x ⊥ y`,
+/-- **Lifting I, at level `k`.**  For `K = ∑ₐ cₐ Aₐ` in the span of a Kraus family
+whose Choi operator obeys `ChoiKBound _ k β`, and any orthonormal `k`-tuple `x`,
 
-  `‖K x‖² + ‖K y‖² ≤ 2β ∑ₐ |cₐ|²`.
+  `∑ᵢ ‖K xᵢ‖² ≤ kβ ∑ₐ |cₐ|²`.
 
-Writing `P` for the projection onto `span {x, y}` and `A = ‖K P‖₂²`, the chain is
+Writing `P` for the projection onto the span of the tuple and `A = ‖K P‖₂²`, the
+chain is
 
   `A = ⟪K, K P⟫ = ∑ₐ conj(cₐ) ⟪Aₐ, K P⟫ ≤ ‖c‖ · ⟪vec(K P), J vec(K P)⟫^½
-     ≤ ‖c‖ · (2β A)^½`,
+     ≤ ‖c‖ · (kβ A)^½`,
 
 after which one factor of `A` cancels.  The first equality is idempotence and
 self-adjointness of `P`; the inequality is Cauchy-Schwarz on the Kraus index; the
-last step is the rank-two bound applied to `K P`, whose two-term form
-`|Kx⟩⟨x| + |Ky⟩⟨y|` is `mul_proj2`.
+last step is the rank-`k` bound applied to `K P`, whose `k`-term form
+`∑ᵢ |K xᵢ⟩⟨xᵢ|` is `mul_projK`.
 
 Read through `vec`, this is `‖S‖² ≤ ‖S S*‖` for the synthesis operator
-`S : c ↦ ∑ₐ cₐ Aₐ` in the `S(2)`-norm, the elementary half of the Johnston-Kribs
-duality; that a rank-two compression suffices to test an orthonormal pair is
+`S : c ↦ ∑ₐ cₐ Aₐ` in the `S(k)`-norm, the elementary half of the Johnston-Kribs
+duality; that a rank-`k` compression suffices to test an orthonormal `k`-tuple is
 Takasaki and Tomiyama, *On the geometry of positive maps in matrix algebras*,
 Math. Z. 184:101--108 (1983), Prop. 1.1. -/
-theorem norm_sq_pair_le_of_choiTwoBound {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β)
-    (hJ : ChoiTwoBound (choiOf A) β) (c : ι → ℂ)
-    {x y : EuclideanSpace ℂ W} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1)
-    (hxy : inner ℂ x y = (0 : ℂ)) :
-    ‖mulVecE (∑ a, c a • A a) x‖ ^ 2 + ‖mulVecE (∑ a, c a • A a) y‖ ^ 2
-      ≤ 2 * β * ∑ a, Complex.normSq (c a) := by
+theorem norm_sq_le_of_choiKBound {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β) {k : ℕ}
+    (hJ : ChoiKBound (choiOf A) k β) (c : ι → ℂ)
+    {x : Fin k → EuclideanSpace ℂ W} (hx : Orthonormal ℂ x) :
+    ∑ i, ‖mulVecE (∑ a, c a • A a) (x i)‖ ^ 2 ≤ k * β * ∑ a, Complex.normSq (c a) := by
   set K : Matrix W W ℂ := ∑ a, c a • A a with hK
-  set M : Matrix W W ℂ := K * proj2 x y with hM
+  set M : Matrix W W ℂ := K * projK x with hM
   set N : ℝ := hsNormSq M with hN
   have hN0 : 0 ≤ N := hsNormSq_nonneg _
   -- the coefficient vector and the vector of overlaps, as Euclidean vectors
   set cv : EuclideanSpace ℂ ι := WithLp.toLp 2 c with hcv
   set zv : EuclideanSpace ℂ ι := WithLp.toLp 2 (fun a => hsInner (A a) M) with hzv
-  have hcvn : ‖cv‖ ^ 2 = ∑ a, Complex.normSq (c a) := by
-    rw [EuclideanSpace.norm_eq, Real.sq_sqrt (by positivity)]
-    exact Finset.sum_congr rfl fun a _ => (Complex.normSq_eq_norm_sq _).symm
+  have hcvn : ‖cv‖ ^ 2 = ∑ a, Complex.normSq (c a) := norm_sq_eq_sum_normSq _
   have hzvn : ‖zv‖ ^ 2 = ∑ a, Complex.normSq (inner ℂ (vec (A a)) (vec M)) := by
-    rw [EuclideanSpace.norm_eq, Real.sq_sqrt (by positivity)]
-    exact Finset.sum_congr rfl fun a _ => by
-      rw [← Complex.normSq_eq_norm_sq]
-      exact congrArg Complex.normSq (hsInner_eq_inner _ _)
+    rw [norm_sq_eq_sum_normSq]
+    exact Finset.sum_congr rfl fun a _ => congrArg Complex.normSq (hsInner_eq_inner _ _)
   -- `⟪c, z⟫ = ⟪K, K P⟫ = ‖K P‖₂²`
   have hpair : (inner ℂ cv zv : ℂ) = (N : ℂ) := by
-    rw [← hsInner_mul_proj2 K hx hy hxy, hK, hsInner_sum_left]
-    rw [PiLp.inner_apply]
+    rw [← hsInner_mul_projK K hx, hK, hsInner_sum_left, PiLp.inner_apply]
     exact Finset.sum_congr rfl fun a _ => by
       rw [RCLike.inner_apply']
       exact (hsInner_smul_left _ _ _).symm
   have hcs : N ≤ ‖cv‖ * ‖zv‖ := by
     have h := norm_inner_le_norm (𝕜 := ℂ) cv zv
     rwa [hpair, Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg hN0] at h
-  -- the rank-two bound, applied to `K P`
-  have hrank2 : ‖zv‖ ^ 2 ≤ 2 * β * N := by
-    rw [hzvn, ← re_qform_choiOf, hM, hN, hM]
-    rw [mul_proj2]
-    exact hJ _ _ _ _
-  rw [← hsNormSq_mul_proj2 K hx hy hxy, ← hM, ← hN, ← hcvn]
-  nlinarith [hcs, hrank2, hN0, norm_nonneg cv, norm_nonneg zv,
-    mul_nonneg hβ (sq_nonneg ‖cv‖)]
+  -- the rank-`k` bound, applied to `K P`
+  have hrankk : ‖zv‖ ^ 2 ≤ k * β * N := by
+    rw [hzvn, ← re_qform_choiOf, hM, hN, hM, mul_projK]
+    exact hJ (fun i => mulVecE K (x i)) x
+  rw [← hsNormSq_mul_projK K hx, ← hM, ← hN, ← hcvn]
+  nlinarith [hcs, hrankk, hN0, norm_nonneg cv, norm_nonneg zv,
+    mul_nonneg (mul_nonneg (Nat.cast_nonneg (α := ℝ) k) hβ) (sq_nonneg ‖cv‖)]
+
+/-- **Lifting I.**  The level-two case, in the two-term form the amplification
+step of `lem:double-skew` consumes: for an orthonormal pair `x ⊥ y`,
+
+  `‖K x‖² + ‖K y‖² ≤ 2β ∑ₐ |cₐ|²`. -/
+theorem norm_sq_pair_le_of_choiTwoBound {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β)
+    (hJ : ChoiTwoBound (choiOf A) β) (c : ι → ℂ)
+    {x y : EuclideanSpace ℂ W} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1)
+    (hxy : inner ℂ x y = (0 : ℂ)) :
+    ‖mulVecE (∑ a, c a • A a) x‖ ^ 2 + ‖mulVecE (∑ a, c a • A a) y‖ ^ 2
+      ≤ 2 * β * ∑ a, Complex.normSq (c a) := by
+  have hyx : (inner ℂ y x : ℂ) = 0 := by rw [← inner_conj_symm, hxy, map_zero]
+  have ho : Orthonormal ℂ ![x, y] := by
+    rw [orthonormal_iff_ite]
+    intro i j
+    fin_cases i <;> fin_cases j <;>
+      simp [hxy, hyx, inner_self_eq_norm_sq_to_K, hx, hy]
+  have h := norm_sq_le_of_choiKBound hβ (choiTwoBound_iff_choiKBound_two.mp hJ) c ho
+  rw [Fin.sum_univ_two] at h
+  push_cast at h
+  simpa using h
 
 end LiftingOne
 
