@@ -2571,8 +2571,13 @@ weights in step 4 of \cref{lem:double-skew} & \texttt{exists\_pair\_sum\_weighte
 zero extension in \cref{rem:fgp-equivalence} & \texttt{FGPBound\_of\_card\_le}\\
 \cref{def:beta2}, $J(\Phi)$ & \texttt{choiOf}\\
 \cref{def:beta2}, $\beta_2$ & \texttt{ChoiTwoBound}\\
+\cref{def:beta2}, attainment & \texttt{ChoiTwoAttained},\\
+ & \texttt{le\_of\_choiTwoAttained}\\
 \cref{eq:beta2-double-skew} & \texttt{choiOf\_skewKraus},\\
  & \texttt{choiTwoBound\_skewKraus}\\
+\cref{eq:beta2-double-skew}, as an equality
+  & \texttt{choiTwoBound\_skewKraus\_iff}\\
+\cref{thm:pair-amplification} & \texttt{thetaPositive\_of\_choiTwoBound}\\
 \cref{eq:kraus-cauchy-schwarz}, \cref{eq:kraus-pair-bound}
   & \texttt{norm\_sq\_pair\_le\_of\_choiTwoBound}\\
 \cref{eq:amplification-A} & \texttt{qform\_krausQ\_Pneg\_le}\\
@@ -2591,6 +2596,10 @@ $\Delta_{U\otimes V}=\Delta_U\otimes\Delta_V$ & \texttt{RU\_zero\_RV\_zero}\\
 \cref{eq:T-by-vertices} & \texttt{Tsyn\_eq\_delta\_vtx}\\
 \cref{eq:T-operator-bound} & \texttt{norm\_Tsyn\_sq\_le}\\
 \cref{eq:T-orthogonal} & \texttt{inner\_delta\_placeQ\_kron\_zetaV}\\
+\cref{eq:T-orthogonal}, converse & \texttt{inner\_delta\_placeQ\_zetaV\_iff}\\
+\cref{rem:parity}, odd degree
+  & \texttt{inner\_delta\_placeQ\_zetaV\_of\_isSkew},\\
+ & \texttt{not\_qform\_krausQ\_Pneg\_le\_skewFam}\\
 \cref{lem:partial-trace-contractions} & \texttt{contraction\_norm},
   \texttt{contraction\_trace},\\
  & \texttt{hsNormSq\_ptraceU\_rankFactor},\\
@@ -2614,6 +2623,7 @@ its rank and its four norms & \texttt{rank\_projWit},
  & \texttt{hsNormSq\_ptraceU\_projWit},\\
  & \texttt{hsNormSq\_ptraceV\_projWit}\\
 equality at the extremizer & \texttt{projWit\_bound\_eq}\\
+$J(\Psi_r)$ attained at it & \texttt{re\_qform\_psiChoi\_projWit}\\
 optimality of $a=r$ & \texttt{le\_coeff\_hsNormSq\_of\_bound}\\
 optimality of $b=1/r$ & \texttt{inv\_le\_coeff\_trace\_of\_bound}\\
 \hline
@@ -2632,6 +2642,41 @@ this does not affect positivity.  Third, what is certified is the deduction,
 not the faithfulness of the formal definitions to the informal ones; the
 conventions those definitions encode are exactly the ones fixed in the
 introduction.
+
+\paragraph{Constants pinned, not merely bounded.}
+\texttt{ChoiTwoBound} is an upper bound, and monotone in its constant: it holds
+at $10^6$ whenever it holds at all.  On its own, therefore, it names no number,
+and the development as described so far certifies \cref{eq:beta2-double-skew}
+only as an inequality.  \texttt{Sharp.lean} supplies the other half.  It adds the
+dual predicate \texttt{ChoiTwoAttained} --- the bound met with equality at some
+nonzero operator of rank at most two --- together with the leastness principle
+the pair generates, \texttt{le\_of\_choiTwoAttained}, and then exhibits an
+extremizer: $M=NP$ with $N=J_U\otimes J_V$ an elementary tensor of rotation
+generators and $P$ a rank-two projection, so that $N$ being unitary makes the two
+singular values of $M$ coincide, which is the equality case of the Ky Fan
+estimate behind $\norm{Q_-}_{S(2)}=\frac12$.  The conclusion is
+\texttt{choiTwoBound\_skewKraus\_iff}: the constants valid for
+$\Lambda_U\otimes\Lambda_V$ are exactly the reals $\ge4$ in the $\Phi_4$ scaling,
+so \cref{eq:beta2-double-skew} is an equality.
+\texttt{re\_qform\_psiChoi\_projWit} does the same for the conclusion --- the
+$r$-block positivity of $J(\Psi_r)$ is attained at the extremizer of
+\cref{rem:optimality}, hence cannot be sharpened to a strict inequality.
+
+\paragraph{A second instance of the mechanism.}
+The edge-Kraus family $A_e=(E_{ij}-E_{ji})\otimes(E_{01}-E_{10})$ attached to the
+edges of a graph is formalized in \texttt{GraphFamily.lean}, with
+$\beta_2(\Phi_G)=1$ exactly (\texttt{choiTwoBound\_graphKraus\_iff}), and
+\texttt{Theta.lean} together with \texttt{ThetaBound.lean} pin its amplification
+threshold: for a graph containing an $R$-clique, $\Theta^{\Phi_G}_{R,\lambda}$ is
+$R$-positive precisely for $\lambda\ge R-1$
+(\texttt{thetaPositive\_graphKraus\_iff}).  The lower half is the witness
+$C=P_S\otimes E_{01}$, which is the extremizer \texttt{projWit} of
+\cref{rem:optimality} read at a two-element second factor; an edge contributes
+$-2$ to the Choi pairing exactly when both of its endpoints lie in $S$, and the
+general form of that count, \texttt{two\_mul\_card\_le\_of\_thetaPositive}, is an
+induced-average-degree obstruction.  These are the development's only statements
+about the \emph{optimal} amplification coefficient rather than about a valid one,
+and they show the bound $(r-1)\beta_2$ of \cref{thm:amplification} is attained.
 
 The formalization follows the arguments of \cref{sec:double-skew,sec:proof}
 except at two points, where it takes a shorter route:
@@ -2661,7 +2706,21 @@ appearing in exactly the second and fourth.  The partial-trace conclusions are
 $\beta_2=1$, and \cref{eq:main-bound-parametrized} is not formalized, the
 contraction \cref{eq:Phi-rhoT} being specific to that family.  What is abstract
 is the lifting layer, where $\Phi=\Lambda_U\otimes\Lambda_V$ enters only through
-\cref{eq:beta2-double-skew}.  Those files, and \texttt{Sectors}, \texttt{Synth},
+\cref{eq:beta2-double-skew}.  \Cref{thm:pair-amplification} \emph{is} covered at
+general $\beta_2$, as \texttt{thetaPositive\_of\_choiTwoBound}: writing
+$\Theta^\Phi_{R,\lambda}$ for $\Phi\circ\tau+\lambda(\Delta_d-\frac1R\id)$ and
+taking $R$-positivity in its Choi form, that map is $R$-positive at
+$\lambda=(R-1)\beta$ for every $\beta$ admissible in \cref{def:beta2} and every
+completely positive $\Phi$ with transpose-symmetric Kraus operators.  The
+conversion from \cref{thm:amplification} does not use \cref{eq:Phi-rhoT}, which
+is why it survives the loss of the double-skew family: it runs
+\cref{eq:amplification-B} at the \emph{conjugated} frame $\overline e$ of the
+range factorization \cref{eq:C-decomposition} and at the test vector
+$\delta_{\overline d}$, where the negative-sector term is exactly the Choi
+pairing of $\Phi\circ\tau$.  Both sides are double sums over the frame indices of
+the \emph{bilinear} pairing $B(x,y)=\sum_wx_wy_w$ --- the partial transpose is
+what replaces the inner product by a bilinear one --- and they match term by term
+through $B(A^*\overline x,\overline y)=\overline{B(Ay,x)}$.  Those files, and \texttt{Sectors}, \texttt{Synth},
 \texttt{Frame} and \texttt{Edge} beneath them, are stated over a single space
 rather than over $U\otimes V$; the bipartite structure enters at the $\Phi_4$
 kernel and not before.  \Cref{eq:map-identity} is covered as
@@ -2672,10 +2731,23 @@ $r$-block-positivity reading of \cref{rem:operator-ineq-as-map} as
 \texttt{isBlockPositive\_psiChoi}.  The $r$-positivity statement of
 \cref{thm:amplification} is formalized in the unrolled form
 $\rank C\le r$ rather than through a definition of Schmidt rank, exactly as
-\texttt{FGPBound} is.  \Cref{rem:parity} and \cref{rem:covariance} are
-observations about the mechanism of the formalized proof, not further claims;
-the $\Z/2$-grading and the two-dimensionality of the commutant are not
-themselves formalized.
+\texttt{FGPBound} is.  \Cref{rem:parity} is formalized, in both directions and
+past the point the remark itself argues.  \texttt{inner\_delta\_placeQ\_zetaV\_iff}
+upgrades \cref{eq:T-orthogonal} to an equivalence --- orthogonality of every
+$(N\otimes I_Q)\zeta_{ij}$ to $\delta_e$ \emph{is} the degree-$0$ hypothesis, so
+that hypothesis is exact and not merely sufficient --- and
+\texttt{inner\_delta\_placeQ\_zetaV\_of\_isSkew} evaluates the same pairing in
+odd degree, where the two terms add instead of cancelling.  That the
+\emph{conclusion} and not only the proof is then lost is a separate statement,
+and is \texttt{not\_qform\_krausQ\_Pneg\_le\_skewFam}: for the one-element family
+$J=E_{01}-E_{10}$ on $\C^2$, at $r=2$ and $y=\delta_e$, the protected right-hand
+side of \cref{eq:amplification-A} vanishes identically --- for every value of
+$\beta_2$, so no constant rescues it --- while the left-hand side is $4$; and the
+same data meets the unprotected \cref{eq:amplification-A0} with equality
+(\texttt{qform\_krausQ\_Pneg\_skewFam\_saturates}), so the gap between the two
+displays is exactly the direction $\delta_e$.  \Cref{rem:covariance} remains an
+observation about the mechanism: the two-dimensionality of the commutant is not
+formalized.
 
 % This appendix is independent of the main line of argument: nothing in
 % Sections 2-5 depends on it.  It records the algebraic defect structure

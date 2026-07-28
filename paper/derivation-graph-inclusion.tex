@@ -402,7 +402,8 @@ conflated: the smaller count certifies the unprotected corner.
 
 \section*{What is and is not established}
 
-Established: the exact constant $\beta_2(\Phi_G)=1$; attainment of the
+Established, and for the first three machine-checked (see below): the exact
+constant $\beta_2(\Phi_G)=1$; attainment of the
 amplified coefficient $R-1$ for graphs with an $R$-clique, and the induced
 average-degree lower bound \cref{eq:avgdeg}; invariance of
 $\cU_G=\cS_G\otimes\cD_2$ with the layer action \cref{eq:layer}; a positive
@@ -417,6 +418,50 @@ The Bose--Mesner algebra alone does not suffice, being commutative, so that
 positivity of a map out of it already forces complete positivity.  Finally, we
 have not carried out a literature priority check for this formulation; targeted
 searches did not surface it, which is not the same thing.
+
+\section*{Formal verification}
+
+\Cref{lem:beta} and both halves of \cref{thm:clique} are machine-checked in the
+Lean~4 development accompanying \texttt{rank-r.tex},
+\url{https://github.com/elazarg/rank-r}, in the files \texttt{GraphFamily.lean},
+\texttt{Theta.lean} and \texttt{ThetaBound.lean}.
+
+\begin{center}
+\begin{tabular}{ll}
+\hline
+Here & Lean\\
+\hline
+$A_e$ of \cref{eq:kraus} & \texttt{edgeKraus}, \texttt{graphKraus}\\
+\cref{lem:beta} & \texttt{choiTwoBound\_graphKraus\_iff}\\
+$R$-positivity of \cref{eq:theta} & \texttt{ThetaPositive}\\
+$\lambda^*_R(\Phi)\le(R-1)\beta_2(\Phi)$ of \cref{eq:lamstar}
+  & \texttt{thetaPositive\_of\_choiTwoBound}\\
+\cref{eq:avgdeg} & \texttt{two\_mul\_card\_le\_of\_thetaPositive}\\
+\cref{thm:clique}, clique case & \texttt{thetaPositive\_graphKraus\_iff}\\
+\hline
+\end{tabular}
+\end{center}
+
+Two of those are stronger than stated here.  \Cref{lem:beta} is formalized
+two-sidedly --- the constants valid for $\Phi_G$ are exactly the reals $\ge1$ ---
+so $\beta_2(\Phi_G)=1$ is certified as an equality rather than as a bound; and
+the clique case of \cref{thm:clique} is an equivalence, $\Theta^G_{R,\lambda}$
+being $R$-positive precisely for $\lambda\ge R-1$.
+
+The formal upper bound does not follow the singular-value argument given above.
+Every $A_e$ lies in the double-skew subspace, so the antisymmetrizer $Q_-$ fixes
+its vectorization and, being self-adjoint, lets each pairing
+$\ip{\operatorname{vec}A_e}{\operatorname{vec}M}$ be read at
+$Q_-\operatorname{vec}M$ instead; the $\operatorname{vec}A_e$ are orthogonal of
+squared norm $4$, so Bessel reduces the estimate to
+$\norm{Q_-}_{S(2)}=\frac12$, which \texttt{rank-r.tex} already carries.  The
+lower bound runs on the witness $C=P_S\otimes E_{01}$, which in the development
+is the extremizer already built for the sharpness half of Theorem~1.1 there.
+
+Not formalized: \cref{prop:layers}, \cref{lem:dict}, \cref{lem:witness} and
+\cref{thm:inclusion}, together with the operator systems $\cS_G$ and $\cU_G$ and
+the free-spectrahedral dictionary they rest on.  Those restate \cref{thm:clique}
+in matrix-convexity language and introduce no new constant.
 
 \section*{Numerical corroboration}
 

@@ -32,6 +32,11 @@ import RankR.Equivalence
 import RankR.KyFanAction
 import RankR.Exterior
 import RankR.HigherArity
+import RankR.GraphFamily
+import RankR.Theta
+import RankR.ThetaBound
+import RankR.Parity
+import RankR.Sharp
 
 namespace RankR
 
@@ -313,5 +318,130 @@ Nothing below depends on the Fu-Gao-Park estimate, in any form. -/
 /-- info: 'RankR.inv_le_coeff_trace_of_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms inv_le_coeff_trace_of_bound
+
+/-! ## The rank-two Choi constant, pinned from below
+
+`ChoiTwoBound` is an upper bound, and monotone in its constant
+(`choiTwoBound_mono`), so on its own it determines nothing.  `Sharp.lean` carries
+the attainment half, and `choiTwoBound_skewKraus_iff` is the two-sided statement
+that certifies `β₂(Λ_U ⊗ Λ_V) = 1` as an equality. -/
+
+/-- info: 'RankR.qform_Qm_sharpWit' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_Qm_sharpWit
+
+/-- info: 'RankR.choiTwoAttained_skewKraus' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiTwoAttained_skewKraus
+
+/-- info: 'RankR.choiTwoBound_skewKraus_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiTwoBound_skewKraus_iff
+
+/-- info: 'RankR.re_qform_psiChoi_projWit' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms re_qform_psiChoi_projWit
+
+/-! ## The parity dichotomy of `eq:T-orthogonal`
+
+`Frame.lean` gives one direction; `Parity.lean` carries the converse, so
+`IsFrameSymmetric` is the exact hypothesis and not merely a sufficient one.  The
+last two entries go further: a skew family saturates form (A₀) and refutes form
+(A), so the hypothesis is load-bearing for the conclusion and not only for the
+proof. -/
+
+/-- info: 'RankR.inner_delta_placeQ_zetaV_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms inner_delta_placeQ_zetaV_iff
+
+/-- info: 'RankR.inner_delta_placeQ_zetaV_of_isSkew' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms inner_delta_placeQ_zetaV_of_isSkew
+
+/-- info: 'RankR.not_isFrameSymmetric_skewFam' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms not_isFrameSymmetric_skewFam
+
+/-- info: 'RankR.qform_krausQ_Pneg_skewFam_saturates' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_krausQ_Pneg_skewFam_saturates
+
+/-- info: 'RankR.not_qform_krausQ_Pneg_le_skewFam' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms not_qform_krausQ_Pneg_le_skewFam
+
+/-! ## The edge-Kraus family of a graph
+
+`lem:beta` of `paper/derivation-graph-inclusion.tex`: the rank-two Choi constant
+of `Φ_G` is exactly `1`, for every graph with an edge.  This is the second
+instance of the two-sided form, and the first one whose upper half is derived
+rather than computed: every edge operator is double-skew, so `Qm` dominates the
+whole family. -/
+
+/-- info: 'RankR.orthonormal_graphKraus' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms orthonormal_graphKraus
+
+/-- info: 'RankR.choiTwoBound_graphKraus' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiTwoBound_graphKraus
+
+/-- info: 'RankR.choiTwoBound_graphKraus_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiTwoBound_graphKraus_iff
+
+/-! ## The amplification threshold, and its obstruction
+
+`thm:clique` of `paper/derivation-graph-inclusion.tex`.  `ThetaPositive` is the
+`R`-positivity of `Θ^Φ_{R,λ}` in Choi form; it is monotone in `λ`, so as with
+`ChoiTwoBound` it names no number on its own.  The witness `P_S ⊗ E_{01}` is the
+extremizer of `Optimal.lean`, and evaluating there bounds the *optimal*
+amplification coefficient from below --- the first statement in the development
+about `λ*` rather than about a valid `λ`. -/
+
+/-- info: 'RankR.thetaPositive_mono' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms thetaPositive_mono
+
+/-- info: 'RankR.two_mul_card_ltPairs' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms two_mul_card_ltPairs
+
+/--
+info: 'RankR.two_mul_card_le_of_thetaPositive' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms two_mul_card_le_of_thetaPositive
+
+/-- info: 'RankR.sub_one_le_lam_of_clique' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms sub_one_le_lam_of_clique
+
+/-! ## Pair amplification in Choi form, and the threshold pinned
+
+`thetaPositive_of_choiTwoBound` is `thm:pair-amplification` for an arbitrary
+completely positive map with transpose-symmetric Kraus operators --- the general
+statement of which `Theorem.lean` proves only the `Λ_U ⊗ Λ_V` instance, and it
+needs no contraction identity.  `thetaPositive_graphKraus_iff` combines it with
+the clique witness: for a graph with an `R`-clique the threshold is exactly
+`R - 1`. -/
+
+/--
+info: 'RankR.thetaPair_eq_qform_krausQ' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms thetaPair_eq_qform_krausQ
+
+/--
+info: 'RankR.thetaPositive_of_choiTwoBound' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms thetaPositive_of_choiTwoBound
+
+/--
+info: 'RankR.thetaPositive_graphKraus_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms thetaPositive_graphKraus_iff
 
 end RankR

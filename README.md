@@ -150,6 +150,68 @@ Two labelled equations of the manuscript, `eq:Phi-Pminus-TTstar` and
 route in `Bessel.lean` never forms the synthesis map as a matrix, which removes
 the need for both. They remain unverified as claims about the paper.
 
+### Constants pinned from below
+
+`ChoiTwoBound J β` is an upper bound and monotone in `β` (`choiTwoBound_mono`):
+it holds at `10⁶` whenever it holds at all, so on its own it names no number.
+Every constant in the development above is consumed in that form, which leaves
+the manuscript's `β₂(Λ_U ⊗ Λ_V) = 1` uncertified as an *equality*.
+
+`Sharp.lean` adds the dual predicate `ChoiTwoAttained` and the leastness
+principle it generates, then exhibits an extremizer: `M = NP` with `N = J_U ⊗ J_V`
+unitary and `P` a rank-two projection, so its two singular values coincide. The
+result is `choiTwoBound_skewKraus_iff` — the valid constants for the double-skew
+family are exactly the reals `≥ 4`, which is `β₂ = 1` in the `Phi4` scaling.
+`re_qform_psiChoi_projWit` records the same for the conclusion: the `r`-block
+positivity of `J(Ψ_r)` is attained, so it cannot be sharpened to a strict
+inequality.
+
+**The parity hypothesis is exact, and load-bearing.** `Parity.lean` upgrades
+`eq:T-orthogonal` to an equivalence (`inner_delta_placeQ_zetaV_iff`):
+orthogonality of every placed edge vector to `δ_e` *is* `IsFrameSymmetric`. On a
+skew operator the same pairing doubles instead of cancelling
+(`inner_delta_placeQ_zetaV_of_isSkew`). Losing the hypothesis loses the
+*conclusion*, not merely the proof: for the one-element family `J = E₀₁ - E₁₀` on
+`ℂ²` at `s = 2` and `y = δ_e`, the protected right-hand side of form (A) is
+exactly `0` for every `β` while the left-hand side is `4`
+(`not_qform_krausQ_Pneg_le_skewFam`), and the same data meets the *unprotected*
+form (A₀) with equality (`qform_krausQ_Pneg_skewFam_saturates`). So the entire
+gap between the two forms is the direction `δ_e`.
+
+### The amplification coefficient, both sides
+
+`paper/derivation-graph-inclusion.tex` attaches to each edge of a graph the
+operator `A_e = (E_ij − E_ji) ⊗ (E_01 − E_10)`. `GraphFamily.lean` proves its
+`lem:beta` in two-sided form (`choiTwoBound_graphKraus_iff`, valid constants
+exactly `≥ 1`), without repeating the manuscript's singular-value argument: every
+`A_e` is double-skew, so `Qm` fixes its vectorization and, being self-adjoint,
+lets each pairing be read at `Qm (vec M)`; Bessel against the orthonormal halved
+edge family then reduces the estimate to `choiTwoBound_Qm`.
+
+`Theta.lean` introduces `Θ^Φ_{R,λ} = Φ∘τ + λ(Δ_d − id/R)` and its `R`-positivity
+in Choi form, with the first term worked out as `∑ₐ⟪A_a C, (A_a C)ᵀ⟫` — each
+Kraus image paired against its own transpose. The clique witness `C = P_S ⊗ E_01`
+of `thm:clique` turns out to be `projWit S 0 1`, the extremizer of
+`Optimal.lean`, so `two_mul_card_le_of_thetaPositive` (`eq:avgdeg`) and
+`sub_one_le_lam_of_clique` come cheaply.
+
+`ThetaBound.lean` closes the other side. `Lifting.lean` is already general in the
+Kraus family, but `Theorem.lean` converts it to a rank-`r` statement only for
+`Λ_U ⊗ Λ_V`, through the contraction identity `eq:Phi-rhoT` special to that map.
+The general conversion runs Lifting II form (B) at the *conjugated* frame `ē` of
+the range factorization and the test vector `δ_{d̄}`; the negative-sector term is
+then exactly the Choi pairing, both sides being double sums of the *bilinear*
+pairing `B(x,y) = ∑ x_w y_w` matched by `B(Aᴴx̄, ȳ) = conj B(Ay, x)`. That gives
+`thetaPositive_of_choiTwoBound`, which is `thm:pair-amplification` for an
+arbitrary completely positive map with transpose-symmetric Kraus operators, and
+`thetaPositive_graphKraus_iff`: for a graph with an `R`-clique the amplification
+threshold is exactly `R − 1`.
+
+**Not proved:** `thm:inclusion` of that manuscript, and the operator systems
+`𝒮_G`, `𝒰_G`, the compression `lem:witness` and the free-spectrahedral dictionary
+`lem:dict` it rests on. Those restate `thm:clique` in matrix-convexity language;
+they establish no new constant.
+
 ## Building
 
 Requires [`elan`](https://github.com/leanprover/elan). Mathlib is the only
@@ -168,7 +230,7 @@ revision.
 
 | Path | Contents |
 | --- | --- |
-| `RankR/` | the formalization (34 files) |
+| `RankR/` | the formalization (43 files) |
 | `paper/` | the manuscript |
 
 ### The formalization, bottom-up
@@ -206,6 +268,11 @@ revision.
 | `Results` | joins the two halves: Theorem 1.1 with no hypotheses |
 | `BlockPos` | Theorem 1.1 as the `r`-block positivity of `J(Ψ_r)` |
 
+| `Sharp` | `ChoiTwoAttained`, the extremizer, and `β₂(Λ_U ⊗ Λ_V) = 1` as an equality |
+| `Parity` | `eq:T-orthogonal` as an equivalence, and a skew family refuting form (A) |
+| `GraphFamily` | the edge-Kraus family of a graph, and `lem:beta` two-sidedly |
+| `Theta` | `Θ^Φ_{R,λ}`, its Choi form, and the induced-average-degree obstruction |
+| `ThetaBound` | pair amplification in Choi form, and `thm:clique` |
 | `Axioms` | the axiom surface, checked by the build |
 
 The import graph has two independent halves that meet only in `Results`: the

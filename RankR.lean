@@ -34,5 +34,10 @@ import RankR.Equivalence
 import RankR.KyFanAction
 import RankR.Exterior
 import RankR.HigherArity
+import RankR.Sharp
+import RankR.Parity
+import RankR.GraphFamily
+import RankR.Theta
+import RankR.ThetaBound
 import RankR.Axioms
 import RankR.Rigidity
