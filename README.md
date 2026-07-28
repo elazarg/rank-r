@@ -3,7 +3,7 @@
 A Lean 4 formalization of the main theorem of `paper/rank-r.tex`,
 
 > **Theorem 1.1.** Let $U, V$ be finite-dimensional complex Hilbert spaces and
-> let $C \in \mathcal L(U \otimes V)$ have $\operatorname{rank} C \le r$. Then
+> let $C \in \mathcal L(U \otimes V)$ have ${rank} C \le r$. Then
 > $$\|\mathrm{Tr}_U C\|_2^2 + \|\mathrm{Tr}_V C\|_2^2 \;\le\; r\|C\|_2^2 + \tfrac1r|\mathrm{Tr}\,C|^2 .$$
 
 The manuscript's abstract records that these proofs are machine-checked. That
