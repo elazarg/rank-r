@@ -43,5 +43,6 @@ import RankR.Applications
 import RankR.MapPos
 import RankR.Staircase
 import RankR.Gram
+import RankR.Defect
 import RankR.Axioms
 import RankR.Rigidity

@@ -41,6 +41,7 @@ import RankR.Applications
 import RankR.MapPos
 import RankR.Staircase
 import RankR.Gram
+import RankR.Defect
 
 namespace RankR
 
@@ -334,6 +335,18 @@ Proposition 2.2. -/
 /-- info: 'RankR.qform_negativeSectorDefectScaled_nonneg_holds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms qform_negativeSectorDefectScaled_nonneg_holds
+
+/-- info: 'RankR.completeGraph_defect_certificate_coeff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms completeGraph_defect_certificate_coeff
+
+/-- info: 'RankR.hsNormSq_sum_smul_of_hsInner_four' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms hsNormSq_sum_smul_of_hsInner_four
+
+/-- info: 'RankR.completeGraph_defect_nonneg_holds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms completeGraph_defect_nonneg_holds
 
 /-- info: 'RankR.operatorIneq_of_FGP' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

@@ -2672,6 +2672,12 @@ $\Delta_{U\otimes V}=\Delta_U\otimes\Delta_V$ & \texttt{RU\_zero\_RV\_zero}\\
   & \texttt{rankFactor\_partialTraceGap\_eq\_sector\_gram}\\
 positivity in \cref{prop:sos-sector-gram}
   & \texttt{qform\_negativeSectorDefectScaled\_nonneg\_holds}\\
+\cref{eq:sos-complete-graph}
+  & \texttt{completeGraph\_defect\_certificate\_coeff}\\
+\cref{eq:Kc-norm}
+  & \texttt{hsNormSq\_sum\_smul\_of\_hsInner\_four}\\
+nonnegativity in \cref{prop:sos-complete-graph}
+  & \texttt{completeGraph\_defect\_nonneg\_holds}\\
 \cref{eq:T-by-vertices} & \texttt{Tsyn\_eq\_delta\_vtx}\\
 \cref{eq:T-operator-bound} & \texttt{norm\_Tsyn\_sq\_le}\\
 \cref{eq:T-orthogonal} & \texttt{inner\_delta\_placeQ\_kron\_zetaV}\\
@@ -2831,8 +2837,10 @@ map, while \cref{eq:sos-main-gram} and positivity of its negative-sector defect
 are formalized as
 \texttt{rankFactor\_partialTraceGap\_eq\_sector\_gram} and
 \texttt{qform\_negativeSectorDefectScaled\_nonneg\_holds}.
-The finer decomposition of that defect into the exact vertex variances and
-edge deficits of \cref{eq:sos-complete-graph} is not formalized.
+The proof does not depend on the finer decomposition of that defect, but
+\texttt{Defect.lean} separately formalizes its exact vertex variances and edge
+deficits as \texttt{completeGraph\_defect\_certificate\_coeff}, and proves
+their nonnegativity as \texttt{completeGraph\_defect\_nonneg\_holds}.
 
 Within \cref{sec:applications}, \texttt{Applications.lean} covers the exact
 two-copy and asymmetric score curves in an infimum-free but equivalent form:

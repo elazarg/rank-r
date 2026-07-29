@@ -294,6 +294,7 @@ revision.
 | `MapPos` | actual finite-coordinate map ampliations, the map/Choi `r`-positivity equivalence, and the symmetric and asymmetric map classifications |
 | `Staircase` | exact threshold algebra, convex boundary coefficient, moment identities, strict threshold ordering |
 | `Gram` | the exact positive/negative-sector Gram identity and positivity of the negative-sector defect |
+| `Defect` | the exact complete-graph vertex-variance and edge-deficit certificate |
 | `Axioms` | the axiom surface, checked by the build |
 
 Conceptually the proof has two halves joined in `Results`: the *reduction*

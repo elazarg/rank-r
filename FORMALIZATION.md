@@ -80,7 +80,7 @@ extended-real-infimum layer.
 | Claim | Status | Gap |
 | --- | --- | --- |
 | polynomial SOS for the trace–rank residual | **Open formalization** | no polynomial-coordinate SOS layer |
-| complete-graph defect certificate | **Open formalization** | the proof uses only its inequality consequence in Lean, not the displayed identity |
+| complete-graph defect certificate | **Checked** | `completeGraph_defect_certificate` is the exact edge-matrix identity; `hsNormSq_sum_smul_of_hsInner_four` proves `eq:Kc-norm` from the stated basis normalization; `completeGraph_defect_certificate_coeff` is the displayed coefficient form; `completeGraph_defect_nonneg_holds` proves all edge and vertex deficits nonnegative |
 | exact positive/negative-sector Gram identity | **Checked** in quadratic-form rendering | `rankFactor_partialTraceGap_eq_sector_gram` is the scaled boxed identity; `qform_negativeSectorDefectScaled_nonneg_holds` proves the defect positive, with Kraus quadratic forms representing the two synthesis Grams |
 | positive-map semidefinite cut | **Open formalization** | requires density matrices, Schmidt number, and trace pairing |
 | local-channel aggregation | **Open formalization** | requires channels, adjoints on observables, and tensor-product state semantics |
