@@ -259,6 +259,21 @@ theorem thetaPositive_at_rank {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 �
     inner_delta_ebar_eq_trace e d] at hkey
   exact hkey
 
+omit [DecidableEq W] in
+/-- The unprotected pair lift at the exact rank. -/
+theorem thetaUnprotectedPositive_at_rank
+    {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β)
+    (hJ : ChoiTwoBound (choiOf A) β)
+    {e d : Fin s → EuclideanSpace ℂ W}
+    (hs : 0 < s) (he : Orthonormal ℂ e) :
+    0 ≤ (thetaPair A (rankFactor e d)).re
+        + β * ((s : ℝ) - 1) * hsNormSq (rankFactor e d) := by
+  have hkey := qform_krausQ_ptransposeUV_ge_of_norm
+    (A := A) (β := β) (e := ebar e) hβ hJ hs
+    (orthonormal_ebar he) (delta (ebar d))
+  rw [← thetaPair_eq_qform_krausQ, norm_delta_ebar_eq e d he] at hkey
+  exact hkey
+
 /-- The coefficient `(r-1)β(‖C‖₂² - |Tr C|²/r)` increases with `r`, by the
 trace-rank bound.  Clearing denominators, the difference is
 `(R - r₀)(r₀R‖C‖₂² - |Tr C|²)/(r₀R)`, and both factors are nonnegative. -/
@@ -304,6 +319,50 @@ theorem thetaPositive_of_choiTwoBound {A : ι → Matrix W W ℂ} {β : ℝ} (h�
     have hmono := coeff_mono (a := hsNormSq C) (t := Complex.normSq C.trace) hβ
       (hsNormSq_nonneg C) hr₀ hrank (normSq_trace_le_rank C)
     linarith
+
+/-- **Unprotected pair amplification in Choi form.**
+
+No transpose-parity hypothesis is needed when the trace direction is not
+removed from the correction. -/
+theorem thetaUnprotectedPositive_of_choiTwoBound
+    {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0 ≤ β)
+    (hJ : ChoiTwoBound (choiOf A) β) (R : ℕ) :
+    ThetaUnprotectedPositive A R (((R : ℝ) - 1) * β) := by
+  intro C hrank
+  rcases eq_or_ne C 0 with rfl | hC
+  · simp [thetaPair, hsInner, hsNormSq]
+  · have hr₀ : 0 < C.rank := rank_pos_of_ne_zero hC
+    obtain ⟨e, d, he, hCeq⟩ := exists_rankFactor_rank C
+    have hat := thetaUnprotectedPositive_at_rank
+      (A := A) hβ hJ (d := d) hr₀ he
+    rw [← hCeq] at hat
+    have hcoeff :
+        β * ((C.rank : ℝ) - 1) * hsNormSq C
+          ≤ ((R : ℝ) - 1) * β * hsNormSq C := by
+      have hrank' : (C.rank : ℝ) ≤ R := by exact_mod_cast hrank
+      calc
+        β * ((C.rank : ℝ) - 1) * hsNormSq C =
+            ((C.rank : ℝ) - 1) * β * hsNormSq C := by ring
+        _ ≤ ((R : ℝ) - 1) * β * hsNormSq C :=
+          mul_le_mul_of_nonneg_right
+            (mul_le_mul_of_nonneg_right
+              (sub_le_sub_right hrank' 1) hβ)
+            (hsNormSq_nonneg C)
+    linarith
+
+/-- The protected lift remains valid when its local Choi constant is replaced
+by a larger upper bound. -/
+theorem thetaPositive_of_choiTwoBound_le
+    {A : ι → Matrix W W ℂ} {β γ : ℝ} (hβ : 0 ≤ β)
+    (hJ : ChoiTwoBound (choiOf A) β)
+    (hsym : ∀ f, (A f)ᵀ = A f)
+    {R : ℕ} (hR : 0 < R) (hβγ : β ≤ γ) :
+    ThetaPositive A R (((R : ℝ) - 1) * γ) := by
+  apply thetaPositive_mono hR
+    (thetaPositive_of_choiTwoBound hβ hJ hsym R)
+  have hR1 : (0 : ℝ) ≤ (R : ℝ) - 1 := by
+    exact sub_nonneg.mpr (by exact_mod_cast hR)
+  exact mul_le_mul_of_nonneg_left hβγ hR1
 
 end Assembly
 

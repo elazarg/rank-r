@@ -27,6 +27,13 @@ def ThetaPositive (A : ι → Matrix W W ℂ) (R : ℕ) (lam : ℝ) : Prop :=
   ∀ C : Matrix W W ℂ, C.rank ≤ R →
     0 ≤ (thetaPair A C).re + lam * (hsNormSq C - Complex.normSq C.trace / R)
 
+/-- The unprotected Choi-form positivity condition, with correction
+`λ ‖C‖₂²` and no trace direction removed. -/
+def ThetaUnprotectedPositive
+    (A : ι → Matrix W W ℂ) (R : ℕ) (lam : ℝ) : Prop :=
+  ∀ C : Matrix W W ℂ, C.rank ≤ R →
+    0 ≤ (thetaPair A C).re + lam * hsNormSq C
+
 omit [DecidableEq W] in
 /-- The correction term is nonnegative at rank `R`, by the trace-rank bound. -/
 theorem correction_nonneg {C : Matrix W W ℂ} {R : ℕ}

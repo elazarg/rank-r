@@ -1297,6 +1297,18 @@ info: 'RankR.thetaPositive_of_choiTwoBound' depends on axioms: [propext, Classic
 #print axioms thetaPositive_of_choiTwoBound
 
 /--
+info: 'RankR.thetaUnprotectedPositive_of_choiTwoBound' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms thetaUnprotectedPositive_of_choiTwoBound
+
+/--
+info: 'RankR.thetaPositive_of_choiTwoBound_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms thetaPositive_of_choiTwoBound_le
+
+/--
 info: 'RankR.thetaPositive_graphKraus_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
 -/
 #guard_msgs in
