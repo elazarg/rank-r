@@ -48,12 +48,12 @@ Mathlib, and is stated coordinate-free
 specialization. `RankR/Core/DoubleSkew/Takagi.lean` then derives the
 double-skew action bound from it.
 
-**The mathematics is Fu–Gao–Park's.** This is not an independent route: it is
-their §2 argument — their Prop. 2.1, Lemma 2.2, Lemma 2.3 — restructured so that
-Autonne–Takagi enters directly and their Theorem 2.4 is never invoked. What is
-new here is the observation that their duality step and their use of
-Johnston–Kribs are avoidable, plus the machine checking. Their preprint remains
-the source of the argument.
+**The appendix proof is presented as an adaptation of Fu–Gao–Park.** It
+reorganizes their §2 argument — their Prop. 2.1, Lemma 2.2, and Lemma 2.3 — so
+that Autonne–Takagi enters directly and their Theorem 2.4 is never invoked.
+This identifies the closest published proof, without making a priority claim
+about the derivation.  The reorganization also shows that their duality step
+and use of Johnston–Kribs can be avoided, and it is machine-checked here.
 
 **Fu–Gao–Park's Theorem 2.4 is proved too.**
 `RankR/Core/DoubleSkew/FGP.lean` supplies
