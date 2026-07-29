@@ -45,6 +45,32 @@ namespace RankR
 open Matrix Finset ComplexConjugate
 open scoped Kronecker
 
+/-- The two adjacent coefficient layers required by a higher tensor-power
+collapse are compatible only at the trivial rank parameter. -/
+theorem higherTensor_coefficient_compatibility (r : ℕ) (hr : 0 < r) :
+    (∃ t : ℝ,
+        (r : ℝ) * t = (r : ℝ) - 1
+          ∧ (r : ℝ) * t ^ 2 = (r : ℝ) - 1) ↔
+      r = 1 := by
+  constructor
+  · rintro ⟨t, ht, ht2⟩
+    have hrR : (0 : ℝ) < r := by exact_mod_cast hr
+    have htIdem : t ^ 2 = t := by
+      apply mul_left_cancel₀ (ne_of_gt hrR)
+      rw [ht2, ht]
+    have hfactor : t * (t - 1) = 0 := by
+      nlinarith
+    rcases mul_eq_zero.mp hfactor with ht0 | ht1
+    · have hrOne : (r : ℝ) = 1 := by
+        rw [ht0] at ht
+        nlinarith
+      exact_mod_cast hrOne
+    · have htOne : t = 1 := sub_eq_zero.mp ht1
+      rw [htOne] at ht
+      nlinarith
+  · rintro rfl
+    exact ⟨0, by norm_num, by norm_num⟩
+
 /-! ## The covariant pencil
 
 `R_{−a} = Δ − a·id`, applied to one factor with the identity on the other.  Each

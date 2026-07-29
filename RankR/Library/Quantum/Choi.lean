@@ -228,6 +228,17 @@ rather than to a choice of decomposition. -/
 noncomputable def choiOf (A : ι → Matrix W W ℂ) : Matrix (W × W) (W × W) ℂ :=
   ∑ a, rankOne (vec (A a)) (vec (A a))
 
+omit [Fintype W] in
+/-- An identically zero Kraus family has zero Choi operator. -/
+@[simp]
+theorem choiOf_zero :
+    choiOf (fun _ : ι => (0 : Matrix W W ℂ)) = 0 := by
+  rw [choiOf]
+  apply Finset.sum_eq_zero
+  intro a _
+  ext x y
+  simp [rankOne]
+
 /-- The quadratic form of a Choi operator is the Bessel sum of the family. -/
 theorem qform_choiOf (A : ι → Matrix W W ℂ) (v : EuclideanSpace ℂ (W × W)) :
     qform (choiOf A) v = ∑ a, ((Complex.normSq (inner ℂ (vec (A a)) v) : ℝ) : ℂ) := by
@@ -270,6 +281,19 @@ def ChoiTwoBound (J : Matrix (W × W) (W × W) ℂ) (β : ℝ) : Prop :=
   ∀ u₁ v₁ u₂ v₂ : EuclideanSpace ℂ W,
     (qform J (vec (rankOne u₁ v₁ + rankOne u₂ v₂))).re
       ≤ 2 * β * hsNormSq (rankOne u₁ v₁ + rankOne u₂ v₂)
+
+/-- The zero Choi operator has the rank-two bound with constant zero. -/
+theorem choiTwoBound_zero :
+    ChoiTwoBound (0 : Matrix (W × W) (W × W) ℂ) 0 := by
+  intro u₁ v₁ u₂ v₂
+  simp [qform]
+
+/-- An identically zero Kraus family satisfies the local Choi estimate with
+constant zero. -/
+theorem choiTwoBound_choiOf_zero {ι : Type*} [Fintype ι] :
+    ChoiTwoBound (choiOf (fun _ : ι => (0 : Matrix W W ℂ))) 0 := by
+  rw [choiOf_zero]
+  exact choiTwoBound_zero
 
 /-- `β` is positively homogeneous: a rescaled map carries a rescaled constant, so
 `Φ` and `β` always agree on the scale. -/

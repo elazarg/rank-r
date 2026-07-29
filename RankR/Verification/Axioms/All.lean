@@ -1146,6 +1146,10 @@ tensor square `r · R_{−1/r} ⊗ R_{−1/r}`. -/
 #guard_msgs in
 #print axioms Psi_eq_tensor_square
 
+/-- info: 'RankR.higherTensor_coefficient_compatibility' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms higherTensor_coefficient_compatibility
+
 /-! ## Theorem 1.1 as block positivity
 
 The quadratic form of `J(Ψ_r)` at `vec C` is the deficit in Theorem 1.1, so the
@@ -1323,6 +1327,18 @@ info: 'RankR.thetaPositive_of_choiTwoBound_le' depends on axioms: [propext, Clas
 -/
 #guard_msgs in
 #print axioms thetaPositive_of_choiTwoBound_le
+
+/-- info: 'RankR.choiTwoBound_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiTwoBound_zero
+
+/-- info: 'RankR.choiTwoBound_choiOf_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiTwoBound_choiOf_zero
+
+/-- info: 'RankR.thetaPositive_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms thetaPositive_zero
 
 /--
 info: 'RankR.thetaPositive_graphKraus_iff' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -19,6 +19,15 @@ variable {W : Type*} [Fintype W] [DecidableEq W] {ι : Type*} [Fintype ι]
 noncomputable def thetaPair (A : ι → Matrix W W ℂ) (C : Matrix W W ℂ) : ℂ :=
   ∑ a, hsInner (A a * C) ((A a * C)ᵀ)
 
+/-- An identically zero Kraus family contributes no Choi pairing. -/
+@[simp]
+theorem thetaPair_zero (C : Matrix W W ℂ) :
+    thetaPair (fun _ : ι => (0 : Matrix W W ℂ)) C = 0 := by
+  rw [thetaPair]
+  apply Finset.sum_eq_zero
+  intro a _
+  simp [hsInner]
+
 /-- **`R`-positivity of `Θ^Φ_{R,λ}`**, in Choi form and with each term unrolled.
 
 `Δ_d` contributes `‖C‖₂²` and `id` contributes `|Tr C|²`, so the correction is
@@ -33,6 +42,13 @@ def ThetaUnprotectedPositive
     (A : ι → Matrix W W ℂ) (R : ℕ) (lam : ℝ) : Prop :=
   ∀ C : Matrix W W ℂ, C.rank ≤ R →
     0 ≤ (thetaPair A C).re + lam * hsNormSq C
+
+/-- At zero correction, the corrected form of an identically zero Kraus
+family is the tautological zero quadratic form. -/
+theorem thetaPositive_zero (R : ℕ) :
+    ThetaPositive (fun _ : ι => (0 : Matrix W W ℂ)) R 0 := by
+  intro C _
+  simp
 
 omit [DecidableEq W] in
 /-- The correction term is nonnegative at rank `R`, by the trace-rank bound. -/
