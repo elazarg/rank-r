@@ -19,8 +19,10 @@ import RankR.Core.DoubleSkew.SeedBound
 import RankR.Core.DoubleSkew.Sharp
 import RankR.Core.DoubleSkew.SymmetricOuter
 import RankR.Core.DoubleSkew.Takagi
+import RankR.Core.PartialTrace.Balanced
 import RankR.Core.PartialTrace.BlockPositivity
 import RankR.Core.PartialTrace.Centered
+import RankR.Core.PartialTrace.Crossed
 import RankR.Core.PartialTrace.DoubleSkew
 import RankR.Core.PartialTrace.FromOperator
 import RankR.Core.PartialTrace.Main

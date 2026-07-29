@@ -285,6 +285,45 @@ theorem hsNormSq_eq_norm_sq (A : Matrix m n ℂ) : hsNormSq A = ‖vec A‖ ^ 2 
   rw [← h] at h2
   simpa using h2
 
+/-- Put two possibly rectangular matrices into one Euclidean direct-sum
+vector.  This realizes the Hilbert direct sum of their Hilbert--Schmidt
+spaces without using the max norm on an ordinary product type. -/
+noncomputable def matrixSumVec {p q : Type*}
+    (X : Matrix m n ℂ) (Y : Matrix p q ℂ) :
+    EuclideanSpace ℂ ((m × n) ⊕ (p × q)) :=
+  WithLp.toLp 2 (Sum.elim (fun ij => X ij.1 ij.2) (fun ij => Y ij.1 ij.2))
+
+omit [Fintype m] [Fintype n] in
+@[simp] theorem matrixSumVec_inl {p q : Type*}
+    (X : Matrix m n ℂ) (Y : Matrix p q ℂ) (ij : m × n) :
+    matrixSumVec X Y (Sum.inl ij) = X ij.1 ij.2 := rfl
+
+omit [Fintype m] [Fintype n] in
+@[simp] theorem matrixSumVec_inr {p q : Type*}
+    (X : Matrix m n ℂ) (Y : Matrix p q ℂ) (ij : p × q) :
+    matrixSumVec X Y (Sum.inr ij) = Y ij.1 ij.2 := rfl
+
+/-- The direct-sum inner product is the sum of the two Hilbert--Schmidt
+pairings. -/
+theorem inner_matrixSumVec {p q : Type*} [Fintype p] [Fintype q]
+    (X A : Matrix m n ℂ) (Y B : Matrix p q ℂ) :
+    inner ℂ (matrixSumVec X Y) (matrixSumVec A B) =
+      hsInner X A + hsInner Y B := by
+  rw [PiLp.inner_apply, Fintype.sum_sum_type, hsInner_eq_sum_vec,
+    hsInner_eq_sum_vec]
+  simp only [RCLike.inner_apply', matrixSumVec_inl, matrixSumVec_inr, vec_apply]
+
+/-- The direct-sum squared norm is the sum of the two Hilbert--Schmidt squared
+norms. -/
+theorem normSq_matrixSumVec {p q : Type*} [Fintype p] [Fintype q]
+    (X : Matrix m n ℂ) (Y : Matrix p q ℂ) :
+    ‖matrixSumVec X Y‖ ^ 2 = hsNormSq X + hsNormSq Y := by
+  rw [EuclideanSpace.norm_sq_eq]
+  simp_rw [← Complex.normSq_eq_norm_sq]
+  rw [Fintype.sum_sum_type]
+  simp only [matrixSumVec_inl, matrixSumVec_inr, hsNormSq,
+    Fintype.sum_prod_type]
+
 /-- A finite sum in `EuclideanSpace` is computed coordinatewise. -/
 theorem sum_apply_euclidean {ι T : Type*} (t : Finset ι)
     (f : ι → EuclideanSpace ℂ T) (x : T) :

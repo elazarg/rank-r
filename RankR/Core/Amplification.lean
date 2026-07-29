@@ -2,6 +2,7 @@
 The reusable pair-amplification construction.
 -/
 import RankR.Core.Amplification.CompleteGraph
+import RankR.Core.Amplification.Balanced
 import RankR.Core.Amplification.Edge
 import RankR.Core.Amplification.Frame
 import RankR.Core.Amplification.OperatorForms
