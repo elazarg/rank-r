@@ -67,11 +67,13 @@ formalized mathematics, Lean~4}
 \begin{document}
 
 \begin{abstract}
-We prove a \emph{pair-amplification} theorem: one number computed at
-level two controls $r$-positivity at every level $r$.  To a completely
-positive map $\Phi$ admitting a Kraus representation with $A_a^T=A_a$,
-attach $\beta_2(\Phi)=\frac12\norm{J(\Phi)}_{S(2)}$, the rank-two
-operator norm of its Choi operator.  Then
+For a completely positive map
+$\Phi:\cL(H)\to\cL(H)$ admitting a Kraus representation with
+$A_a^T=A_a$, we show that a single rank-two bound on its Choi operator
+generates an $r$-positive map for every $r$.  We call this
+\emph{pair amplification}.  Specifically, attach
+$\beta_2(\Phi)=\frac12\norm{J(\Phi)}_{S(2)}$, the rank-two operator norm
+of the Choi operator.  Then
 $\Phi\circ\tau+(r-1)\beta_2(\Phi)\bigl(\Delta-\frac1r\id\bigr)$ is
 $r$-positive for every $r$, where $\Delta(X)=\Tr(X)I$ and $\tau$ is
 transposition.  Two mechanisms drive it: an ancilla construction and a
