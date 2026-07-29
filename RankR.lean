@@ -44,5 +44,6 @@ import RankR.MapPos
 import RankR.Staircase
 import RankR.Gram
 import RankR.Defect
+import RankR.LagrangeSOS
 import RankR.Axioms
 import RankR.Rigidity

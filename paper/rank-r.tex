@@ -2699,6 +2699,10 @@ strictness for $\rank C<r$ & \texttt{rank\_r\_partial\_trace\_strict}\\
 equality forces $\rank C=r$ & \texttt{rank\_eq\_of\_eq\_rank\_r}\\
  & \texttt{\_partial\_trace}\\
 trace--rank bound in \cref{sec:proof} & \texttt{normSq\_trace\_le}\\
+\cref{eq:sos-lagrange}
+  & \texttt{rankFactor\_traceRankResidual\_eq\_wedgeNormSq}\\
+\cref{eq:sos-lagrange-coordinates}
+  & \texttt{rankFactor\_traceRankResidual\_eq\_lagrangeSOS}\\
 \cref{lem:one-sided-partial-trace} & \texttt{hsNormSq\_ptraceU\_le},\\
  & \texttt{hsNormSq\_ptraceV\_le}\\
 \cref{eq:ptrace-rank-one-product} & \texttt{ptraceU\_rankOne},
@@ -2841,6 +2845,13 @@ The proof does not depend on the finer decomposition of that defect, but
 \texttt{Defect.lean} separately formalizes its exact vertex variances and edge
 deficits as \texttt{completeGraph\_defect\_certificate\_coeff}, and proves
 their nonnegativity as \texttt{completeGraph\_defect\_nonneg\_holds}.
+\texttt{LagrangeSOS.lean} proves the complex Lagrange identity first as a
+choice-free half-sum over ordered coordinate pairs and then as the literal
+$\alpha<\beta$ polynomial sum in
+\cref{eq:sos-lagrange-coordinates}.  The theorem
+\texttt{rankFactor\_traceRankResidual\_eq\_wedgeNormSq} records
+\cref{eq:sos-lagrange} with the exterior squared norm defined by that
+orthonormal-coordinate sum, so no separate exterior-algebra API is assumed.
 
 Within \cref{sec:applications}, \texttt{Applications.lean} covers the exact
 two-copy and asymmetric score curves in an infimum-free but equivalent form:
@@ -2862,7 +2873,8 @@ duality appear nowhere in the development, so
 \cref{cor:two-copy-trace-distance} and the final step of
 \cref{cor:kronecker} remain prose-only.  The mixed-state Schmidt-number
 arguments in \cref{cor:exact-schmidt-number,cor:explicit-witnesses}, and the
-results of \cref{app:gram,app:generic}, are likewise not covered.
+positive-map and local-channel applications at the end of \cref{app:gram},
+and the results of \cref{app:generic}, remain prose-only.
 
 \Cref{thm:amplification} is covered, in all four operator forms and for
 an arbitrary Kraus family: \texttt{Choi.lean} carries

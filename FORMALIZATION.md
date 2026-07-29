@@ -79,7 +79,7 @@ extended-real-infimum layer.
 
 | Claim | Status | Gap |
 | --- | --- | --- |
-| polynomial SOS for the trace–rank residual | **Open formalization** | no polynomial-coordinate SOS layer |
+| polynomial SOS for the trace–rank residual | **Checked** in coordinates | `complex_lagrange_sos_ordered` proves the choice-free half-double-sum identity; `complex_lagrange_sos` and `rankFactor_traceRankResidual_eq_lagrangeSOS` prove the literal `α < β` formula; `rankFactor_traceRankResidual_eq_wedgeNormSq` gives `eq:sos-lagrange` with the exterior squared norm defined by that orthonormal-coordinate sum |
 | complete-graph defect certificate | **Checked** | `completeGraph_defect_certificate` is the exact edge-matrix identity; `hsNormSq_sum_smul_of_hsInner_four` proves `eq:Kc-norm` from the stated basis normalization; `completeGraph_defect_certificate_coeff` is the displayed coefficient form; `completeGraph_defect_nonneg_holds` proves all edge and vertex deficits nonnegative |
 | exact positive/negative-sector Gram identity | **Checked** in quadratic-form rendering | `rankFactor_partialTraceGap_eq_sector_gram` is the scaled boxed identity; `qform_negativeSectorDefectScaled_nonneg_holds` proves the defect positive, with Kraus quadratic forms representing the two synthesis Grams |
 | positive-map semidefinite cut | **Open formalization** | requires density matrices, Schmidt number, and trace pairing |
@@ -157,8 +157,7 @@ The shortest route to a fully formalized application suite is:
 4. add mixed-state Schmidt number and projection duality;
 5. add isotropic states and the product-isotropic twirl;
 6. add operator systems/free spectrahedra for the graph-inclusion translation;
-7. formalize the remaining SOS identities.
 
 Items 1–2 close the score and positivity applications. Items 3–4 close the
-remaining main-paper applications. Items 5–7 concern companion constructions
+remaining main-paper applications. Items 5–6 concern companion constructions
 and appendices rather than the proof of the central theorem.

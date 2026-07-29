@@ -42,6 +42,7 @@ import RankR.MapPos
 import RankR.Staircase
 import RankR.Gram
 import RankR.Defect
+import RankR.LagrangeSOS
 
 namespace RankR
 
@@ -347,6 +348,26 @@ Proposition 2.2. -/
 /-- info: 'RankR.completeGraph_defect_nonneg_holds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms completeGraph_defect_nonneg_holds
+
+/-- info: 'RankR.complex_lagrange_sos_ordered' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms complex_lagrange_sos_ordered
+
+/-- info: 'RankR.complex_lagrange_sos' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms complex_lagrange_sos
+
+/-- info: 'RankR.rankFactor_traceRankResidual_eq_lagrangeSOS_ordered' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rankFactor_traceRankResidual_eq_lagrangeSOS_ordered
+
+/-- info: 'RankR.rankFactor_traceRankResidual_eq_lagrangeSOS' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rankFactor_traceRankResidual_eq_lagrangeSOS
+
+/-- info: 'RankR.rankFactor_traceRankResidual_eq_wedgeNormSq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rankFactor_traceRankResidual_eq_wedgeNormSq
 
 /-- info: 'RankR.operatorIneq_of_FGP' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
