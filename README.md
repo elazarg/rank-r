@@ -113,7 +113,8 @@ itself is proved (`fgpBound_holds`).
 `RankR/Applications.lean` checks the algebraic cores of the main-paper
 applications: both branches and attaining matrices of the symmetric and
 asymmetric score curves; their exact score-nonnegativity thresholds for
-`1 ≤ r ≤ d`; the endpoint and strict adjacent-rank score separations; factor
+`1 ≤ r ≤ d`; the endpoint and strict adjacent-rank separations directly for
+unit vectors with the asserted pure Schmidt ranks; factor
 interchange; the coordinate Choi matrices of the reduction maps and their
 regrouped tensor product; block-positivity thresholds at every positive rank
 in equal local dimensions; the finite-coordinate equivalence with positivity

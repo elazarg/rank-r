@@ -126,6 +126,30 @@ Ky-Fan corollary. -/
 #guard_msgs in
 #print axioms twoCopyScore_adjacent_strict_neg
 
+/-- info: 'RankR.exists_unit_pureSchmidtRank_adjacent_score' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms exists_unit_pureSchmidtRank_adjacent_score
+
+/-- info: 'RankR.exists_unit_pureSchmidtRank_adjacent_endpoint' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms exists_unit_pureSchmidtRank_adjacent_endpoint
+
+/-- info: 'RankR.re_qform_productReductionChoi_strict_lower_of_pureSchmidtRank_le' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms re_qform_productReductionChoi_strict_lower_of_pureSchmidtRank_le
+
+/-- info: 'RankR.re_qform_productReductionChoi_strict_pos_of_pureSchmidtRank_le' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms re_qform_productReductionChoi_strict_pos_of_pureSchmidtRank_le
+
+/-- info: 'RankR.exists_unit_pureSchmidtRank_adjacent_strict_neg' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms exists_unit_pureSchmidtRank_adjacent_strict_neg
+
 /-- info: 'RankR.asymmetricScore_lower_left_of_le_inv' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms asymmetricScore_lower_left_of_le_inv
@@ -215,6 +239,18 @@ Ky-Fan corollary. -/
 /-- info: 'RankR.pureSchmidtRank_vec' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms pureSchmidtRank_vec
+
+/-- info: 'RankR.rank_smul_eq_of_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rank_smul_eq_of_ne_zero
+
+/-- info: 'RankR.pureSchmidtRank_smul_of_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms pureSchmidtRank_smul_of_ne_zero
+
+/-- info: 'RankR.qform_smul_vec' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_smul_vec
 
 /-- info: 'RankR.rank_le_iff_exists_sum_rankOne' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

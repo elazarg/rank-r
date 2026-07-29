@@ -59,8 +59,8 @@ extended-real-infimum layer.
 | --- | --- | --- |
 | one-sided marginal bound | **Checked** | `hsNormSq_ptraceU_le`, `hsNormSq_ptraceV_le` |
 | exact symmetric two-copy score curve for `1 ≤ r ≤ d` | **Checked** | `twoCopyScore_lower_of_le_inv`, `twoCopyScore_lower_of_inv_le`, `twoCopyScore_projWit_same`, `twoCopyScore_projWit_orthogonal` |
-| adjacent-rank endpoint score `-1/r` | **Checked core** | `twoCopyScore_adjacent_endpoint`; normalization and the vectorized Schmidt-rank wording remain interface steps |
-| strict signed adjacent-rank separation | **Checked core** | `twoCopyScore_strict_separation_pos`, `twoCopyScore_adjacent_strict_neg` |
+| adjacent-rank endpoint score `-1/r` | **Checked** in finite coordinates | `exists_unit_pureSchmidtRank_adjacent_score` proves the full normalized score formula; `exists_unit_pureSchmidtRank_adjacent_endpoint` supplies the unit vector, exact pure Schmidt rank `r+1`, and expectation `-1/r` |
+| strict signed adjacent-rank separation | **Checked** in finite coordinates | `re_qform_productReductionChoi_strict_lower_of_pureSchmidtRank_le` proves the displayed uniform margin directly for pure vectors, its `strict_pos` corollary gives strict positivity for nonzero vectors, and `exists_unit_pureSchmidtRank_adjacent_strict_neg` supplies the normalized rank-`r+1` negative witness |
 | symmetric score nonnegativity iff `t ≤ 1/r`, for `1 ≤ r ≤ d` | **Checked** | `twoCopyNonnegative_iff` |
 | reduction pencil and displayed product Choi matrices | **Checked** in coordinates | `mapChoi_reductionMap`, `productReductionChoi_eq_regroup_mapChoi`, and `productReductionChoi_eq_asymmetricScoreOperator` include the output/input register permutation explicitly |
 | finite-coordinate map/Choi `r`-positivity equivalence | **Checked** | `IsMapRPositive` tests all positive-semidefinite inputs to the actual `Fin r` ampliation; `rank_le_card_iff_exists_mul` and `isMapRPositive_mapOfChoi_iff_isBlockPositive` prove the Choi correspondence |

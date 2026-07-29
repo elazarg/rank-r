@@ -72,6 +72,13 @@ theorem vec_unvec (z : EuclideanSpace ℂ (m × n)) : vec (unvec z) = z := by
   ext p
   rfl
 
+omit [Fintype m] [Fintype n] in
+@[simp]
+theorem unvec_smul (c : ℂ) (z : EuclideanSpace ℂ (m × n)) :
+    unvec (c • z) = c • unvec z := by
+  ext i j
+  rfl
+
 /-- Pure-state Schmidt rank across the `m : n` cut, defined as the matrix rank
 of the coefficient matrix in the fixed product basis. -/
 noncomputable def pureSchmidtRank
@@ -93,6 +100,45 @@ theorem pureSchmidtRank_le_iff_rank_unvec_le
   Iff.rfl
 
 end SchmidtRank
+
+section SchmidtRankScaling
+
+variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m]
+
+/-- Multiplication by a nonzero scalar preserves matrix rank. -/
+theorem rank_smul_eq_of_ne_zero (A : Matrix m n ℂ)
+    {c : ℂ} (hc : c ≠ 0) :
+    (c • A).rank = A.rank := by
+  apply le_antisymm
+  · have hmul :
+        (c • (1 : Matrix m m ℂ)) * A = c • A := by
+      rw [Matrix.smul_mul, Matrix.one_mul]
+    calc
+      (c • A).rank =
+          ((c • (1 : Matrix m m ℂ)) * A).rank :=
+        congrArg Matrix.rank hmul.symm
+      _ ≤ A.rank :=
+        Matrix.rank_mul_le_right (c • (1 : Matrix m m ℂ)) A
+  · have hmul :
+        (c⁻¹ • (1 : Matrix m m ℂ)) * (c • A) = A := by
+      rw [Matrix.smul_mul, Matrix.one_mul, smul_smul,
+        inv_mul_cancel₀ hc, one_smul]
+    calc
+      A.rank =
+          ((c⁻¹ • (1 : Matrix m m ℂ)) * (c • A)).rank :=
+        congrArg Matrix.rank hmul.symm
+      _ ≤ (c • A).rank :=
+        Matrix.rank_mul_le_right
+          (c⁻¹ • (1 : Matrix m m ℂ)) (c • A)
+
+/-- Nonzero scalar normalization preserves pure Schmidt rank. -/
+theorem pureSchmidtRank_smul_of_ne_zero
+    (z : EuclideanSpace ℂ (m × n)) {c : ℂ} (hc : c ≠ 0) :
+    pureSchmidtRank (c • z) = pureSchmidtRank z := by
+  rw [pureSchmidtRank, unvec_smul, rank_smul_eq_of_ne_zero _ hc,
+    pureSchmidtRank]
+
+end SchmidtRankScaling
 
 /-! ## Finite rank factorization through a coordinate type -/
 

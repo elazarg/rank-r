@@ -935,6 +935,169 @@ theorem re_qform_twoCopyScoreOperator (t : ℝ)
       = twoCopyScore t C := by
   rw [twoCopyScoreOperator, re_qform_asymmetricScoreOperator, asymmetricScore_self]
 
+/-- The normalized adjacent-rank witness used in
+`cor:adjacent-rank-gap` and `rem:strict-rank-gap`.  Its expectation is
+the entire normalized score `1 - (r+1)t`, not only either specialization
+used in the manuscript. -/
+theorem exists_unit_pureSchmidtRank_adjacent_score
+    {T : Type*} [Fintype T] [DecidableEq T] {r : ℕ}
+    (hr : 0 < r) (hrT : r < Fintype.card T) (t : ℝ) :
+    ∃ ψ : EuclideanSpace ℂ ((T × T) × (T × T)),
+      ‖ψ‖ = 1 ∧
+      pureSchmidtRank ψ = r + 1 ∧
+      (qform
+        (productReductionChoi (U := T) (V := T)
+          t t) ψ).re =
+        1 - (r + 1 : ℕ) * t := by
+  have hrT' : r + 1 ≤ Fintype.card T := by omega
+  obtain ⟨S, -, hS⟩ := Finset.exists_subset_card_eq
+    (s := (Finset.univ : Finset T)) (by
+      simpa only [Finset.card_univ] using hrT')
+  obtain ⟨x₀, x₁, hx⟩ :=
+    Fintype.exists_pair_of_one_lt_card (by omega : 1 < Fintype.card T)
+  let C : Matrix (T × T) (T × T) ℂ := projWit S x₀ x₁
+  let z : EuclideanSpace ℂ ((T × T) × (T × T)) := vec C
+  have hC : C ≠ 0 := by
+    intro hzero
+    have hnorm := hsNormSq_projWit (S := S) x₀ x₁
+    change projWit S x₀ x₁ = 0 at hzero
+    rw [hzero] at hnorm
+    have hcardpos : (0 : ℝ) < S.card := by
+      rw [hS]
+      positivity
+    have hcardzero : (0 : ℝ) = S.card := by
+      simpa [hsNormSq] using hnorm
+    linarith
+  have hz : z ≠ 0 := by
+    intro hzero
+    apply hC
+    ext i j
+    have happ := congrFun (congrArg WithLp.ofLp hzero) (i, j)
+    simpa [z] using happ
+  have hznorm : 0 < ‖z‖ := norm_pos_iff.mpr hz
+  have hc : (‖z‖⁻¹ : ℂ) ≠ 0 := by
+    exact_mod_cast inv_ne_zero hznorm.ne'
+  refine ⟨(‖z‖⁻¹ : ℂ) • z, ?_, ?_, ?_⟩
+  · rw [norm_smul, norm_inv, Complex.norm_real, Real.norm_eq_abs,
+      abs_of_pos hznorm, inv_mul_cancel₀ hznorm.ne']
+  · rw [pureSchmidtRank_smul_of_ne_zero _ hc]
+    change C.rank = r + 1
+    rw [show C = projWit S x₀ x₁ from rfl, rank_projWit, hS]
+  · calc
+      (qform
+          (productReductionChoi (U := T) (V := T)
+            t t)
+          ((‖z‖⁻¹ : ℂ) • z)).re =
+          Complex.normSq (‖z‖⁻¹ : ℂ) *
+            (qform
+              (productReductionChoi (U := T) (V := T)
+                t t) z).re := by
+        rw [qform_smul_vec, Complex.mul_re]
+        simp
+      _ = Complex.normSq (‖z‖⁻¹ : ℂ) *
+          twoCopyScore t C := by
+        rw [productReductionChoi_self_eq_twoCopyScoreOperator,
+          show z = vec C from rfl, re_qform_twoCopyScoreOperator]
+      _ = 1 - (r + 1 : ℕ) * t := by
+        rw [twoCopyScore_projWit_orthogonal hx hS,
+          Complex.normSq_inv, Complex.normSq_ofReal,
+          hsNormSq_eq_norm_sq]
+        simp only [z, C]
+        field_simp [hznorm.ne']
+        rw [mul_div_cancel_left₀ _ (by simpa [z, C] using hznorm.ne')]
+
+/-- The normalized endpoint witness asserted in `cor:adjacent-rank-gap`.
+When `0 < r < dim T`, the reduction-product Choi operator at `t = 1/r`
+has a unit vector of pure Schmidt rank exactly `r+1` and expectation
+exactly `-1/r`. -/
+theorem exists_unit_pureSchmidtRank_adjacent_endpoint
+    {T : Type*} [Fintype T] [DecidableEq T] {r : ℕ}
+    (hr : 0 < r) (hrT : r < Fintype.card T) :
+    ∃ ψ : EuclideanSpace ℂ ((T × T) × (T × T)),
+      ‖ψ‖ = 1 ∧
+      pureSchmidtRank ψ = r + 1 ∧
+      (qform
+        (productReductionChoi (U := T) (V := T)
+          (1 / (r : ℝ)) (1 / (r : ℝ))) ψ).re =
+        -(1 / (r : ℝ)) := by
+  obtain ⟨ψ, hψ, hrank, hscore⟩ :=
+    exists_unit_pureSchmidtRank_adjacent_score hr hrT (1 / (r : ℝ))
+  refine ⟨ψ, hψ, hrank, hscore.trans ?_⟩
+  have hrR : (0 : ℝ) < r := by exact_mod_cast hr
+  push_cast
+  field_simp [ne_of_gt hrR]
+  ring
+
+/-- The uniform margin in `rem:strict-rank-gap`, stated directly for pure
+vectors of Schmidt rank at most `r`. -/
+theorem re_qform_productReductionChoi_strict_lower_of_pureSchmidtRank_le
+    {T : Type*} [Fintype T] [DecidableEq T] {r : ℕ}
+    (hr : 0 < r) {ε : ℝ}
+    (hε0 : 0 < ε) (hε : ε < 1 / ((r + 1 : ℕ) : ℝ))
+    (ψ : EuclideanSpace ℂ ((T × T) × (T × T)))
+    (hrank : pureSchmidtRank ψ ≤ r) :
+    ε * (1 - (1 - ε) / (r : ℝ)) * ‖ψ‖ ^ 2 ≤
+      (qform
+        (productReductionChoi (U := T) (V := T)
+          ((1 - ε) / (r : ℝ)) ((1 - ε) / (r : ℝ))) ψ).re := by
+  have hscore :=
+    twoCopyScore_strict_separation_lower hr hε0 hε
+      (unvec ψ) (by simpa [pureSchmidtRank] using hrank)
+  rw [hsNormSq_eq_norm_sq, vec_unvec,
+    ← re_qform_twoCopyScoreOperator, vec_unvec,
+    ← productReductionChoi_self_eq_twoCopyScoreOperator] at hscore
+  exact hscore
+
+/-- The positive side of `rem:strict-rank-gap`, stated directly for
+nonzero pure vectors of Schmidt rank at most `r`. -/
+theorem re_qform_productReductionChoi_strict_pos_of_pureSchmidtRank_le
+    {T : Type*} [Fintype T] [DecidableEq T] {r : ℕ}
+    (hr : 0 < r) {ε : ℝ}
+    (hε0 : 0 < ε) (hε : ε < 1 / ((r + 1 : ℕ) : ℝ))
+    (ψ : EuclideanSpace ℂ ((T × T) × (T × T)))
+    (hψ : ψ ≠ 0) (hrank : pureSchmidtRank ψ ≤ r) :
+    0 <
+      (qform
+        (productReductionChoi (U := T) (V := T)
+          ((1 - ε) / (r : ℝ)) ((1 - ε) / (r : ℝ))) ψ).re := by
+  have hC : unvec ψ ≠ 0 := by
+    intro hzero
+    apply hψ
+    rw [← vec_unvec ψ, hzero, vec_zero]
+  have hscore :=
+    twoCopyScore_strict_separation_pos hr hε0 hε
+      (unvec ψ) hC (by simpa [pureSchmidtRank] using hrank)
+  rw [← re_qform_twoCopyScoreOperator, vec_unvec,
+    ← productReductionChoi_self_eq_twoCopyScoreOperator] at hscore
+  exact hscore
+
+/-- The negative side of `rem:strict-rank-gap`, including the unit-vector
+normalization and exact adjacent pure Schmidt rank. -/
+theorem exists_unit_pureSchmidtRank_adjacent_strict_neg
+    {T : Type*} [Fintype T] [DecidableEq T] {r : ℕ}
+    (hr : 0 < r) (hrT : r < Fintype.card T) {ε : ℝ}
+    (_hε0 : 0 < ε) (hε : ε < 1 / ((r + 1 : ℕ) : ℝ)) :
+    ∃ ψ : EuclideanSpace ℂ ((T × T) × (T × T)),
+      ‖ψ‖ = 1 ∧
+      pureSchmidtRank ψ = r + 1 ∧
+      (qform
+        (productReductionChoi (U := T) (V := T)
+          ((1 - ε) / (r : ℝ)) ((1 - ε) / (r : ℝ))) ψ).re < 0 := by
+  obtain ⟨ψ, hψ, hrank, hscore⟩ :=
+    exists_unit_pureSchmidtRank_adjacent_score
+      hr hrT ((1 - ε) / (r : ℝ))
+  refine ⟨ψ, hψ, hrank, ?_⟩
+  rw [hscore]
+  have hrR : (0 : ℝ) < r := by exact_mod_cast hr
+  have hr1R : (0 : ℝ) < (r + 1 : ℕ) := by positivity
+  have hε' : ε * ((r + 1 : ℕ) : ℝ) < 1 :=
+    (lt_div_iff₀ hr1R).mp hε
+  norm_num [Nat.cast_add, Nat.cast_one] at hε' ⊢
+  rw [show ((r : ℝ) + 1) * ((1 - ε) / r) =
+    (((r : ℝ) + 1) * (1 - ε)) / r by ring]
+  rw [lt_div_iff₀ hrR]
+  nlinarith
+
 theorem isBlockPositive_twoCopyScoreOperator_iff (r : ℕ) (t : ℝ) :
     IsBlockPositive r (twoCopyScoreOperator (U := U) (V := V) t)
       ↔ TwoCopyNonnegative (U := U) (V := V) r t := by

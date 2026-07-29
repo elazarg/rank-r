@@ -37,6 +37,19 @@ theorem qform_smul (c : ℂ) (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
   simp only [qform, Matrix.smul_apply, smul_eq_mul, Finset.mul_sum]
   exact Finset.sum_congr rfl fun p _ => Finset.sum_congr rfl fun q _ => by ring
 
+/-- Scaling the tested vector scales its quadratic form by the scalar's
+squared norm. -/
+theorem qform_smul_vec (A : Matrix W W ℂ) (c : ℂ)
+    (x : EuclideanSpace ℂ W) :
+    qform A (c • x) = (Complex.normSq c : ℂ) * qform A x := by
+  simp only [qform, WithLp.ofLp_smul, Pi.smul_apply, smul_eq_mul, map_mul,
+    Complex.normSq_eq_conj_mul_self, Finset.mul_sum]
+  apply Finset.sum_congr rfl
+  intro p _
+  apply Finset.sum_congr rfl
+  intro q _
+  ring
+
 /-- The quadratic form is additive in its matrix argument, over an arbitrary
 finite index set. -/
 theorem qform_sum_finset {ι : Type*} (t : Finset ι) (A : ι → Matrix W W ℂ)
