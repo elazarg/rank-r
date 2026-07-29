@@ -68,6 +68,18 @@ theorem choiTwoAttained_smul {J : Matrix (W × W) (W × W) ℂ} {β t : ℝ}
     heq]
   ring
 
+omit [DecidableEq W] in
+/-- The unrolled two-term attainment predicate is the level-two instance of
+`ChoiKAttained`. -/
+theorem choiKAttained_two_of_choiTwoAttained
+    {J : Matrix (W × W) (W × W) ℂ} {β : ℝ}
+    (h : ChoiTwoAttained J β) :
+    ChoiKAttained J 2 β := by
+  obtain ⟨u₁, v₁, u₂, v₂, hne, heq⟩ := h
+  refine ⟨![u₁, u₂], ![v₁, v₂], ?_, ?_⟩
+  · simpa [Fin.sum_univ_two] using hne
+  · simpa [Fin.sum_univ_two] using heq
+
 end Attained
 
 /-! ## The extremizer for the double antisymmetrizer -/
@@ -198,6 +210,229 @@ theorem qform_Qm_sharpWit {a₀ a₁ : U} {b₀ b₁ : V} (ha : a₀ ≠ a₁) (
     Finset.sum_ite_eq' Finset.univ (wit₁ a₀ a₁ b₀ b₁) (fun _ => (2 : ℂ)),
     Finset.sum_ite_eq' Finset.univ (wit₂ a₀ a₁ b₀ b₁) (fun _ => (2 : ℂ)),
     Finset.mem_univ, if_true]
+  norm_num
+
+/-! ## The rank-three truncation -/
+
+/-- Three of the four signed matrix units in one elementary double-skew
+operator.  Its three nonzero singular values are all one. -/
+noncomputable def sharpWitThree (a₀ a₁ : U) (b₀ b₁ : V) :
+    Matrix (U × V) (U × V) ℂ :=
+  sharpWit a₀ a₁ b₀ b₁
+    + rankOne (-(eBasis (a₀, b₁) : EuclideanSpace ℂ (U × V)))
+        (eBasis (a₁, b₀))
+
+/-- The third support point of the rank-three truncation. -/
+private def wit₃ (a₀ a₁ : U) (b₀ b₁ : V) : Idx U V :=
+  ((a₀, b₁), (a₁, b₀))
+
+/-- The omitted fourth point in its double-swap orbit. -/
+private def wit₄ (a₀ a₁ : U) (b₀ b₁ : V) : Idx U V :=
+  ((a₀, b₀), (a₁, b₁))
+
+omit [Fintype U] [Fintype V] in
+/-- A signed rank-one matrix unit vectorizes to a signed coordinate vector. -/
+private theorem vec_rankOne_neg_eBasis (p q : U × V) (X : Idx U V) :
+    vec (rankOne (-(eBasis p : EuclideanSpace ℂ (U × V))) (eBasis q)) X
+      = if X = (p, q) then (-1 : ℂ) else 0 := by
+  by_cases hX : X = (p, q)
+  · subst X
+    simp [rankOne]
+  · by_cases hp : X.1 = p
+    · by_cases hq : X.2 = q
+      · exact (hX (Prod.ext hp hq)).elim
+      · simp [rankOne, hp, hq, hX]
+    · simp [rankOne, hp, hX]
+
+omit [Fintype U] [Fintype V] in
+/-- The vectorized rank-three witness has coefficients `1,-1,-1` on its three
+support points. -/
+theorem vec_sharpWitThree (a₀ a₁ : U) (b₀ b₁ : V) (X : Idx U V) :
+    vec (sharpWitThree a₀ a₁ b₀ b₁) X
+      = (if X = wit₁ a₀ a₁ b₀ b₁ then (1 : ℂ) else 0)
+        - (if X = wit₂ a₀ a₁ b₀ b₁ then 1 else 0)
+        - (if X = wit₃ a₀ a₁ b₀ b₁ then 1 else 0) := by
+  rw [sharpWitThree, vec_add, PiLp.add_apply, vec_sharpWit]
+  rw [vec_rankOne_neg_eBasis]
+  by_cases h3 : X = wit₃ a₀ a₁ b₀ b₁
+  · have h3' : X = ((a₀, b₁), (a₁, b₀)) := by simpa [wit₃] using h3
+    rw [if_pos h3', if_pos h3]
+    abel
+  · have h3' : X ≠ ((a₀, b₁), (a₁, b₀)) := by simpa [wit₃] using h3
+    rw [if_neg h3', if_neg h3]
+    simp
+
+/-- The squared Hilbert--Schmidt norm of the rank-three truncation is three. -/
+theorem hsNormSq_sharpWitThree {a₀ a₁ : U} {b₀ b₁ : V}
+    (ha : a₀ ≠ a₁) (hb : b₀ ≠ b₁) :
+    hsNormSq (sharpWitThree a₀ a₁ b₀ b₁) = 3 := by
+  have h12 : wit₁ a₀ a₁ b₀ b₁ ≠ wit₂ a₀ a₁ b₀ b₁ := by
+    simp [wit₁, wit₂, Prod.ext_iff]
+    exact fun _ => hb
+  have h13 : wit₁ a₀ a₁ b₀ b₁ ≠ wit₃ a₀ a₁ b₀ b₁ := by
+    simp [wit₁, wit₃, Prod.ext_iff, ha]
+  have h23 : wit₂ a₀ a₁ b₀ b₁ ≠ wit₃ a₀ a₁ b₀ b₁ := by
+    simp [wit₂, wit₃, Prod.ext_iff, ha]
+  have hterm : ∀ X : Idx U V,
+      Complex.normSq (vec (sharpWitThree a₀ a₁ b₀ b₁) X)
+        = (if X = wit₁ a₀ a₁ b₀ b₁ then (1 : ℝ) else 0)
+          + (if X = wit₂ a₀ a₁ b₀ b₁ then 1 else 0)
+          + (if X = wit₃ a₀ a₁ b₀ b₁ then 1 else 0) := by
+    intro X
+    rw [vec_sharpWitThree]
+    by_cases h1 : X = wit₁ a₀ a₁ b₀ b₁
+      <;> by_cases h2 : X = wit₂ a₀ a₁ b₀ b₁
+      <;> by_cases h3 : X = wit₃ a₀ a₁ b₀ b₁
+      <;> simp_all [Complex.normSq]
+  have hsum : hsNormSq (sharpWitThree a₀ a₁ b₀ b₁)
+      = ∑ X : Idx U V,
+          Complex.normSq (vec (sharpWitThree a₀ a₁ b₀ b₁) X) := by
+    rw [Fintype.sum_prod_type]
+    rfl
+  rw [hsum, Finset.sum_congr rfl fun X _ => hterm X,
+    Finset.sum_add_distrib, Finset.sum_add_distrib,
+    Finset.sum_ite_eq' Finset.univ (wit₁ a₀ a₁ b₀ b₁) (fun _ => (1 : ℝ)),
+    Finset.sum_ite_eq' Finset.univ (wit₂ a₀ a₁ b₀ b₁) (fun _ => (1 : ℝ)),
+    Finset.sum_ite_eq' Finset.univ (wit₃ a₀ a₁ b₀ b₁) (fun _ => (1 : ℝ))]
+  simp
+  norm_num
+
+/-- The rank-three truncation is admissible at every level at least three. -/
+theorem rank_sharpWitThree_le (a₀ a₁ : U) (b₀ b₁ : V) :
+    (sharpWitThree a₀ a₁ b₀ b₁).rank ≤ 3 := by
+  apply (rank_le_iff_exists_sum_rankOne (W := U × V) (k := 3)
+    (sharpWitThree a₀ a₁ b₀ b₁)).mpr
+  refine ⟨(fun i : Fin 3 => ![eBasis (a₁, b₁), -(eBasis (a₁, b₀)),
+      -(eBasis (a₀, b₁))] i),
+    (fun i : Fin 3 =>
+      ![eBasis (a₀, b₀), eBasis (a₀, b₁), eBasis (a₁, b₀)] i), ?_⟩
+  simp [sharpWitThree, sharpWit, Fin.sum_univ_succ]
+  abel
+
+/-- The rank-three truncation is nonzero. -/
+theorem sharpWitThree_ne_zero {a₀ a₁ : U} {b₀ b₁ : V}
+    (ha : a₀ ≠ a₁) (hb : b₀ ≠ b₁) :
+    sharpWitThree a₀ a₁ b₀ b₁ ≠ 0 := by
+  intro h
+  have h3 := hsNormSq_sharpWitThree ha hb
+  rw [h] at h3
+  simp [hsNormSq] at h3
+
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
+private theorem swU_wit₁_three (a₀ a₁ : U) (b₀ b₁ : V) :
+    swU (wit₁ a₀ a₁ b₀ b₁) = wit₃ a₀ a₁ b₀ b₁ := rfl
+
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
+private theorem swVU_wit₁_three (a₀ a₁ : U) (b₀ b₁ : V) :
+    swV (swU (wit₁ a₀ a₁ b₀ b₁)) = wit₄ a₀ a₁ b₀ b₁ := rfl
+
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
+private theorem swU_wit₂_three (a₀ a₁ : U) (b₀ b₁ : V) :
+    swU (wit₂ a₀ a₁ b₀ b₁) = wit₄ a₀ a₁ b₀ b₁ := rfl
+
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
+private theorem swVU_wit₂_three (a₀ a₁ : U) (b₀ b₁ : V) :
+    swV (swU (wit₂ a₀ a₁ b₀ b₁)) = wit₃ a₀ a₁ b₀ b₁ := rfl
+
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
+private theorem swU_wit₃_three (a₀ a₁ : U) (b₀ b₁ : V) :
+    swU (wit₃ a₀ a₁ b₀ b₁) = wit₁ a₀ a₁ b₀ b₁ := rfl
+
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
+private theorem swV_wit₃_three (a₀ a₁ : U) (b₀ b₁ : V) :
+    swV (wit₃ a₀ a₁ b₀ b₁) = wit₄ a₀ a₁ b₀ b₁ := rfl
+
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
+private theorem swV_wit₄_three (a₀ a₁ : U) (b₀ b₁ : V) :
+    swV (wit₄ a₀ a₁ b₀ b₁) = wit₃ a₀ a₁ b₀ b₁ := rfl
+
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
+private theorem swVU_wit₃_three (a₀ a₁ : U) (b₀ b₁ : V) :
+    swV (swU (wit₃ a₀ a₁ b₀ b₁)) = wit₂ a₀ a₁ b₀ b₁ := rfl
+
+/-- The rank-three truncation attains the coefficient `3/4` in the
+low-rank quadratic-form bound for `Qm`. -/
+theorem qform_Qm_sharpWitThree {a₀ a₁ : U} {b₀ b₁ : V}
+    (ha : a₀ ≠ a₁) (hb : b₀ ≠ b₁) :
+    qform (Qm : Matrix (Idx U V) (Idx U V) ℂ)
+      (vec (sharpWitThree a₀ a₁ b₀ b₁)) = 9 / 4 := by
+  have h12 : wit₁ a₀ a₁ b₀ b₁ ≠ wit₂ a₀ a₁ b₀ b₁ := by
+    simp [wit₁, wit₂, Prod.ext_iff]
+    exact fun _ => hb
+  have h13 : wit₁ a₀ a₁ b₀ b₁ ≠ wit₃ a₀ a₁ b₀ b₁ := by
+    simp [wit₁, wit₃, Prod.ext_iff, ha]
+  have h23 : wit₂ a₀ a₁ b₀ b₁ ≠ wit₃ a₀ a₁ b₀ b₁ := by
+    simp [wit₂, wit₃, Prod.ext_iff, ha]
+  have h41 : wit₄ a₀ a₁ b₀ b₁ ≠ wit₁ a₀ a₁ b₀ b₁ := by
+    simp [wit₄, wit₁, Prod.ext_iff, ha]
+  have h42 : wit₄ a₀ a₁ b₀ b₁ ≠ wit₂ a₀ a₁ b₀ b₁ := by
+    simp [wit₄, wit₂, Prod.ext_iff, ha]
+  have h43 : wit₄ a₀ a₁ b₀ b₁ ≠ wit₃ a₀ a₁ b₀ b₁ := by
+    intro h
+    have h' := congrArg (fun X : Idx U V => X.1.2) h
+    simp [wit₄, wit₃] at h'
+    exact hb h'
+  have e1 :
+      vec (sharpWitThree a₀ a₁ b₀ b₁) (wit₁ a₀ a₁ b₀ b₁) = 1 := by
+    rw [vec_sharpWitThree, if_pos rfl, if_neg h12, if_neg h13]
+    ring
+  have e2 :
+      vec (sharpWitThree a₀ a₁ b₀ b₁) (wit₂ a₀ a₁ b₀ b₁) = -1 := by
+    rw [vec_sharpWitThree, if_neg (Ne.symm h12), if_pos rfl, if_neg h23]
+    ring
+  have e3 :
+      vec (sharpWitThree a₀ a₁ b₀ b₁) (wit₃ a₀ a₁ b₀ b₁) = -1 := by
+    rw [vec_sharpWitThree, if_neg (Ne.symm h13),
+      if_neg (Ne.symm h23), if_pos rfl]
+    ring
+  have e4 :
+      vec (sharpWitThree a₀ a₁ b₀ b₁) (wit₄ a₀ a₁ b₀ b₁) = 0 := by
+    rw [vec_sharpWitThree, if_neg h41, if_neg h42, if_neg h43]
+    ring
+  have hsummand : ∀ X : Idx U V,
+      conj (vec (sharpWitThree a₀ a₁ b₀ b₁) X) *
+          (vec (sharpWitThree a₀ a₁ b₀ b₁) X
+            - vec (sharpWitThree a₀ a₁ b₀ b₁) (swU X)
+            - vec (sharpWitThree a₀ a₁ b₀ b₁) (swV X)
+            + vec (sharpWitThree a₀ a₁ b₀ b₁) (swV (swU X)))
+        = 3 * (if X = wit₁ a₀ a₁ b₀ b₁ then (1 : ℂ) else 0)
+          + 3 * (if X = wit₂ a₀ a₁ b₀ b₁ then 1 else 0)
+          + 3 * (if X = wit₃ a₀ a₁ b₀ b₁ then 1 else 0) := by
+    intro X
+    by_cases h1 : X = wit₁ a₀ a₁ b₀ b₁
+    · rw [h1, e1, swU_wit₁_three, e3, swV_wit₁, e2,
+        swV_wit₃_three, e4, if_pos rfl, if_neg h12, if_neg h13]
+      norm_num
+    · by_cases h2 : X = wit₂ a₀ a₁ b₀ b₁
+      · rw [h2, e2, swU_wit₂_three, e4, swV_wit₂, e1,
+          swV_wit₄_three, e3, if_neg (Ne.symm h12), if_pos rfl,
+          if_neg h23]
+        norm_num
+      · by_cases h3 : X = wit₃ a₀ a₁ b₀ b₁
+        · rw [h3, e3, swU_wit₃_three, e1, swV_wit₃_three, e4,
+            swV_wit₁, e2, if_neg (Ne.symm h13),
+            if_neg (Ne.symm h23), if_pos rfl]
+          norm_num
+        · have h0 : vec (sharpWitThree a₀ a₁ b₀ b₁) X = 0 := by
+            rw [vec_sharpWitThree, if_neg h1, if_neg h2, if_neg h3]
+            ring
+          rw [h0, if_neg h1, if_neg h2, if_neg h3]
+          simp
+  rw [qform_Qm_eq, Finset.sum_congr rfl fun X _ => hsummand X]
+  simp only [mul_ite, mul_one, mul_zero, Finset.sum_add_distrib,
+    Finset.sum_ite_eq' Finset.univ (wit₁ a₀ a₁ b₀ b₁) (fun _ => (3 : ℂ)),
+    Finset.sum_ite_eq' Finset.univ (wit₂ a₀ a₁ b₀ b₁) (fun _ => (3 : ℂ)),
+    Finset.sum_ite_eq' Finset.univ (wit₃ a₀ a₁ b₀ b₁) (fun _ => (3 : ℂ)),
+    Finset.mem_univ, if_true]
+  norm_num
+
+/-- `1/4` is attained by `Qm` at level three. -/
+theorem choiKAttained_Qm_three {a₀ a₁ : U} {b₀ b₁ : V}
+    (ha : a₀ ≠ a₁) (hb : b₀ ≠ b₁) :
+    ChoiKAttained (Qm : Matrix (Idx U V) (Idx U V) ℂ) 3 (1 / 4) := by
+  apply choiKAttained_of_matrix (rank_sharpWitThree_le a₀ a₁ b₀ b₁)
+    (sharpWitThree_ne_zero ha hb)
+  rw [qform_Qm_sharpWitThree ha hb, hsNormSq_sharpWitThree ha hb]
   norm_num
 
 /-! ## The constant of the double-skew family is exactly `4` -/

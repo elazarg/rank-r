@@ -310,6 +310,80 @@ theorem choiKBound_smul {J : Matrix (W × W) (W × W) ℂ}
   nlinarith [hq, Nat.cast_nonneg (α := ℝ) k,
     hsNormSq_nonneg (∑ i, rankOne (u i) (v i))]
 
+/-- A level-`k` Choi constant is attained when a nonzero `k`-term matrix
+meets its defining quadratic-form inequality with equality. -/
+def ChoiKAttained (J : Matrix (W × W) (W × W) ℂ) (k : ℕ) (β : ℝ) : Prop :=
+  ∃ u v : Fin k → EuclideanSpace ℂ W,
+    (∑ i, rankOne (u i) (v i)) ≠ 0 ∧
+      (qform J (vec (∑ i, rankOne (u i) (v i)))).re
+        = k * β * hsNormSq (∑ i, rankOne (u i) (v i))
+
+/-- An attained positive-level constant lies below every valid constant. -/
+theorem le_of_choiKAttained {J : Matrix (W × W) (W × W) ℂ}
+    {k : ℕ} {β β' : ℝ} (hk : 0 < k)
+    (ha : ChoiKAttained J k β) (hb : ChoiKBound J k β') :
+    β ≤ β' := by
+  obtain ⟨u, v, hne, heq⟩ := ha
+  have hpos : 0 < hsNormSq (∑ i, rankOne (u i) (v i)) :=
+    hsNormSq_pos hne
+  have hle := hb u v
+  rw [heq] at hle
+  have hkR : (0 : ℝ) < k := by exact_mod_cast hk
+  have hfactor :
+      0 < (k : ℝ) * hsNormSq (∑ i, rankOne (u i) (v i)) :=
+    mul_pos hkR hpos
+  have hle' :
+      ((k : ℝ) * hsNormSq (∑ i, rankOne (u i) (v i))) * β
+        ≤ ((k : ℝ) * hsNormSq (∑ i, rankOne (u i) (v i))) * β' := by
+    calc
+      ((k : ℝ) * hsNormSq (∑ i, rankOne (u i) (v i))) * β =
+          (k : ℝ) * β * hsNormSq (∑ i, rankOne (u i) (v i)) := by ring
+      _ ≤ (k : ℝ) * β' * hsNormSq (∑ i, rankOne (u i) (v i)) := hle
+      _ = ((k : ℝ) * hsNormSq (∑ i, rankOne (u i) (v i))) * β' := by ring
+  exact le_of_mul_le_mul_left hle' hfactor
+
+/-- Attainment scales with the Choi operator. -/
+theorem choiKAttained_smul {J : Matrix (W × W) (W × W) ℂ}
+    {k : ℕ} {β t : ℝ} (h : ChoiKAttained J k β) :
+    ChoiKAttained ((t : ℂ) • J) k (t * β) := by
+  obtain ⟨u, v, hne, heq⟩ := h
+  refine ⟨u, v, hne, ?_⟩
+  rw [qform_smul, Complex.mul_re, Complex.ofReal_re,
+    Complex.ofReal_im, zero_mul, sub_zero, heq]
+  ring
+
+/-- A valid level-`k` bound remains valid when its coefficient is increased. -/
+theorem choiKBound_mono {J : Matrix (W × W) (W × W) ℂ}
+    {k : ℕ} {β β' : ℝ} (h : ChoiKBound J k β) (hβ : β ≤ β') :
+    ChoiKBound J k β' := by
+  intro u v
+  have hq := h u v
+  have hk0 : (0 : ℝ) ≤ k := Nat.cast_nonneg k
+  have hn0 : 0 ≤ hsNormSq (∑ i, rankOne (u i) (v i)) :=
+    hsNormSq_nonneg _
+  have hfactor :
+      0 ≤ (k : ℝ) * hsNormSq (∑ i, rankOne (u i) (v i)) :=
+    mul_nonneg hk0 hn0
+  apply hq.trans
+  have hmul := mul_le_mul_of_nonneg_left hβ hfactor
+  calc
+    (k : ℝ) * β * hsNormSq (∑ i, rankOne (u i) (v i)) =
+        ((k : ℝ) * hsNormSq (∑ i, rankOne (u i) (v i))) * β := by ring
+    _ ≤ ((k : ℝ) * hsNormSq (∑ i, rankOne (u i) (v i))) * β' := hmul
+    _ = (k : ℝ) * β' * hsNormSq (∑ i, rankOne (u i) (v i)) := by ring
+
+/-- Any nonzero rank-at-most-`k` matrix attaining the homogeneous
+quadratic-form equality supplies a `ChoiKAttained` witness. -/
+theorem choiKAttained_of_matrix {J : Matrix (W × W) (W × W) ℂ}
+    {k : ℕ} {β : ℝ} {M : Matrix W W ℂ}
+    [DecidableEq W]
+    (hrank : M.rank ≤ k) (hne : M ≠ 0)
+    (heq : (qform J (vec M)).re = k * β * hsNormSq M) :
+    ChoiKAttained J k β := by
+  obtain ⟨u, v, hM⟩ := (rank_le_iff_exists_sum_rankOne M).mp hrank
+  subst M
+  exact ⟨u, v, hne, heq⟩
+
 /-- The same level-`k` Choi bound stated directly for bipartite vectors of
 pure Schmidt rank at most `k`.  Its equivalence with `ChoiKBound` is proved in
 `Equivalence.lean`. -/

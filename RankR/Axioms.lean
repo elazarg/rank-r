@@ -46,6 +46,7 @@ import RankR.LagrangeSOS
 import RankR.TraceSeparation
 import RankR.Kronecker
 import RankR.SchmidtWitness
+import RankR.HigherChoiSharp
 import RankR.GenericApplications
 import RankR.Rigidity
 
@@ -629,6 +630,18 @@ info: 'RankR.sum_norm_sq_le_min_of_doubleSkewQm' depends on axioms: [propext, Cl
 #guard_msgs in
 #print axioms choiKBound_four_smul_Qm_min
 
+/-- info: 'RankR.qform_Qm_sharpWitThree' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_Qm_sharpWitThree
+
+/-- info: 'RankR.choiKAttained_four_smul_Qm_min' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiKAttained_four_smul_Qm_min
+
+/-- info: 'RankR.choiKBound_four_smul_Qm_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiKBound_four_smul_Qm_iff
+
 /-! ## Exterior indexing
 
 The two families of modes attached to the faces of `Fin r`. -/
@@ -720,6 +733,14 @@ info: 'RankR.choiTwoBound_iff_choiKBound_two' depends on axioms: [propext, Class
 /-- info: 'RankR.choiKBound_smul' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms choiKBound_smul
+
+/-- info: 'RankR.le_of_choiKAttained' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms le_of_choiKAttained
+
+/-- info: 'RankR.choiKAttained_of_matrix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiKAttained_of_matrix
 
 /-- info: 'RankR.norm_sq_pair_le_of_choiTwoBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
