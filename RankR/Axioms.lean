@@ -45,6 +45,7 @@ import RankR.Defect
 import RankR.LagrangeSOS
 import RankR.TraceSeparation
 import RankR.Kronecker
+import RankR.SchmidtWitness
 import RankR.Rigidity
 
 namespace RankR
@@ -275,6 +276,46 @@ Ky-Fan corollary. -/
 /-- info: 'RankR.kyFanSq_kroneckerSum_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms kyFanSq_kroneckerSum_le
+
+/-- info: 'RankR.sum_rankOne_scaledSkewKraus' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms sum_rankOne_scaledSkewKraus
+
+/-- info: 'RankR.schmidtNumberLE_four_smul_Qm' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms schmidtNumberLE_four_smul_Qm
+
+/-- info: 'RankR.qform_Qm_rank_two_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_Qm_rank_two_le
+
+/-- info: 'RankR.qform_Qm_rank_three_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_Qm_rank_three_le
+
+/-- info: 'RankR.QmRankThreeBound_holds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms QmRankThreeBound_holds
+
+/-- info: 'RankR.twoWitness_isBlockPositive' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms twoWitness_isBlockPositive
+
+/-- info: 'RankR.threeWitness_isBlockPositive' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms threeWitness_isBlockPositive
+
+/-- info: 'RankR.doubleAntisym_schmidt_number_eq_four' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms doubleAntisym_schmidt_number_eq_four
+
+/-- info: 'RankR.trace_mul_twoWitness_smul_Qm' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms trace_mul_twoWitness_smul_Qm
+
+/-- info: 'RankR.trace_mul_threeWitness_smul_Qm' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms trace_mul_threeWitness_smul_Qm
 
 /-- info: 'RankR.staircaseP_eq_gamma_ratio' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

@@ -134,7 +134,7 @@ theorem doubleSkewBound_holds : DoubleSkewBound U V :=
 
 /-- Pairing against a rank-one operator is the vector pairing against the action:
 both sides expand to `∑_{p,q} conj (A q p) · x q · conj (y p)`. -/
-private theorem hsInner_rankOne_right {W : Type*} [Fintype W] (A : Matrix W W ℂ)
+theorem hsInner_rankOne_right {W : Type*} [Fintype W] (A : Matrix W W ℂ)
     (x y : EuclideanSpace ℂ W) :
     hsInner A (rankOne x y) = conj (inner ℂ x (mulVecE A y)) := by
   simp only [hsInner, Matrix.trace, Matrix.diag_apply, Matrix.mul_apply,
@@ -150,18 +150,18 @@ private theorem hsInner_rankOne_right {W : Type*} [Fintype W] (A : Matrix W W �
 `Field`, whereas `Matrix.rank_conjTranspose` lives in a `StarOrderedField`
 section and would require the star order on `ℂ`; the development orders `ℂ`
 nowhere, so the transpose is used throughout. -/
-private theorem rank_transpose_le {W : Type*} [Fintype W]
+theorem rank_transpose_le {W : Type*} [Fintype W]
     {A : Matrix W W ℂ} {k : ℕ} (h : A.rank ≤ k) : Aᵀ.rank ≤ k := by
   rwa [Matrix.rank_transpose]
 
 /-- `(|x⟩⟨y|)ᵀ = |ȳ⟩⟨x̄|`. -/
-private theorem transpose_rankOne {W : Type*} (x y : EuclideanSpace ℂ W) :
+theorem transpose_rankOne {W : Type*} (x y : EuclideanSpace ℂ W) :
     (rankOne x y)ᵀ = rankOne (bar y) (bar x) := by
   ext p q
   simp [rankOne, Matrix.transpose_apply, mul_comm]
 
 /-- Entrywise conjugation is an isometry. -/
-private theorem norm_bar {W : Type*} [Fintype W] (v : EuclideanSpace ℂ W) :
+theorem norm_bar {W : Type*} [Fintype W] (v : EuclideanSpace ℂ W) :
     ‖bar v‖ = ‖v‖ := by
   rw [EuclideanSpace.norm_eq, EuclideanSpace.norm_eq]
   exact congrArg _ (Finset.sum_congr rfl fun p _ => by simp)

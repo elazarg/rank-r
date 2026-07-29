@@ -124,9 +124,13 @@ singular-value conclusion conditional on the one remaining reusable equality,
 `KyFanFrobeniusDuality`. `TraceSeparation.lean` adds the finite mixed-state
 Schmidt-number cone and proves the quantitative trace-distance corollary using
 the Hermitian trace norm (the sum of absolute eigenvalues), including the exact
-witness spectral diameter. Frobenius Ky Fan duality itself and the remaining
-mixed-state Schmidt-number applications stay outside the unconditional checked
-conclusions.
+witness spectral diameter. `SchmidtWitness.lean` gives an explicit rank-four
+pure-state decomposition of positive scalar multiples of the
+double-antisymmetric projection, proves the rank-two witness and its mixed-state
+inequality, proves the rank-three projection bound and witness, derives exact
+Schmidt number four, and checks both displayed witness expectations.
+Frobenius Ky Fan duality is the remaining operator-theoretic interface in the
+Kronecker and double-antisymmetric applications.
 The exact claim-by-claim boundary is maintained in `FORMALIZATION.md`.
 
 ### Two sharpenings not in the manuscript
@@ -308,6 +312,7 @@ revision.
 | `LagrangeSOS` | the coordinate Lagrange identity and polynomial SOS for the trace--rank residual |
 | `TraceSeparation` | mixed-state Schmidt-number cone, witness spectrum, Hermitian trace-norm separation |
 | `Kronecker` | Kronecker pairing, centered Cauchy--Schwarz, Frobenius rank-test bound, conditional Ky Fan conclusion |
+| `SchmidtWitness` | rank-four double-antisymmetric decomposition, \(W_2\), \(W_3\), and exact Schmidt number |
 | `Axioms` | the axiom surface, checked by the build |
 
 Conceptually the proof has two halves joined in `Results`: the *reduction*

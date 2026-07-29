@@ -47,5 +47,6 @@ import RankR.Defect
 import RankR.LagrangeSOS
 import RankR.TraceSeparation
 import RankR.Kronecker
+import RankR.SchmidtWitness
 import RankR.Rigidity
 import RankR.Axioms

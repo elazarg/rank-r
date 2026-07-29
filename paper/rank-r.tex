@@ -1570,8 +1570,10 @@ development also checks the exact pairing, centered Cauchy--Schwarz step, both
 branches of the minimum, and the normalized rank-constrained Frobenius
 test-supremum bound.  The identification of that supremum with the sum of the
 first $k$ squared singular values is isolated as
-\texttt{KyFanFrobeniusDuality} and is not proved.  The remaining mixed-state
-Schmidt-number arguments are not formalized.
+\texttt{KyFanFrobeniusDuality} and is not proved.  For the
+double-antisymmetric mixed-state application, the development proves an
+explicit rank-four decomposition, the rank-two and rank-three witnesses, the
+exact Schmidt-number lower bound, and both displayed witness expectations.
 
 The consequences at $r=2$ --- the two-copy distillability threshold and the
 statements at the endpoint $\alpha=-\frac12$ --- are also reached in
@@ -2904,9 +2906,13 @@ admissible $\sigma$ is equivalent to the displayed infimum bound.  The final
 singular-value step of \cref{cor:kronecker} is represented conditionally by
 \texttt{kyFanSq\_kroneckerSum\_le}; its sole unproved hypothesis is the
 reusable equality \texttt{KyFanFrobeniusDuality}.  The
-mixed-state arguments specific to
-\cref{cor:exact-schmidt-number,cor:explicit-witnesses}, and the
-positive-map and local-channel applications at the end of \cref{app:gram},
+file \texttt{SchmidtWitness.lean} gives the explicit rank-four decomposition
+used for the upper bound in \cref{cor:exact-schmidt-number}, proves the
+rank-two witness and its mixed-state inequality, derives the required
+rank-three projection bound from the level-three double-skew action theorem,
+and proves the rank-three witness, the exact lower bound, and both displayed
+witness expectations.  The positive-map and local-channel applications at
+the end of \cref{app:gram},
 and the results of \cref{app:generic}, remain prose-only.
 
 \Cref{thm:amplification} is covered, in all four operator forms and for
