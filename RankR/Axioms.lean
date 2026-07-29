@@ -43,6 +43,7 @@ import RankR.Staircase
 import RankR.Gram
 import RankR.Defect
 import RankR.LagrangeSOS
+import RankR.TraceSeparation
 
 namespace RankR
 
@@ -236,6 +237,22 @@ Ky-Fan corollary. -/
  Quot.sound] -/
 #guard_msgs in
 #print axioms isMapRPositive_productReductionMapLinear_self_iff_le_inv_min
+
+/-- info: 'RankR.re_hsInner_nonneg_of_schmidtNumberLE' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms re_hsInner_nonneg_of_schmidtNumberLE
+
+/-- info: 'RankR.abs_re_hsInner_le_hermitianTraceNorm' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms abs_re_hsInner_le_hermitianTraceNorm
+
+/-- info: 'RankR.abs_re_qform_twoCopyWitness_centered_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms abs_re_qform_twoCopyWitness_centered_le
+
+/-- info: 'RankR.twoCopy_traceDistance_lower' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms twoCopy_traceDistance_lower
 
 /-- info: 'RankR.centeredPartialTrace_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

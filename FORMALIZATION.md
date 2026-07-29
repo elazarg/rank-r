@@ -70,10 +70,10 @@ extended-real-infimum layer.
 | asymmetric score nonnegativity iff `max(a,b) ≤ 1/r`, for `1 ≤ r ≤ d` | **Checked** | `asymmetricNonnegative_iff` |
 | asymmetric product-Choi block positivity | **Checked** in coordinates | `isBlockPositive_productReductionChoi_iff_max_le_inv` handles `1 ≤ r ≤ min(dim U,dim V)`; `isBlockPositive_productReductionChoi_iff_max_le_inv_min` gives `max(a,b) ≤ 1/min(r,d)` for every positive `r` at equal local dimension `d ≥ 2` |
 | asymmetric map `r`-positivity classification | **Checked** in coordinates | `isMapRPositive_productReductionMapLinear_iff_max_le_inv` handles the rank-constrained range; `isMapRPositive_productReductionMapLinear_iff_max_le_inv_min` handles every positive `r` at equal local dimension |
-| quantitative trace-norm separation | **Open formalization** | requires Hermitian spectral diameter and Schatten-1/operator-norm duality |
+| quantitative trace-norm separation | **Checked** in Hermitian spectral rendering | `SchmidtNumberLE` is the finite pure-state decomposition definition; `abs_re_hsInner_le_hermitianTraceNorm` proves Hölder duality from the spectral theorem; `abs_re_qform_twoCopyWitness_centered_le` proves the exact diameter `γ + max(1,γ²)`; `twoCopy_traceDistance_lower` is the pointwise form of the displayed infimum bound |
 | Kronecker-sum Ky Fan bound | **Checked core** | `centeredPartialTrace_le` is the complete use of the rank theorem; Frobenius Ky Fan duality, the Kronecker pairing, and the final singular-value statement remain |
-| exact Schmidt number of the product of antisymmetric projector states | **Open formalization** | needs mixed-state Schmidt number, projection `S(k)` duality at `k=3`, and convex decompositions |
-| explicit Schmidt-number witnesses | **Open formalization** | same mixed-state and projection-duality layer |
+| exact Schmidt number of the product of antisymmetric projector states | **Open formalization** | the mixed-state definition `SchmidtNumberLE` is present; projection `S(k)` duality at `k=3` and the upper-bound decomposition remain |
+| explicit Schmidt-number witnesses | **Open formalization** | the mixed-state definition and block-positive-to-cone implication are present; the antisymmetric projection pairing is not composed |
 
 ### Appendices
 
@@ -153,8 +153,8 @@ The shortest route to a fully formalized application suite is:
 1. define vector Schmidt rank and prove its equality with matrix rank under
    `vec`, then package Choi block positivity and map `r`-positivity;
 2. formalize complete positivity of the reduction map for the `r>d` branches;
-3. add singular values/Ky Fan and Schatten-1 duality;
-4. add mixed-state Schmidt number and projection duality;
+3. add singular values and Frobenius Ky Fan duality;
+4. add projection duality and the required mixed-state decompositions;
 5. add isotropic states and the product-isotropic twirl;
 6. add operator systems/free spectrahedra for the graph-inclusion translation;
 

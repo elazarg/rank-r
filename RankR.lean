@@ -45,5 +45,6 @@ import RankR.Staircase
 import RankR.Gram
 import RankR.Defect
 import RankR.LagrangeSOS
+import RankR.TraceSeparation
 import RankR.Axioms
 import RankR.Rigidity

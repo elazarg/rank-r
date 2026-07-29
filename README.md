@@ -103,8 +103,10 @@ rank `r` has `a ≥ r` (`le_coeff_hsNormSq_of_bound`), and once `a = r` is fixed
 via an abstract Schmidt-rank predicate. `FGPBound` quantifies over the explicit
 two-term form; that this is the same condition as "Schmidt rank ≤ 2" is
 `eq:SR-vec-rank`, a definitional reading rather than a formalized theorem — the
-development contains no definition of Schmidt rank at all. The estimate itself
-*is* proved (`fgpBound_holds`).
+development contains no separate definition of pure-vector Schmidt rank. The
+mixed-state decomposition predicate `SchmidtNumberLE` is introduced only for
+the trace-distance application. The estimate itself *is* proved
+(`fgpBound_holds`).
 
 `RankR/Applications.lean` checks the algebraic cores of the main-paper
 applications: both branches and attaining matrices of the symmetric and
@@ -115,9 +117,12 @@ regrouped tensor product; block-positivity thresholds at every positive rank
 in equal local dimensions; the finite-coordinate equivalence with positivity
 of the actual `Fin r` map ampliation; the symmetric and asymmetric map
 classifications; and the rank-sensitive estimate used by the Kronecker-sum
-corollary. Trace-norm and Ky Fan duality and mixed-state Schmidt-number claims
-remain outside the formal vocabulary. The exact claim-by-claim boundary is
-maintained in `FORMALIZATION.md`.
+corollary. `TraceSeparation.lean` adds the finite mixed-state
+Schmidt-number cone and proves the quantitative trace-distance corollary using
+the Hermitian trace norm (the sum of absolute eigenvalues), including the exact
+witness spectral diameter. Singular-value Ky Fan duality and the remaining
+mixed-state Schmidt-number applications stay outside the checked conclusions.
+The exact claim-by-claim boundary is maintained in `FORMALIZATION.md`.
 
 ### Two sharpenings not in the manuscript
 
@@ -296,6 +301,7 @@ revision.
 | `Gram` | the exact positive/negative-sector Gram identity and positivity of the negative-sector defect |
 | `Defect` | the exact complete-graph vertex-variance and edge-deficit certificate |
 | `LagrangeSOS` | the coordinate Lagrange identity and polynomial SOS for the trace--rank residual |
+| `TraceSeparation` | mixed-state Schmidt-number cone, witness spectrum, Hermitian trace-norm separation |
 | `Axioms` | the axiom surface, checked by the build |
 
 Conceptually the proof has two halves joined in `Results`: the *reduction*

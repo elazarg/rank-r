@@ -1562,8 +1562,10 @@ regrouped tensor products, block-positivity thresholds at every positive rank
 in equal local dimensions, the equivalence with positivity of the actual
 finite-coordinate map ampliations, the resulting symmetric and asymmetric map
 classifications, and the rank-sensitive estimate \cref{eq:kronecker-main-use}.
-The trace-norm and Ky Fan dualities and the mixed-state Schmidt-number
-arguments are not formalized.
+The trace-distance corollary is checked using a finite pure-state decomposition
+definition of mixed-state Schmidt number and the Hermitian trace norm, rendered
+as the sum of absolute eigenvalues.  Singular-value Ky Fan duality and the
+remaining mixed-state Schmidt-number arguments are not formalized.
 
 The consequences at $r=2$ --- the two-copy distillability threshold and the
 statements at the endpoint $\alpha=-\frac12$ --- are also reached in
@@ -2730,6 +2732,10 @@ optimality of $b=1/r$ & \texttt{inv\_le\_coeff\_trace\_of\_bound}\\
 \cref{rem:strict-rank-gap}
   & \texttt{twoCopyScore\_strict\_separation\_pos},\\
   & \texttt{twoCopyScore\_adjacent\_strict\_neg}\\
+\cref{cor:two-copy-trace-distance}
+  & \texttt{twoCopy\_traceDistance\_lower}\\
+spectral diameter in \cref{cor:two-copy-trace-distance}
+  & \texttt{abs\_re\_qform\_twoCopyWitness\_centered\_le}\\
 \cref{thm:exact-asymmetric-score}, four lower branches
   & \texttt{asymmetricScore\_lower\_left\_of\_le\_inv},\\
   & \texttt{asymmetricScore\_lower\_left\_of\_inv\_le},\\
@@ -2868,11 +2874,16 @@ finite-coordinate Choi equivalence, identifies the product map with the tensor
 product of the two reduction pencils, and derives the symmetric and asymmetric
 map-$r$-positivity classifications.  The development also covers the complete
 rank-sensitive estimate
-\cref{eq:kronecker-main-use}.  The Schatten-$1$ norm and singular-value Ky Fan
-duality appear nowhere in the development, so
-\cref{cor:two-copy-trace-distance} and the final step of
-\cref{cor:kronecker} remain prose-only.  The mixed-state Schmidt-number
-arguments in \cref{cor:exact-schmidt-number,cor:explicit-witnesses}, and the
+\cref{eq:kronecker-main-use}.  \texttt{TraceSeparation.lean} defines
+Schmidt number at most $r$ by a finite sum of rank-constrained pure-state
+projectors, proves that block positivity extends to this cone, derives
+Hermitian trace-norm duality from the spectral theorem, and proves both the
+spectral diameter and the pointwise form of
+\cref{cor:two-copy-trace-distance}.  The pointwise statement for every
+admissible $\sigma$ is equivalent to the displayed infimum bound.  The final
+singular-value Ky Fan step of \cref{cor:kronecker} remains prose-only.  The
+mixed-state arguments specific to
+\cref{cor:exact-schmidt-number,cor:explicit-witnesses}, and the
 positive-map and local-channel applications at the end of \cref{app:gram},
 and the results of \cref{app:generic}, remain prose-only.
 
