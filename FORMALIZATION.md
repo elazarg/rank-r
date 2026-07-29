@@ -72,7 +72,7 @@ extended-real-infimum layer.
 | asymmetric product-Choi block positivity | **Checked** in coordinates | `isBlockPositive_productReductionChoi_iff_max_le_inv` handles `1 ≤ r ≤ min(dim U,dim V)`; `isBlockPositive_productReductionChoi_iff_max_le_inv_min` gives `max(a,b) ≤ 1/min(r,d)` for every positive `r` at equal local dimension `d ≥ 2` |
 | asymmetric map `r`-positivity classification | **Checked** in coordinates | `isMapRPositive_productReductionMapLinear_iff_max_le_inv` handles the rank-constrained range; `isMapRPositive_productReductionMapLinear_iff_max_le_inv_min` handles every positive `r` at equal local dimension |
 | quantitative trace-norm separation | **Checked** in Hermitian spectral rendering | `SchmidtNumberLE` is the finite pure-state decomposition definition; `abs_re_hsInner_le_hermitianTraceNorm` proves Hölder duality from the spectral theorem; `abs_re_qform_twoCopyWitness_centered_le` proves the exact diameter `γ + max(1,γ²)`; `twoCopy_traceDistance_lower` is the pointwise form of the displayed infimum bound |
-| Kronecker-sum Ky Fan bound | **Checked through the Frobenius dual bound; singular-value conclusion conditional** | `hsInner_kroneckerSum_centered`, `normSq_hsInner_kroneckerSum_le`, `hsNormSq_kroneckerSum`, and `normSq_hsInner_kroneckerSum_le_min` prove the displayed pairing, Cauchy--Schwarz step, and both branches of the minimum; `frobeniusRankTestSq_kroneckerSum_le` proves the normalized rank-test supremum bound; `kyFanSq_kroneckerSum_le` and its `d ≤ 2k` specialization derive the literal singular-value conclusion from the precisely isolated proposition `KyFanFrobeniusDuality` |
+| Kronecker-sum Ky Fan bound | **Checked** | `hsInner_kroneckerSum_centered`, `normSq_hsInner_kroneckerSum_le`, `hsNormSq_kroneckerSum`, and `normSq_hsInner_kroneckerSum_le_min` prove the displayed pairing, Cauchy--Schwarz step, and both branches of the minimum; `frobeniusRankTestSq_kroneckerSum_le` proves the normalized rank-test supremum bound; `weighted_antitone_sum_le_head`, `sum_norm_sq_mulVecE_le_kyFanSq`, and `exists_kyFan_optimal_test` prove both directions of `kyFanFrobeniusDuality`; `kyFanSq_kroneckerSum_le` and its `d ≤ 2k` specialization are the literal singular-value conclusions |
 | exact Schmidt number of the product of antisymmetric projector states | **Checked** in finite coordinates | `sum_rankOne_scaledSkewKraus` and `schmidtNumberLE_four_smul_Qm` give an explicit decomposition into vectorized matrices of rank at most four; `hsNormSq_dsProj_le_three_of_rank_eq` dualizes the level-three double-skew action bound, and `doubleAntisym_schmidt_number_eq_four` proves the lower bound; the abstract-space/basis rendering remains part of the global coordinate boundary |
 | explicit Schmidt-number witnesses | **Checked** in finite coordinates | `twoWitness_isBlockPositive`, `threeWitness_isBlockPositive`, and their mixed-state inequalities are unconditional; `trace_mul_twoWitness_smul_Qm` and `trace_mul_threeWitness_smul_Qm` prove the displayed expectations \(-1/2\) and \(-1/4\) on every normalized scalar multiple of `Qm` |
 
@@ -153,14 +153,11 @@ extended-real-infimum layer.
 
 The shortest route to a fully formalized application suite is:
 
-1. prove `KyFanFrobeniusDuality`, the equality between `kyFanSq` and
-   `frobeniusRankTestSq`;
-2. add isotropic states and the product-isotropic twirl;
-3. finish the graph note's presentation layer by choosing the displayed real
+1. add isotropic states and the product-isotropic twirl;
+2. finish the graph note's presentation layer by choosing the displayed real
    monic pencil basis.
 
-Item 1 closes the remaining main-paper application interface. Items 2–3
-concern companion constructions and appendices rather than the proof of the
-central theorem.  The rook-graph combinatorics and coefficient-space
-dimensions are checked; item 3 is only the remaining explicit basis/pencil
-interface.
+These items concern companion constructions and appendices rather than the
+proof of the central theorem.  The rook-graph combinatorics and
+coefficient-space dimensions are checked; item 2 is only the explicit
+basis/pencil interface.

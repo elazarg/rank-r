@@ -45,6 +45,7 @@ import RankR.Defect
 import RankR.LagrangeSOS
 import RankR.TraceSeparation
 import RankR.Kronecker
+import RankR.KyFanDuality
 import RankR.SchmidtWitness
 import RankR.HigherChoiSharp
 import RankR.HigherAritySkew
@@ -336,6 +337,10 @@ Ky-Fan corollary. -/
 /-- info: 'RankR.frobeniusRankTestSq_kroneckerSum_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms frobeniusRankTestSq_kroneckerSum_le
+
+/-- info: 'RankR.kyFanFrobeniusDuality' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms kyFanFrobeniusDuality
 
 /-- info: 'RankR.kyFanSq_kroneckerSum_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

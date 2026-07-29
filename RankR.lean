@@ -47,6 +47,7 @@ import RankR.Defect
 import RankR.LagrangeSOS
 import RankR.TraceSeparation
 import RankR.Kronecker
+import RankR.KyFanDuality
 import RankR.SchmidtWitness
 import RankR.HigherChoiSharp
 import RankR.HigherAritySkew

@@ -113,9 +113,9 @@ Consequences include the exact rank-constrained two-copy score curve,
 an exact asymmetric tensor-product score theorem with the resulting
 $r$-positivity classification, Kronecker-sum Ky Fan bounds, and
 Schmidt-number witnesses.  The score inequalities, their extremizers and
-rank-constrained thresholds, and the rank-sensitive estimate used in the
-Kronecker bound are machine-checked; the remaining operator-theoretic
-interfaces and applications are tracked explicitly in \cref{app:formal}.
+rank-constrained thresholds, the Frobenius--Ky Fan duality, and the
+Kronecker singular-value bound are machine-checked; other application
+interfaces are tracked explicitly in \cref{app:formal}.
 \end{abstract}
 
 \maketitle
@@ -1569,8 +1569,9 @@ as the sum of absolute eigenvalues.  For the Kronecker corollary, the
 development also checks the exact pairing, centered Cauchy--Schwarz step, both
 branches of the minimum, and the normalized rank-constrained Frobenius
 test-supremum bound.  The identification of that supremum with the sum of the
-first $k$ squared singular values is isolated as
-\texttt{KyFanFrobeniusDuality} and is not proved.  For the
+first $k$ squared singular values is proved as
+\texttt{kyFanFrobeniusDuality}, using finite spectral majorization and an
+explicit optimal test matrix.  For the
 double-antisymmetric mixed-state application, the development proves an
 explicit rank-four decomposition, the rank-two and rank-three witnesses, the
 exact Schmidt-number lower bound, and both displayed witness expectations.
@@ -2800,7 +2801,9 @@ both entries of the minimum in \cref{eq:kronecker-bound}
   & \texttt{normSq\_hsInner\_kroneckerSum\_le\_min}\\
 rank-constrained Frobenius dual form of \cref{cor:kronecker}
   & \texttt{frobeniusRankTestSq\_kroneckerSum\_le}\\
-\cref{cor:kronecker}, conditional on \cref{eq:ky-fan-duality}
+\cref{eq:ky-fan-duality}
+  & \texttt{kyFanFrobeniusDuality}\\
+\cref{cor:kronecker}
   & \texttt{kyFanSq\_kroneckerSum\_le}\\
 \end{longtable}
 
@@ -2903,11 +2906,12 @@ projectors, proves that block positivity extends to this cone, derives
 Hermitian trace-norm duality from the spectral theorem, and proves both the
 spectral diameter and the pointwise form of
 \cref{cor:two-copy-trace-distance}.  The pointwise statement for every
-admissible $\sigma$ is equivalent to the displayed infimum bound.  The final
-singular-value step of \cref{cor:kronecker} is represented conditionally by
-\texttt{kyFanSq\_kroneckerSum\_le}; its sole unproved hypothesis is the
-reusable equality \texttt{KyFanFrobeniusDuality}.  The
-file \texttt{SchmidtWitness.lean} gives the explicit rank-four decomposition
+admissible $\sigma$ is equivalent to the displayed infimum bound.
+\texttt{KyFanDuality.lean} proves the reusable equality
+\texttt{kyFanFrobeniusDuality}, including an explicit optimal
+rank-constrained Frobenius test, and derives the unconditional theorem
+\texttt{kyFanSq\_kroneckerSum\_le}.  The file
+\texttt{SchmidtWitness.lean} gives the explicit rank-four decomposition
 used for the upper bound in \cref{cor:exact-schmidt-number}, proves the
 rank-two witness and its mixed-state inequality, derives the required
 rank-three projection bound from the level-three double-skew action theorem,

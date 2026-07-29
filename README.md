@@ -122,9 +122,10 @@ of the actual `Fin r` map ampliation; the symmetric and asymmetric map
 classifications; and the rank-sensitive estimate used by the Kronecker-sum
 corollary. `Kronecker.lean` proves the exact Kronecker pairing, centered
 Cauchy--Schwarz identity, both branches of the minimum, and the resulting
-rank-constrained Frobenius test-supremum bound. It also states the
-singular-value conclusion conditional on the one remaining reusable equality,
-`KyFanFrobeniusDuality`. `TraceSeparation.lean` adds the finite mixed-state
+rank-constrained Frobenius test-supremum bound. `KyFanDuality.lean` proves the
+reusable equality `KyFanFrobeniusDuality` by finite spectral majorization and
+an explicit optimal rank-constrained test matrix, then derives the literal
+singular-value conclusion. `TraceSeparation.lean` adds the finite mixed-state
 Schmidt-number cone and proves the quantitative trace-distance corollary using
 the Hermitian trace norm (the sum of absolute eigenvalues), including the exact
 witness spectral diameter. `SchmidtWitness.lean` gives an explicit rank-four
@@ -132,8 +133,7 @@ pure-state decomposition of positive scalar multiples of the
 double-antisymmetric projection, proves the rank-two witness and its mixed-state
 inequality, proves the rank-three projection bound and witness, derives exact
 Schmidt number four, and checks both displayed witness expectations.
-Frobenius Ky Fan duality is the remaining operator-theoretic interface in the
-Kronecker application. `GenericApplications.lean`
+`GenericApplications.lean`
 extends the decomposition definition to rectangular bipartitions and proves
 the positive-map semidefinite cut for arbitrary finite ancillas, including its
 symmetric and asymmetric reduction-product specializations.  It also proves
@@ -333,7 +333,8 @@ revision.
 | `Defect` | the exact complete-graph vertex-variance and edge-deficit certificate |
 | `LagrangeSOS` | the coordinate Lagrange identity and polynomial SOS for the trace--rank residual |
 | `TraceSeparation` | mixed-state Schmidt-number cone, witness spectrum, Hermitian trace-norm separation |
-| `Kronecker` | Kronecker pairing, centered Cauchy--Schwarz, Frobenius rank-test bound, conditional Ky Fan conclusion |
+| `Kronecker` | Kronecker pairing, centered Cauchy--Schwarz, and Frobenius rank-test bound |
+| `KyFanDuality` | finite spectral majorization, optimal low-rank Frobenius test, Ky Fan duality, and the unconditional Kronecker singular-value bound |
 | `SchmidtWitness` | rank-four double-antisymmetric decomposition, \(W_2\), \(W_3\), and exact Schmidt number |
 | `GenericApplications` | rectangular Schmidt-number cone, semidefinite cuts, local Kraus aggregation, shifted positive terms and energy baseline |
 | `Axioms` | the axiom surface, checked by the build |

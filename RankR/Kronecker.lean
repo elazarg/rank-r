@@ -2,11 +2,12 @@
 The Kronecker-sum application of the rank-r partial-trace inequality.
 
 This file separates the algebraic and rank-sensitive content of
-`cor:kronecker` from its one operator-theoretic input.  The Kronecker pairing,
-the centered partial-trace norm, the Cauchy--Schwarz step, the rank-k bound, and
-the full Frobenius bound are proved below.  The final identification of the
-rank-k Frobenius test supremum with the sum of the first k squared singular
-values is isolated at the end as `KyFanFrobeniusDuality`.
+`cor:kronecker` from its reusable operator-theoretic input.  The Kronecker
+pairing, the centered partial-trace norm, the Cauchy--Schwarz step, the rank-k
+bound, and the full Frobenius bound are proved below.  The final identification
+of the rank-k Frobenius test supremum with the sum of the first k squared
+singular values is isolated as `KyFanFrobeniusDuality` and proved in
+`KyFanDuality.lean`.
 -/
 import RankR.Applications
 import RankR.GraphFamily
@@ -338,7 +339,7 @@ theorem normSq_hsInner_kroneckerSum_le_min {k : ℕ} (hk : 0 < k)
 
 end KroneckerSum
 
-/-! ## Rank-constrained Frobenius duality and the exact remaining interface -/
+/-! ## Rank-constrained Frobenius duality interface -/
 
 section FrobeniusDuality
 
@@ -391,10 +392,8 @@ zero-indexed decreasing singular-value sequence. -/
 noncomputable def kyFanSq (k : ℕ) (M : Matrix W W ℂ) : ℝ :=
   ∑ i ∈ Finset.range k, (Matrix.toEuclideanLin M).singularValues i ^ 2
 
-/-- The one operator-theoretic statement not proved in this development:
-Frobenius Ky Fan duality for matrices.  Naming the equality keeps the gap
-auditable and lets the whole Kronecker corollary be checked conditionally on
-exactly this reusable interface. -/
+/-- Frobenius Ky Fan duality for matrices, stated as a reusable interface.
+`KyFanDuality.lean` proves this proposition for every finite complex matrix. -/
 def KyFanFrobeniusDuality (k : ℕ) (M : Matrix W W ℂ) : Prop :=
   kyFanSq k M = frobeniusRankTestSq k M
 
@@ -428,9 +427,10 @@ theorem frobeniusRankTestSq_kroneckerSum_le {k : ℕ} (hk : 0 < k)
     simpa [kroneckerKyFanCoeff, mul_assoc] using
       normSq_hsInner_kroneckerSum_le_min hk C hrank A B hA hB hd
 
-/-- `cor:kronecker`, with its remaining reusable operator-theoretic input made
-explicit as `KyFanFrobeniusDuality`. -/
-theorem kyFanSq_kroneckerSum_le {k : ℕ} (hk : 0 < k)
+/-- Conditional interface for `cor:kronecker`, with the reusable
+operator-theoretic input explicit as `KyFanFrobeniusDuality`.
+`KyFanDuality.lean` supplies the unconditional theorem. -/
+theorem kyFanSq_kroneckerSum_le_of_duality {k : ℕ} (hk : 0 < k)
     (A B : Matrix D D ℂ) (hA : A.trace = 0) (hB : B.trace = 0)
     (hd : 0 < Fintype.card D)
     (hdual : KyFanFrobeniusDuality k (kroneckerSum A B)) :
@@ -452,15 +452,15 @@ theorem kronecker_rankCoeff_eq_of_card_le_two_mul {k : ℕ}
   rw [max_eq_left (by linarith)]
   ring
 
-/-- The “in particular” clause of `cor:kronecker`, again conditional only on
-Frobenius Ky Fan duality. -/
-theorem kyFanSq_kroneckerSum_le_of_card_le_two_mul {k : ℕ} (hk : 0 < k)
+/-- Conditional interface for the “in particular” clause of `cor:kronecker`.
+`KyFanDuality.lean` supplies the unconditional theorem. -/
+theorem kyFanSq_kroneckerSum_le_of_card_le_two_mul_of_duality {k : ℕ} (hk : 0 < k)
     (A B : Matrix D D ℂ) (hA : A.trace = 0) (hB : B.trace = 0)
     (hd : 0 < Fintype.card D) (hdk : Fintype.card D ≤ 2 * k)
     (hdual : KyFanFrobeniusDuality k (kroneckerSum A B)) :
     kyFanSq k (kroneckerSum A B) ≤
       (k : ℝ) * (hsNormSq A + hsNormSq B) := by
-  have h := kyFanSq_kroneckerSum_le hk A B hA hB hd hdual
+  have h := kyFanSq_kroneckerSum_le_of_duality hk A B hA hB hd hdual
   rw [kroneckerKyFanCoeff, kronecker_rankCoeff_eq_of_card_le_two_mul hd hdk] at h
   exact h.trans (mul_le_mul_of_nonneg_right (min_le_right _ _)
     (add_nonneg (hsNormSq_nonneg A) (hsNormSq_nonneg B)))
