@@ -14,6 +14,7 @@ import RankR.Library.Matrix.Contraction
 import RankR.Library.Matrix.Elementary
 import RankR.Library.Matrix.HermitianTraceNorm
 import RankR.Library.Matrix.HilbertSchmidt
+import RankR.Library.Matrix.KyFan
 import RankR.Library.Matrix.Placement
 import RankR.Library.Matrix.QuadraticForm
 import RankR.Library.Matrix.Rank
@@ -25,6 +26,7 @@ import RankR.Library.Quantum.Choi
 import RankR.Library.Quantum.ChoiMap
 import RankR.Library.Quantum.Isotropic
 import RankR.Library.Quantum.Kraus
+import RankR.Library.Quantum.KrausActionNorm
 import RankR.Library.Quantum.KrausSpace
 import RankR.Library.Quantum.MaximallyEntangled
 import RankR.Library.Quantum.PositiveMaps

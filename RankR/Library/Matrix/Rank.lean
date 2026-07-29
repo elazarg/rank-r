@@ -13,6 +13,13 @@ open Matrix Finset ComplexConjugate
 
 section Rank
 
+/-- Transposition preserves a rank upper bound. -/
+theorem rank_transpose_le {W : Type*} [Fintype W]
+    {A : Matrix W W ℂ} {k : ℕ}
+    (h : A.rank ≤ k) :
+    Aᵀ.rank ≤ k := by
+  rwa [Matrix.rank_transpose]
+
 variable {W : Type*} [Fintype W] [DecidableEq W]
 
 /-- The factorization's index type has the manuscript's `r₀ = rank C`. -/

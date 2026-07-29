@@ -7,11 +7,11 @@ pairing, the centered partial-trace norm, the Cauchy--Schwarz step, the rank-k
 bound, and the full Frobenius bound are proved below.  The final identification
 of the rank-k Frobenius test supremum with the sum of the first k squared
 singular values is isolated as `KyFanFrobeniusDuality` and proved in
-`KyFanDuality.lean`.
+`RankR.Library.Matrix.KyFan`.
 -/
 import RankR.Core.PartialTrace.Centered
+import RankR.Library.Matrix.KyFanDefs
 import RankR.Library.Matrix.Tensor
-import Mathlib.Analysis.InnerProductSpace.SingularValues
 
 namespace RankR
 
@@ -189,19 +189,6 @@ theorem normSq_hsInner_kroneckerSum_le
   rw [centeredPartialTrace_normSq_eq C hd] at h
   nlinarith
 
-omit [DecidableEq D] in
-/-- Ordinary Hilbert--Schmidt Cauchy--Schwarz for matrices. -/
-theorem normSq_hsInner_le {m n : Type*} [Fintype m] [Fintype n]
-    (X Y : Matrix m n ℂ) :
-    Complex.normSq (hsInner X Y) ≤ hsNormSq X * hsNormSq Y := by
-  rw [hsInner_eq_inner, Complex.normSq_eq_norm_sq, hsNormSq_eq_norm_sq,
-    hsNormSq_eq_norm_sq]
-  have h := norm_inner_le_norm (𝕜 := ℂ) (vec X) (vec Y)
-  have h₀ : 0 ≤ ‖inner ℂ (vec X) (vec Y)‖ := norm_nonneg _
-  have h₁ : 0 ≤ ‖vec X‖ * ‖vec Y‖ :=
-    mul_nonneg (norm_nonneg _) (norm_nonneg _)
-  nlinarith
-
 /-- Tracelessness kills the cross term in the squared Frobenius norm of a
 Kronecker sum. -/
 theorem hsNormSq_kroneckerSum (A B : Matrix D D ℂ)
@@ -282,66 +269,6 @@ theorem normSq_hsInner_kroneckerSum_le_min {k : ℕ} (hk : 0 < k)
 
 end KroneckerSum
 
-/-! ## Rank-constrained Frobenius duality interface -/
-
-section FrobeniusDuality
-
-variable {W : Type*} [Fintype W] [DecidableEq W]
-
-/-- Squared pairings against rank-at-most-`k`, unit-Frobenius test matrices. -/
-def frobeniusRankTestValues (k : ℕ) (M : Matrix W W ℂ) : Set ℝ :=
-  {q | ∃ C : Matrix W W ℂ,
-    C.rank ≤ k ∧ hsNormSq C ≤ 1 ∧ q = Complex.normSq (hsInner C M)}
-
-/-- The squared rank-`k` Frobenius dual quantity in `eq:ky-fan-duality`. -/
-noncomputable def frobeniusRankTestSq (k : ℕ) (M : Matrix W W ℂ) : ℝ :=
-  sSup (frobeniusRankTestValues k M)
-
-theorem frobeniusRankTestValues_nonempty (k : ℕ) (M : Matrix W W ℂ) :
-    (frobeniusRankTestValues k M).Nonempty := by
-  refine ⟨0, 0, ?_, ?_, ?_⟩
-  · simp
-  · simp [hsNormSq]
-  · simp [hsInner]
-
-omit [DecidableEq W] in
-theorem frobeniusRankTestValues_bddAbove (k : ℕ) (M : Matrix W W ℂ) :
-    BddAbove (frobeniusRankTestValues k M) := by
-  refine ⟨hsNormSq M, ?_⟩
-  rintro q ⟨C, -, hnorm, rfl⟩
-  calc
-    Complex.normSq (hsInner C M) ≤ hsNormSq C * hsNormSq M :=
-      normSq_hsInner_le C M
-    _ ≤ 1 * hsNormSq M :=
-      mul_le_mul_of_nonneg_right hnorm (hsNormSq_nonneg M)
-    _ = hsNormSq M := one_mul _
-
-/-- Any homogeneous pointwise rank-`k` bound controls the normalized
-Frobenius test supremum. -/
-theorem frobeniusRankTestSq_le_of_pointwise {k : ℕ} {M : Matrix W W ℂ}
-    {Λ : ℝ} (hΛ : 0 ≤ Λ)
-    (h : ∀ C : Matrix W W ℂ, C.rank ≤ k →
-      Complex.normSq (hsInner C M) ≤ Λ * hsNormSq C) :
-    frobeniusRankTestSq k M ≤ Λ := by
-  apply csSup_le (frobeniusRankTestValues_nonempty k M)
-  rintro q ⟨C, hrank, hnorm, rfl⟩
-  calc
-    Complex.normSq (hsInner C M) ≤ Λ * hsNormSq C := h C hrank
-    _ ≤ Λ * 1 := mul_le_mul_of_nonneg_left hnorm hΛ
-    _ = Λ := mul_one _
-
-/-- The sum of the first `k` squared singular values, using Mathlib's
-zero-indexed decreasing singular-value sequence. -/
-noncomputable def kyFanSq (k : ℕ) (M : Matrix W W ℂ) : ℝ :=
-  ∑ i ∈ Finset.range k, (Matrix.toEuclideanLin M).singularValues i ^ 2
-
-/-- Frobenius Ky Fan duality for matrices, stated as a reusable interface.
-`KyFanDuality.lean` proves this proposition for every finite complex matrix. -/
-def KyFanFrobeniusDuality (k : ℕ) (M : Matrix W W ℂ) : Prop :=
-  kyFanSq k M = frobeniusRankTestSq k M
-
-end FrobeniusDuality
-
 section KroneckerKyFan
 
 variable {D : Type*} [Fintype D] [DecidableEq D]
@@ -372,7 +299,7 @@ theorem frobeniusRankTestSq_kroneckerSum_le {k : ℕ} (hk : 0 < k)
 
 /-- Conditional interface for `cor:kronecker`, with the reusable
 operator-theoretic input explicit as `KyFanFrobeniusDuality`.
-`KyFanDuality.lean` supplies the unconditional theorem. -/
+`RankR.Library.Matrix.KyFan` supplies the unconditional theorem. -/
 theorem kyFanSq_kroneckerSum_le_of_duality {k : ℕ} (hk : 0 < k)
     (A B : Matrix D D ℂ) (hA : A.trace = 0) (hB : B.trace = 0)
     (hd : 0 < Fintype.card D)
@@ -396,7 +323,7 @@ theorem kronecker_rankCoeff_eq_of_card_le_two_mul {k : ℕ}
   ring
 
 /-- Conditional interface for the “in particular” clause of `cor:kronecker`.
-`KyFanDuality.lean` supplies the unconditional theorem. -/
+`RankR.Library.Matrix.KyFan` supplies the unconditional theorem. -/
 theorem kyFanSq_kroneckerSum_le_of_card_le_two_mul_of_duality {k : ℕ} (hk : 0 < k)
     (A B : Matrix D D ℂ) (hA : A.trace = 0) (hB : B.trace = 0)
     (hd : 0 < Fintype.card D) (hdk : Fintype.card D ≤ 2 * k)

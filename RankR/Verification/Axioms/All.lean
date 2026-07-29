@@ -53,6 +53,7 @@ import RankR.Applications.Kronecker.Inequality
 import RankR.Applications.Kronecker.KyFan
 import RankR.Applications.SchmidtWitness
 import RankR.Library.Quantum.KrausSpace
+import RankR.Library.Quantum.KrausActionNorm
 import RankR.Library.Quantum.SchmidtOperatorNorm
 import RankR.Companions.HigherChoi.Sharp
 import RankR.Companions.HigherArity.DoubleSkew
@@ -1367,6 +1368,20 @@ info: 'RankR.choiTwoBound_iff_schmidtOperatorNorm_le' depends on axioms: [propex
 /-- info: 'RankR.choiTwoBound_betaTwo' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms choiTwoBound_betaTwo
+
+/-! ## Kraus-action formula -/
+
+/--
+info: 'RankR.schmidtOperatorNorm_choiOf_eq_krausActionNorm' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms schmidtOperatorNorm_choiOf_eq_krausActionNorm
+
+/--
+info: 'RankR.two_mul_betaTwo_choiOf_eq_krausActionNorm' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms two_mul_betaTwo_choiOf_eq_krausActionNorm
 
 /--
 info: 'RankR.thetaPositive_graphKraus_iff' depends on axioms: [propext, Classical.choice, Quot.sound]

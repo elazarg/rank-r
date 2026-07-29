@@ -21,23 +21,11 @@ namespace RankR
 
 open Matrix Finset ComplexConjugate
 
-/-! ## The Hilbert-Schmidt norm under transposition, conjugation and products -/
+/-! ## Hilbert-Schmidt products -/
 
 section Submultiplicative
 
 variable {l m n : Type*} [Fintype l] [Fintype m] [Fintype n]
-
-theorem hsNormSq_transpose (A : Matrix m n ℂ) : hsNormSq Aᵀ = hsNormSq A := by
-  simp only [hsNormSq, Matrix.transpose_apply]
-  exact Finset.sum_comm
-
-theorem hsNormSq_map_conj (A : Matrix m n ℂ) :
-    hsNormSq (A.map (starRingEnd ℂ)) = hsNormSq A := by
-  simp [hsNormSq, Matrix.map_apply]
-
-theorem hsNormSq_conjTranspose (A : Matrix m n ℂ) : hsNormSq Aᴴ = hsNormSq A := by
-  simp only [hsNormSq, Matrix.conjTranspose_apply, RCLike.star_def, Complex.normSq_conj]
-  exact Finset.sum_comm
 
 /-- **Hilbert-Schmidt submultiplicativity**, `‖AB‖₂² ≤ ‖A‖₂²‖B‖₂²`.
 

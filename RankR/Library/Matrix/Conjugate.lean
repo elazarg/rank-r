@@ -4,11 +4,11 @@ Entrywise complex conjugation of Euclidean vectors.
 The operation is used throughout the matrix and amplification developments, as
 is the fact that it preserves orthonormal families.
 -/
-import RankR.Library.Conventions
+import RankR.Library.Matrix.Elementary
 
 namespace RankR
 
-open ComplexConjugate
+open Matrix ComplexConjugate
 
 section Conjugate
 
@@ -35,6 +35,19 @@ theorem orthonormal_conj {ι : Type*} {e : ι → EuclideanSpace ℂ W} (he : Or
     show inner ℂ _ _ = (0 : ℂ)
     rw [PiLp.inner_apply, ← h']
     exact Finset.sum_congr rfl fun p _ => by simp [mul_comm]
+
+omit [Fintype W] in
+/-- `(|x⟩⟨y|)ᵀ = |ȳ⟩⟨x̄|`. -/
+theorem transpose_rankOne (x y : EuclideanSpace ℂ W) :
+    (rankOne x y)ᵀ = rankOne (bar y) (bar x) := by
+  ext p q
+  simp [rankOne, Matrix.transpose_apply, mul_comm]
+
+/-- Entrywise conjugation is an isometry. -/
+theorem norm_bar (v : EuclideanSpace ℂ W) :
+    ‖bar v‖ = ‖v‖ := by
+  rw [EuclideanSpace.norm_eq, EuclideanSpace.norm_eq]
+  exact congrArg _ (Finset.sum_congr rfl fun p _ => by simp)
 
 end Conjugate
 

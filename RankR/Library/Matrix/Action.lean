@@ -19,6 +19,20 @@ def mulVecE (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) : EuclideanSpace ℂ
 theorem mulVecE_apply (A : Matrix W W ℂ) (x : EuclideanSpace ℂ W) (p : W) :
     mulVecE A x p = ∑ q, A p q * x q := rfl
 
+/-- Pairing against a rank-one operator is the vector pairing against the
+matrix action. -/
+theorem hsInner_rankOne_right (A : Matrix W W ℂ)
+    (x y : EuclideanSpace ℂ W) :
+    hsInner A (rankOne x y) = conj (inner ℂ x (mulVecE A y)) := by
+  simp only [hsInner, Matrix.trace, Matrix.diag_apply, Matrix.mul_apply,
+    Matrix.conjTranspose_apply, RCLike.star_def, rankOne, Matrix.of_apply,
+    PiLp.inner_apply, RCLike.inner_apply', mulVecE_apply, map_sum, map_mul,
+    Complex.conj_conj]
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun q _ => ?_
+  rw [Finset.mul_sum]
+  exact Finset.sum_congr rfl fun p _ => by ring
+
 theorem mulVecE_zero (A : Matrix W W ℂ) : mulVecE A 0 = 0 := by
   ext p
   simp [mulVecE_apply]
