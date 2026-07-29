@@ -433,6 +433,38 @@ theorem choiTwoBound_iff_choiKBound_two {J : Matrix (W × W) (W × W) ℂ} {β :
     push_cast at hu
     simpa using hu
 
+/-- The explicit `k`-term formulation of the Choi bound is exactly the direct
+pure-Schmidt-rank formulation. -/
+theorem choiKBound_iff_pureSchmidtKBound
+    [DecidableEq W]
+    {J : Matrix (W × W) (W × W) ℂ} {k : ℕ} {β : ℝ} :
+    ChoiKBound J k β ↔ PureSchmidtKBound J k β := by
+  constructor
+  · intro h z hz
+    have hrank : (unvec z).rank ≤ k := by
+      simpa [pureSchmidtRank] using hz
+    obtain ⟨u, v, hdecomp⟩ :=
+      (rank_le_iff_exists_sum_rankOne (unvec z)).mp hrank
+    have hb := h u v
+    rw [← hdecomp] at hb
+    simpa [hsNormSq_eq_norm_sq] using hb
+  · intro h u v
+    let M : Matrix W W ℂ := ∑ i, rankOne (u i) (v i)
+    have hrank : pureSchmidtRank (vec M) ≤ k := by
+      rw [pureSchmidtRank_vec]
+      exact (rank_le_iff_exists_sum_rankOne M).mpr ⟨u, v, rfl⟩
+    have hb := h (vec M) hrank
+    simpa [M, hsNormSq_eq_norm_sq] using hb
+
+/-- The rank-two Choi bound is literally the bound over vectors of pure
+Schmidt rank at most two. -/
+theorem choiTwoBound_iff_pureSchmidtKBound_two
+    [DecidableEq W]
+    {J : Matrix (W × W) (W × W) ℂ} {β : ℝ} :
+    ChoiTwoBound J β ↔ PureSchmidtKBound J 2 β :=
+  choiTwoBound_iff_choiKBound_two.trans
+    choiKBound_iff_pureSchmidtKBound
+
 end TwoBound
 
 /-! ## Lifting I

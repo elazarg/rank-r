@@ -53,6 +53,7 @@ import RankR.Applications.Kronecker.Inequality
 import RankR.Applications.Kronecker.KyFan
 import RankR.Applications.SchmidtWitness
 import RankR.Library.Quantum.KrausSpace
+import RankR.Library.Quantum.SchmidtOperatorNorm
 import RankR.Companions.HigherChoi.Sharp
 import RankR.Companions.HigherArity.DoubleSkew
 import RankR.Companions.HigherChoi.KappaOne
@@ -1350,6 +1351,22 @@ info: 'RankR.thetaPositive_of_choiTwoBound_le' depends on axioms: [propext, Clas
 /-- info: 'RankR.krausSpace_eq_of_choiOf_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms krausSpace_eq_of_choiOf_eq
+
+/-! ## Restricted Schmidt operator norm -/
+
+/--
+info: 'RankR.choiTwoBound_iff_schmidtOperatorNorm_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms choiTwoBound_iff_schmidtOperatorNorm_le
+
+/-- info: 'RankR.choiTwoBound_iff_betaTwo_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiTwoBound_iff_betaTwo_le
+
+/-- info: 'RankR.choiTwoBound_betaTwo' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiTwoBound_betaTwo
 
 /--
 info: 'RankR.thetaPositive_graphKraus_iff' depends on axioms: [propext, Classical.choice, Quot.sound]

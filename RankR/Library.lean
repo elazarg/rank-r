@@ -30,4 +30,5 @@ import RankR.Library.Quantum.MaximallyEntangled
 import RankR.Library.Quantum.PositiveMaps
 import RankR.Library.Quantum.Reduction
 import RankR.Library.Quantum.SchmidtNumber
+import RankR.Library.Quantum.SchmidtOperatorNorm
 import RankR.Library.Quantum.WitnessDistance
