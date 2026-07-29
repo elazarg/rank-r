@@ -363,79 +363,20 @@ theorem asymmetricScore_lower_right_of_le_inv {r : ℕ} (hr : 0 < r)
     {a b : ℝ} (ha0 : 0 ≤ a) (hab : a ≤ b) (hb : b ≤ 1 / (r : ℝ))
     (C : Matrix (U × V) (U × V) ℂ) (hrank : C.rank ≤ r) :
     (1 - a) * (1 - r * b) * hsNormSq C ≤ asymmetricScore a b C := by
-  have hrR : (0 : ℝ) < r := by exact_mod_cast hr
-  have hmain := rank_r_partial_trace C r hrank
-  have hV := hsNormSq_ptraceV_le C r hrank
-  have htrace : Complex.normSq C.trace ≤ (r : ℝ) * hsNormSq C := by
-    exact (normSq_trace_le_rank C).trans
-      (mul_le_mul_of_nonneg_right (by exact_mod_cast hrank) (hsNormSq_nonneg C))
-  have hsum : a * (hsNormSq (ptraceU C) + hsNormSq (ptraceV C))
-      + (b - a) * hsNormSq (ptraceV C)
-      ≤ b * r * hsNormSq C + a * (1 / (r : ℝ)) * Complex.normSq C.trace := by
-    have h1 := mul_le_mul_of_nonneg_left hmain ha0
-    have h2 := mul_le_mul_of_nonneg_left hV (sub_nonneg.mpr hab)
-    nlinarith
-  have hcoef : a * (b - 1 / (r : ℝ)) ≤ 0 :=
-    mul_nonpos_of_nonneg_of_nonpos ha0 (sub_nonpos.mpr hb)
-  have hcoef_use := mul_le_mul_of_nonpos_left htrace hcoef
-  have hri : (r : ℝ) * (1 / (r : ℝ)) = 1 := by field_simp
-  calc
-    (1 - a) * (1 - r * b) * hsNormSq C
-        = (1 - r * b) * hsNormSq C
-          + (a * (b - 1 / (r : ℝ))) * ((r : ℝ) * hsNormSq C) := by
-            field_simp [ne_of_gt hrR]
-            ring
-    _ ≤ (1 - r * b) * hsNormSq C
-          + a * (b - 1 / (r : ℝ)) * Complex.normSq C.trace := by
-            linarith
-    _ = hsNormSq C
-          - (a * hsNormSq (ptraceU C) + b * hsNormSq (ptraceV C))
-          + a * b * Complex.normSq C.trace
-          + (a * hsNormSq (ptraceU C) + b * hsNormSq (ptraceV C)
-            - (b * (r : ℝ) * hsNormSq C
-              + a * (1 / (r : ℝ)) * Complex.normSq C.trace)) := by ring
-    _ ≤ asymmetricScore a b C := by
-      unfold asymmetricScore
-      have hrewrite :
-          a * (hsNormSq (ptraceU C) + hsNormSq (ptraceV C))
-              + (b - a) * hsNormSq (ptraceV C)
-            = a * hsNormSq (ptraceU C) + b * hsNormSq (ptraceV C) := by ring
-      rw [hrewrite] at hsum
-      linarith
+  have h := asymmetricScore_lower_left_of_le_inv
+    (U := V) (V := U) hr ha0 hab hb
+    (swapFactors (U := V) (V := U) C) (by simpa using hrank)
+  simpa using h
 
 /-- The symmetric `b ≥ a` second branch. -/
 theorem asymmetricScore_lower_right_of_inv_le {r : ℕ} (_hr : 0 < r)
     {a b : ℝ} (ha0 : 0 ≤ a) (hab : a ≤ b) (hb : 1 / (r : ℝ) ≤ b)
     (C : Matrix (U × V) (U × V) ℂ) (hrank : C.rank ≤ r) :
     (1 - r * b) * hsNormSq C ≤ asymmetricScore a b C := by
-  have hmain := rank_r_partial_trace C r hrank
-  have hV := hsNormSq_ptraceV_le C r hrank
-  have hsum : a * (hsNormSq (ptraceU C) + hsNormSq (ptraceV C))
-      + (b - a) * hsNormSq (ptraceV C)
-      ≤ b * r * hsNormSq C + a * (1 / (r : ℝ)) * Complex.normSq C.trace := by
-    have h1 := mul_le_mul_of_nonneg_left hmain ha0
-    have h2 := mul_le_mul_of_nonneg_left hV (sub_nonneg.mpr hab)
-    nlinarith
-  have hcoef : 0 ≤ a * (b - 1 / (r : ℝ)) :=
-    mul_nonneg ha0 (sub_nonneg.mpr hb)
-  have htrace0 := Complex.normSq_nonneg C.trace
-  calc
-    (1 - r * b) * hsNormSq C
-        ≤ (1 - r * b) * hsNormSq C
-          + a * (b - 1 / (r : ℝ)) * Complex.normSq C.trace := by
-            exact le_add_of_nonneg_right (mul_nonneg hcoef htrace0)
-    _ = hsNormSq C
-          - (b * (r : ℝ) * hsNormSq C
-            + a * (1 / (r : ℝ)) * Complex.normSq C.trace)
-          + a * b * Complex.normSq C.trace := by ring
-    _ ≤ asymmetricScore a b C := by
-      unfold asymmetricScore
-      have hrewrite :
-          a * (hsNormSq (ptraceU C) + hsNormSq (ptraceV C))
-              + (b - a) * hsNormSq (ptraceV C)
-            = a * hsNormSq (ptraceU C) + b * hsNormSq (ptraceV C) := by ring
-      rw [hrewrite] at hsum
-      linarith
+  have h := asymmetricScore_lower_left_of_inv_le
+    (U := V) (V := U) _hr ha0 hab hb
+    (swapFactors (U := V) (V := U) C) (by simpa using hrank)
+  simpa using h
 
 /-- The traceful `a ≥ b` extremizer for the asymmetric score. -/
 theorem asymmetricScore_projWit_same {S : Finset U} {x : V} {r : ℕ}
