@@ -109,7 +109,7 @@ extended-real-infimum layer.
 | face regrouping | **Checked**, stronger weighted form | `norm_sq_sum_placeAt_le_weighted` and downstream `PhypAmp` theorems |
 | unprotected exterior amplification, `k ≥ 1` | **Checked** | `qform_PhypAmp_le_of_norm`, `qform_PhypAmp_le` |
 | protected exterior amplification, `k ≥ 2` | **Checked** | weighted and uniform protected theorems in `HigherArity.lean` |
-| protected-space dimension | **Checked rendering** | modes are indexed by `Face r (k-2)` and proved orthonormal; the binomial-cardinality display is not separately packaged |
+| protected-space dimension | **Checked** | modes are indexed by `Face r (k-2)` and proved orthonormal; `card_face` proves `|Face r (k-2)| = choose r (k-2)` |
 | `k=2` specialization | **Checked core** | pair-level corollaries and `upDeg_univ`; equality with every notation choice in the note is a rendering |
 | complete-hypergraph degree `r-k+1` | **Checked** | `upDeg_univ` |
 | double-skew specialization with exact `beta_k` | **Conditional** | blocked on the general-`k` exact constant in the preceding note |
@@ -145,8 +145,8 @@ extended-real-infimum layer.
 | strict monotonicity of thresholds | **Checked** | `staircaseGamma_succ_sub`, `staircaseP_lt_succ` |
 | exact staircase | **Open formalization** | depends on twirl, boundary decomposition, and mixed-state Schmidt number |
 | adjacent threshold and equality mode | **Checked only at the score core** | `twoCopyScore_adjacent_endpoint`; the isotropic-state and twirl identifications are absent |
-| protected/unprotected threshold comparison | **Open formalization** | no scalar or Choi-state theorem |
-| entangled-marginal comparison | **Open formalization** | requires the isotropic Schmidt-number theorem and partial-trace semantics |
+| protected/unprotected threshold comparison | **Checked scalar core** | `staircaseP_lt_unprotected` proves the strict threshold comparison; the Choi-state identity for the unprotected witness remains part of the missing semantic layer |
+| entangled-marginal comparison | **Checked scalar core** | `staircaseP_lt_marginal` proves the displayed strict rational comparison; identifying it as the exact marginal Schmidt-number threshold still requires isotropic-state and partial-trace semantics |
 
 ## Closure order
 

@@ -27,6 +27,20 @@ noncomputable def staircaseP (m n s k : ℝ) : ℝ :=
 noncomputable def staircaseAlpha (m n s k : ℝ) : ℝ :=
   m * (s - k) / staircaseD m n s k
 
+/-- The white-noise baseline obtained without the protected
+transpose-symmetry correction. -/
+noncomputable def staircaseGammaUnprotected (m n k : ℝ) : ℝ :=
+  staircaseGamma m n k + (k - 1) / (k * m * n)
+
+/-- The detection threshold obtained from the unprotected baseline. -/
+noncomputable def staircasePUnprotected (m n s k : ℝ) : ℝ :=
+  staircaseGammaUnprotected m n k /
+    (staircaseGammaUnprotected m n k + s - k)
+
+/-- The threshold seen by the entangled marginal alone. -/
+noncomputable def staircasePMarginal (m s k : ℝ) : ℝ :=
+  (k * m - 1) / (s * m - 1)
+
 theorem staircaseGamma_eq_fraction {m n k : ℝ}
     (hm : m ≠ 0) (hn : n ≠ 0) (hk : k ≠ 0) :
     staircaseGamma m n k = (k * m - 1) * (k * n - 1) / (k * m * n) := by
@@ -240,5 +254,56 @@ theorem staircaseP_lt_succ {m n s k : ℝ}
   have hratio := ratio_lt_ratio_of_lt_of_gt (c := s - k) (d := s - (k + 1))
     hγ hγinc (by linarith) (by linarith)
   convert hratio using 1 <;> ring
+
+/-- The unprotected witness crosses strictly later than the protected one
+whenever `k > 1`. -/
+theorem staircaseP_lt_unprotected {m n s k : ℝ}
+    (hm : 2 ≤ m) (hn : 2 ≤ n) (hk : 1 < k) (hks : k < s) :
+    staircaseP m n s k < staircasePUnprotected m n s k := by
+  have hk1 : 1 ≤ k := hk.le
+  have hγ : 0 < staircaseGamma m n k :=
+    staircaseGamma_pos hm hn hk1 hks
+  have hextra : 0 < (k - 1) / (k * m * n) := by positivity
+  have hγun : 0 < staircaseGammaUnprotected m n k := by
+    rw [staircaseGammaUnprotected]
+    positivity
+  have hc : 0 < s - k := sub_pos.mpr hks
+  have hden : 0 < staircaseGamma m n k + s - k := by linarith
+  have hdenUn : 0 < staircaseGammaUnprotected m n k + s - k := by
+    linarith
+  rw [staircaseP_eq_gamma_ratio hm hn hk1 hks,
+    staircasePUnprotected, div_lt_div_iff₀ hden hdenUn]
+  rw [staircaseGammaUnprotected]
+  nlinarith [mul_pos hextra hc]
+
+/-- The exact staircase threshold is strictly below the threshold detected
+by the entangled marginal. -/
+theorem staircaseP_lt_marginal {m n s k : ℝ}
+    (hm : 2 ≤ m) (hn : 2 ≤ n) (hk : 1 ≤ k) (hks : k < s) :
+    staircaseP m n s k < staircasePMarginal m s k := by
+  have hD : 0 < staircaseD m n s k :=
+    staircaseD_pos hm hn hk hks
+  have hkm : 0 < k * m - 1 :=
+    (staircase_factors_pos hm hn hk hks).1
+  have hsm : 0 < s * m - 1 := by
+    have hm0 : 0 < m := by linarith
+    have hs : 1 < s := hk.trans_lt hks
+    nlinarith [mul_lt_mul_of_pos_right hs hm0]
+  rw [staircaseP, staircasePMarginal, div_lt_div_iff₀ hD hsm]
+  have hinside :
+      (k * n - 1) * (s * m - 1) < staircaseD m n s k := by
+    rw [← sub_pos]
+    have hid :
+        staircaseD m n s k - (k * n - 1) * (s * m - 1)
+          = m * (s - k) := by
+      unfold staircaseD
+      ring
+    rw [hid]
+    positivity
+  calc
+    (k * m - 1) * (k * n - 1) * (s * m - 1) =
+        (k * m - 1) * ((k * n - 1) * (s * m - 1)) := by ring
+    _ < (k * m - 1) * staircaseD m n s k :=
+      mul_lt_mul_of_pos_left hinside hkm
 
 end RankR

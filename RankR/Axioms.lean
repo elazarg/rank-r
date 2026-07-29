@@ -478,6 +478,14 @@ Ky-Fan corollary. -/
 #guard_msgs in
 #print axioms staircaseP_lt_succ
 
+/-- info: 'RankR.staircaseP_lt_unprotected' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms staircaseP_lt_unprotected
+
+/-- info: 'RankR.staircaseP_lt_marginal' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms staircaseP_lt_marginal
+
 /-! ## Fu-Gao-Park's Theorem 2.4, proved
 
 `Equivalence.lean` supplies the converse of `doubleSkewBound_of_FGP`, so the
@@ -612,6 +620,10 @@ info: 'RankR.sum_norm_sq_le_min_of_doubleSkewQm' depends on axioms: [propext, Cl
 /-! ## Exterior indexing
 
 The two families of modes attached to the faces of `Fin r`. -/
+
+/-- info: 'RankR.card_face' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms card_face
 
 /-- info: 'RankR.orthonormal_etaMode' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

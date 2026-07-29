@@ -40,6 +40,14 @@ variable {r : ℕ}
 basis. -/
 abbrev Face (r m : ℕ) := {s : Finset (Fin r) // s.card = m}
 
+/-- The coordinate index set for `m`-faces has the expected binomial
+cardinality. -/
+@[simp]
+theorem card_face (r m : ℕ) :
+    Fintype.card (Face r m) = Nat.choose r m := by
+  simpa only [Face, Fintype.card_fin] using
+    (Fintype.card_finset_len (α := Fin r) m)
+
 /-- The position sign `(-1)^{#\{i ∈ I : i < v\}}`, the sign with which the vertex
 `v` is extracted from the wedge product indexed by `I`. -/
 def esign (I : Finset (Fin r)) (v : Fin r) : ℂ := (-1) ^ (I.filter (· < v)).card
