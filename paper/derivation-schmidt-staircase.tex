@@ -694,12 +694,19 @@ the map identity \cref{eq:mapid}, the latter formalized as
 boundary decomposition \cref{thm:decomp}, which is an elementary moment
 computation; and hence \cref{thm:staircase}.
 
-The rational identities governing this argument are machine-checked in
-\texttt{RankR/Staircase.lean}: the three forms of $\gamma_k$, both forms of
-$p_k$ and $\alpha_k$, the strict bounds $0<\alpha_k<1$, all three moment
-equalities in \cref{thm:decomp}, the affine threshold test, and the strict
-ordering $p_k<p_{k+1}$.  The product-isotropic twirl, moment uniqueness and
-mixed-state Schmidt-number statements are not formalized.
+The finite algebra governing this argument is machine-checked in
+\texttt{RankR/Staircase.lean}, \texttt{RankR/Isotropic.lean}, and
+\texttt{RankR/StaircaseStates.lean}.  This includes the three forms of
+$\gamma_k$, both forms of $p_k$ and $\alpha_k$, the strict bounds
+$0<p_k,\alpha_k<1$, normalized isotropic states and
+\cref{eq:noise-split}, the real four-sector product-isotropic space and
+trace-plus-three-moment uniqueness inside it, the Hermitian witness and
+operator trace formulas \cref{eq:trace,eq:trace-rho}, and the literal matrix
+identity \cref{eq:decomp}.  The checked identity does not by itself establish
+its Schmidt-number conclusion.  The identification of the four-sector space
+as the range of the product Haar twirl, preservation of Schmidt number by that
+twirl, the product-seed lemma, and the resulting mixed-state Schmidt-number
+staircase are not formalized.
 
 Not established.  First, the seed \cref{eq:tau-rho} is bi-isotropic, and the
 entire converse direction consumes that: \cref{lem:moments} works because the

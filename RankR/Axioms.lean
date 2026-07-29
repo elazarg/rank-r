@@ -40,6 +40,8 @@ import RankR.Sharp
 import RankR.Applications
 import RankR.MapPos
 import RankR.Staircase
+import RankR.Isotropic
+import RankR.StaircaseStates
 import RankR.Gram
 import RankR.Defect
 import RankR.LagrangeSOS
@@ -474,6 +476,10 @@ Ky-Fan corollary. -/
 #guard_msgs in
 #print axioms staircaseP_eq_gamma_ratio
 
+/-- info: 'RankR.staircaseP_mem_Ioo' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms staircaseP_mem_Ioo
+
 /-- info: 'RankR.staircaseAlpha_mem_Ioo' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms staircaseAlpha_mem_Ioo
@@ -497,6 +503,45 @@ Ky-Fan corollary. -/
 /-- info: 'RankR.staircaseP_lt_marginal' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms staircaseP_lt_marginal
+
+/-! ## Product-isotropic state algebra
+
+The Haar-twirl and Schmidt-number interfaces remain outside the development.
+These guards cover the finite matrix statements that do not need them:
+normalized isotropic states, the four-sector moment coordinates, the witness
+trace formula and the exact boundary operator identity. -/
+
+/-- info: 'RankR.isotropicState_whiteNoise' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms isotropicState_whiteNoise
+
+/-- info: 'RankR.eq_of_memBiIsotropicSpace_of_trace_moments' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms eq_of_memBiIsotropicSpace_of_trace_moments
+
+/-- info: 'RankR.trace_mul_staircaseWitness_biIsotropicState' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms trace_mul_staircaseWitness_biIsotropicState
+
+/-- info: 'RankR.trace_mul_staircaseWitness_staircaseState_neg_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms trace_mul_staircaseWitness_staircaseState_neg_iff
+
+/-- info: 'RankR.staircase_boundary_operator_identity' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms staircase_boundary_operator_identity
+
+/-- info: 'RankR.staircaseState_at_threshold_normalized_posSemidef' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms staircaseState_at_threshold_normalized_posSemidef
+
+/--
+info: 'RankR.staircaseBoundaryState_at_threshold_normalized_posSemidef' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms staircaseBoundaryState_at_threshold_normalized_posSemidef
 
 /-! ## Fu-Gao-Park's Theorem 2.4, proved
 

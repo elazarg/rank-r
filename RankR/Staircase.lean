@@ -118,6 +118,18 @@ theorem staircaseP_eq_gamma_ratio {m n s k : ℝ}
   rw [staircaseGamma_eq_fraction hm0 hn0 hk0]
   field_simp [hm0, hn0, hk0, ne_of_gt hsum]
 
+/-- Every nontrivial staircase threshold is a genuine convex parameter. -/
+theorem staircaseP_mem_Ioo {m n s k : ℝ}
+    (hm : 2 ≤ m) (hn : 2 ≤ n) (hk : 1 ≤ k) (hks : k < s) :
+    staircaseP m n s k ∈ Set.Ioo 0 1 := by
+  rw [staircaseP_eq_gamma_ratio hm hn hk hks]
+  have hγ := staircaseGamma_pos hm hn hk hks
+  have hc : 0 < s - k := sub_pos.mpr hks
+  have hden : 0 < staircaseGamma m n k + s - k := by linarith
+  constructor
+  · exact div_pos hγ hden
+  · exact (div_lt_one hden).mpr (by linarith)
+
 /-- Both formulas for `α_k` in `eq:Dk-alphak` agree. -/
 theorem staircaseAlpha_eq {m n s k : ℝ}
     (hm : 2 ≤ m) (hn : 2 ≤ n) (hk : 1 ≤ k) (hks : k < s) :

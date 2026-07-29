@@ -139,12 +139,14 @@ extended-real-infimum layer.
 | double-skew constant `beta_2=1` | **Checked** | main development |
 | map identity for `W_k` | **Checked** | `Psi_eq_tensor_square` |
 | `k`-block positivity of `W_k` | **Checked core** | `thetaPositive_of_choiTwoBound`; mixed-state Schmidt-number phrasing remains an interface |
-| product-isotropic twirl, its four-dimensional commutant, and moment uniqueness | **Open formalization** | no Haar twirl or representation-theoretic commutant layer |
+| normalized isotropic states and white-noise identity | **Checked** in finite coordinates | `isotropicState_isDensityMatrix`, `isotropicState_whiteNoise`, `staircaseWhiteNoiseState_eq` |
+| product-isotropic four-sector algebra and moment uniqueness | **Checked** inside the specified real four-dimensional space | `biIsotropicForm_eq_of_trace_moments`, `eq_of_memBiIsotropicSpace_of_trace_moments`; identifying this space as the range/commutant of the Haar twirl remains open |
+| product-isotropic Haar twirl and Schmidt-number preservation | **Open formalization** | no Haar integration or local-unitary channel layer |
 | product-seed lemma and exact seed Schmidt number | **Open formalization** | requires Schmidt number and local-unitary twirling |
-| trace formula and one-sided threshold | **Checked scalar core** | `staircaseGamma_eq_fraction`, `staircaseP_eq_gamma_ratio`, `affine_threshold_iff`; the operator trace identity remains an interface |
-| boundary decomposition at `p_k` | **Checked core** | `staircaseAlpha_eq`, `staircaseAlpha_mem_Ioo`, `staircase_boundary_moments`; moment uniqueness and the Schmidt-number bound remain absent |
+| trace formula and one-sided threshold | **Checked** at matrix level | `staircaseWitness_isHermitian`, `trace_mul_staircaseWitness_biIsotropicState`, `trace_mul_staircaseWitness_staircaseState_neg_iff` |
+| boundary decomposition at `p_k` | **Checked** as an exact matrix identity | `staircase_boundary_operator_identity`; `staircaseState_at_threshold_normalized_posSemidef` and `staircaseBoundaryState_at_threshold_normalized_posSemidef` check both sides are states, while the Schmidt-number bound remains open |
 | strict monotonicity of thresholds | **Checked** | `staircaseGamma_succ_sub`, `staircaseP_lt_succ` |
-| exact staircase | **Open formalization** | depends on twirl, boundary decomposition, and mixed-state Schmidt number |
+| exact staircase | **Open formalization** | depends on the product-seed lemma, twirl preservation, and mixed-state Schmidt-number semantics; the boundary operator identity itself is checked |
 | adjacent threshold and equality mode | **Checked only at the score core** | `twoCopyScore_adjacent_endpoint`; the isotropic-state and twirl identifications are absent |
 | protected/unprotected threshold comparison | **Checked scalar core** | `staircaseP_lt_unprotected` proves the strict threshold comparison; the Choi-state identity for the unprotected witness remains part of the missing semantic layer |
 | entangled-marginal comparison | **Checked scalar core** | `staircaseP_lt_marginal` proves the displayed strict rational comparison; identifying it as the exact marginal Schmidt-number threshold still requires isotropic-state and partial-trace semantics |
@@ -153,7 +155,8 @@ extended-real-infimum layer.
 
 The shortest route to a fully formalized application suite is:
 
-1. add isotropic states and the product-isotropic twirl;
+1. identify the checked four-sector algebra with the product-isotropic Haar
+   twirl and prove the required Schmidt-number preservation and seed lemmas;
 2. finish the graph note's presentation layer by choosing the displayed real
    monic pencil basis.
 

@@ -42,6 +42,8 @@ import RankR.ThetaBound
 import RankR.Applications
 import RankR.MapPos
 import RankR.Staircase
+import RankR.Isotropic
+import RankR.StaircaseStates
 import RankR.Gram
 import RankR.Defect
 import RankR.LagrangeSOS

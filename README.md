@@ -329,6 +329,8 @@ revision.
 | `Applications` | exact score bounds, extremizers and thresholds; reduction-product Choi matrices; adjacent separation; Kronecker rank core |
 | `MapPos` | actual finite-coordinate map ampliations, the map/Choi `r`-positivity equivalence, and the symmetric and asymmetric map classifications |
 | `Staircase` | exact threshold algebra, convex boundary coefficient, moment identities, strict threshold ordering, and protected/unprotected and marginal threshold comparisons |
+| `Isotropic` | normalized isotropic states, the product-isotropic four-sector algebra, and trace-plus-moment uniqueness inside that space |
+| `StaircaseStates` | the Hermitian staircase witness and trace formula, white-noise identity, normalized noisy states, and exact boundary matrix decomposition |
 | `Gram` | the exact positive/negative-sector Gram identity and positivity of the negative-sector defect |
 | `Defect` | the exact complete-graph vertex-variance and edge-deficit certificate |
 | `LagrangeSOS` | the coordinate Lagrange identity and polynomial SOS for the trace--rank residual |
