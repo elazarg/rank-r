@@ -294,8 +294,9 @@ lift is the map identity: for every $k\ge1$,
 \end{equation}
 the binomial expansion of $(S+t\,\id)^{\otimes2}$ at $S=\Delta-\id$,
 $t=(k-1)/k$.  \Cref{eq:mapid} is formalized as
-\texttt{RankR.Psi\_eq\_tensor\_square} in \texttt{RankR/MapId.lean}, in the
-normalization that scales both sides by $4$ to match the convention
+\texttt{RankR.Psi\_eq\_tensor\_square} in
+\path{RankR/Core/DoubleSkew/MapIdentity.lean}, in the normalization that
+scales both sides by $4$ to match the convention
 \texttt{Lam4}${}=4(\Lambda_m\otimes\Lambda_n)$ used there.
 
 Since $J(\Delta)=I$ and $J(\id)=\ketbra{\Omega}{\Omega}$, the Choi operator of
@@ -695,8 +696,10 @@ boundary decomposition \cref{thm:decomp}, which is an elementary moment
 computation; and hence \cref{thm:staircase}.
 
 The finite algebra governing this argument is machine-checked in
-\texttt{RankR/Staircase.lean}, \texttt{RankR/Isotropic.lean}, and
-\texttt{RankR/StaircaseStates.lean}.  This includes the three forms of
+\path{RankR/Companions/Staircase/Scalar.lean},
+\path{RankR/Library/Quantum/Isotropic.lean},
+\path{RankR/Companions/Staircase/ProductIsotropic.lean}, and
+\path{RankR/Companions/Staircase/States.lean}.  This includes the three forms of
 $\gamma_k$, both forms of $p_k$ and $\alpha_k$, the strict bounds
 $0<p_k,\alpha_k<1$, normalized isotropic states and
 \cref{eq:noise-split}, the real four-sector product-isotropic space and

@@ -130,6 +130,7 @@ ledger records that correspondence explicitly.
 | Goal | Starting point |
 | --- | --- |
 | Understand the mathematics and motivation | [paper/rank-r.pdf](paper/rank-r.pdf) |
+| Distinguish the focused paper from companion notes | [paper/README.md](paper/README.md) |
 | Check whether a paper claim is machine-verified | [docs/FORMALIZATION.md](docs/FORMALIZATION.md) |
 | Reuse only the generic lift | `import RankR.Core.Amplification` |
 | Use the headline partial-trace theorem | `import RankR` |

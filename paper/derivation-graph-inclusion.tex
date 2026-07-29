@@ -424,11 +424,15 @@ searches did not surface it, which is not the same thing.
 \Cref{lem:beta}, both halves of \cref{thm:clique}, and the finite-coordinate
 content of \cref{prop:layers} and \cref{lem:witness} are machine-checked in the
 Lean~4 development accompanying \texttt{rank-r.tex},
-\url{https://github.com/elazarg/rank-r}, in the files \texttt{GraphFamily.lean},
-\texttt{Theta.lean}, \texttt{ThetaBound.lean}, \texttt{GraphLayers.lean} and
-\texttt{GraphSpectrahedron.lean}.  The rook specialization and the
-coefficient-space dimensions are checked in \texttt{GraphDimensions.lean} and
-\texttt{RookGraph.lean}.  The basis-free positive-cone rendering of
+\url{https://github.com/elazarg/rank-r}, in
+\path{RankR/Companions/Graph/Family.lean},
+\path{RankR/Companions/Graph/PairBound.lean},
+\path{RankR/Companions/Graph/Layers.lean}, and
+\path{RankR/Companions/Graph/Inclusion.lean}.
+The rook specialization and the coefficient-space dimensions are checked in
+\path{RankR/Companions/Graph/Dimensions.lean} and
+\path{RankR/Companions/Graph/Rook.lean}.  The basis-free
+positive-cone rendering of
 \cref{lem:dict} and the exact threshold \cref{eq:exact} are checked there as
 well.
 
