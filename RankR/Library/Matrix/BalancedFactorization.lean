@@ -5,6 +5,8 @@ A balanced factorization has identical left and right Gram matrices, and each
 rank-one summand contributes the same scalar to the trace.
 -/
 import RankR.Library.Matrix.Rank
+import Mathlib.Analysis.InnerProductSpace.GramMatrix
+import Mathlib.Analysis.Matrix.PosDef
 
 namespace RankR
 
@@ -51,7 +53,7 @@ noncomputable def mixRankFamily
 /-- The Gram matrix of a finite vector family. -/
 noncomputable def rankFamilyGram
     (e : Fin q → EuclideanSpace ℂ W) : Matrix (Fin q) (Fin q) ℂ :=
-  fun i j => inner ℂ (e i) (e j)
+  Matrix.gram ℂ e
 
 /-- The cross-Gram matrix whose diagonal entries are the trace contributions
 of a rank factorization. -/
@@ -145,6 +147,180 @@ theorem rankFactor_mixRankFamily
     _ = ∑ j, e j p * conj (d j r) := by
       simp [Matrix.one_apply]
 
+/-- Spectral mixing makes the right Gram matrix diagonal while keeping an
+orthonormal left family orthonormal. -/
+theorem exists_spectral_mixRankFamily
+    (e d : Fin q → EuclideanSpace ℂ W) (he : Orthonormal ℂ e) :
+    ∃ (e' d' : Fin q → EuclideanSpace ℂ W) (lam : Fin q → ℝ),
+      rankFactor e d = rankFactor e' d'
+        ∧ rankFamilyGram e' = 1
+        ∧ rankFamilyGram d' = Matrix.diagonal (RCLike.ofReal ∘ lam)
+        ∧ ∀ i, 0 ≤ lam i := by
+  classical
+  let G := rankFamilyGram d
+  have hG : G.IsHermitian := by
+    exact Matrix.isHermitian_gram ℂ d
+  let U : Matrix (Fin q) (Fin q) ℂ := hG.eigenvectorUnitary
+  let lam : Fin q → ℝ := hG.eigenvalues
+  have hU : U ∈ Matrix.unitaryGroup (Fin q) ℂ :=
+    SetLike.coe_mem hG.eigenvectorUnitary
+  have hGramE : rankFamilyGram e = 1 := by
+    ext i j
+    rw [rankFamilyGram_apply, Matrix.one_apply]
+    exact orthonormal_iff_ite.mp he i j
+  have hmixE : rankFamilyGram (mixRankFamily e U) = 1 := by
+    rw [rankFamilyGram_mixRankFamily, hGramE, Matrix.mul_one]
+    simpa only [Matrix.star_eq_conjTranspose] using
+      (Matrix.mem_unitaryGroup_iff'.mp hU)
+  have hmixD :
+      rankFamilyGram (mixRankFamily d U) =
+        Matrix.diagonal (RCLike.ofReal ∘ lam) := by
+    rw [rankFamilyGram_mixRankFamily]
+    have hspectral := hG.conjStarAlgAut_star_eigenvectorUnitary
+    simpa only [G, U, lam, Unitary.conjStarAlgAut_star_apply,
+      Matrix.star_eq_conjTranspose] using hspectral
+  have hlam : ∀ i, 0 ≤ lam i := by
+    intro i
+    exact (Matrix.posSemidef_gram ℂ d).eigenvalues_nonneg i
+  exact ⟨mixRankFamily e U, mixRankFamily d U, lam,
+    (rankFactor_mixRankFamily e d U hU).symm, hmixE, hmixD, hlam⟩
+
+/-- The positive fourth-root scale that equalizes the two diagonal Gram
+entries in a spectral rank factorization. -/
+noncomputable def gramQuarterRoot (lam : Fin q → ℝ) (i : Fin q) : ℝ :=
+  √(√(lam i))
+
+/-- Scale the orthonormal side of a spectral factorization. -/
+noncomputable def balanceSpectralLeft
+    (e : Fin q → EuclideanSpace ℂ W) (lam : Fin q → ℝ) :
+    Fin q → EuclideanSpace ℂ W :=
+  fun i => (gramQuarterRoot lam i : ℂ) • e i
+
+/-- Inversely scale the orthogonal side of a spectral factorization.  The
+inverse of zero is zero, so zero-eigenvalue summands vanish on both sides. -/
+noncomputable def balanceSpectralRight
+    (d : Fin q → EuclideanSpace ℂ W) (lam : Fin q → ℝ) :
+    Fin q → EuclideanSpace ℂ W :=
+  fun i => ((gramQuarterRoot lam i : ℂ)⁻¹) • d i
+
+/-- Spectral fourth-root scaling turns an orthonormal/orthogonal
+factorization into an equal-Gram factorization without changing its sum. -/
+theorem spectralBalance_isEqualGram
+    (e d : Fin q → EuclideanSpace ℂ W) (lam : Fin q → ℝ)
+    (hE : rankFamilyGram e = 1)
+    (hD : rankFamilyGram d = Matrix.diagonal (RCLike.ofReal ∘ lam))
+    (hlam : ∀ i, 0 ≤ lam i) :
+    rankFactor e d =
+        rankFactor (balanceSpectralLeft e lam) (balanceSpectralRight d lam)
+      ∧ IsEqualGramRankFactor
+        (balanceSpectralLeft e lam) (balanceSpectralRight d lam) := by
+  have hEij : ∀ i j, inner ℂ (e i) (e j) = if i = j then 1 else 0 := by
+    intro i j
+    have h := congrFun (congrFun hE i) j
+    simpa only [rankFamilyGram_apply, Matrix.one_apply] using h
+  have hDij : ∀ i j, inner ℂ (d i) (d j) =
+      if i = j then RCLike.ofReal (lam i) else 0 := by
+    intro i j
+    have h := congrFun (congrFun hD i) j
+    simpa [rankFamilyGram_apply, Matrix.diagonal_apply, Function.comp_apply] using h
+  have hterm : ∀ i,
+      rankOne (balanceSpectralLeft e lam i) (balanceSpectralRight d lam i)
+        = rankOne (e i) (d i) := by
+    intro i
+    by_cases hi : lam i = 0
+    · have hd0 : d i = 0 := by
+        apply norm_eq_zero.mp
+        have h := hDij i i
+        rw [if_pos rfl, inner_self_eq_norm_sq_to_K, hi] at h
+        have hsq : ‖d i‖ ^ 2 = 0 := by exact_mod_cast h
+        nlinarith [sq_nonneg ‖d i‖]
+      ext p r
+      simp [balanceSpectralLeft, balanceSpectralRight, rankOne,
+        gramQuarterRoot, hi, hd0]
+    · have hpos : 0 < lam i := lt_of_le_of_ne (hlam i) (Ne.symm hi)
+      have hroot : gramQuarterRoot lam i ≠ 0 := by
+        exact ne_of_gt (Real.sqrt_pos.2 (Real.sqrt_pos.2 hpos))
+      have hrootC : (gramQuarterRoot lam i : ℂ) ≠ 0 := by
+        exact_mod_cast hroot
+      ext p r
+      change (gramQuarterRoot lam i : ℂ) * e i p *
+          conj ((gramQuarterRoot lam i : ℂ)⁻¹ * d i r) =
+        e i p * conj (d i r)
+      calc
+        _ = (gramQuarterRoot lam i : ℂ) * e i p *
+            ((gramQuarterRoot lam i : ℂ)⁻¹ * conj (d i r)) := by
+              rw [map_mul, map_inv₀]
+              simp only [Complex.conj_ofReal]
+        _ = _ := by field_simp
+  constructor
+  · rw [rankFactor_eq_sum, rankFactor_eq_sum]
+    exact Finset.sum_congr rfl fun i _ => (hterm i).symm
+  · intro i j
+    by_cases hij : i = j
+    · subst j
+      by_cases hi : lam i = 0
+      · simp [balanceSpectralLeft, balanceSpectralRight, gramQuarterRoot, hi]
+      · have hpos : 0 < lam i := lt_of_le_of_ne (hlam i) (Ne.symm hi)
+        have ha : 0 < gramQuarterRoot lam i :=
+          Real.sqrt_pos.2 (Real.sqrt_pos.2 hpos)
+        have ha2 : gramQuarterRoot lam i ^ 2 = √(lam i) := by
+          exact Real.sq_sqrt (Real.sqrt_nonneg _)
+        have hs2 : (√(lam i)) ^ 2 = lam i := Real.sq_sqrt (hlam i)
+        have ha4 : gramQuarterRoot lam i ^ 4 = lam i := by
+          calc
+            gramQuarterRoot lam i ^ 4 =
+                (gramQuarterRoot lam i ^ 2) ^ 2 := by ring
+            _ = lam i := by rw [ha2, hs2]
+        have hreal :
+            gramQuarterRoot lam i * gramQuarterRoot lam i =
+              (gramQuarterRoot lam i)⁻¹ *
+                ((gramQuarterRoot lam i)⁻¹ * lam i) := by
+          field_simp [ne_of_gt ha]
+          nlinarith
+        have hcomplex :
+            (gramQuarterRoot lam i : ℂ) * (gramQuarterRoot lam i : ℂ) =
+              (gramQuarterRoot lam i : ℂ)⁻¹ *
+                ((gramQuarterRoot lam i : ℂ)⁻¹ * (lam i : ℂ)) := by
+          exact_mod_cast hreal
+        calc
+          inner ℂ (balanceSpectralLeft e lam i)
+              (balanceSpectralLeft e lam i) =
+              conj (gramQuarterRoot lam i : ℂ) *
+                ((gramQuarterRoot lam i : ℂ) * inner ℂ (e i) (e i)) := by
+                  rw [balanceSpectralLeft,
+                    inner_smul_left, inner_smul_right]
+          _ = (gramQuarterRoot lam i : ℂ) *
+                (gramQuarterRoot lam i : ℂ) := by
+                  rw [hEij i i, if_pos rfl]
+                  simp only [Complex.conj_ofReal, mul_one]
+          _ = (gramQuarterRoot lam i : ℂ)⁻¹ *
+                ((gramQuarterRoot lam i : ℂ)⁻¹ * (lam i : ℂ)) :=
+            hcomplex
+          _ = conj ((gramQuarterRoot lam i : ℂ)⁻¹) *
+                ((gramQuarterRoot lam i : ℂ)⁻¹ * inner ℂ (d i) (d i)) := by
+                  rw [hDij i i, if_pos rfl]
+                  simp only [map_inv₀, Complex.conj_ofReal]
+                  rfl
+          _ = inner ℂ (balanceSpectralRight d lam i)
+                (balanceSpectralRight d lam i) := by
+                  rw [balanceSpectralRight,
+                    inner_smul_left, inner_smul_right]
+    · calc
+        inner ℂ (balanceSpectralLeft e lam i)
+            (balanceSpectralLeft e lam j) =
+            conj (gramQuarterRoot lam i : ℂ) *
+              ((gramQuarterRoot lam j : ℂ) * inner ℂ (e i) (e j)) := by
+                simp only [balanceSpectralLeft]
+                rw [inner_smul_left, inner_smul_right]
+        _ = 0 := by rw [hEij i j, if_neg hij, mul_zero, mul_zero]
+        _ = conj ((gramQuarterRoot lam i : ℂ)⁻¹) *
+              ((gramQuarterRoot lam j : ℂ)⁻¹ * inner ℂ (d i) (d j)) := by
+                rw [hDij i j, if_neg hij, mul_zero, mul_zero]
+        _ = inner ℂ (balanceSpectralRight d lam i)
+              (balanceSpectralRight d lam j) := by
+                simp only [balanceSpectralRight]
+                rw [inner_smul_left, inner_smul_right]
+
 end Mixing
 
 section ConstantDiagonal
@@ -183,6 +359,18 @@ section Balance
 
 variable {W : Type*} [Fintype W] {q : ℕ}
 
+/-- Every square complex matrix has an equal-Gram factorization indexed by
+its exact rank. -/
+theorem hasEqualGramRankFactorization (C : Matrix W W ℂ) :
+    HasEqualGramRankFactorization C := by
+  obtain ⟨e, d, he, hC⟩ := exists_rankFactor_rank C
+  obtain ⟨e', d', lam, hspectral, hE, hD, hlam⟩ :=
+    exists_spectral_mixRankFamily e d he
+  obtain ⟨hscale, hG⟩ :=
+    spectralBalance_isEqualGram e' d' lam hE hD hlam
+  exact ⟨balanceSpectralLeft e' lam, balanceSpectralRight d' lam,
+    hC.trans (hspectral.trans hscale), hG⟩
+
 /-- Constant-diagonal unitary mixing balances an equal-Gram factorization. -/
 theorem exists_balanced_mixRankFamily
     (e d : Fin q → EuclideanSpace ℂ W)
@@ -220,6 +408,21 @@ theorem hasBalancedRankFactorization_of_equalGram_of_constantDiagonals
     exists_balanced_mixRankFamily e d hG
       (hdiag (rankFactorCrossGram e d))
   exact ⟨e', d', τ, hC.trans hmix, hbal⟩
+
+/-- The constant-diagonal property in the matrix rank produces a balanced
+exact-rank factorization. -/
+theorem hasBalancedRankFactorization_of_constantDiagonals
+    (C : Matrix W W ℂ) (hdiag : HasConstantDiagonals C.rank) :
+    HasBalancedRankFactorization C :=
+  hasBalancedRankFactorization_of_equalGram_of_constantDiagonals
+    (hasEqualGramRankFactorization C) hdiag
+
+/-- Constant diagonals in every dimension give balanced exact-rank
+factorizations for every square matrix on `W`. -/
+theorem hasBalancedRankFactorizations_of_constantDiagonals
+    (hdiag : ∀ q, HasConstantDiagonals q) :
+    HasBalancedRankFactorizations W :=
+  fun C => hasBalancedRankFactorization_of_constantDiagonals C (hdiag C.rank)
 
 end Balance
 

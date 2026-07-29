@@ -103,8 +103,8 @@ a hypothesis of the main theorem. -/
 
 These declarations check the generic crossed-polarization lift, its
 complete-graph defect, the two concrete marginal hypotheses, and the
-conditional reconstruction of the partial-trace theorem.  Balanced
-factorization existence remains a proposition-valued input. -/
+balanced-factorization interfaces used to reconstruct the partial-trace
+theorem. -/
 
 /-- info: 'RankR.balancedPolarization_rankFactor_trace_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
@@ -130,6 +130,10 @@ factorization existence remains a proposition-valued input. -/
 #guard_msgs in
 #print axioms partialTrace_of_hasBalancedRankFactorization
 
+/-- info: 'RankR.hasEqualGramRankFactorization' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms hasEqualGramRankFactorization
+
 /--
 info: 'RankR.hasBalancedRankFactorization_of_equalGram_of_constantDiagonals' depends on axioms: [propext,
  Classical.choice,
@@ -137,6 +141,14 @@ info: 'RankR.hasBalancedRankFactorization_of_equalGram_of_constantDiagonals' dep
 -/
 #guard_msgs in
 #print axioms hasBalancedRankFactorization_of_equalGram_of_constantDiagonals
+
+/-- info: 'RankR.hasBalancedRankFactorization_of_constantDiagonals' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms hasBalancedRankFactorization_of_constantDiagonals
+
+/-- info: 'RankR.hasBalancedRankFactorizations_of_constantDiagonals' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms hasBalancedRankFactorizations_of_constantDiagonals
 
 /-! ## Applications
 
