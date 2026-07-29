@@ -48,5 +48,6 @@ import RankR.LagrangeSOS
 import RankR.TraceSeparation
 import RankR.Kronecker
 import RankR.SchmidtWitness
+import RankR.GenericApplications
 import RankR.Rigidity
 import RankR.Axioms

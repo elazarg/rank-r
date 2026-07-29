@@ -46,6 +46,7 @@ import RankR.LagrangeSOS
 import RankR.TraceSeparation
 import RankR.Kronecker
 import RankR.SchmidtWitness
+import RankR.GenericApplications
 import RankR.Rigidity
 
 namespace RankR
@@ -316,6 +317,22 @@ Ky-Fan corollary. -/
 /-- info: 'RankR.trace_mul_threeWitness_smul_Qm' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms trace_mul_threeWitness_smul_Qm
+
+/-- info: 'RankR.rank_choiContraction_vec_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rank_choiContraction_vec_le
+
+/-- info: 'RankR.mapAmplification_posSemidef_of_schmidtNumberLEBetween' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms mapAmplification_posSemidef_of_schmidtNumberLEBetween
+
+/-- info: 'RankR.productReduction_schmidtNumberLE_cut' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms productReduction_schmidtNumberLE_cut
+
+/-- info: 'RankR.productReduction_self_schmidtNumberLE_cut' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms productReduction_self_schmidtNumberLE_cut
 
 /-- info: 'RankR.staircaseP_eq_gamma_ratio' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

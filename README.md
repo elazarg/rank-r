@@ -130,7 +130,10 @@ double-antisymmetric projection, proves the rank-two witness and its mixed-state
 inequality, proves the rank-three projection bound and witness, derives exact
 Schmidt number four, and checks both displayed witness expectations.
 Frobenius Ky Fan duality is the remaining operator-theoretic interface in the
-Kronecker and double-antisymmetric applications.
+Kronecker and double-antisymmetric applications. `GenericApplications.lean`
+extends the decomposition definition to rectangular bipartitions and proves
+the positive-map semidefinite cut for arbitrary finite ancillas, including its
+symmetric and asymmetric reduction-product specializations.
 The exact claim-by-claim boundary is maintained in `FORMALIZATION.md`.
 
 ### Two sharpenings not in the manuscript
@@ -313,6 +316,7 @@ revision.
 | `TraceSeparation` | mixed-state Schmidt-number cone, witness spectrum, Hermitian trace-norm separation |
 | `Kronecker` | Kronecker pairing, centered Cauchy--Schwarz, Frobenius rank-test bound, conditional Ky Fan conclusion |
 | `SchmidtWitness` | rank-four double-antisymmetric decomposition, \(W_2\), \(W_3\), and exact Schmidt number |
+| `GenericApplications` | rectangular Schmidt-number cone and reduction-product semidefinite cuts |
 | `Axioms` | the axiom surface, checked by the build |
 
 Conceptually the proof has two halves joined in `Results`: the *reduction*

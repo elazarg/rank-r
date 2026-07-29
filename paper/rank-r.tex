@@ -2911,9 +2911,12 @@ used for the upper bound in \cref{cor:exact-schmidt-number}, proves the
 rank-two witness and its mixed-state inequality, derives the required
 rank-three projection bound from the level-three double-skew action theorem,
 and proves the rank-three witness, the exact lower bound, and both displayed
-witness expectations.  The positive-map and local-channel applications at
-the end of \cref{app:gram},
-and the results of \cref{app:generic}, remain prose-only.
+witness expectations.  \texttt{GenericApplications.lean} extends the
+pure-state decomposition definition to rectangular bipartitions and proves
+the positive-map semidefinite cut of \cref{cor:positive-map-cut}, including
+the symmetric and asymmetric reduction-product specializations for arbitrary
+finite ancillas.  The local-channel applications at the end of
+\cref{app:generic} remain prose-only.
 
 \Cref{thm:amplification} is covered, in all four operator forms and for
 an arbitrary Kraus family: \texttt{Choi.lean} carries
