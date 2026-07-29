@@ -449,6 +449,12 @@ $\SN(\rho_{p_k})\le k$.
 \end{theorem}
 
 \begin{proof}
+The coefficient is genuinely convex: its numerator is positive, while
+\[
+ D_k-m(s-k)
+ =(km-1)(kn-1)+m(s-k)(kn-1)>0,
+\]
+so $0<\alpha_k<1$.
 Both sides of \cref{eq:decomp} are states in $\cL_{\cT}$, so by
 \cref{lem:moments} it suffices to match the three moments \cref{eq:moments}.
 On the left, from \cref{eq:tau-rho} and \cref{eq:noise-split},
@@ -523,7 +529,8 @@ and consequently
 \end{theorem}
 
 \begin{proof}
-The forward implication is \cref{prop:onesided}.  For the converse let
+The implication $p>p_k\Rightarrow\SN(\rho_p)>k$ is
+\cref{prop:onesided}.  For the reverse implication, let
 $p\le p_k$.  Then
 \[
     \rho_p
@@ -686,6 +693,13 @@ the map identity \cref{eq:mapid}, the latter formalized as
 \texttt{RankR.Psi\_eq\_tensor\_square}; the trace formula \cref{eq:trace}; the
 boundary decomposition \cref{thm:decomp}, which is an elementary moment
 computation; and hence \cref{thm:staircase}.
+
+The rational identities governing this argument are machine-checked in
+\texttt{RankR/Staircase.lean}: the three forms of $\gamma_k$, both forms of
+$p_k$ and $\alpha_k$, the strict bounds $0<\alpha_k<1$, all three moment
+equalities in \cref{thm:decomp}, the affine threshold test, and the strict
+ordering $p_k<p_{k+1}$.  The product-isotropic twirl, moment uniqueness and
+mixed-state Schmidt-number statements are not formalized.
 
 Not established.  First, the seed \cref{eq:tau-rho} is bi-isotropic, and the
 entire converse direction consumes that: \cref{lem:moments} works because the

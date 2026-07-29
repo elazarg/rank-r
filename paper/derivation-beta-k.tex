@@ -52,7 +52,8 @@ is exact.
 
 \section{Setting}
 
-Fix orthonormal bases of $U$ and $V$, write
+Let $U$ and $V$ be finite-dimensional with
+$\dim U,\dim V\ge2$.  Fix orthonormal bases and write
 $\mathfrak{so}(W)=\{L:L^T=-L\}$, and let
 \[
     \mathcal A:=\mathfrak{so}(U)\otimes\mathfrak{so}(V)\subseteq\cL(U\otimes V)
@@ -113,6 +114,12 @@ $\sum_{j\le k}s_j^2\le1$ this gives $\kappa_k\le\min\{k,4\}/4$.
 $L_{ab}=E_{ab}-E_{ba}$, has exactly four nonzero singular values, all equal, so
 after normalization $\sum_{j\le k}s_j^2=\min\{k,4\}/4$ for every $k$.
 \end{proof}
+
+The assumptions $\dim U,\dim V\ge2$ are necessary for the statement as
+written.  If either factor has dimension below two, then
+$\mathcal A=\{0\}$, so the Frobenius-unit set in \cref{eq:kappa} is empty and
+the displayed maximum is not defined; the associated completely positive map
+is zero.
 
 \begin{remark}
 \label{rem:everypair}

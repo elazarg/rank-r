@@ -93,14 +93,16 @@ Both coefficients are optimal --- the first outright, the second once
 the first is fixed --- whenever one factor has dimension at least $r$
 and the other at least $2$, and for nonzero $C$ equality forces
 $\rank C=r$.  This is the extension beyond normal matrices that Costa
-Rico and Wolf identify as open.  There $\beta_2=1$ is a two-vector
+Rico and Wolf identify as open.  When both local dimensions are at least two,
+the sharp value $\beta_2=1$ is a two-vector
 action bound on the double-skew space
 $\mathfrak{so}(U)\otimes\mathfrak{so}(V)$, proved here from the
 Autonne--Takagi factorization and equivalent to Fu, Gao, and Park's
 sharp Schmidt-rank-two projection estimate.
 
-The development is machine-checked in Lean~4 in full, proved end to
-end.  What is certified is the deduction, not the faithfulness of
+The pair-amplification theorem, the main partial-trace theorem, and their
+dependency chain are machine-checked in Lean~4 end to end.  What is certified
+is the deduction, not the faithfulness of
 the formal definitions to their informal counterparts;
 \cref{app:formal} gives the repository, the versions, the reported
 axioms, and the formal--informal correspondence.
@@ -108,8 +110,10 @@ axioms, and the formal--informal correspondence.
 Consequences include the exact rank-constrained two-copy score curve,
 an exact asymmetric tensor-product score theorem with the resulting
 $r$-positivity classification, Kronecker-sum Ky Fan bounds, and
-Schmidt-number witnesses.  These applications are developed in prose
-only; they are not part of the machine-checked development.
+Schmidt-number witnesses.  The score inequalities, their extremizers and
+rank-constrained thresholds, and the rank-sensitive estimate used in the
+Kronecker bound are machine-checked; the remaining operator-theoretic
+interfaces and applications are tracked explicitly in \cref{app:formal}.
 \end{abstract}
 
 \maketitle
@@ -270,11 +274,13 @@ The assertion is immediate when $C=0$.
 
 \Cref{eq:main-bound} was obtained independently and concurrently by Fraser,
 Huber, Pozsgay and Vona \cite{FraserHuberPozsgayVona2026}, by a different
-route; Bharti, Gajjala and Haug \cite{BhartiGajjalaHaug2026} obtain the
-rank-two case together with finite-copy extensions.  Both, like the present
-work, resolve the two-copy distillability question through Costa Rico's
-equivalence.  The overlap is the inequality; what is particular to this
-account is the derivation from \cref{thm:pair-amplification}, together with
+route.  Song and Chen \cite{SongChen2026} and Bharti, Gajjala and Haug
+\cite{BhartiGajjalaHaug2026} obtain the rank-two case; Song and Chen also give a
+two-parameter extension and an activation result, while Bharti, Gajjala and
+Haug give finite-copy extensions.  All four accounts resolve the two-copy
+distillability question through Costa Rico's equivalence.  The overlap is the
+inequality and its rank-two consequences; what is particular to this account
+is the reusable derivation from \cref{thm:pair-amplification}, together with
 the formal development of \cref{app:formal}.
 
 \begin{remark}[Optimality of the coefficients]
@@ -314,7 +320,8 @@ forces $b\ge1/r$.
 
 The proof of \cref{thm:rank_r}, and of every result it depends on, has been
 formalized in Lean~4, as have the statements of \cref{rem:optimality} and
-\cref{lem:one-sided-partial-trace}.
+\cref{lem:one-sided-partial-trace}, the algebraic score applications, and the
+rank-sensitive core of \cref{cor:kronecker}.
 \Cref{app:formal} records the repository, the toolchain and Mathlib pins, the
 reported axioms, and the correspondence between the formal and informal
 statements.
@@ -566,12 +573,16 @@ definition.  The middle equality is the $S(k)$-norm projection duality of
 \cite{JohnstonKribs2010} at $k=2$, and the right-hand quantity is the threshold
 characterizing $k$-positivity of $a\Tr(\cdot)I-\Phi$ in
 \cite[Thm.~3.2]{MlynikOsakaMarciniak2025}, so $2\beta_2$ is their $a_2$.
-By \cref{rem:fgp-equivalence}, $J(\Lambda_U\otimes\Lambda_V)$ is $4Q_-$ and
-$\norm{Q_-}_{S(2)}=\frac12$, so
+By \cref{rem:fgp-equivalence}, $J(\Lambda_U\otimes\Lambda_V)$ is $4Q_-$.  If
+$\dim U,\dim V\ge2$, then $\norm{Q_-}_{S(2)}=\frac12$, so
 \begin{equation}
 \label{eq:beta2-double-skew}
     \beta_2(\Lambda_U\otimes\Lambda_V)=1 .
 \end{equation}
+If either local dimension is below two, the double-skew space and the map
+vanish, and the sharp value is instead $\beta_2=0$.  The upper bound
+$\beta_2\le1$, which is all the proof of \cref{thm:rank_r} consumes, is valid
+in every dimension.
 
 \begin{theorem}[Pair amplification, operator forms]
 \label[theorem]{thm:amplification}
@@ -1072,8 +1083,9 @@ corresponding upper bound: $\rho_0^{T_{UV}}=P_+-P_-$ and
 $(\Phi\otimes\id_Q)(P_+)\succeq0$, so
 $(\Phi\otimes\id_Q)(\rho_0^{T_{UV}})\succeq-(\Phi\otimes\id_Q)(P_-)$.
 
-For the $r$-positivity assertion no further identity is needed.  Since the $e_i$
-are orthonormal, $\Tr_{UV}\rho_0=I_Q$ and $\rho_0=r\Pi_e$, so
+For the positivity assertion at the size of the displayed frame no further
+identity is needed.  Since the $e_i$ are orthonormal,
+$\Tr_{UV}\rho_0=I_Q$ and $\rho_0=r\Pi_e$, so
 \[
     I-\Pi_e
     =\bigl[(\Delta-\tfrac1r\id)\otimes\id_Q\bigr](\rho_0),
@@ -1082,11 +1094,23 @@ are orthonormal, $\Tr_{UV}\rho_0=I_Q$ and $\rho_0=r\Pi_e$, so
     =(\Phi\otimes\id_Q)\bigl(\rho_0^{T_{UV}}\bigr),
 \]
 so \cref{eq:amplification-B} is exactly
-$(\Psi_{r,\Phi}\otimes\id_Q)(\rho_0)\succeq0$.  A vector of Schmidt rank at most
-$r$ is $(I\otimes D)\delta_e$ for some $D$ and some orthonormal
-$e_1,\ldots,e_r$, by \cref{eq:C-decomposition}; conjugating the previous display
-by $I\otimes D$ preserves positivity and evaluates it there.  Both steps use
-only that $\Phi$ is completely positive.
+$(\Psi_{r,\Phi}\otimes\id_Q)(\rho_0)\succeq0$.
+
+It remains to avoid padding a Schmidt decomposition by an orthonormal
+$r$-frame, which need not exist when $r>\dim H$.  Let a nonzero test vector have
+exact Schmidt rank $s\le r$, and write it as
+$(I\otimes D)\delta_e$ for an orthonormal $s$-frame, using
+\cref{eq:C-decomposition}.  The preceding argument at size $s$, conjugated by
+$I\otimes D$, proves nonnegativity for $\Psi_{s,\Phi}$.  If $C$ is the matrix
+obtained by inverse vectorization of the test vector, then the difference of
+the two Choi quadratic forms is
+\[
+  (r-s)\beta_2(\Phi)
+  \left(\norm C_2^2-\frac{\abs{\Tr C}^2}{rs}\right)\ge0,
+\]
+because $\abs{\Tr C}^2\le s\norm C_2^2$.  Thus the same vector is nonnegative
+for $\Psi_{r,\Phi}$.  The zero vector is immediate.  This proves the assertion
+for every $r$, including $r>\dim H$.
 \end{proof}
 
 \begin{remark}[Transpose parity, and where the trace term comes from]
@@ -1207,16 +1231,19 @@ $C$ to
     \norm{\Tr_V C}_2^2,\qquad
     \abs{\Tr C}^2 .
 \]
-So every quadratic functional of $C$ invariant under local unitaries
+So every Hermitian sesquilinear functional of degree $(1,1)$ in
+$(C,\overline C)$ that is invariant under local unitaries
 $C\mapsto(U\otimes V)C(U\otimes V)^*$ is a combination of exactly these four,
-and \cref{thm:rank_r} is an inequality between the only quantities available.
-Nothing has been selected: a local-basis-independent quadratic statement about
-a bipartite operator has no other terms it could involve.  This is also why the
+and \cref{thm:rank_r} is an inequality between the only quantities available
+within that class.  The qualifier is essential: real quadratic expressions
+such as $\operatorname{Re}\Tr(C^2)$ obey different representation-theoretic
+rules and are not classified by this commutant count.  This is also why the
 same four terms recur in otherwise unrelated settings --- Gaussian fourth
 moments with product structure, subsystem purities --- since a Haar average of
-a quadratic lands in the commutant by construction.  The hypothesis is the full
-local unitary group: a quantity invariant only under the stabilizer of some
-fixed structure has a larger commutant and need not lie in this span.
+a Hermitian sesquilinear form lands in the commutant by construction.  The
+hypothesis is the full local unitary group: a quantity invariant only under the
+stabilizer of some fixed structure has a larger commutant and need not lie in
+this span.
 
 The collapse in \cref{eq:map-identity} is specific to two factors.  For $n$
 factors the same factorization gives
@@ -1525,15 +1552,24 @@ positivity and positive maps, quantitative Schmidt-number separation, Ky
 Fan bounds for Kronecker sums, and the exact Schmidt number of a product
 of antisymmetric projector states.  All of them descend from
 \cref{thm:rank_r}, or from \cref{lem:double-skew}, rather than from
-\cref{thm:pair-amplification} directly; none is part of the machine-checked
-development.
+\cref{thm:pair-amplification} directly.  The development checks the two score
+curves as pointwise lower bounds plus rank-exact attaining matrices, their
+rank-constrained nonnegativity thresholds, the adjacent-rank signed
+separation, their explicit coordinate Choi quadratic forms and block-positivity
+restatements, and the rank-sensitive estimate \cref{eq:kronecker-main-use}.
+It does not yet identify those explicitly assembled score operators with the
+displayed tensor-product Choi matrices, nor check map $r$-positivity, the
+completely-positive continuation when $r>d$, the trace-norm and Ky Fan
+dualities, or the mixed-state Schmidt-number arguments.
 
 The consequences at $r=2$ --- the two-copy distillability threshold and the
 statements at the endpoint $\alpha=-\frac12$ --- are also reached in
-\cite{FraserHuberPozsgayVona2026,BhartiGajjalaHaug2026}, the latter with
-finite-copy extensions beyond anything proved here.  What the results below add
-is the behaviour away from that endpoint: exact score curves at every $r$, the
-asymmetric threshold, and the Schmidt-number consequences that need $r>2$.
+\cite{SongChen2026,FraserHuberPozsgayVona2026,BhartiGajjalaHaug2026}.  Song and
+Chen include a two-parameter rank-two extension, and Bharti, Gajjala and Haug
+give finite-copy extensions beyond anything proved here.  Relative to those
+contemporaneous results, the additional content developed below is the exact
+score curve at every $r$, the all-$r$ asymmetric classification, and the
+Schmidt-number consequences that require $r>2$.
 
 They do not all rest on the same input.
 \Cref{prop:exact-q2-score,thm:exact-asymmetric-score,cor:kronecker} use
@@ -2542,10 +2578,13 @@ The formal counterpart of \cref{thm:rank_r} is
 \texttt{rank\_r\_partial\_trace}, and it has \emph{no}
 hypotheses.  The Autonne--Takagi factorization is itself proved, as
 \texttt{Matrix.exists\_takagi}; \texttt{Takagi.lean} derives
-\cref{lem:double-skew} from it, \texttt{Equivalence.lean} converts that into
-$\beta_2(\Lambda_U\otimes\Lambda_V)=1$, and \texttt{Results.lean} composes the
-chain, so the development is proved end to end.  The single quantitative input
-is that one number: the development's only route from
+\cref{lem:double-skew} from it, and \texttt{Equivalence.lean} supplies the
+universal upper bound $\beta_2(\Lambda_U\otimes\Lambda_V)\le1$.
+\texttt{Sharp.lean} proves equality when both factors contain two distinct
+basis labels; in the degenerate dimensions the map is zero and the sharp
+constant is zero.  \texttt{Results.lean} composes the upper-bound chain, so the
+development is proved end to end.  The single quantitative input is that upper
+bound: the development's only route from
 \cref{sec:double-skew} to \cref{sec:proof} is \cref{def:beta2}.  Beyond
 \cref{eq:main-bound} itself the development covers the strict form of
 \cref{eq:rank-monotonicity}, hence the assertion that for nonzero $C$ equality
@@ -2659,6 +2698,39 @@ equality at the extremizer & \texttt{projWit\_bound\_eq}\\
 $J(\Psi_r)$ attained at it & \texttt{re\_qform\_psiChoi\_projWit}\\
 optimality of $a=r$ & \texttt{le\_coeff\_hsNormSq\_of\_bound}\\
 optimality of $b=1/r$ & \texttt{inv\_le\_coeff\_trace\_of\_bound}\\
+\cref{prop:exact-q2-score}, lower branches
+  & \texttt{twoCopyScore\_lower\_of\_le\_inv},\\
+  & \texttt{twoCopyScore\_lower\_of\_inv\_le}\\
+\cref{prop:exact-q2-score}, attaining matrices
+  & \texttt{twoCopyScore\_projWit\_same},\\
+  & \texttt{twoCopyScore\_projWit\_orthogonal}\\
+\cref{cor:two-copy-block-positive}, score condition for $r\le d$
+  & \texttt{twoCopyNonnegative\_iff}\\
+\cref{cor:adjacent-rank-gap}, score identity
+  & \texttt{twoCopyScore\_adjacent\_endpoint}\\
+\cref{rem:strict-rank-gap}
+  & \texttt{twoCopyScore\_strict\_separation\_pos},\\
+  & \texttt{twoCopyScore\_adjacent\_strict\_neg}\\
+\cref{thm:exact-asymmetric-score}, four lower branches
+  & \texttt{asymmetricScore\_lower\_left\_of\_le\_inv},\\
+  & \texttt{asymmetricScore\_lower\_left\_of\_inv\_le},\\
+  & \texttt{asymmetricScore\_lower\_right\_of\_le\_inv},\\
+  & \texttt{asymmetricScore\_lower\_right\_of\_inv\_le}\\
+\cref{thm:exact-asymmetric-score}, attaining matrices
+  & \texttt{asymmetricScore\_projWit\_same},\\
+  & \texttt{asymmetricScore\_projWit\_orthogonal},\\
+  & \texttt{asymmetricScore\_swappedProjWit\_same},\\
+  & \texttt{asymmetricScore\_swappedProjWit\_orthogonal}\\
+\cref{cor:asymmetric-block-positive}, score condition for $r\le d$
+  & \texttt{asymmetricNonnegative\_iff}\\
+explicit score Choi quadratic forms
+  & \texttt{re\_qform\_twoCopyScoreOperator},\\
+  & \texttt{re\_qform\_asymmetricScoreOperator}\\
+score block positivity for $r\le d$
+  & \texttt{isBlockPositive\_twoCopyScoreOperator\_iff\_le\_inv},\\
+  & \texttt{isBlockPositive\_asymmetricScoreOperator\_iff\_max\_le\_inv}\\
+\cref{eq:kronecker-main-use}
+  & \texttt{centeredPartialTrace\_le}\\
 \end{longtable}
 
 Three respects in which the formal statements are renderings rather than
@@ -2685,10 +2757,12 @@ the pair generates, \texttt{le\_of\_choiTwoAttained}, and then exhibits an
 extremizer: $M=NP$ with $N=J_U\otimes J_V$ an elementary tensor of rotation
 generators and $P$ a rank-two projection, so that $N$ being unitary makes the two
 singular values of $M$ coincide, which is the equality case of the Ky Fan
-estimate behind $\norm{Q_-}_{S(2)}=\frac12$.  The conclusion is
+estimate behind $\norm{Q_-}_{S(2)}=\frac12$.  When each factor has two distinct
+basis labels, the conclusion is
 \texttt{choiTwoBound\_skewKraus\_iff}: the constants valid for
 $\Lambda_U\otimes\Lambda_V$ are exactly the reals $\ge4$ in the $\Phi_4$ scaling,
-so \cref{eq:beta2-double-skew} is an equality.
+so \cref{eq:beta2-double-skew} is an equality.  If a factor has cardinality below
+two, the family vanishes and the sharp constant is zero.
 \texttt{re\_qform\_psiChoi\_projWit} does the same for the conclusion --- the
 $r$-block positivity of $J(\Psi_r)$ is attained at the extremizer of
 \cref{rem:optimality}, hence cannot be sharpened to a strict inequality.
@@ -2716,11 +2790,22 @@ forms $\mathcal T$ as a matrix, and the complete-graph identity of
 \cref{prop:sos-complete-graph} is not used, the vertex Cauchy--Schwarz estimate
 sufficing.  Those two displays are therefore not themselves covered.
 
-Of \cref{sec:applications}, only \cref{lem:one-sided-partial-trace} is covered,
-in the elementary form proved there rather than through trace-norm duality; the
-Schatten-$1$ norm appears nowhere in the development.  The remaining results of
-\cref{sec:applications}, and those of \cref{app:gram} and \cref{app:generic},
-are not covered.
+Within \cref{sec:applications}, \texttt{Applications.lean} covers the exact
+two-copy and asymmetric score curves in an infimum-free but equivalent form:
+each branch is a pointwise lower bound and a displayed rank-exact matrix attains
+it.  It also covers factor interchange, the score nonnegativity thresholds for
+$1\le r\le d$, the endpoint and strict adjacent-rank score separations, and the
+explicit Choi-form quadratic identities and block-positivity thresholds.  The
+identification of these assembled score operators with the tensor products
+displayed in the prose, their map-$r$-positivity reading, and the
+completely-positive $r>d$ continuation are not formalized.  The development
+also covers the complete rank-sensitive estimate
+\cref{eq:kronecker-main-use}.  The Schatten-$1$ norm and singular-value Ky Fan
+duality appear nowhere in the development, so
+\cref{cor:two-copy-trace-distance} and the final step of
+\cref{cor:kronecker} remain prose-only.  The mixed-state Schmidt-number
+arguments in \cref{cor:exact-schmidt-number,cor:explicit-witnesses}, and the
+results of \cref{app:gram,app:generic}, are likewise not covered.
 
 \Cref{thm:amplification} \emph{is} covered, in all four operator forms and for
 an arbitrary Kraus family: \texttt{Choi.lean} carries
@@ -3210,8 +3295,8 @@ Pablo Costa Rico and Michael M. Wolf.
 \bibitem{fu2026solution2copydistillabilitywerner}
 Jinshi Fu, Li Gao, and Sang-Jun Park.
 ``A solution to 2-copy distillability of Werner states.''
-\newblock arXiv:2607.21367v1, July 23, 2026.
-\newblock \url{https://arxiv.org/abs/2607.21367v1}
+\newblock arXiv:2607.21367v2, revised July 27, 2026.
+\newblock \url{https://arxiv.org/abs/2607.21367v2}
 
 \bibitem{HornJohnson}
 Roger A. Horn and Charles R. Johnson.
@@ -3236,12 +3321,20 @@ Thomas C. Fraser, Felix Huber, Bal\'azs Pozsgay, and Istv\'an Vona.
 ``On the two-copy distillability of Werner states and a new partial trace
 inequality.''
 \newblock arXiv:2607.24309, 2026.
+\newblock \url{https://arxiv.org/abs/2607.24309}
+
+\bibitem{SongChen2026}
+Zhiwei Song and Lin Chen.
+``A partial-trace matrix inequality and Werner-state distillability.''
+\newblock arXiv:2607.23416, 2026.
+\newblock \url{https://arxiv.org/abs/2607.23416}
 
 \bibitem{BhartiGajjalaHaug2026}
 Kishor Bharti, Rishikesh Gajjala, and Tobias Haug.
 ``Two-copy nondistillability of Werner states: sharp partial-trace inequalities
 and finite-copy extensions.''
 \newblock arXiv:2607.24479, 2026.
+\newblock \url{https://arxiv.org/abs/2607.24479}
 
 \bibitem{TakasakiTomiyama1983}
 Toshiyuki Takasaki and Jun Tomiyama.

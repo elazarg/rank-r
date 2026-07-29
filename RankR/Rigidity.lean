@@ -1,18 +1,18 @@
 /-
 Rigidity of marginal-preserving classical embeddings.
 
-A classical joint distribution on `U × V` can be carried to an operator on
-`U ⊗ V` in many ways.  Requiring only two things of the encoding --- that it
-send entrywise-nonnegative matrices to positive semidefinite operators, and
-that it reproduce the two classical marginals as the two partial traces ---
-already forces it to be the diagonal embedding
+A classical joint distribution on `U × V` can be carried linearly to an
+operator on `U ⊗ V` in many ways.  Among linear encodings, requiring two
+additional things --- that point masses be sent to positive semidefinite
+operators, and that their two partial traces reproduce the two classical
+point-mass marginals --- already forces the encoding to be the diagonal map
 `P ↦ ∑_{a,b} P_{ab} |ab⟩⟨ab|`.
 
 The consequence is that operator rank of the image is the *support size* of
 `P`, never its matrix rank.  So the coupled-marginal inequalities of this
 development cannot distinguish a low-rank classical distribution from a
-small-support one: the two notions coincide on the image of any encoding
-meeting those hypotheses, and no other encoding meets them.
+small-support one: the two notions coincide on the image of any linear
+encoding meeting those hypotheses, and no other linear encoding meets them.
 
 The argument stays on the diagonal.  A pure marginal forces a whole slab of
 diagonal entries to vanish, positivity propagates each vanishing diagonal

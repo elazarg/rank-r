@@ -37,6 +37,8 @@ import RankR.Theta
 import RankR.ThetaBound
 import RankR.Parity
 import RankR.Sharp
+import RankR.Applications
+import RankR.Staircase
 
 namespace RankR
 
@@ -44,8 +46,8 @@ namespace RankR
 
 Nothing below assumes anything.  `Autonne.lean` proves the Autonne-Takagi
 factorization, `Takagi.lean` derives the double-skew action bound from it, and
-`Results.lean` composes the two.  In particular the Fu-Gao-Park estimate
-is no longer a hypothesis of the main theorem. -/
+`Results.lean` composes the two.  In particular the Fu-Gao-Park estimate is not
+a hypothesis of the main theorem. -/
 
 /-- info: 'Matrix.exists_takagi' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
@@ -74,6 +76,120 @@ is no longer a hypothesis of the main theorem. -/
 /-- info: 'RankR.rank_eq_of_eq_rank_r_partial_trace' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms rank_eq_of_eq_rank_r_partial_trace
+
+/-! ## Applications
+
+The score curves are represented without an extended-real infimum: a pointwise
+lower bound and a rank-exact attaining matrix certify each branch.  The
+nonnegativity equivalences package those two halves into the exact thresholds.
+The Kronecker result below is the complete rank-sensitive input to the paper's
+Ky-Fan corollary. -/
+
+/-- info: 'RankR.twoCopyScore_lower_of_le_inv' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms twoCopyScore_lower_of_le_inv
+
+/-- info: 'RankR.twoCopyScore_lower_of_inv_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms twoCopyScore_lower_of_inv_le
+
+/-- info: 'RankR.twoCopyScore_projWit_same' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms twoCopyScore_projWit_same
+
+/-- info: 'RankR.twoCopyScore_projWit_orthogonal' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms twoCopyScore_projWit_orthogonal
+
+/-- info: 'RankR.twoCopyNonnegative_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms twoCopyNonnegative_iff
+
+/-- info: 'RankR.twoCopyScore_adjacent_endpoint' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms twoCopyScore_adjacent_endpoint
+
+/-- info: 'RankR.twoCopyScore_strict_separation_pos' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms twoCopyScore_strict_separation_pos
+
+/-- info: 'RankR.twoCopyScore_adjacent_strict_neg' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms twoCopyScore_adjacent_strict_neg
+
+/-- info: 'RankR.asymmetricScore_lower_left_of_le_inv' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms asymmetricScore_lower_left_of_le_inv
+
+/-- info: 'RankR.asymmetricScore_lower_left_of_inv_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms asymmetricScore_lower_left_of_inv_le
+
+/-- info: 'RankR.asymmetricScore_lower_right_of_le_inv' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms asymmetricScore_lower_right_of_le_inv
+
+/-- info: 'RankR.asymmetricScore_lower_right_of_inv_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms asymmetricScore_lower_right_of_inv_le
+
+/-- info: 'RankR.asymmetricScore_projWit_same' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms asymmetricScore_projWit_same
+
+/-- info: 'RankR.asymmetricScore_projWit_orthogonal' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms asymmetricScore_projWit_orthogonal
+
+/-- info: 'RankR.asymmetricScore_swappedProjWit_same' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms asymmetricScore_swappedProjWit_same
+
+/-- info: 'RankR.asymmetricScore_swappedProjWit_orthogonal' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms asymmetricScore_swappedProjWit_orthogonal
+
+/-- info: 'RankR.asymmetricNonnegative_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms asymmetricNonnegative_iff
+
+/-- info: 'RankR.re_qform_asymmetricScoreOperator' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms re_qform_asymmetricScoreOperator
+
+/-- info: 'RankR.isBlockPositive_twoCopyScoreOperator_iff_le_inv' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms isBlockPositive_twoCopyScoreOperator_iff_le_inv
+
+/-- info: 'RankR.isBlockPositive_asymmetricScoreOperator_iff_max_le_inv' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms isBlockPositive_asymmetricScoreOperator_iff_max_le_inv
+
+/-- info: 'RankR.centeredPartialTrace_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms centeredPartialTrace_le
+
+/-- info: 'RankR.staircaseP_eq_gamma_ratio' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms staircaseP_eq_gamma_ratio
+
+/-- info: 'RankR.staircaseAlpha_mem_Ioo' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms staircaseAlpha_mem_Ioo
+
+/-- info: 'RankR.staircase_boundary_moments' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms staircase_boundary_moments
+
+/-- info: 'RankR.affine_threshold_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms affine_threshold_iff
+
+/-- info: 'RankR.staircaseP_lt_succ' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms staircaseP_lt_succ
 
 /-! ## Fu-Gao-Park's Theorem 2.4, proved
 

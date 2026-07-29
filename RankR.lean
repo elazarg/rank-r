@@ -39,5 +39,7 @@ import RankR.Parity
 import RankR.GraphFamily
 import RankR.Theta
 import RankR.ThetaBound
+import RankR.Applications
+import RankR.Staircase
 import RankR.Axioms
 import RankR.Rigidity

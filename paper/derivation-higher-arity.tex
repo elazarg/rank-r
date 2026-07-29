@@ -89,7 +89,8 @@ $P_{\mathcal H}:=\sum_{I\in\mathcal H}\ketbra{\eta_I}{\eta_I}$ and
     d^\uparrow_{k-1}(\mathcal H)
     :=\max_{J\in\binom{[r]}{k-1}}\#\{I\in\mathcal H:J\subset I\} .
 \end{equation}
-Finally, for a $(k-2)$-subset $L$ let $N_L:=\#\{j\notin L\}=r-k+2$ and
+When $k\ge2$, for a $(k-2)$-subset $L$ let
+$N_L:=\#\{j\notin L\}=r-k+2$ and
 \begin{equation}
 \label{eq:delta}
     \delta_L:=\frac1{\sqrt{N_L}}\sum_{j\notin L}e_j\otimes(q_j\wedge q_L),
@@ -105,7 +106,7 @@ With the notation above,
     \preceq
     d^\uparrow_{k-1}(\mathcal H)\,\beta_k(\Phi)\,I .
 \end{equation}
-If moreover every $A_a$ satisfies $A_a^T=A_a$, then
+If moreover $k\ge2$ and every $A_a$ satisfies $A_a^T=A_a$, then
 \begin{equation}
 \label{eq:A}
     (\Phi\otimes\id)(P_{\mathcal H})
@@ -127,7 +128,8 @@ Let $K=\sum_ac_aA_a$ and let $x_1,\ldots,x_k\in H$ be orthonormal.  Then
 
 \begin{proof}
 Let $P=\sum_i\ketbra{x_i}{x_i}$, so $\sum_i\norm{Kx_i}^2=\norm{KP}_F^2$ and
-$\rank(KP)\le k$.  Since $P$ is a self-adjoint idempotent,
+$\rank(KP)\le k$.  If $KP=0$, the assertion is immediate.  Otherwise, since
+$P$ is a self-adjoint idempotent,
 $\ip K{KP}_{\mathrm{HS}}=\norm{KP}_F^2$, so $M:=KP/\norm{KP}_F$ has
 $\rank M\le k$, $\norm M_F=1$ and $\ip MK_{\mathrm{HS}}=\norm{KP}_F$.  Hence
 \[
@@ -140,8 +142,8 @@ and $\norm{S^*M}_F^2=\ip{\operatorname{vec}M}{J(\Phi)\operatorname{vec}M}
 
 \begin{lemma}
 \label{lem:orth}
-The $\eta_I$, $I\in\binom{[r]}k$, are orthonormal, as are the $\delta_L$,
-$L\in\binom{[r]}{k-2}$.
+The $\eta_I$, $I\in\binom{[r]}k$, are orthonormal.  When $k\ge2$, so are the
+$\delta_L$, $L\in\binom{[r]}{k-2}$.
 \end{lemma}
 
 \begin{proof}
@@ -203,7 +205,8 @@ Expanding the Kraus sum and then $P_{\mathcal H}$,
 $(\Phi\otimes\id)(P_{\mathcal H})=\mathcal T\mathcal T^*$, so
 \cref{eq:A0} is \cref{lem:regroup}.
 
-For \cref{eq:A} it suffices, since $\mathcal T\mathcal T^*\succeq0$, to show
+Assume now $k\ge2$.  For \cref{eq:A} it suffices, since
+$\mathcal T\mathcal T^*\succeq0$, to show
 $\operatorname{ran}\mathcal T\subseteq(\operatorname{ran}\Pi)^\perp$; then
 $\mathcal T\mathcal T^*=(I-\Pi)\mathcal T\mathcal T^*(I-\Pi)$ and \cref{eq:A0}
 upgrades to \cref{eq:A}.  Fix $L$ and, with $\sigma$ as in \cref{lem:orth},
@@ -264,8 +267,9 @@ $(k-1)$-face extends to a $k$-face in exactly $r-k+1$ ways.
 \end{corollary}
 
 \begin{corollary}[Double-skew family]
-For $\Phi=\Lambda_U\otimes\Lambda_V$ one has $\beta_k=\min\{1,4/k\}$ for every
-$k\ge2$, so on the complete hypergraph
+If $\dim U,\dim V\ge2$, then for
+$\Phi=\Lambda_U\otimes\Lambda_V$ one has
+$\beta_k=\min\{1,4/k\}$ for every $k\ge2$, so on the complete hypergraph
 \[
     (\Phi\otimes\id)(P^{(k)})
     \preceq

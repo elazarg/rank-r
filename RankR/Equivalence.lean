@@ -333,7 +333,7 @@ theorem FGPBound_of_doubleSkewBoundQm (hDS : DoubleSkewBoundQm U V) : FGPBound U
 
 Together with `doubleSkewBound_of_FGP` this closes the loop: the estimate
 Fu-Gao-Park state and the double-skew action bound of the manuscript are
-equivalent, and both are now proved from the Autonne-Takagi factorization.
+equivalent, and both are proved from the Autonne-Takagi factorization.
 
 What is proved is `FGPBound` as `Conventions.lean` renders it — the homogeneous
 form, quantified over `|u₁⟩⟨v₁| + |u₂⟩⟨v₂|` rather than over vectors of Schmidt

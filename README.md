@@ -18,8 +18,8 @@ theorem RankR.rank_r_partial_trace
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace
 ```
 
-**There are no hypotheses.** Earlier revisions carried the Fu–Gao–Park estimate
-as a standing assumption; it has since been discharged. The chain is
+**There are no hypotheses.** The Fu–Gao–Park estimate is proved within the
+development. The chain is
 
     Autonne–Takagi  →  Lemma 2.1  →  Proposition 2.2  →  Theorem 1.1
 
@@ -98,20 +98,32 @@ statements: any bound `‖Tr_U C‖₂² + ‖Tr_V C‖₂² ≤ a‖C‖₂² +
 rank `r` has `a ≥ r` (`le_coeff_hsNormSq_of_bound`), and once `a = r` is fixed,
 `b ≥ 1/r` (`inv_le_coeff_trace_of_bound`).
 
-**Not proved here:** the identification of `FGPBound` with Theorem 2.4 as stated
+**Still an interface rather than a theorem here:** the identification of
+`FGPBound` with Theorem 2.4 as stated
 via an abstract Schmidt-rank predicate. `FGPBound` quantifies over the explicit
 two-term form; that this is the same condition as "Schmidt rank ≤ 2" is
 `eq:SR-vec-rank`, a definitional reading rather than a formalized theorem — the
 development contains no definition of Schmidt rank at all. The estimate itself
-*is* proved (`fgpBound_holds`). Also not proved: any of the applications in §4
-or the appendices of the manuscript.
+*is* proved (`fgpBound_holds`).
+
+`RankR/Applications.lean` checks the algebraic cores of the main-paper
+applications: both branches and attaining matrices of the symmetric and
+asymmetric score curves; their exact score-nonnegativity thresholds for
+`1 ≤ r ≤ d`; the endpoint and strict adjacent-rank score separations; factor
+interchange; explicit Choi-form quadratic identities and block-positivity
+thresholds; and the rank-sensitive estimate used by the Kronecker-sum
+corollary. Identification of the assembled score operators with the displayed
+tensor-product Choi matrices, map `r`-positivity, the completely-positive
+continuation for `r > d`, trace-norm and Ky Fan duality, and mixed-state
+Schmidt-number claims remain outside the formal vocabulary. The exact
+claim-by-claim boundary is maintained in `FORMALIZATION.md`.
 
 ### Two sharpenings not in the manuscript
 
 **The symmetry hypothesis is a condition on the compression, not on the operator.**
 `Frame.lean` defines `IsFrameSymmetric e N` — the compression `E^*NĒ` of `N` to the
-frame `E : q_i ↦ e_i` is a symmetric matrix — and `Lifting.lean`, `HigherArity.lean`
-now take that in place of `Nᵀ = N`. It is what the orthogonality actually consumes:
+frame `E : q_i ↦ e_i` is a symmetric matrix — and `Lifting.lean`,
+`HigherArity.lean` use that hypothesis. It is what the orthogonality actually consumes:
 in the fermionic notation of `HigherArity.lean`, `ε_E^*(N ⊗ I)∂_E = ι_{Alt(E^*NĒ)}`,
 so the Koszul cancellation is the vanishing of the alternating part of the
 compression and nothing more. Transpose symmetry is the frame-independent
@@ -157,11 +169,15 @@ it holds at `10⁶` whenever it holds at all, so on its own it names no number.
 Every constant in the development above is consumed in that form, which leaves
 the manuscript's `β₂(Λ_U ⊗ Λ_V) = 1` uncertified as an *equality*.
 
-`Sharp.lean` adds the dual predicate `ChoiTwoAttained` and the leastness
+When both index types contain two distinct labels, `Sharp.lean` adds the dual
+predicate `ChoiTwoAttained` and the leastness
 principle it generates, then exhibits an extremizer: `M = NP` with `N = J_U ⊗ J_V`
 unitary and `P` a rank-two projection, so its two singular values coincide. The
 result is `choiTwoBound_skewKraus_iff` — the valid constants for the double-skew
 family are exactly the reals `≥ 4`, which is `β₂ = 1` in the `Phi4` scaling.
+If either index type has cardinality below two, the Kraus family is zero and the
+sharp constant is zero; the dimension-free upper bound used by the main theorem
+remains valid.
 `re_qform_psiChoi_projWit` records the same for the conclusion: the `r`-block
 positivity of `J(Ψ_r)` is attained, so it cannot be sharpened to a strict
 inequality.
@@ -230,7 +246,7 @@ revision.
 
 | Path | Contents |
 | --- | --- |
-| `RankR/` | the formalization (43 files) |
+| `RankR/` | the formalization (45 files) |
 | `paper/` | the manuscript |
 
 ### The formalization, bottom-up
@@ -256,7 +272,7 @@ revision.
 | `Bessel`, `Restrict` | Bessel duality, and its sharpening on `δ_e^⊥` |
 | `Lifting` | **Lifting II** in both operator forms, for an arbitrary Kraus family and sharpened on `δ_e` for a frame-symmetric one |
 | `Theorem` | Proposition 2.2 and Theorem 1.1 given the rank-two Choi bound |
-| `Antisym`, `FGP`, `Extend` | the antisymmetrizer, and Theorem 1.1 from Fu–Gao–Park as published (retained, no longer on the critical path) |
+| `Antisym`, `FGP`, `Extend` | the antisymmetrizer, and the bridge from Fu–Gao–Park's published statement (outside the critical path) |
 | `Optimal` | the extremizer, and optimality of the coefficients `r`, `1/r` |
 | `OneSided` | HS submultiplicativity, and `lem:one-sided-partial-trace` |
 | `Flip` | the two partial transposes, and `⟨N, Π N⟩ = ½(‖N‖₂² − ⟨N, N^{T_U}⟩)` |
@@ -273,14 +289,16 @@ revision.
 | `GraphFamily` | the edge-Kraus family of a graph, and `lem:beta` two-sidedly |
 | `Theta` | `Θ^Φ_{R,λ}`, its Choi form, and the induced-average-degree obstruction |
 | `ThetaBound` | pair amplification in Choi form, and `thm:clique` |
+| `Applications` | exact score bounds, extremizers and thresholds; adjacent separation; Kronecker rank core |
+| `Staircase` | exact threshold algebra, convex boundary coefficient, moment identities, strict threshold ordering |
 | `Axioms` | the axiom surface, checked by the build |
 
-The import graph has two independent halves that meet only in `Results`: the
-*reduction* (`Conventions` … `Theorem`), which is parametrized by the pair
-`(Φ, β₂)` and knows nothing about where the constant comes from, and the *bound*
-(`Antisym`, `Flip`, `SymOuter`, `Weights`, `Takagi`, `Autonne`, `Equivalence`),
-which knows nothing about partial traces. `Extend` hangs off the reduction and
-is no longer on any critical path.
+Conceptually the proof has two halves joined in `Results`: the *reduction*
+(`Conventions` … `Theorem`), which is parametrized by the pair `(Φ, β₂)`, and
+the *bound* (`Antisym`, `Flip`, `SymOuter`, `Weights`, `Takagi`, `Autonne`,
+`Equivalence`), which establishes the required constant. Some utility imports
+cross that conceptual boundary; this is a dependency description, not a claim
+that the source import graph is disconnected.
 
 Everything from `Sectors` through `Lifting` lives on a single space `W` tensored
 with the ancilla: the sectors, the placement `A ↦ A ⊗ I_Q`, the synthesis map and
@@ -306,6 +324,5 @@ This formalization is therefore a *measuring instrument*, not a victory lap.
 Discharging the standing hypothesis narrows what is being measured but does not
 change that. Lean checks deductions; it does not check that
 `RankR/Conventions.lean` renders the manuscript's informal definitions
-faithfully, and with the hypothesis gone that definitional-fidelity question is
-the *only* thing left between the formal result and the informal claim. It
-deserves more scrutiny now, not less.
+faithfully. That definitional-fidelity question is the *only* thing between the
+formal result and the informal claim, and it deserves independent scrutiny.
