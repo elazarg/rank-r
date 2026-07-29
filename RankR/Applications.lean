@@ -681,6 +681,23 @@ theorem qform_reductionChoi {T : Type*} [Fintype T] [DecidableEq T]
     qform_rankOne, inner_singleOmegaVec, hsNormSq_eq_norm_sq]
   norm_cast
 
+/-- The reduction witness `I - |Ω⟩⟨Ω|/r` is `r`-block-positive.
+
+This is the one-factor rank--trace inequality in witness form. -/
+theorem reductionChoi_inv_isBlockPositive {T : Type*} [Fintype T]
+    [DecidableEq T] {r : ℕ} (hr : 0 < r) :
+    IsBlockPositive r (reductionChoi (T := T) (1 / (r : ℝ))) := by
+  intro C hCrank
+  rw [qform_reductionChoi, Complex.ofReal_re, sub_nonneg]
+  have hrR : (0 : ℝ) < r := by exact_mod_cast hr
+  have htrace :
+      Complex.normSq C.trace ≤ (r : ℝ) * hsNormSq C :=
+    (normSq_trace_le_rank C).trans
+      (mul_le_mul_of_nonneg_right (by exact_mod_cast hCrank)
+        (hsNormSq_nonneg C))
+  rw [one_div_mul_eq_div, div_le_iff₀ hrR]
+  nlinarith
+
 theorem reductionChoi_isHermitian {T : Type*} [DecidableEq T] (a : ℝ) :
     (reductionChoi (T := T) a).IsHermitian := by
   rw [Matrix.IsHermitian]

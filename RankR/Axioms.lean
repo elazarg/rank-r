@@ -226,6 +226,10 @@ Ky-Fan corollary. -/
 #guard_msgs in
 #print axioms reductionChoi_posSemidef
 
+/-- info: 'RankR.reductionChoi_inv_isBlockPositive' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms reductionChoi_inv_isBlockPositive
+
 /-- info: 'RankR.productReductionChoi_posSemidef' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms productReductionChoi_posSemidef
@@ -500,6 +504,10 @@ Ky-Fan corollary. -/
 #guard_msgs in
 #print axioms staircaseP_lt_unprotected
 
+/-- info: 'RankR.staircasePMarginal_lt_iff_fidelity_gt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms staircasePMarginal_lt_iff_fidelity_gt
+
 /-- info: 'RankR.staircaseP_lt_marginal' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms staircaseP_lt_marginal
@@ -514,6 +522,16 @@ trace formula and the exact boundary operator identity. -/
 /-- info: 'RankR.isotropicState_whiteNoise' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms isotropicState_whiteNoise
+
+/-- info: 'RankR.isotropicMoment_le_of_schmidtNumberLE' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms isotropicMoment_le_of_schmidtNumberLE
+
+/-- info: 'RankR.not_schmidtNumberLE_ptraceV_staircaseState_of_marginal_lt' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms not_schmidtNumberLE_ptraceV_staircaseState_of_marginal_lt
 
 /-- info: 'RankR.ptraceV_kronecker' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

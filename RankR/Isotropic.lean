@@ -147,6 +147,57 @@ theorem isotropicMoment_isotropicState
   rw [isotropicMoment, hsInner_omegaProjection_isotropicState hT]
   simp
 
+/-- Every normalized state of Schmidt number at most `r` has maximally
+entangled fidelity at most `r / dim(T)`.
+
+This is the necessary half of the Schmidt-number classification of isotropic
+states.  It follows from block positivity of the one-factor reduction witness;
+the converse requires an explicit Schmidt-rank decomposition (or twirling
+argument) and is deliberately not asserted here. -/
+theorem isotropicMoment_le_of_schmidtNumberLE
+    (hT : 0 < Fintype.card T) {r : ℕ} (hr : 0 < r)
+    {ρ : Matrix (T × T) (T × T) ℂ}
+    (hSN : SchmidtNumberLE r ρ) (htrace : ρ.trace = 1) :
+    isotropicMoment (T := T) ρ ≤
+      (r : ℝ) / Fintype.card T := by
+  have hnonneg :=
+    re_hsInner_nonneg_of_schmidtNumberLE
+      (reductionChoi_inv_isBlockPositive (T := T) hr) hSN
+  rw [reductionChoi, hsInner_sub_left, hsInner_one_left,
+    hsInner_smul_left, htrace] at hnonneg
+  simp only [Complex.one_re, Complex.conj_ofReal, Complex.sub_re,
+    Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im, zero_mul,
+    sub_zero] at hnonneg
+  have hdR : (0 : ℝ) < Fintype.card T := by exact_mod_cast hT
+  have hrR : (0 : ℝ) < r := by exact_mod_cast hr
+  have hoverlap :
+      (hsInner (singleOmegaChoi (T := T)) ρ).re ≤ r := by
+    rw [one_div_mul_eq_div, sub_nonneg, div_le_iff₀ hrR] at hnonneg
+    nlinarith
+  rw [isotropicMoment, omegaProjection, hsInner_smul_left]
+  simp only [Complex.conj_ofReal, Complex.mul_re, Complex.ofReal_re,
+    Complex.ofReal_im, zero_mul, sub_zero]
+  calc
+    1 / (Fintype.card T : ℝ) *
+          (hsInner (singleOmegaChoi (T := T)) ρ).re
+        ≤ 1 / (Fintype.card T : ℝ) * r :=
+      mul_le_mul_of_nonneg_left hoverlap (one_div_nonneg.mpr hdR.le)
+    _ = (r : ℝ) / Fintype.card T := by ring
+
+/-- An isotropic state above `r / dim(T)` cannot have Schmidt number at most
+`r`.  This packages the certified obstruction in the parameters used by the
+staircase application. -/
+theorem not_schmidtNumberLE_isotropicState_of_ratio_lt
+    (hT : 2 ≤ Fintype.card T) {r : ℕ} (hr : 0 < r)
+    {F : ℝ} (hF : (r : ℝ) / Fintype.card T < F) :
+    ¬ SchmidtNumberLE r (isotropicState (T := T) F) := by
+  intro hSN
+  have hle :=
+    isotropicMoment_le_of_schmidtNumberLE (T := T) (by omega) hr hSN
+      (trace_isotropicState hT F)
+  rw [isotropicMoment_isotropicState hT F] at hle
+  exact (not_le_of_gt hF) hle
+
 theorem isotropicState_whiteNoise
     (hT : 2 ≤ Fintype.card T) :
     isotropicState (T := T) (1 / (Fintype.card T : ℝ) ^ 2)

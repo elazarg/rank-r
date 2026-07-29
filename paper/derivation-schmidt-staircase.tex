@@ -705,12 +705,19 @@ operator trace formulas \cref{eq:trace,eq:trace-rho}, and the literal matrix
 identity \cref{eq:decomp}.  The additional maximally entangled term in
 \cref{eq:Wun}, its seed and white-noise expectations and its exact affine
 threshold are checked as matrix identities; so is the partial-trace identity
-leaving the isotropic marginal used in \cref{prop:marginal}.  The checked
-boundary identity does not by itself establish its Schmidt-number conclusion.
+leaving the isotropic marginal used in \cref{prop:marginal}.  The reduction
+witness proves in finite coordinates that every normalized state of Schmidt
+number at most \(k\) has maximally entangled fidelity at most \(k/m\).
+Consequently, the implication
+\(p>p_k^{\mathrm{marg}}\Rightarrow
+\operatorname{SN}(\operatorname{Tr}_{A_2B_2}\rho_p)>k\), including the exact
+scalar equivalence between the two inequalities, is machine-checked.  The
+checked boundary identity does not by itself establish its Schmidt-number
+conclusion.
 The identification of the four-sector space as the range of the product Haar
 twirl, preservation of Schmidt number by that twirl, the product-seed lemma,
-the isotropic Schmidt-number stratification, and the resulting mixed-state
-Schmidt-number staircase are not formalized.
+the sufficient direction of the isotropic Schmidt-number stratification, and
+the resulting mixed-state Schmidt-number staircase are not formalized.
 
 Not established.  First, the seed \cref{eq:tau-rho} is bi-isotropic, and the
 entire converse direction consumes that: \cref{lem:moments} works because the

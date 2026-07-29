@@ -1,11 +1,10 @@
 /-
 Scalar core of `paper/derivation-schmidt-staircase.tex`.
 
-The operator-theoretic part of that note needs isotropic states, Haar twirls and
-mixed-state Schmidt number, none of which is present in the development.  This
-file isolates the exact rational identities that determine the threshold and
-the boundary decomposition.  Thus a future semantic layer cannot silently
-change the constants while implementing the state-level argument.
+The operator-theoretic part of that note additionally needs isotropic states,
+Haar twirls, and mixed-state Schmidt number.  This file isolates the exact
+rational identities that determine the threshold and the boundary
+decomposition, so the constants are independent of that semantic layer.
 -/
 import Mathlib
 
@@ -287,6 +286,25 @@ theorem staircaseP_lt_unprotected {m n s k : ℝ}
     staircasePUnprotected, div_lt_div_iff₀ hden hdenUn]
   rw [staircaseGammaUnprotected]
   nlinarith [mul_pos hextra hc]
+
+/-- The marginal threshold is exactly the point where the displayed
+isotropic fidelity exceeds `k / m`. -/
+theorem staircasePMarginal_lt_iff_fidelity_gt {m s k p : ℝ}
+    (hm : 2 ≤ m) (hk : 1 ≤ k) (hks : k < s) :
+    staircasePMarginal m s k < p ↔
+      k / m < p * (s / m) + (1 - p) / m ^ 2 := by
+  have hm0 : 0 < m := by linarith
+  have hsm : 0 < s * m - 1 := by
+    have hs : 1 < s := hk.trans_lt hks
+    nlinarith [mul_lt_mul_of_pos_right hs hm0]
+  rw [staircasePMarginal, div_lt_iff₀ hsm]
+  constructor <;> intro h
+  · rw [div_lt_iff₀ hm0]
+    field_simp [ne_of_gt hm0]
+    nlinarith
+  · rw [div_lt_iff₀ hm0] at h
+    field_simp [ne_of_gt hm0] at h
+    nlinarith
 
 /-- The exact staircase threshold is strictly below the threshold detected
 by the entangled marginal. -/

@@ -4,9 +4,10 @@ Finite operator algebra for the state family and boundary decomposition in
 
 The matrices are kept in the paper's `A₁B₁A₂B₂` register order.  This file
 proves the normalized isotropic white-noise identity, protected and unprotected
-witness expectations, the isotropic marginal formula, and the exact boundary
-operator equality.  It does not assert that the algebraic product-isotropic
-space is the range of a Haar twirl, or that the twirl preserves Schmidt number.
+witness expectations, the isotropic marginal formula and its one-sided
+Schmidt-number obstruction, and the exact boundary operator equality.  It does
+not assert that the algebraic product-isotropic space is the range of a Haar
+twirl, or that the twirl preserves Schmidt number.
 -/
 import RankR.Isotropic
 import RankR.Staircase
@@ -414,6 +415,27 @@ theorem ptraceV_staircaseState
   rw [isotropicState_affine (T := U)]
   congr 1
   ring
+
+/-- Above the marginal threshold, the first isotropic marginal cannot have
+Schmidt number at most `k`.
+
+This is the certified (detector-soundness) direction of the paper's exact
+marginal crossing.  The converse still requires the missing explicit
+Schmidt-rank decomposition of isotropic states. -/
+theorem not_schmidtNumberLE_ptraceV_staircaseState_of_marginal_lt
+    (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
+    {k : ℕ} (hk : 0 < k) {s p : ℝ} (hks : (k : ℝ) < s)
+    (hp :
+      staircasePMarginal (Fintype.card U) s k < p) :
+    ¬ SchmidtNumberLE k
+      (ptraceV (staircaseState (U := U) (V := V) s p)) := by
+  rw [ptraceV_staircaseState hV]
+  apply not_schmidtNumberLE_isotropicState_of_ratio_lt hU hk
+  apply
+    (staircasePMarginal_lt_iff_fidelity_gt
+      (m := (Fintype.card U : ℝ)) (s := s) (k := (k : ℝ)) (p := p)
+      (by exact_mod_cast hU) (by exact_mod_cast hk) hks).mp
+  exact hp
 
 /-- The other marginal of the noisy family. -/
 theorem ptraceU_staircaseState

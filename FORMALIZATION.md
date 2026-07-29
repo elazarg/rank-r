@@ -140,6 +140,7 @@ extended-real-infimum layer.
 | map identity for `W_k` | **Checked** | `Psi_eq_tensor_square` |
 | `k`-block positivity of `W_k` | **Checked core** | `thetaPositive_of_choiTwoBound`; mixed-state Schmidt-number phrasing remains an interface |
 | normalized isotropic states and white-noise identity | **Checked** in finite coordinates | `isotropicState_isDensityMatrix`, `isotropicState_whiteNoise`, `staircaseWhiteNoiseState_eq` |
+| necessary isotropic Schmidt-number bound | **Checked** in finite coordinates | `reductionChoi_inv_isBlockPositive` and `isotropicMoment_le_of_schmidtNumberLE` prove that every normalized state of Schmidt number at most `r` has maximally entangled fidelity at most `r/d`; `not_schmidtNumberLE_isotropicState_of_ratio_lt` gives the contrapositive for isotropic states |
 | product-isotropic four-sector algebra and moment uniqueness | **Checked** inside the specified real four-dimensional space | `biIsotropicForm_eq_of_trace_moments`, `eq_of_memBiIsotropicSpace_of_trace_moments`; identifying this space as the range/commutant of the Haar twirl remains open |
 | product-isotropic Haar twirl and Schmidt-number preservation | **Open formalization** | no Haar integration or local-unitary channel layer |
 | product-seed lemma and exact seed Schmidt number | **Open formalization** | requires Schmidt number and local-unitary twirling |
@@ -149,14 +150,15 @@ extended-real-infimum layer.
 | exact staircase | **Open formalization** | depends on the product-seed lemma, twirl preservation, and mixed-state Schmidt-number semantics; the boundary operator identity itself is checked |
 | adjacent threshold and equality mode | **Checked only at the score core** | `twoCopyScore_adjacent_endpoint`; the isotropic-state and twirl identifications are absent |
 | protected/unprotected threshold comparison | **Checked** at matrix level | `staircaseUnprotectedWitness`, `trace_mul_staircaseUnprotectedWitness_staircaseState_neg_iff`, and `staircaseP_lt_unprotected` prove the extra maximally entangled term, its exact expectation threshold, and the strict comparison |
-| entangled-marginal comparison | **Checked state identity and scalar comparison** | `ptraceV_staircaseState` proves the displayed isotropic marginal and `staircaseP_lt_marginal` proves the strict rational comparison; identifying the marginal crossing as an exact Schmidt-number threshold still requires the isotropic stratification theorem |
+| entangled-marginal comparison | **Checked detector direction and strict comparison** | `staircasePMarginal_lt_iff_fidelity_gt` identifies the scalar crossing, `ptraceV_staircaseState` proves the displayed isotropic marginal, and `not_schmidtNumberLE_ptraceV_staircaseState_of_marginal_lt` certifies Schmidt number greater than `k` above the threshold; `staircaseP_lt_marginal` proves the protected threshold is strictly earlier. The converse below the marginal threshold still requires the sufficient half of isotropic stratification |
 
 ## Closure order
 
 The shortest route to a fully formalized application suite is:
 
-1. identify the checked four-sector algebra with the product-isotropic Haar
-   twirl and prove the required Schmidt-number preservation and seed lemmas;
+1. prove the sufficient half of the isotropic Schmidt-number classification,
+   identify the checked four-sector algebra with the product-isotropic Haar
+   twirl, and prove the required Schmidt-number preservation and seed lemmas;
 2. finish the graph note's presentation layer by choosing the displayed real
    monic pencil basis.
 
