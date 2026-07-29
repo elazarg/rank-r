@@ -23,6 +23,7 @@ otherwise match itself):
       RankR RankR.lean -g '!RankR/Verification/Axioms/All.lean'
 -/
 import RankR.Core.PartialTrace.BlockPositivity
+import RankR.Core.Amplification.Gram
 import RankR.Core.DoubleSkew.Extend
 import RankR.Core.DoubleSkew.MapIdentity
 import RankR.Core.PartialTrace.Optimality
@@ -1382,6 +1383,44 @@ info: 'RankR.two_mul_betaTwo_choiOf_eq_krausActionNorm' depends on axioms: [prop
 -/
 #guard_msgs in
 #print axioms two_mul_betaTwo_choiOf_eq_krausActionNorm
+
+/-! ## Balanced Gram-operator rendering -/
+
+/--
+info: 'RankR.linearGramOperator_posSemidef' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms linearGramOperator_posSemidef
+
+/--
+info: 'RankR.qform_linearGramOperator_eq_inner_linearGramMap' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms qform_linearGramOperator_eq_inner_linearGramMap
+
+/--
+info: 'RankR.mulVecE_linearGramOperator_eq_linearGramMap' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms mulVecE_linearGramOperator_eq_linearGramMap
+
+/--
+info: 'RankR.hasCrossedPolarization_iff_isCrossingFixed' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms hasCrossedPolarization_iff_isCrossingFixed
+
+/--
+info: 'RankR.hasRankOneTraceBound_iff_isBlockPositive_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms hasRankOneTraceBound_iff_isBlockPositive_one
+
+/--
+info: 'RankR.balancedGramDefect_isBlockPositive' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms balancedGramDefect_isBlockPositive
 
 /--
 info: 'RankR.thetaPositive_graphKraus_iff' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -153,6 +153,22 @@ theorem hsInner_rankOne (x y z w : EuclideanSpace ℂ W) :
   rw [Finset.sum_mul_sum, Finset.sum_comm]
   exact Finset.sum_congr rfl fun q _ => Finset.sum_congr rfl fun p _ => by ring
 
+/-- The Hilbert--Schmidt norm of a rank-one matrix is the product of the two
+vector norms. -/
+theorem hsNormSq_rankOne (x y : EuclideanSpace ℂ W) :
+    hsNormSq (rankOne x y) = ‖x‖ ^ 2 * ‖y‖ ^ 2 := by
+  rw [← Complex.ofReal_inj, ← hsInner_self, hsInner_rankOne,
+    inner_self_eq_norm_sq_to_K, inner_self_eq_norm_sq_to_K]
+  push_cast
+  simp [map_pow, Complex.conj_ofReal]
+
+/-- The trace of `|x⟩⟨y|` is `⟪y,x⟫`. -/
+theorem trace_rankOne (x y : EuclideanSpace ℂ W) :
+    (rankOne x y).trace = inner ℂ y x := by
+  rw [Matrix.trace, PiLp.inner_apply]
+  exact Finset.sum_congr rfl fun i _ => by
+    simp [rankOne, Matrix.diag_apply]
+
 /-- The Gram expansion underlying `eq:contraction-norm`:
 `‖∑ᵢ |eᵢ⟩⟨dᵢ|‖₂² = ∑ᵢⱼ ⟪eᵢ,eⱼ⟫ · conj ⟪dᵢ,dⱼ⟫`.  No orthonormality yet. -/
 theorem hsNormSq_rankFactor (e d : Fin s → EuclideanSpace ℂ W) :
