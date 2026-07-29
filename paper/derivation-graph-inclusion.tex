@@ -425,10 +425,13 @@ searches did not surface it, which is not the same thing.
 content of \cref{prop:layers} and \cref{lem:witness} are machine-checked in the
 Lean~4 development accompanying \texttt{rank-r.tex},
 \url{https://github.com/elazarg/rank-r}, in the files \texttt{GraphFamily.lean},
-\texttt{Theta.lean}, \texttt{ThetaBound.lean} and \texttt{GraphLayers.lean}.
+\texttt{Theta.lean}, \texttt{ThetaBound.lean}, \texttt{GraphLayers.lean} and
+\texttt{GraphSpectrahedron.lean}.  The basis-free positive-cone rendering of
+\cref{lem:dict} and the exact threshold \cref{eq:exact} are checked there as
+well.
 
 \begin{center}
-\begin{tabular}{ll}
+\begin{tabular}{p{0.31\linewidth}p{0.63\linewidth}}
 \hline
 Here & Lean\\
 \hline
@@ -444,6 +447,13 @@ $\lambda^*_R(\Phi)\le(R-1)\beta_2(\Phi)$ of \cref{eq:lamstar}
 \cref{lem:witness} & \texttt{cliqueLayerWitness\_posSemidef},
   \texttt{cliqueLayerWitness\_mem\_matrixLevelSpace},
   \texttt{qform\_graphThetaCliqueOutput}\\
+\cref{lem:dict}, basis-free positive-cone form
+  & \texttt{matrixLevelPositiveCone\_subset\_mapped\_iff}\\
+\cref{eq:exact}, basis-free positive-cone form
+  & \texttt{graphCliqueLevelInclusion\_iff}\\
+inclusion through level $R$ and failure at $R+1$
+  & \texttt{graphLevelInclusion\_at\_threshold\_of\_card\_le},
+    \texttt{not\_graphCliqueNextLevelInclusion}\\
 \hline
 \end{tabular}
 \end{center}
@@ -464,13 +474,16 @@ $\norm{Q_-}_{S(2)}=\frac12$, which \texttt{rank-r.tex} already carries.  The
 lower bound runs on the witness $C=P_S\otimes E_{01}$, which in the development
 is the extremizer already built for the sharpness half of Theorem~1.1 there.
 
-Not formalized: \cref{lem:dict} and \cref{thm:inclusion}, together with the
-general free-spectrahedral dictionary they rest on.  The concrete spaces
-$\cS_G$ and $\cU_G$, their unital and adjoint structure, the graph-reduction
-range, the displayed layer formula, invariance of the corrected map, and the
-positive compressed clique input with its exact expectation are formalized.
-The remaining statements restate \cref{thm:clique} in matrix-convexity language
-and introduce no new constant.
+The inclusion dictionary and \cref{eq:exact} are formalized in a basis-free
+positive-cone rendering, rather than by choosing a real basis and reconstructing
+the displayed monic pencils.  Inclusion is checked at every finite level of
+cardinality at most $R$, and the compressed witness checks failure at the
+$(R+1)$-clique level.  Padding that witness to every larger canonical level
+$\mathbb C^n$ --- the final monotonicity step in the literal biconditional
+\cref{eq:levels} --- is not formalized.  The concrete spaces $\cS_G$ and
+$\cU_G$, their unital and adjoint structure, the graph-reduction range, the
+displayed layer formula, invariance of the corrected map, and the positive
+compressed clique input with its exact expectation are formalized.
 
 \section*{Numerical corroboration}
 

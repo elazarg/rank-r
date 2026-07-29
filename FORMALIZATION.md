@@ -125,9 +125,10 @@ extended-real-infimum layer.
 | induced-average-degree obstruction | **Checked** | `two_mul_card_le_of_thetaPositive` |
 | clique sharpness and exact threshold `lambda = R-1` | **Checked** | `thetaPositive_graphKraus_iff` |
 | invariant operator system and layer action | **Checked** in finite coordinates | `graphOperatorSpace` and `graphTwoLayerSpace` define `S_G` and `U_G`; their `one_mem` and `conjTranspose_mem` theorems prove the unital self-adjoint structure; `graphPhiTranspose_layers` and `graphTheta_layers` prove the displayed action; `graphReduction_mem_graphOperatorSpace` and `graphTheta_mem_graphTwoLayerSpace` prove invariance |
-| inclusion dictionary | **Open formalization** | no operator-system/free-spectrahedral vocabulary |
+| inclusion dictionary | **Checked** in a basis-free finite-coordinate rendering | `matrixLevelPositiveCone` and `mappedMatrixLevelPositiveCone` are the two levelwise positivity loci, and `matrixLevelPositiveCone_subset_mapped_iff` is their exact restricted-ampliation dictionary; choosing a real traceless basis and spelling the same cone as a monic pencil remains a presentation interface |
 | compressed clique expectation | **Checked** in finite coordinates | `cliqueLayerWitness_posSemidef` proves that `Y_S` is positive; `cliqueLayerWitness_mem_matrixLevelSpace` places all of its blocks in `U_G`; `qform_graphThetaCliqueOutput` proves the exact value `|S|(λ-(|S|-1))`, independently of `R` |
-| exact protected inclusion through level `R`, failure at `R+1` | **Open formalization** | the concrete lower witness and the global positivity theorem are checked; composing them into free-spectrahedral language depends on the preceding dictionary |
+| exact protected threshold `λ=R-1` at level `R` | **Checked** in the basis-free rendering | `graphCliqueLevelInclusion_iff`; `isBlockPositive_mapChoi_graphThetaLinear_iff` and `isMapPositiveAt_graphThetaLinear_of_thetaPositive` supply the Choi-to-ampliation bridge |
+| protected inclusion through level `R`, failure at `R+1` | **Checked** at every lower cardinality and at the adjacent obstruction | `graphLevelInclusion_at_threshold_of_card_le` proves inclusion for every finite level of cardinality at most `R`; `not_graphCliqueNextLevelInclusion` proves failure on the `(R+1)`-clique level. Padding that witness to every larger `Fin n`, needed for the literal all-`n` biconditional in `eq:levels`, remains open. |
 | rook-graph corollary | **Open formalization** | depends on exact inclusion |
 | exact invariant for clique-free graphs | **Not claimed** | the note states only upper and lower bounds |
 
@@ -155,7 +156,9 @@ The shortest route to a fully formalized application suite is:
 1. prove `KyFanFrobeniusDuality`, the equality between `kyFanSq` and
    `frobeniusRankTestSq`;
 2. add isotropic states and the product-isotropic twirl;
-3. add operator systems/free spectrahedra for the graph-inclusion translation.
+3. finish the graph note's presentation layer: choose the displayed real monic
+   pencil basis, pad the adjacent clique obstruction to every larger canonical
+   level, and instantiate the rook-graph combinatorics.
 
 Item 1 closes the remaining main-paper application interface. Items 2–3
 concern companion constructions and appendices rather than the proof of the

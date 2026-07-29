@@ -50,6 +50,7 @@ import RankR.HigherChoiSharp
 import RankR.HigherAritySkew
 import RankR.KappaOne
 import RankR.GraphLayers
+import RankR.GraphSpectrahedron
 import RankR.GenericApplications
 import RankR.Rigidity
 
@@ -679,11 +680,11 @@ do not claim the conjectured matching upper bound. -/
 #guard_msgs in
 #print axioms quarter_lt_correlatedSkew_levelOne_ratio
 
-/-! ## The graph two-layer compression
+/-! ## The graph two-layer compression and inclusion
 
-The concrete graph and two-layer coefficient spaces, the exact layer action,
-and invariance of the corrected map.  The free-spectrahedral inclusion
-dictionary is a separate interface and is not asserted here. -/
+The concrete graph and two-layer coefficient spaces, exact layer action,
+corrected-map invariance, basis-free positive-cone dictionary, and exact clique
+threshold. -/
 
 /-- info: 'RankR.graphPhiTranspose_layers' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
@@ -720,6 +721,30 @@ dictionary is a separate interface and is not asserted here. -/
 /-- info: 'RankR.qform_graphThetaCliqueOutput' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms qform_graphThetaCliqueOutput
+
+/-- info: 'RankR.qform_mapChoi_krausSum_transpose' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_mapChoi_krausSum_transpose
+
+/-- info: 'RankR.isBlockPositive_mapChoi_graphThetaLinear_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms isBlockPositive_mapChoi_graphThetaLinear_iff
+
+/-- info: 'RankR.matrixLevelPositiveCone_subset_mapped_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms matrixLevelPositiveCone_subset_mapped_iff
+
+/-- info: 'RankR.graphLevelInclusion_at_threshold_of_card_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms graphLevelInclusion_at_threshold_of_card_le
+
+/-- info: 'RankR.graphCliqueLevelInclusion_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms graphCliqueLevelInclusion_iff
+
+/-- info: 'RankR.not_graphCliqueNextLevelInclusion' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms not_graphCliqueNextLevelInclusion
 
 /-! ## Exterior indexing
 
