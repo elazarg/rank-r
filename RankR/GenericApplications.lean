@@ -780,12 +780,110 @@ theorem productReductionChoi_inv_shift_posSemidef
       ((RCLike.ofReal_nonneg (K := ℂ)).mpr
         (add_nonneg hγ (sq_nonneg γ))))
 
+/-- The concrete reduction-product witness is `r`-block-positive throughout
+the manuscript range `0 < r ≤ d`, including the degenerate case `d = 1`. -/
+theorem productReductionChoi_inv_isBlockPositiveBetween_all
+    {r : ℕ} (hr : 0 < r) (hrT : r ≤ Fintype.card T) :
+    IsBlockPositiveBetween r
+      (productReductionChoi (U := T) (V := T)
+        (1 / (r : ℝ)) (1 / (r : ℝ))) := by
+  by_cases hTtwo : 2 ≤ Fintype.card T
+  · exact productReductionChoi_inv_isBlockPositiveBetween hr hrT hTtwo
+  · have hrone : r = 1 := by omega
+    have hTone : Fintype.card T = 1 := by omega
+    have hpsd :=
+      productReductionChoi_inv_shift_posSemidef (T := T) hr hrT
+    have hpsd' :
+        (productReductionChoi (U := T) (V := T)
+          (1 / (r : ℝ)) (1 / (r : ℝ))).PosSemidef := by
+      simpa [hrone, hTone] using hpsd
+    intro C _
+    exact qform_re_nonneg_of_posSemidef hpsd' (vec C)
+
+/-- `μ` is the exact Rayleigh minimum of a finite Hermitian matrix when it is
+a lower quadratic-form bound and some nonzero vector attains it.  This
+coordinate predicate is the spectral content needed for the manuscript's
+`λ_min` notation without choosing an eigenvalue enumeration. -/
+def IsExactRayleighMinimum {X : Type*} [Fintype X]
+    (μ : ℝ) (W : Matrix X X ℂ) : Prop :=
+  (∀ x : EuclideanSpace ℂ X, μ * ‖x‖ ^ 2 ≤ (qform W x).re) ∧
+    ∃ x : EuclideanSpace ℂ X, x ≠ 0 ∧
+      (qform W x).re = μ * ‖x‖ ^ 2
+
+/-- The reduction-product witness has exact Rayleigh minimum `1 - d/r`
+throughout `0 < r ≤ d`.  The proof uses the shifted positive decomposition
+for the lower bound and the manuscript's explicit score extremizers for
+attainment. -/
+theorem productReductionChoi_inv_exactRayleighMinimum
+    {r : ℕ} (hr : 0 < r) (hrT : r ≤ Fintype.card T) :
+    IsExactRayleighMinimum
+      ((1 : ℝ) - Fintype.card T / r)
+      (productReductionChoi (U := T) (V := T)
+        (1 / (r : ℝ)) (1 / (r : ℝ))) := by
+  have hTpos : 0 < Fintype.card T := hr.trans_le hrT
+  constructor
+  · intro x
+    have hq := qform_re_nonneg_of_posSemidef
+      (productReductionChoi_inv_shift_posSemidef
+        (T := T) hr hrT) x
+    rw [qform_sub, qform_smul, qform_one, Complex.sub_re,
+      Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im,
+      zero_mul, sub_zero] at hq
+    exact sub_nonneg.mp hq
+  · let S : Finset T := Finset.univ
+    by_cases hTtwo : 2 ≤ Fintype.card T
+    · obtain ⟨x₀, x₁, hx⟩ :=
+        Fintype.exists_pair_of_one_lt_card (by omega : 1 < Fintype.card T)
+      let C : Matrix (T × T) (T × T) ℂ := projWit S x₀ x₁
+      have hC : C ≠ 0 := by
+        intro hzero
+        have hnorm := hsNormSq_projWit (S := S) x₀ x₁
+        change projWit S x₀ x₁ = 0 at hzero
+        rw [hzero] at hnorm
+        have hcardzero : (0 : ℝ) = Fintype.card T := by
+          simpa [S, hsNormSq] using hnorm
+        have hcardpos : (0 : ℝ) < Fintype.card T := by
+          exact_mod_cast hTpos
+        linarith
+      have hvec : vec C ≠ 0 := fun h => hC (by
+        ext i j
+        have happ := congrFun (congrArg WithLp.ofLp h) (i, j)
+        simpa using happ)
+      refine ⟨vec C, hvec, ?_⟩
+      rw [productReductionChoi_self_eq_twoCopyScoreOperator,
+        re_qform_twoCopyScoreOperator,
+        twoCopyScore_projWit_orthogonal
+          (S := S) (r := Fintype.card T) hx (by simp [S]),
+        hsNormSq_eq_norm_sq]
+      simp only [C]
+      ring
+    · have hrone : r = 1 := by omega
+      have hTone : Fintype.card T = 1 := by omega
+      let x : T := Classical.choice (Fintype.card_pos_iff.mp hTpos)
+      let C : Matrix (T × T) (T × T) ℂ := projWit S x x
+      have hC : C ≠ 0 := by
+        intro hzero
+        have hnorm := hsNormSq_projWit (S := S) x x
+        change projWit S x x = 0 at hzero
+        rw [hzero] at hnorm
+        simp [S, hTone, hsNormSq] at hnorm
+      have hvec : vec C ≠ 0 := fun h => hC (by
+        ext i j
+        have happ := congrFun (congrArg WithLp.ofLp h) (i, j)
+        simpa using happ)
+      refine ⟨vec C, hvec, ?_⟩
+      rw [productReductionChoi_self_eq_twoCopyScoreOperator,
+        re_qform_twoCopyScoreOperator,
+        twoCopyScore_projWit_same (S := S) (r := Fintype.card T)
+          (by simp [S]) (1 / (r : ℝ)),
+        hsNormSq_eq_norm_sq]
+      simp [hrone, hTone]
+
 /-- The local-Hamiltonian Schmidt-number certificate for a common local
 coordinate dimension.  Arbitrary local Kraus families are allowed; channel
 normalization is not required for the implication. -/
 theorem not_schmidtNumberLEBetween_of_reductionAggregate_neg
     {r : ℕ} (hr : 0 < r) (hrT : r ≤ Fintype.card T)
-    (hTtwo : 2 ≤ Fintype.card T)
     {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
     (L : E → P → Matrix (T × T) A ℂ)
     (R : E → Q → Matrix (T × T) B ℂ)
@@ -802,7 +900,7 @@ theorem not_schmidtNumberLEBetween_of_reductionAggregate_neg
   · intro e
     exact productReductionChoi_isHermitian (U := T) (V := T) _ _
   · intro e
-    exact productReductionChoi_inv_isBlockPositiveBetween hr hrT hTtwo
+    exact productReductionChoi_inv_isBlockPositiveBetween_all hr hrT
   · exact hneg
 
 end ReductionAggregation
@@ -819,7 +917,6 @@ both Kraus index types allowed to vary with the term. -/
 theorem not_schmidtNumberLEBetween_of_dependentReductionAggregate_neg
     {r : ℕ} (hr : 0 < r)
     (hrT : ∀ e, r ≤ Fintype.card (T e))
-    (hTtwo : ∀ e, 2 ≤ Fintype.card (T e))
     {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
     (L : (e : E) → P e → Matrix (T e × T e) A ℂ)
     (R : (e : E) → Q e → Matrix (T e × T e) B ℂ)
@@ -836,8 +933,7 @@ theorem not_schmidtNumberLEBetween_of_dependentReductionAggregate_neg
   · intro e
     exact productReductionChoi_isHermitian (U := T e) (V := T e) _ _
   · intro e
-    exact productReductionChoi_inv_isBlockPositiveBetween
-      hr (hrT e) (hTtwo e)
+    exact productReductionChoi_inv_isBlockPositiveBetween_all hr (hrT e)
   · exact hneg
 
 /-- The weighted aggregate of the concretely shifted reduction-product
@@ -870,7 +966,6 @@ theorem trace_mul_dependentReductionAggregate_shift_lower
     [DecidableEq A] [DecidableEq B]
     {r : ℕ} (hr : 0 < r)
     (hrT : ∀ e, r ≤ Fintype.card (T e))
-    (hTtwo : ∀ e, 2 ≤ Fintype.card (T e))
     {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
     (L : (e : E) → P e → Matrix (T e × T e) A ℂ)
     (R : (e : E) → Q e → Matrix (T e × T e) B ℂ)
@@ -898,8 +993,8 @@ theorem trace_mul_dependentReductionAggregate_shift_lower
           (1 / (r : ℝ)) (1 / (r : ℝ)))
       (fun e => productReductionChoi_isHermitian
         (U := T e) (V := T e) _ _)
-      (fun e => productReductionChoi_inv_isBlockPositiveBetween
-        hr (hrT e) (hTtwo e))
+      (fun e => productReductionChoi_inv_isBlockPositiveBetween_all
+        hr (hrT e))
       hρ htrace
   convert hbase using 1
   rw [← Finset.sum_neg_distrib]

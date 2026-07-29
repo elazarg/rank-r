@@ -386,6 +386,14 @@ Ky-Fan corollary. -/
 #guard_msgs in
 #print axioms productReductionChoi_inv_shift_posSemidef
 
+/-- info: 'RankR.productReductionChoi_inv_isBlockPositiveBetween_all' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms productReductionChoi_inv_isBlockPositiveBetween_all
+
+/-- info: 'RankR.productReductionChoi_inv_exactRayleighMinimum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms productReductionChoi_inv_exactRayleighMinimum
+
 /-- info: 'RankR.dependentReductionAggregate_shift_posSemidef' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms dependentReductionAggregate_shift_posSemidef

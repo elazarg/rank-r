@@ -139,7 +139,9 @@ finite output spaces and Kraus families, together with the concrete
 reduction-witness negative-energy certificate.  Under Kraus completeness it
 also proves unitality of the pullback, positivity of shifted local terms, the
 exact aggregate shift identity, and the explicit reduction-witness energy
-baseline.
+baseline.  The scalar \(1-d/r\) is certified as the exact Rayleigh minimum by
+a global lower bound and an explicit nonzero attaining vector, including the
+one-dimensional case.
 The exact claim-by-claim boundary is maintained in `FORMALIZATION.md`.
 
 ### Two sharpenings not in the manuscript

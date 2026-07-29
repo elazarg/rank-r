@@ -2927,9 +2927,11 @@ shift identity, and
 \texttt{dependentReductionAggregate\_shift\_posSemidef} together with
 \texttt{trace\_mul\_dependentReductionAggregate\_shift\_lower} proves
 positive semidefiniteness and the displayed energy baseline.  The sector
-decomposition proves that the shift by $1-d_e/r$ is positive semidefinite;
-identifying it through a literal minimum-eigenvalue API remains a
-finite-coordinate rendering step.
+decomposition proves the lower bound $1-d_e/r$, and
+\texttt{productReductionChoi\_inv\_exactRayleighMinimum} combines it with an
+explicit nonzero attaining vector, including the one-dimensional case.  Thus
+the manuscript's minimum-eigenvalue statement is represented without choosing
+an enumeration of eigenvalues.
 
 \Cref{thm:amplification} is covered, in all four operator forms and for
 an arbitrary Kraus family: \texttt{Choi.lean} carries
