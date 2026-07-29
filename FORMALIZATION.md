@@ -44,8 +44,8 @@ exact-rank factorizations.
 
 | Manuscript item | Status | Lean certificate or remaining gap |
 | --- | --- | --- |
-| Kraus-space definition and independence of Kraus representation | **Standard interface; not separately packaged** | `choiOf` is representation-independent in use, but the equality between the span of a Kraus family and the inverse-vectorized range of its Choi operator is not a named theorem |
-| Equation (3), the action formula for `β₂` | **Checked rendering** | `ChoiTwoBound` and the synthesis/action lemmas encode the equivalent rank-two quadratic-form bound; no independently defined supremum-valued `S(2)` norm is connected to it by a named equality |
+| Kraus-space definition and independence of Kraus representation | **Checked in finite coordinates** | `krausSpace`, `map_krausSpace_vec`, and `krausSpace_eq_of_choiOf_eq` identify the vectorized Kraus span with the range of `choiOf` and prove invariance under changing Kraus families without changing the Choi operator |
+| Equation (3), the action formula for `β₂` | **Checked** | `schmidtOperatorNorm` defines the restricted `S(k)` supremum; `betaTwo` is half its value at `k = 2`; `schmidtOperatorNorm_choiOf_eq_krausActionNorm` proves the all-`k` Kraus-action equality, and `two_mul_betaTwo_choiOf_eq_krausActionNorm` is the displayed level-two formula |
 | Theorem 1.1, protected rank-two lift for every `r` | **Checked in Choi form** | `thetaPositive_of_choiTwoBound`; exact-rank assembly is `thetaPositive_at_rank`, and the rank-parameter step is checked inside the former theorem |
 | Theorem 1.1, unprotected lift | **Checked in Choi form** | `thetaUnprotectedPositive_of_choiTwoBound`; the exact-rank assembly is `thetaUnprotectedPositive_at_rank`, and no transpose-parity hypothesis is used |
 | Corollary 1.2, replacing `β₂` by an upper bound | **Checked in Choi form** | `thetaPositive_of_choiTwoBound_le` applies monotonicity of the protected correction at every positive level |

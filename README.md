@@ -133,11 +133,14 @@ classifications; and the rank-sensitive estimate used by the Kronecker-sum
 corollary. `RankR/Applications/Kronecker/Inequality.lean` proves the exact Kronecker pairing, centered
 Cauchy--Schwarz identity, both branches of the minimum, and the resulting
 rank-constrained Frobenius test-supremum bound.
-`RankR/Applications/Kronecker/KyFan.lean` proves
-`KyFanFrobeniusDuality` by finite spectral majorization and an explicit optimal
-rank-constrained test matrix, then derives the literal singular-value
-conclusion. The mixed-state cone, Hermitian trace norm, and centered-witness
-duality are in `RankR/Library/Quantum/SchmidtNumber.lean`,
+`RankR/Library/Matrix/KyFan.lean` proves `KyFanFrobeniusDuality` by finite
+spectral majorization and an explicit optimal rank-constrained test matrix;
+`RankR/Applications/Kronecker/KyFan.lean` derives the literal singular-value
+conclusion. `RankR/Library/Quantum/KrausActionNorm.lean` identifies the
+restricted Schmidt operator norm of a Choi operator with the supremal Ky Fan
+sum over normalized Kraus combinations. The mixed-state cone, Hermitian trace
+norm, and centered-witness duality are in
+`RankR/Library/Quantum/SchmidtNumber.lean`,
 `RankR/Library/Matrix/HermitianTraceNorm.lean`, and
 `RankR/Library/Quantum/WitnessDistance.lean`.
 `RankR/Applications/TraceDistance/Main.lean` specializes them to the
