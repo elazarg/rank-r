@@ -2668,6 +2668,10 @@ $\Delta_{U\otimes V}=\Delta_U\otimes\Delta_V$ & \texttt{RU\_zero\_RV\_zero}\\
 \cref{eq:Phi-expansion} & \texttt{Phi4\_apply}\\
 \cref{eq:Phi-rhoT} & \texttt{Phi4\_ptransposeUV\_rankOne}\\
 \cref{eq:H-decomposition} & \texttt{HopScaled\_eq}\\
+\cref{eq:sos-main-gram}
+  & \texttt{rankFactor\_partialTraceGap\_eq\_sector\_gram}\\
+positivity in \cref{prop:sos-sector-gram}
+  & \texttt{qform\_negativeSectorDefectScaled\_nonneg\_holds}\\
 \cref{eq:T-by-vertices} & \texttt{Tsyn\_eq\_delta\_vtx}\\
 \cref{eq:T-operator-bound} & \texttt{norm\_Tsyn\_sq\_le}\\
 \cref{eq:T-orthogonal} & \texttt{inner\_delta\_placeQ\_kron\_zetaV}\\
@@ -2821,7 +2825,14 @@ except at two points, where it takes a shorter route:
 \cref{eq:Phi-Pminus-TTstar} is replaced by a Bessel-type duality that never
 forms $\mathcal T$ as a matrix, and the complete-graph identity of
 \cref{prop:sos-complete-graph} is not used, the vertex Cauchy--Schwarz estimate
-sufficing.  Those two displays are therefore not themselves covered.
+sufficing.  Accordingly, \cref{eq:Phi-Pminus-TTstar} is represented by the
+corresponding Kraus quadratic form rather than by a matrix-valued synthesis
+map, while \cref{eq:sos-main-gram} and positivity of its negative-sector defect
+are formalized as
+\texttt{rankFactor\_partialTraceGap\_eq\_sector\_gram} and
+\texttt{qform\_negativeSectorDefectScaled\_nonneg\_holds}.
+The finer decomposition of that defect into the exact vertex variances and
+edge deficits of \cref{eq:sos-complete-graph} is not formalized.
 
 Within \cref{sec:applications}, \texttt{Applications.lean} covers the exact
 two-copy and asymmetric score curves in an infimum-free but equivalent form:

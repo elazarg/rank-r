@@ -81,7 +81,7 @@ extended-real-infimum layer.
 | --- | --- | --- |
 | polynomial SOS for the trace–rank residual | **Open formalization** | no polynomial-coordinate SOS layer |
 | complete-graph defect certificate | **Open formalization** | the proof uses only its inequality consequence in Lean, not the displayed identity |
-| exact positive/negative-sector Gram identity | **Open formalization** | the sector inequalities are checked by a different Bessel route |
+| exact positive/negative-sector Gram identity | **Checked** in quadratic-form rendering | `rankFactor_partialTraceGap_eq_sector_gram` is the scaled boxed identity; `qform_negativeSectorDefectScaled_nonneg_holds` proves the defect positive, with Kraus quadratic forms representing the two synthesis Grams |
 | positive-map semidefinite cut | **Open formalization** | requires density matrices, Schmidt number, and trace pairing |
 | local-channel aggregation | **Open formalization** | requires channels, adjoints on observables, and tensor-product state semantics |
 | local-Hamiltonian Schmidt-number certificate | **Open formalization** | depends on the preceding aggregation layer |

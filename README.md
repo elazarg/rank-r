@@ -247,7 +247,7 @@ revision.
 
 | Path | Contents |
 | --- | --- |
-| `RankR/` | the formalization (46 files) |
+| `RankR/` | the Lean formalization sources |
 | `paper/` | the manuscript |
 
 ### The formalization, bottom-up
@@ -293,6 +293,7 @@ revision.
 | `Applications` | exact score bounds, extremizers and thresholds; reduction-product Choi matrices; adjacent separation; Kronecker rank core |
 | `MapPos` | actual finite-coordinate map ampliations, the map/Choi `r`-positivity equivalence, and the symmetric and asymmetric map classifications |
 | `Staircase` | exact threshold algebra, convex boundary coefficient, moment identities, strict threshold ordering |
+| `Gram` | the exact positive/negative-sector Gram identity and positivity of the negative-sector defect |
 | `Axioms` | the axiom surface, checked by the build |
 
 Conceptually the proof has two halves joined in `Results`: the *reduction*

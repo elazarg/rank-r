@@ -40,6 +40,7 @@ import RankR.Sharp
 import RankR.Applications
 import RankR.MapPos
 import RankR.Staircase
+import RankR.Gram
 
 namespace RankR
 
@@ -325,6 +326,14 @@ Proposition 2.2. -/
 /-- info: 'RankR.rank_r_partial_trace_exact_of_betaTwo' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms rank_r_partial_trace_exact_of_betaTwo
+
+/-- info: 'RankR.rankFactor_partialTraceGap_eq_sector_gram' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rankFactor_partialTraceGap_eq_sector_gram
+
+/-- info: 'RankR.qform_negativeSectorDefectScaled_nonneg_holds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_negativeSectorDefectScaled_nonneg_holds
 
 /-- info: 'RankR.operatorIneq_of_FGP' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
