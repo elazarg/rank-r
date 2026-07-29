@@ -207,7 +207,9 @@ theorem hsNormSq_sum_smul_of_hsInner_four
   rw [← Complex.ofReal_inj, ← hsInner_self, hsInner_sum_sum]
   simp only [hsInner_smul_left, hsInner_smul_right, hA]
   push_cast
-  simp [Complex.normSq_eq_conj_mul_self, mul_comm]
+  simp only [mul_comm, ite_mul, zero_mul, mul_ite, mul_zero,
+    Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte,
+    Complex.normSq_eq_conj_mul_self]
   rw [Finset.mul_sum]
   exact Finset.sum_congr rfl fun i _ => by ring
 

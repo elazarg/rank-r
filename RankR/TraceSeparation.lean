@@ -206,7 +206,9 @@ theorem isHermitian_eq_sum_eigen_rankOne (D : Matrix I I ℂ) (hD : D.IsHermitia
         mul_zero, Matrix.sum_apply, Matrix.smul_apply,
         smul_eq_mul, rankOne, Matrix.IsHermitian.eigenvectorUnitary_apply]
       exact Finset.sum_congr rfl fun i _ => by
-        simp
+        simp only [Complex.coe_algebraMap, Function.comp_apply,
+          Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte,
+          RCLike.star_def]
         ring
 
 /-- Expand a Hilbert--Schmidt pairing along the Hermitian spectral
@@ -388,7 +390,8 @@ theorem regroupChoi_add_left
     (A A' : Matrix (T × T) (T × T) ℂ) (B : Matrix (T × T) (T × T) ℂ) :
     regroupChoi (A + A') B = regroupChoi A B + regroupChoi A' B := by
   ext X Y
-  simp [regroupChoi, Matrix.add_apply]
+  simp only [regroupChoi, Matrix.reindex_apply, Matrix.submatrix_apply,
+    Matrix.kroneckerMap_apply, Matrix.add_apply]
   ring
 
 omit [Fintype T] [DecidableEq T] in
@@ -396,7 +399,8 @@ theorem regroupChoi_add_right
     (A : Matrix (T × T) (T × T) ℂ) (B B' : Matrix (T × T) (T × T) ℂ) :
     regroupChoi A (B + B') = regroupChoi A B + regroupChoi A B' := by
   ext X Y
-  simp [regroupChoi, Matrix.add_apply]
+  simp only [regroupChoi, Matrix.reindex_apply, Matrix.submatrix_apply,
+    Matrix.kroneckerMap_apply, Matrix.add_apply]
   ring
 
 /-- Read positive semidefiniteness in the quadratic-form convention of the
@@ -648,11 +652,10 @@ theorem twoCopy_traceDistance_lower
     dsimp only [traceSeparationDelta, γ, M]
     have hM : 0 ≤ max 1 (γ ^ 2) := le_max_left 1 (γ ^ 2) |>.trans' zero_le_one
     linarith
-  apply two_mul_div_le_hermitianTraceNorm_of_witness
+  exact two_mul_div_le_hermitianTraceNorm_of_witness
     (productReductionChoi_isHermitian (U := T) (V := T) _ _)
     hBlock hρ hσ hSN hΔ hdetect
-  intro x hx
-  exact abs_re_qform_twoCopyWitness_centered_le hr hrT x hx
+    (abs_re_qform_twoCopyWitness_centered_le hr hrT)
 
 end TwoCopyTraceDistance
 

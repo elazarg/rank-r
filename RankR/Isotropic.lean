@@ -60,7 +60,9 @@ theorem trace_omegaComplement (hT : 0 < Fintype.card T) :
     (omegaComplement (T := T)).trace =
       ((Fintype.card T : ℝ) ^ 2 - 1 : ℂ) := by
   rw [omegaComplement, Matrix.trace_sub, trace_omegaProjection hT]
-  simp [Matrix.trace, Fintype.card_prod]
+  simp only [Matrix.trace, Matrix.diag_apply, Matrix.one_apply_eq,
+    Finset.sum_const, Finset.card_univ, Fintype.card_prod, nsmul_eq_mul,
+    Nat.cast_mul, mul_one, Complex.ofReal_natCast, sub_left_inj]
   norm_cast
   ring
 

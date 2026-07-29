@@ -33,11 +33,9 @@ theorem hsInner_kronecker_one_right
   rw [hsInner_eq_sum_vec, hsInner_eq_sum_vec]
   simp only [Fintype.sum_prod_type, vec_apply, Matrix.kroneckerMap_apply, Matrix.one_apply,
     ptraceV_apply, map_sum, mul_ite, mul_one, mul_zero]
-  simp
+  simp only [Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
   simp_rw [Finset.sum_mul]
-  apply Finset.sum_congr rfl
-  intro a _
-  exact Finset.sum_comm
+  exact Finset.sum_congr rfl fun _ _ => Finset.sum_comm
 
 omit [DecidableEq V] in
 /-- Pairing with an operator on the second tensor factor contracts the first
@@ -48,16 +46,15 @@ theorem hsInner_kronecker_one_left
   rw [hsInner_eq_sum_vec, hsInner_eq_sum_vec]
   simp only [Fintype.sum_prod_type, vec_apply, Matrix.kroneckerMap_apply, Matrix.one_apply,
     ptraceU_apply, map_sum, ite_mul, one_mul, zero_mul]
-  simp
+  simp only [mul_ite, mul_zero, Finset.sum_ite_irrel,
+    Finset.sum_const_zero, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
   simp_rw [Finset.sum_mul]
   calc
     (∑ a, ∑ b, ∑ b', conj (C (a, b) (a, b')) * B b b') =
         ∑ b, ∑ a, ∑ b', conj (C (a, b) (a, b')) * B b b' := by
-          exact Finset.sum_comm
-    _ = ∑ b, ∑ b', ∑ a, conj (C (a, b) (a, b')) * B b b' := by
-      apply Finset.sum_congr rfl
-      intro b _
       exact Finset.sum_comm
+    _ = ∑ b, ∑ b', ∑ a, conj (C (a, b) (a, b')) * B b b' := by
+      exact Finset.sum_congr rfl fun _ _ => Finset.sum_comm
 
 omit [DecidableEq U] [DecidableEq V] in
 /-- Taking either partial trace preserves the full trace. -/
@@ -327,7 +324,9 @@ theorem hsNormSq_kroneckerSum (A B : Matrix D D ℂ)
   dsimp only [M, kroneckerSum]
   rw [hsInner_add_left, hsInner_add_right, hsInner_add_right,
     hsInner_kron, hsInner_kron, hsInner_kron, hsInner_kron]
-  simp [hsInner_self, hsInner_one_left, hsInner_one_right, hA, hB, hsNormSq_one]
+  simp only [hsInner_self, hsNormSq_one, Complex.ofReal_natCast,
+    hsInner_one_right, hA, map_zero, hsInner_one_left, hB, mul_zero,
+    add_zero, zero_add, Complex.ofReal_mul, Complex.ofReal_add]
   ring
 
 /-- The rank-sensitive branch of `eq:kronecker-bound`, without normalizing the

@@ -122,14 +122,17 @@ noncomputable def graphTwoLayerSpaceEquiv
     ext p q
     obtain ⟨i, a⟩ := p
     obtain ⟨j, b⟩ := q
-    simp [Matrix.kroneckerMap_apply, add_mul]
+    simp only [Prod.fst_add, Submodule.coe_add, Prod.snd_add,
+      Matrix.add_apply, Matrix.kroneckerMap_apply, add_mul]
     ring
   map_smul' c XY := by
     apply Subtype.ext
     ext p q
     obtain ⟨i, a⟩ := p
     obtain ⟨j, b⟩ := q
-    simp [Matrix.kroneckerMap_apply]
+    simp only [Prod.smul_fst, SetLike.val_smul, Prod.smul_snd,
+      Matrix.add_apply, Matrix.kroneckerMap_apply, Matrix.smul_apply,
+      smul_eq_mul, RingHom.id_apply]
     ring
 
 omit [DecidableEq U] [LinearOrder U] in

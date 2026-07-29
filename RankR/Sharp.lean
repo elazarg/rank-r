@@ -146,7 +146,7 @@ theorem hsNormSq_sharpWit {a₀ a₁ : U} {b₀ b₁ : V} (hb : b₀ ≠ b₁) :
   rw [hsum, Finset.sum_congr rfl fun X _ => hterm X, Finset.sum_add_distrib,
     Finset.sum_ite_eq' Finset.univ (wit₁ a₀ a₁ b₀ b₁) (fun _ => (1 : ℝ)),
     Finset.sum_ite_eq' Finset.univ (wit₂ a₀ a₁ b₀ b₁) (fun _ => (1 : ℝ))]
-  simp
+  simp only [Finset.mem_univ, ↓reduceIte]
   norm_num
 
 omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
@@ -267,7 +267,7 @@ theorem hsNormSq_sharpWitThree {a₀ a₁ : U} {b₀ b₁ : V}
     (ha : a₀ ≠ a₁) (hb : b₀ ≠ b₁) :
     hsNormSq (sharpWitThree a₀ a₁ b₀ b₁) = 3 := by
   have h12 : wit₁ a₀ a₁ b₀ b₁ ≠ wit₂ a₀ a₁ b₀ b₁ := by
-    simp [wit₁, wit₂, Prod.ext_iff]
+    simp only [wit₁, wit₂, ne_eq, Prod.ext_iff, true_and, not_and]
     exact fun _ => hb
   have h13 : wit₁ a₀ a₁ b₀ b₁ ≠ wit₃ a₀ a₁ b₀ b₁ := by
     simp [wit₁, wit₃, Prod.ext_iff, ha]
@@ -294,7 +294,7 @@ theorem hsNormSq_sharpWitThree {a₀ a₁ : U} {b₀ b₁ : V}
     Finset.sum_ite_eq' Finset.univ (wit₁ a₀ a₁ b₀ b₁) (fun _ => (1 : ℝ)),
     Finset.sum_ite_eq' Finset.univ (wit₂ a₀ a₁ b₀ b₁) (fun _ => (1 : ℝ)),
     Finset.sum_ite_eq' Finset.univ (wit₃ a₀ a₁ b₀ b₁) (fun _ => (1 : ℝ))]
-  simp
+  simp only [Finset.mem_univ, ↓reduceIte]
   norm_num
 
 /-- The rank-three truncation is admissible at every level at least three. -/
@@ -306,7 +306,11 @@ theorem rank_sharpWitThree_le (a₀ a₁ : U) (b₀ b₁ : V) :
       -(eBasis (a₀, b₁))] i),
     (fun i : Fin 3 =>
       ![eBasis (a₀, b₀), eBasis (a₀, b₁), eBasis (a₁, b₀)] i), ?_⟩
-  simp [sharpWitThree, sharpWit, Fin.sum_univ_succ]
+  simp only [sharpWitThree, sharpWit, Nat.succ_eq_add_one,
+    Nat.reduceAdd, Fin.sum_univ_succ, Fin.isValue, Matrix.cons_val_zero,
+    Matrix.cons_val_succ, Finset.univ_unique, Fin.default_eq_zero,
+    Matrix.cons_val_fin_one, Finset.sum_const, Finset.card_singleton,
+    one_smul]
   abel
 
 /-- The rank-three truncation is nonzero. -/
@@ -357,7 +361,7 @@ theorem qform_Qm_sharpWitThree {a₀ a₁ : U} {b₀ b₁ : V}
     qform (Qm : Matrix (Idx U V) (Idx U V) ℂ)
       (vec (sharpWitThree a₀ a₁ b₀ b₁)) = 9 / 4 := by
   have h12 : wit₁ a₀ a₁ b₀ b₁ ≠ wit₂ a₀ a₁ b₀ b₁ := by
-    simp [wit₁, wit₂, Prod.ext_iff]
+    simp only [wit₁, wit₂, ne_eq, Prod.ext_iff, true_and, not_and]
     exact fun _ => hb
   have h13 : wit₁ a₀ a₁ b₀ b₁ ≠ wit₃ a₀ a₁ b₀ b₁ := by
     simp [wit₁, wit₃, Prod.ext_iff, ha]

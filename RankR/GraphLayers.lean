@@ -754,10 +754,13 @@ theorem sum_if_eq_else_neg_one
       apply Finset.sum_congr rfl
       intro a _
       rw [Finset.sum_add_distrib]
-      simp
+      simp only [Finset.sum_neg_distrib, Finset.sum_const,
+        Finset.card_univ, nsmul_eq_mul, mul_one, Finset.sum_ite_eq,
+        Finset.mem_univ, ↓reduceIte, mul_neg]
     _ = (Fintype.card A : ℂ)
           * (lam - ((Fintype.card A : ℂ) - 1)) := by
-      simp
+      simp only [mul_neg, mul_one, Finset.sum_const, Finset.card_univ,
+        smul_add, smul_neg, nsmul_eq_mul]
       ring
 
 /-- **Compressed clique expectation** (`eq:witness-val`).

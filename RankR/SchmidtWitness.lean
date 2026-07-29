@@ -274,7 +274,7 @@ theorem schmidtWitness_isHermitian (α : ℝ) :
     (schmidtWitness (U := U) (V := V) α).IsHermitian := by
   rw [Matrix.IsHermitian, schmidtWitness, Matrix.conjTranspose_sub,
     Matrix.conjTranspose_smul, Matrix.conjTranspose_one, Qm_conjTranspose]
-  simp
+  simp only [RCLike.star_def, Complex.conj_ofReal, Complex.coe_smul]
 
 /-- A homogeneous pure-state bound makes `α I - Qm` block positive. -/
 theorem schmidtWitness_isBlockPositive {r : ℕ} {α : ℝ}
@@ -347,7 +347,8 @@ theorem re_hsInner_schmidtWitness_Qm (α : ℝ) :
       simp only [hsInner, Matrix.conjTranspose_one, Matrix.one_mul]
       rfl,
     hsInner_self, trace_Qm_eq_hsNormSq]
-  simp
+  simp only [Complex.conj_ofReal, Complex.sub_re, Complex.mul_re,
+    Complex.ofReal_re, Complex.ofReal_im, mul_zero, sub_zero]
   ring
 
 /-- Distinct labels in both local factors make `Qm` nonzero. -/

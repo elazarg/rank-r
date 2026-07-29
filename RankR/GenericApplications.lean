@@ -889,15 +889,13 @@ theorem not_schmidtNumberLEBetween_of_reductionAggregate_neg
         (fun _ => productReductionChoi (U := T) (V := T)
           (1 / (r : ℝ)) (1 / (r : ℝ))) * ρ).trace).re < 0) :
     ¬ SchmidtNumberLEBetween r ρ := by
-  apply not_schmidtNumberLEBetween_of_aggregateLocalWitness_neg
+  exact not_schmidtNumberLEBetween_of_aggregateLocalWitness_neg
     (W := fun _ => productReductionChoi (U := T) (V := T)
       (1 / (r : ℝ)) (1 / (r : ℝ)))
     hweights L R
-  · intro e
-    exact productReductionChoi_isHermitian (U := T) (V := T) _ _
-  · intro e
-    exact productReductionChoi_inv_isBlockPositiveBetween_all hr hrT
-  · exact hneg
+    (fun _ => productReductionChoi_isHermitian (U := T) (V := T) _ _)
+    (fun _ => productReductionChoi_inv_isBlockPositiveBetween_all hr hrT)
+    hneg
 
 end ReductionAggregation
 
@@ -922,15 +920,13 @@ theorem not_schmidtNumberLEBetween_of_dependentReductionAggregate_neg
         (fun e => productReductionChoi (U := T e) (V := T e)
           (1 / (r : ℝ)) (1 / (r : ℝ))) * ρ).trace).re < 0) :
     ¬ SchmidtNumberLEBetween r ρ := by
-  apply not_schmidtNumberLEBetween_of_aggregateLocalWitnessDependent_neg
+  exact not_schmidtNumberLEBetween_of_aggregateLocalWitnessDependent_neg
     (W := fun e => productReductionChoi (U := T e) (V := T e)
       (1 / (r : ℝ)) (1 / (r : ℝ)))
     hweights L R
-  · intro e
-    exact productReductionChoi_isHermitian (U := T e) (V := T e) _ _
-  · intro e
-    exact productReductionChoi_inv_isBlockPositiveBetween_all hr (hrT e)
-  · exact hneg
+    (fun e => productReductionChoi_isHermitian (U := T e) (V := T e) _ _)
+    (fun e => productReductionChoi_inv_isBlockPositiveBetween_all hr (hrT e))
+    hneg
 
 /-- The weighted aggregate of the concretely shifted reduction-product
 witnesses is positive semidefinite. -/
@@ -949,12 +945,11 @@ theorem dependentReductionAggregate_shift_posSemidef
             (1 : Matrix
               ((T e × T e) × (T e × T e))
               ((T e × T e) × (T e × T e)) ℂ))).PosSemidef := by
-  apply aggregateLocalWitnessDependent_shift_posSemidef
+  exact aggregateLocalWitnessDependent_shift_posSemidef
     hweights
     (mu := fun e => (1 : ℝ) - Fintype.card (T e) / r)
     L R
-  intro e
-  exact productReductionChoi_inv_shift_posSemidef hr (hrT e)
+    (fun e => productReductionChoi_inv_shift_posSemidef hr (hrT e))
 
 /-- The concrete reduction-product construction has the explicit normalized
 energy baseline `∑ e, w_e (d_e / r - 1)`. -/

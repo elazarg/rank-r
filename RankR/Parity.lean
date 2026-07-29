@@ -179,7 +179,10 @@ of `qform_krausQ_Pneg_le` other than frame symmetry is met. -/
 theorem choiTwoBound_skewFam : ChoiTwoBound (choiOf skewFam) 1 := by
   refine choiTwoBound_of_sum_hsNormSq skewFam ?_
   have h : hsNormSq (skewFam ()) = 2 := by
-    simp [skewFam, hsNormSq, skewUnit_apply, Fin.sum_univ_two]
+    simp only [hsNormSq, skewFam, Fin.isValue, skewUnit_apply, mul_ite,
+      mul_one, mul_zero, Fin.sum_univ_two, one_ne_zero, ↓reduceIte,
+      zero_sub, Complex.normSq_neg, MonoidWithZeroHom.map_ite_one_zero,
+      zero_ne_one, sub_zero, zero_add, add_zero]
     norm_num
   simp [h]
 
@@ -202,7 +205,9 @@ theorem re_qform_krausQ_Pneg_skewFam :
     (qform (krausQ skewFam (Pneg pb)) (delta pb)).re = 4 := by
   rw [re_qform_krausQ_Pneg, Finset.sum_eq_single ((), ((0 : Fin 2), (1 : Fin 2)))]
   · rw [← inner_conj_symm, Complex.normSq_conj, inner_delta_wvec_skewFam]
-    simp [Complex.normSq]
+    simp only [Complex.normSq, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+      Complex.neg_re, Complex.re_ofNat, mul_neg, neg_mul, neg_neg,
+      Complex.neg_im, Complex.im_ofNat, neg_zero, mul_zero, add_zero]
     norm_num
   · rintro ⟨u, i, j⟩ _ hk
     have hij : ¬ (i < j) := by

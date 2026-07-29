@@ -62,35 +62,21 @@ private theorem sum5_perm
       = ∑ e, ∑ c, ∑ a, ∑ b, ∑ d, F a b c d e := by
   calc
     _ = ∑ a, ∑ b, ∑ c, ∑ e, ∑ d, F a b c d e := by
-      apply Finset.sum_congr rfl
-      intro a _
-      apply Finset.sum_congr rfl
-      intro b _
-      apply Finset.sum_congr rfl
-      intro c _
-      exact Finset.sum_comm
+      exact Finset.sum_congr rfl fun _ _ =>
+        Finset.sum_congr rfl fun _ _ =>
+          Finset.sum_congr rfl fun _ _ => Finset.sum_comm
     _ = ∑ a, ∑ b, ∑ e, ∑ c, ∑ d, F a b c d e := by
-      apply Finset.sum_congr rfl
-      intro a _
-      apply Finset.sum_congr rfl
-      intro b _
-      exact Finset.sum_comm
+      exact Finset.sum_congr rfl fun _ _ =>
+        Finset.sum_congr rfl fun _ _ => Finset.sum_comm
     _ = ∑ a, ∑ e, ∑ b, ∑ c, ∑ d, F a b c d e := by
-      apply Finset.sum_congr rfl
-      intro a _
-      exact Finset.sum_comm
+      exact Finset.sum_congr rfl fun _ _ => Finset.sum_comm
     _ = ∑ e, ∑ a, ∑ b, ∑ c, ∑ d, F a b c d e :=
       Finset.sum_comm
     _ = ∑ e, ∑ a, ∑ c, ∑ b, ∑ d, F a b c d e := by
-      apply Finset.sum_congr rfl
-      intro e _
-      apply Finset.sum_congr rfl
-      intro a _
-      exact Finset.sum_comm
+      exact Finset.sum_congr rfl fun _ _ =>
+        Finset.sum_congr rfl fun _ _ => Finset.sum_comm
     _ = ∑ e, ∑ c, ∑ a, ∑ b, ∑ d, F a b c d e := by
-      apply Finset.sum_congr rfl
-      intro e _
-      exact Finset.sum_comm
+      exact Finset.sum_congr rfl fun _ _ => Finset.sum_comm
 
 /-- A matrix unit passed through a transposed Kraus sum, entrywise. -/
 theorem krausSum_transpose_single_apply
@@ -376,12 +362,12 @@ theorem isMapPositiveAt_graphThetaLinear_of_thetaPositive
     (hTheta : ThetaPositive (graphKraus E) R lam)
     (hcard : Fintype.card A ≤ R) :
     IsMapPositiveAt A (graphThetaLinear E R (lam : ℂ)) := by
-  apply isMapPositiveAt_of_isBlockPositive_mapChoi
+  exact isMapPositiveAt_of_isBlockPositive_mapChoi
     (graphThetaLinear E R (lam : ℂ))
     (mapChoi_graphThetaLinear_isHermitian E R lam)
-  exact isBlockPositive_mono
-    ((isBlockPositive_mapChoi_graphThetaLinear_iff E R lam).2 hTheta)
-    hcard
+    (isBlockPositive_mono
+      ((isBlockPositive_mapChoi_graphThetaLinear_iff E R lam).2 hTheta)
+      hcard)
 
 end GraphMapPositivity
 
@@ -521,11 +507,8 @@ theorem padMatrixLevel_mem
     padMatrixLevel e Z ∈ matrixLevelSpace S := by
   intro a b
   rw [matrixLevelBlock_padMatrixLevel]
-  apply Submodule.sum_mem
-  intro k _
-  apply Submodule.sum_mem
-  intro l _
-  exact Submodule.smul_mem _ _ (hZ k l)
+  exact Submodule.sum_mem _ fun k _ =>
+    Submodule.sum_mem _ fun l _ => Submodule.smul_mem _ _ (hZ k l)
 
 omit [DecidableEq K] in
 /-- Padding preserves positive semidefiniteness. -/

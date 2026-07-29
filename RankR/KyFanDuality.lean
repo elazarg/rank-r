@@ -251,9 +251,7 @@ theorem sum_norm_sq_mulVecE_le_eigenvalue_head
     have hb :
         ∑ i, ‖inner ℂ (b a) (x i)‖ ^ 2 =
           ∑ i, ‖inner ℂ (x i) (b a)‖ ^ 2 := by
-      apply Finset.sum_congr rfl
-      intro i hi
-      rw [norm_inner_symm]
+      exact Finset.sum_congr rfl fun _ _ => by rw [norm_inner_symm]
     change (∑ i, ‖inner ℂ (b a) (x i)‖ ^ 2) ≤ 1
     rw [hb]
     exact (hx.sum_inner_products_le (b a)).trans_eq (by rw [b.norm_eq_one]; norm_num)
@@ -263,9 +261,8 @@ theorem sum_norm_sq_mulVecE_le_eigenvalue_head
     calc
       ∑ i, ∑ a, ‖inner ℂ (b a) (x i)‖ ^ 2 =
           ∑ i, ‖x i‖ ^ 2 := by
-            apply Finset.sum_congr rfl
-            intro i hi
-            exact b.sum_sq_norm_inner_right (x i)
+        exact Finset.sum_congr rfl fun i _ =>
+          b.sum_sq_norm_inner_right (x i)
       _ = r := by simp [hx.1]
   have hweighted := weighted_antitone_sum_le_head hr
     (fun a => hS.eigenvalues finrank_euclideanSpace a) w

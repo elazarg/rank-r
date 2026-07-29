@@ -166,7 +166,7 @@ theorem twoCopyScore_projWit_orthogonal {S : Finset U} {x₀ x₁ : V} (hx : x�
       = (1 - r * t) * hsNormSq (projWit S x₀ x₁) := by
   rw [twoCopyScore, hsNormSq_projWit, hsNormSq_ptraceU_projWit,
     hsNormSq_ptraceV_projWit, trace_projWit, if_neg hx, if_neg hx, hS]
-  simp
+  simp only [add_zero, map_zero, mul_zero]
   ring
 
 /-- The unrolled block-positivity condition for the symmetric two-copy score. -/
@@ -395,7 +395,7 @@ theorem asymmetricScore_projWit_orthogonal {S : Finset U} {x₀ x₁ : V}
       = (1 - r * a) * hsNormSq (projWit S x₀ x₁) := by
   rw [asymmetricScore, hsNormSq_projWit, hsNormSq_ptraceU_projWit,
     hsNormSq_ptraceV_projWit, trace_projWit, if_neg hx, if_neg hx, hS]
-  simp
+  simp only [mul_zero, sub_zero, map_zero, add_zero]
   ring
 
 /-- The traceful `b ≥ a` extremizer, obtained by exchanging the factors. -/
@@ -518,7 +518,8 @@ theorem regroupChoi_sub_left (A A' : Matrix (U × U) (U × U) ℂ)
     (B : Matrix (V × V) (V × V) ℂ) :
     regroupChoi (A - A') B = regroupChoi A B - regroupChoi A' B := by
   ext X Y
-  simp [regroupChoi, Matrix.sub_apply]
+  simp only [regroupChoi, Matrix.reindex_apply, Matrix.submatrix_apply,
+    Matrix.kroneckerMap_apply, Matrix.sub_apply]
   ring
 
 omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
@@ -526,7 +527,8 @@ theorem regroupChoi_sub_right (A : Matrix (U × U) (U × U) ℂ)
     (B B' : Matrix (V × V) (V × V) ℂ) :
     regroupChoi A (B - B') = regroupChoi A B - regroupChoi A B' := by
   ext X Y
-  simp [regroupChoi, Matrix.sub_apply]
+  simp only [regroupChoi, Matrix.reindex_apply, Matrix.submatrix_apply,
+    Matrix.kroneckerMap_apply, Matrix.sub_apply]
   ring
 
 omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
@@ -534,7 +536,8 @@ theorem regroupChoi_smul_left (c : ℂ) (A : Matrix (U × U) (U × U) ℂ)
     (B : Matrix (V × V) (V × V) ℂ) :
     regroupChoi (c • A) B = c • regroupChoi A B := by
   ext X Y
-  simp [regroupChoi]
+  simp only [regroupChoi, Matrix.reindex_apply, Matrix.submatrix_apply,
+    Matrix.kroneckerMap_apply, Matrix.smul_apply, smul_eq_mul]
   ring
 
 omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
@@ -542,7 +545,8 @@ theorem regroupChoi_smul_right (c : ℂ) (A : Matrix (U × U) (U × U) ℂ)
     (B : Matrix (V × V) (V × V) ℂ) :
     regroupChoi A (c • B) = c • regroupChoi A B := by
   ext X Y
-  simp [regroupChoi]
+  simp only [regroupChoi, Matrix.reindex_apply, Matrix.submatrix_apply,
+    Matrix.kroneckerMap_apply, Matrix.smul_apply, smul_eq_mul]
   ring
 
 /-- The one-factor maximally entangled vector. -/
@@ -823,7 +827,10 @@ theorem regroupChoi_one_one :
   ext X Y
   obtain ⟨⟨u, v⟩, u', v'⟩ := X
   obtain ⟨⟨w, x⟩, w', x'⟩ := Y
-  simp [regroupChoi, choiRegroupEquiv, Matrix.one_apply, Prod.ext_iff]
+  simp only [regroupChoi, choiRegroupEquiv, zero_mul, implies_true,
+    mul_zero, mul_one, Matrix.kroneckerMap_one_one,
+    Matrix.reindex_apply, Equiv.symm_mk, Equiv.coe_fn_mk,
+    Matrix.submatrix_apply, Matrix.one_apply, Prod.ext_iff]
   split_ifs <;> simp_all
 
 theorem re_qform_marginalChoiU (C : Matrix (U × V) (U × V) ℂ) :
@@ -864,7 +871,9 @@ theorem productReductionChoi_eq_asymmetricScoreOperator (a b : ℝ) :
     regroupChoi_one_one, regroupChoi_singleOmega_one,
     regroupChoi_one_singleOmega, regroupChoi_singleOmega_singleOmega]
   ext X Y
-  simp [asymmetricScoreOperator]
+  simp only [Complex.coe_smul, Matrix.sub_apply, Matrix.smul_apply,
+    Complex.real_smul, asymmetricScoreOperator, Complex.ofReal_mul,
+    Matrix.add_apply, smul_eq_mul]
   ring
 
 /-- `eq:q2-vectorization` and its asymmetric analogue in the coordinate

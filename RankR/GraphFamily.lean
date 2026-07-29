@@ -111,7 +111,8 @@ theorem hsInner_edgeKraus {p q : U × U} (hp : p.1 < p.2) (hq : q.1 < q.2) :
     exact absurd (h1 ▸ h2 ▸ hp) (asymm hq)
   by_cases hpq : p = q
   · subst hpq
-    simp [ne_of_lt hp]
+    simp only [↓reduceIte, mul_one, ne_of_lt hp, mul_ite, mul_zero,
+      ite_self, sub_zero]
     norm_num
   · have hne : ¬ (p.1 = q.1 ∧ p.2 = q.2) := fun h => hpq (Prod.ext h.1 h.2)
     rw [if_neg hpq]
@@ -204,7 +205,8 @@ theorem choiTwoBound_graphKraus {E : Finset (U × U)} (hE : ∀ p ∈ E, p.1 < p
     intro e
     rw [graphKraus, inner_vec_edgeKraus_eq, ← hw, inner_smul_left, norm_mul, mul_pow,
       Complex.normSq_eq_norm_sq, ← graphKraus]
-    simp [map_inv₀, map_ofNat]
+    simp only [map_inv₀, map_ofNat, norm_inv, Complex.norm_ofNat,
+      inv_pow]
     ring
   have hsum : ∑ e : {p : U × U // p ∈ E},
       Complex.normSq (inner ℂ (vec (graphKraus E e)) (vec M)) ≤ 4 * ‖w‖ ^ 2 := by
@@ -240,7 +242,9 @@ theorem hsInner_edgeKraus_sharpWit {p : U × U} (hp : p.1 < p.2) {a₀ a₁ : U}
     exact absurd (h1 ▸ h2 ▸ hp) (asymm ha)
   by_cases hpq : p = (a₀, a₁)
   · subst hpq
-    simp [ne_of_lt ha, Ne.symm (ne_of_lt ha)]
+    simp only [ne_of_lt ha, ↓reduceIte, Ne.symm (ne_of_lt ha),
+      mul_zero, mul_one, zero_sub, Fin.isValue, zero_ne_one, one_ne_zero,
+      mul_neg, neg_neg, map_one, sub_zero, map_neg, sub_neg_eq_add]
     norm_num
   · have h2 : ¬ (p.1 = a₀ ∧ p.2 = a₁) := fun h => hpq (Prod.ext h.1 h.2)
     rw [if_neg hpq]

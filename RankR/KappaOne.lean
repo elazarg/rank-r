@@ -103,7 +103,7 @@ theorem mulVecE_tensorFlip (x : EuclideanSpace ℂ (T × T)) (p : T × T) :
       rfl
   simp only [tensorFlip_apply, hiff, ite_mul, one_mul, zero_mul]
   rw [Finset.sum_ite_eq' Finset.univ (p.2, p.1) (fun q => x q)]
-  simp
+  simp only [Finset.mem_univ, ↓reduceIte]
 
 /-- The diagonal vector is fixed by the tensor flip. -/
 theorem mulVecE_tensorFlip_singleOmega :
@@ -136,7 +136,8 @@ theorem inner_singleOmegaVec_self :
       simp [singleOmegaVec_apply, hpq]
   rw [Finset.sum_congr rfl fun p _ =>
     Finset.sum_congr rfl fun q _ => hterm p q]
-  simp
+  simp only [Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte,
+    Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_one]
 
 /-- The maximally entangled rank-one operator has eigenvalue `card T` on its
 diagonal vector. -/
@@ -195,7 +196,8 @@ theorem mulVecE_correlatedSkew_of_flip_eq
     mulVecE (correlatedSkew (T := T)) x = (-1 / 2 : ℂ) • x := by
   rw [mulVecE_correlatedSkew, horth, zero_smul, zero_sub, hflip]
   ext p
-  simp
+  simp only [one_div, smul_neg, PiLp.neg_apply, PiLp.smul_apply,
+    smul_eq_mul]
   ring
 
 /-- On the flip-antisymmetric subspace, which is automatically orthogonal to
@@ -320,7 +322,7 @@ theorem hsInner_singleOmegaChoi_self :
       = ((Fintype.card T : ℝ) ^ 2 : ℂ) := by
   rw [singleOmegaChoi, hsInner_rankOne,
     inner_singleOmegaVec_self]
-  simp
+  simp only [map_natCast, Complex.ofReal_natCast]
   ring
 
 /-- The flip and the maximally entangled rank-one operator have
@@ -371,10 +373,9 @@ theorem hsNormSq_correlatedSkew :
 /-- The correlated skew sum belongs to `so(T) ⊗ so(T)`. -/
 theorem correlatedSkew_mem_doubleSkew :
     correlatedSkew (T := T) ∈ doubleSkew T T := by
-  apply Submodule.smul_mem
-  apply Submodule.sum_mem
-  intro p _
-  exact kron_mem_doubleSkew (skewUnit_isSkew _ _) (skewUnit_isSkew _ _)
+  exact Submodule.smul_mem _ _
+    (Submodule.sum_mem _ fun _ _ =>
+      kron_mem_doubleSkew (skewUnit_isSkew _ _) (skewUnit_isSkew _ _))
 
 /-- The exact level-one ratio attained by the correlated skew witness.  This
 is the witness identity underlying the manuscript's lower bound

@@ -41,12 +41,14 @@ theorem choiOf_normalizedSkewKraus :
       rw [Finset.mul_sum]
       apply Finset.sum_congr rfl
       intro f _
-      simp [map_inv₀, map_ofNat]
+      simp only [one_div, vec_apply, map_inv₀, map_ofNat]
       ring
     _ = (4 : ℂ) • (Qm : Matrix (Idx U V) (Idx U V) ℂ) := by
       rw [choiOf_skewKraus]
       ext X Y
-      simp
+      simp only [one_div, Matrix.smul_apply, Qm_apply, smul_eq_mul,
+        ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+        mul_inv_cancel_left₀]
       ring
 
 omit [Fintype U] [Fintype V] in

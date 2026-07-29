@@ -144,7 +144,8 @@ def rookAdjacentPairsEquivCoordinates (q : ℕ) :
     (rookDiagonalPairs q).card = q * q := by
   rw [← Fintype.card_coe,
     Fintype.card_congr (rookDiagonalPairsEquiv q)]
-  simp [RookVertex]
+  simp only [RookVertex, Fintype.card_lex, Fintype.card_prod,
+    Fintype.card_fin]
 
 @[simp] theorem card_rookAdjacentPairs (q : ℕ) :
     (rookAdjacentPairs q).card = q * q * (2 * (q - 1)) := by
@@ -246,7 +247,8 @@ theorem finrank_rookAmbientMatrix (q : ℕ) :
         (Matrix (RookVertex q × Fin 2) (RookVertex q × Fin 2) ℂ)
       = 4 * q ^ 4 := by
   rw [Module.finrank_matrix]
-  simp [RookVertex]
+  simp only [Fintype.card_prod, Fintype.card_lex, Fintype.card_fin,
+    Module.finrank_self, mul_one]
   ring
 
 /-- Removing the identity coordinate from the full matrix dimension gives the

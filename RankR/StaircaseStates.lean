@@ -216,9 +216,7 @@ theorem staircaseWitness_isHermitian (k : ℝ) :
     rw [Matrix.IsHermitian, Matrix.conjTranspose_kronecker,
       (staircaseWitnessFactor_isHermitian k).eq,
       (staircaseWitnessFactor_isHermitian k).eq]
-  apply hkr.smul
-  change conj (k : ℂ) = (k : ℂ)
-  exact Complex.conj_ofReal k
+  exact hkr.smul (Complex.conj_ofReal k)
 
 theorem staircaseWitnessAcrossCut_isHermitian (k : ℝ) :
     (staircaseWitnessAcrossCut (U := U) (V := V) k).IsHermitian :=
@@ -277,11 +275,8 @@ theorem staircaseOmegaProduct_isHermitian :
 
 theorem staircaseUnprotectedWitness_isHermitian (k : ℝ) :
     (staircaseUnprotectedWitness (U := U) (V := V) k).IsHermitian := by
-  apply Matrix.IsHermitian.add (staircaseWitness_isHermitian k)
-  apply staircaseOmegaProduct_isHermitian.smul
-  change conj ((((k - 1) / k : ℝ) : ℂ)) =
-    ((((k - 1) / k : ℝ) : ℂ))
-  exact Complex.conj_ofReal _
+  exact Matrix.IsHermitian.add (staircaseWitness_isHermitian k)
+    (staircaseOmegaProduct_isHermitian.smul (Complex.conj_ofReal _))
 
 theorem hsInner_staircaseWitnessFactor_isotropicState
     {T : Type*} [Fintype T] [DecidableEq T]
@@ -665,12 +660,10 @@ theorem not_schmidtNumberLE_ptraceV_staircaseState_of_marginal_lt
     ¬ SchmidtNumberLE k
       (ptraceV (staircaseState (U := U) (V := V) s p)) := by
   rw [ptraceV_staircaseState hV]
-  apply not_schmidtNumberLE_isotropicState_of_ratio_lt hU hk
-  apply
-    (staircasePMarginal_lt_iff_fidelity_gt
+  exact not_schmidtNumberLE_isotropicState_of_ratio_lt hU hk
+    ((staircasePMarginal_lt_iff_fidelity_gt
       (m := (Fintype.card U : ℝ)) (s := s) (k := (k : ℝ)) (p := p)
-      (by exact_mod_cast hU) (by exact_mod_cast hk) hks).mp
-  exact hp
+      (by exact_mod_cast hU) (by exact_mod_cast hk) hks).mp hp)
 
 /-- The other marginal of the noisy family. -/
 theorem ptraceU_staircaseState
