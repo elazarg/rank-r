@@ -318,6 +318,14 @@ Proposition 2.2. -/
 #guard_msgs in
 #print axioms operatorIneq_of_choiTwoBound
 
+/-- info: 'RankR.qform_HopScaled_param' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_HopScaled_param
+
+/-- info: 'RankR.rank_r_partial_trace_exact_of_betaTwo' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rank_r_partial_trace_exact_of_betaTwo
+
 /-- info: 'RankR.operatorIneq_of_FGP' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms operatorIneq_of_FGP

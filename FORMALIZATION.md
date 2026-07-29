@@ -44,7 +44,7 @@ mathematically standard but is not packaged as an abstract Schmidt-rank type.
 | strictness below the rank parameter and equality forcing exact rank | **Checked** | `rank_r_partial_trace_strict`, `rank_eq_of_eq_rank_r_partial_trace` |
 | optimal coefficients and displayed extremizers | **Checked** for coordinate-basis witnesses | `projWit_bound_eq`, `le_coeff_hsNormSq_of_bound`, `inv_le_coeff_trace_of_bound`; arbitrary unit `v,w` identities are not separately formalized because the basis cases already certify optimality |
 | covariance classification in `rem:covariance` | **Open formalization** | no representation-theoretic commutant layer; the manuscript claim is restricted to Hermitian sesquilinear degree-`(1,1)` forms |
-| parameterized partial-trace inequality `eq:main-bound-parametrized` | **Open formalization** | the generic lifting is checked, but the contraction layer is composed only at the concrete double-skew constant |
+| parameterized partial-trace inequality `eq:main-bound-parametrized` | **Checked** | `rank_r_partial_trace_exact_of_betaTwo`; `qform_HopScaled_param` composes the generic Choi constant with the double-skew contraction identity |
 | even higher-copy alternating marginal inequality in `rem:scope` | **Conditional** | parity and the generic pair lift are checked; the constants `beta_2(Λ^{⊗2m})` are unknown for `m ≥ 2` |
 
 ### Applications

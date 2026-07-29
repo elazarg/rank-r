@@ -2683,6 +2683,8 @@ $\Delta_{U\otimes V}=\Delta_U\otimes\Delta_V$ & \texttt{RU\_zero\_RV\_zero}\\
 \cref{eq:rank-monotonicity} & \texttt{rank\_mono}\\
 strict case of \cref{eq:rank-monotonicity} & \texttt{rank\_mono\_strict}\\
 \cref{eq:main-bound-exact-rank} & \texttt{rank\_r\_partial\_trace\_exact}\\
+\cref{eq:main-bound-parametrized}
+  & \texttt{rank\_r\_partial\_trace\_exact\_of\_betaTwo}\\
 strictness for $\rank C<r$ & \texttt{rank\_r\_partial\_trace\_strict}\\
 equality forces $\rank C=r$ & \texttt{rank\_eq\_of\_eq\_rank\_r}\\
  & \texttt{\_partial\_trace}\\
@@ -2779,8 +2781,9 @@ introduction.
 \paragraph{Constants pinned, not merely bounded.}
 \texttt{ChoiTwoBound} is an upper bound, and monotone in its constant: it holds
 at $10^6$ whenever it holds at all.  On its own, therefore, it names no number,
-and the development as described so far certifies \cref{eq:beta2-double-skew}
-only as an inequality.  \texttt{Sharp.lean} supplies the other half.  It adds the
+and the theorems stated only with \texttt{ChoiTwoBound} certify
+\cref{eq:beta2-double-skew} only as an inequality.
+\texttt{Sharp.lean} supplies the other half.  It adds the
 dual predicate \texttt{ChoiTwoAttained} --- the bound met with equality at some
 nonzero operator of rank at most two --- together with the leastness principle
 the pair generates, \texttt{le\_of\_choiTwoAttained}, and then exhibits an
@@ -2842,7 +2845,7 @@ duality appear nowhere in the development, so
 arguments in \cref{cor:exact-schmidt-number,cor:explicit-witnesses}, and the
 results of \cref{app:gram,app:generic}, are likewise not covered.
 
-\Cref{thm:amplification} \emph{is} covered, in all four operator forms and for
+\Cref{thm:amplification} is covered, in all four operator forms and for
 an arbitrary Kraus family: \texttt{Choi.lean} carries
 \cref{eq:kraus-cauchy-schwarz} with $(\Phi,\beta_2)$ abstract and
 \texttt{Lifting.lean} carries
@@ -2851,13 +2854,16 @@ as \texttt{qform\_krausQ\_Pneg\_le\_of\_norm},
 \texttt{qform\_krausQ\_Pneg\_le},
 \texttt{qform\_krausQ\_ptransposeUV\_ge\_of\_norm} and
 \texttt{qform\_krausQ\_ptransposeUV\_ge}, the transpose-symmetry hypothesis
-appearing in exactly the second and fourth.  The partial-trace conclusions are
-\emph{not} covered at general $\beta_2$: the formal counterparts of
-\cref{thm:rank_r} are stated for the double-skew family at the value
-$\beta_2=1$, and \cref{eq:main-bound-parametrized} is not formalized, the
-contraction \cref{eq:Phi-rhoT} being specific to that family.  What is abstract
-is the lifting layer, where $\Phi=\Lambda_U\otimes\Lambda_V$ enters only through
-\cref{eq:beta2-double-skew}.  \Cref{thm:pair-amplification} \emph{is} covered at
+appearing in exactly the second and fourth.  For the double-skew family, the
+constant remains free through the contraction layer:
+\texttt{qform\_HopScaled\_param} and
+\texttt{rank\_r\_partial\_trace\_exact\_of\_betaTwo} formalize
+\cref{eq:main-bound-parametrized}.  This partial-trace conclusion is not a
+statement for an arbitrary $\Phi$, because the contraction
+\cref{eq:Phi-rhoT} is specific to $\Lambda_U\otimes\Lambda_V$.  The lifting
+layer is abstract, and $\Phi=\Lambda_U\otimes\Lambda_V$ enters its application
+through \cref{eq:beta2-double-skew} and that contraction identity.
+\Cref{thm:pair-amplification} is covered at
 general $\beta_2$, as \texttt{thetaPositive\_of\_choiTwoBound}: writing
 $\Theta^\Phi_{R,\lambda}$ for $\Phi\circ\tau+\lambda(\Delta_d-\frac1R\id)$ and
 taking $R$-positivity in its Choi form, that map is $R$-positive at

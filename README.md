@@ -272,7 +272,7 @@ revision.
 | `MapId` | `Δ` monoidal, `(Λ_U⊗Λ_V)∘τ = S_U⊗S_V`, and **the map identity** `Ψ_r = r·R_{−1/r}⊗R_{−1/r}` |
 | `Bessel`, `Restrict` | Bessel duality, and its sharpening on `δ_e^⊥` |
 | `Lifting` | **Lifting II** in both operator forms, for an arbitrary Kraus family and sharpened on `δ_e` for a frame-symmetric one |
-| `Theorem` | Proposition 2.2 and Theorem 1.1 given the rank-two Choi bound |
+| `Theorem` | the parameterized double-skew contraction, Proposition 2.2, and Theorem 1.1 given the rank-two Choi bound |
 | `Antisym`, `FGP`, `Extend` | the antisymmetrizer, and the bridge from Fu–Gao–Park's published statement (outside the critical path) |
 | `Optimal` | the extremizer, and optimality of the coefficients `r`, `1/r` |
 | `OneSided` | HS submultiplicativity, and `lem:one-sided-partial-trace` |
