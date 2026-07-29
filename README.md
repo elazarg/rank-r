@@ -128,13 +128,16 @@ classifications; and the rank-sensitive estimate used by the Kronecker-sum
 corollary. `RankR/Applications/Kronecker/Inequality.lean` proves the exact Kronecker pairing, centered
 Cauchy--Schwarz identity, both branches of the minimum, and the resulting
 rank-constrained Frobenius test-supremum bound.
-`RankR/Applications/Kronecker/KyFan.lean` proves the
-reusable equality `KyFanFrobeniusDuality` by finite spectral majorization and
-an explicit optimal rank-constrained test matrix, then derives the literal
-singular-value conclusion. `RankR/Applications/TraceDistance/Main.lean` adds the finite mixed-state
-Schmidt-number cone and proves the quantitative trace-distance corollary using
-the Hermitian trace norm (the sum of absolute eigenvalues), including the exact
-witness spectral diameter. `SchmidtWitness.lean` gives an explicit rank-four
+`RankR/Applications/Kronecker/KyFan.lean` proves
+`KyFanFrobeniusDuality` by finite spectral majorization and an explicit optimal
+rank-constrained test matrix, then derives the literal singular-value
+conclusion. The mixed-state cone, Hermitian trace norm, and centered-witness
+duality are in `RankR/Library/Quantum/SchmidtNumber.lean`,
+`RankR/Library/Matrix/HermitianTraceNorm.lean`, and
+`RankR/Library/Quantum/WitnessDistance.lean`.
+`RankR/Applications/TraceDistance/Main.lean` specializes them to the
+two-copy reduction witness and computes its exact spectral diameter.
+`SchmidtWitness.lean` gives an explicit rank-four
 pure-state decomposition of positive scalar multiples of the
 double-antisymmetric projection, proves the rank-two witness and its mixed-state
 inequality, proves the rank-three projection bound and witness, derives exact
@@ -323,10 +326,11 @@ The source tree follows the same top-level distinction:
 | `RankR/Companions/` | graph, higher-arity, higher-Choi, staircase, and rigidity projects |
 | `RankR/Verification/` | executable audits, separate from mathematical entry points |
 
-Imports are one-way: Library does not import Core, Applications, or Companions;
-Core does not import Applications or Companions. The generic pair theorem is in
-`RankR/Core/Amplification/Pair.lean`; the graph threshold is its client in
-`RankR/Companions/Graph/PairBound.lean`.
+Imports are one-way through the mathematical layers: Library does not import
+Core, Applications, or Companions, and Core does not import Applications or
+Companions. Companion developments may import a main-paper application they
+extend. The generic pair theorem is in `RankR/Core/Amplification/Pair.lean`;
+the graph threshold is its client in `RankR/Companions/Graph/PairBound.lean`.
 
 The seam is the predicate `ChoiTwoBound (choiOf A) β`. The amplification layer
 uses only that rank-two constant and frame symmetry. The double-skew layer

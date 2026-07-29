@@ -11,7 +11,6 @@ import RankR.Companions.Graph.Threshold
 import RankR.Companions.HigherArity.Amplification
 import RankR.Companions.HigherArity.DoubleSkew
 import RankR.Companions.HigherArity.Exterior
-import RankR.Companions.HigherChoi.Action
 import RankR.Companions.HigherChoi.KappaOne
 import RankR.Companions.HigherChoi.Sharp
 import RankR.Companions.Rigidity

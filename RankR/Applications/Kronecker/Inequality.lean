@@ -9,8 +9,8 @@ of the rank-k Frobenius test supremum with the sum of the first k squared
 singular values is isolated as `KyFanFrobeniusDuality` and proved in
 `KyFanDuality.lean`.
 -/
-import RankR.Applications.Reduction.Main
-import RankR.Companions.Graph.Family
+import RankR.Core.PartialTrace.Centered
+import RankR.Library.Matrix.Tensor
 import Mathlib.Analysis.InnerProductSpace.SingularValues
 
 namespace RankR
@@ -56,87 +56,11 @@ theorem hsInner_kronecker_one_left
     _ = ∑ b, ∑ b', ∑ a, conj (C (a, b) (a, b')) * B b b' := by
       exact Finset.sum_congr rfl fun _ _ => Finset.sum_comm
 
-omit [DecidableEq U] [DecidableEq V] in
-/-- Taking either partial trace preserves the full trace. -/
-theorem trace_ptraceV (C : Matrix (U × V) (U × V) ℂ) :
-    (ptraceV C).trace = C.trace := by
-  simp [Matrix.trace, Fintype.sum_prod_type]
-
-omit [DecidableEq U] [DecidableEq V] in
-/-- Taking either partial trace preserves the full trace. -/
-theorem trace_ptraceU (C : Matrix (U × V) (U × V) ℂ) :
-    (ptraceU C).trace = C.trace := by
-  simp only [Matrix.trace, Matrix.diag_apply, ptraceU_apply, Fintype.sum_prod_type]
-  exact Finset.sum_comm
-
-omit [Fintype U] [DecidableEq U] [DecidableEq V] in
-/-- The partial trace of a Kronecker product is the trace of the contracted
-factor times the surviving factor. -/
-theorem ptraceV_kronecker
-    (A : Matrix U U ℂ) (B : Matrix V V ℂ) :
-    ptraceV (A ⊗ₖ B) = B.trace • A := by
-  ext i j
-  simp only [ptraceV_apply, Matrix.kroneckerMap_apply,
-    Matrix.smul_apply, smul_eq_mul, Matrix.trace, Matrix.diag_apply]
-  rw [Finset.sum_mul]
-  apply Finset.sum_congr rfl
-  intro x _
-  ring
-
-omit [Fintype V] [DecidableEq U] [DecidableEq V] in
-/-- The other partial trace of a Kronecker product. -/
-theorem ptraceU_kronecker
-    (A : Matrix U U ℂ) (B : Matrix V V ℂ) :
-    ptraceU (A ⊗ₖ B) = A.trace • B := by
-  ext i j
-  simp only [ptraceU_apply, Matrix.kroneckerMap_apply,
-    Matrix.smul_apply, smul_eq_mul, Matrix.trace, Matrix.diag_apply]
-  rw [Finset.sum_mul]
-
-omit [Fintype U] [DecidableEq U] [DecidableEq V] in
-theorem ptraceV_add
-    (A B : Matrix (U × V) (U × V) ℂ) :
-  ptraceV (A + B) = ptraceV A + ptraceV B := by
-  ext i j
-  simp [Finset.sum_add_distrib]
-
-omit [Fintype U] [DecidableEq U] [DecidableEq V] in
-theorem ptraceV_smul
-    (c : ℂ) (A : Matrix (U × V) (U × V) ℂ) :
-  ptraceV (c • A) = c • ptraceV A := by
-  ext i j
-  simp [Finset.mul_sum]
-
-omit [Fintype V] [DecidableEq U] [DecidableEq V] in
-theorem ptraceU_add
-    (A B : Matrix (U × V) (U × V) ℂ) :
-  ptraceU (A + B) = ptraceU A + ptraceU B := by
-  ext i j
-  simp [Finset.sum_add_distrib]
-
-omit [Fintype V] [DecidableEq U] [DecidableEq V] in
-theorem ptraceU_smul
-    (c : ℂ) (A : Matrix (U × V) (U × V) ℂ) :
-  ptraceU (c • A) = c • ptraceU A := by
-  ext i j
-  simp [Finset.mul_sum]
-
 end Pairing
 
 section Centering
 
 variable {D : Type*} [Fintype D] [DecidableEq D]
-
-/-- The identity is the trace functional in the first Hilbert--Schmidt slot. -/
-theorem hsInner_one_left (X : Matrix D D ℂ) :
-    hsInner (1 : Matrix D D ℂ) X = X.trace := by
-  simp [hsInner]
-
-/-- The identity is the conjugate trace functional in the second
-Hilbert--Schmidt slot. -/
-theorem hsInner_one_right (X : Matrix D D ℂ) :
-    hsInner X (1 : Matrix D D ℂ) = conj X.trace := by
-  simp [hsInner, Matrix.trace_conjTranspose, RCLike.star_def]
 
 /-- The squared Hilbert--Schmidt norm of the identity is the dimension. -/
 theorem hsNormSq_one :

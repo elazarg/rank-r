@@ -8,7 +8,10 @@ state formulas, their moments, and the moment-uniqueness argument used by the
 Schmidt-staircase note.
 -/
 import RankR.Companions.HigherChoi.KappaOne
-import RankR.Applications.Kronecker.Inequality
+import RankR.Library.Matrix.Tensor
+import RankR.Library.Quantum.Isotropic
+import RankR.Library.Quantum.Reduction
+import RankR.Library.Quantum.SchmidtNumber
 
 namespace RankR
 

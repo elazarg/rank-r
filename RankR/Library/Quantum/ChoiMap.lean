@@ -2,11 +2,12 @@
 Finite-coordinate Choi matrices and product-register regrouping.
 -/
 import RankR.Library.Quantum.BlockPositive
+import Mathlib.Analysis.Matrix.Order
 
 namespace RankR
 
 open Matrix
-open scoped Kronecker
+open scoped ComplexOrder Kronecker
 
 section Regroup
 
@@ -42,6 +43,22 @@ theorem regroupChoi_sub_right (A : Matrix (U × U) (U × U) ℂ)
     Matrix.kroneckerMap_apply, Matrix.sub_apply]
   ring
 
+theorem regroupChoi_add_left (A A' : Matrix (U × U) (U × U) ℂ)
+    (B : Matrix (V × V) (V × V) ℂ) :
+    regroupChoi (A + A') B = regroupChoi A B + regroupChoi A' B := by
+  ext X Y
+  simp only [regroupChoi, Matrix.reindex_apply, Matrix.submatrix_apply,
+    Matrix.kroneckerMap_apply, Matrix.add_apply]
+  ring
+
+theorem regroupChoi_add_right (A : Matrix (U × U) (U × U) ℂ)
+    (B B' : Matrix (V × V) (V × V) ℂ) :
+    regroupChoi A (B + B') = regroupChoi A B + regroupChoi A B' := by
+  ext X Y
+  simp only [regroupChoi, Matrix.reindex_apply, Matrix.submatrix_apply,
+    Matrix.kroneckerMap_apply, Matrix.add_apply]
+  ring
+
 theorem regroupChoi_smul_left (c : ℂ) (A : Matrix (U × U) (U × U) ℂ)
     (B : Matrix (V × V) (V × V) ℂ) :
     regroupChoi (c • A) B = c • regroupChoi A B := by
@@ -57,6 +74,16 @@ theorem regroupChoi_smul_right (c : ℂ) (A : Matrix (U × U) (U × U) ℂ)
   simp only [regroupChoi, Matrix.reindex_apply, Matrix.submatrix_apply,
     Matrix.kroneckerMap_apply, Matrix.smul_apply, smul_eq_mul]
   ring
+
+variable [Fintype U] [Fintype V]
+
+/-- Regrouping a Kronecker product preserves positive semidefiniteness. -/
+theorem regroupChoi_posSemidef
+    {A : Matrix (U × U) (U × U) ℂ} {B : Matrix (V × V) (V × V) ℂ}
+    (hA : A.PosSemidef) (hB : B.PosSemidef) :
+    (regroupChoi A B).PosSemidef := by
+  rw [regroupChoi, Matrix.reindex_apply]
+  exact hA.kronecker hB |>.submatrix _
 
 end Regroup
 

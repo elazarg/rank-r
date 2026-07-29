@@ -12,6 +12,7 @@ import Mathlib.LinearAlgebra.Matrix.Rank
 namespace RankR
 
 open Matrix Finset ComplexConjugate
+open scoped Kronecker
 
 /-! ## Vectorization is linear
 
@@ -301,5 +302,32 @@ theorem hsNormSq_pos {A : Matrix m n ℂ} (hA : A ≠ 0) : 0 < hsNormSq A := by
     have := congrFun (congrArg (WithLp.ofLp) h) (i, j)
     simpa using this)
   exact pow_pos (norm_pos_iff.mpr hv) 2
+
+section Pairings
+
+variable {W : Type*} [Fintype W] [DecidableEq W]
+
+/-- The Hilbert--Schmidt pairing of two elementary matrix units. -/
+theorem hsInner_single (a b c d : W) :
+    hsInner (Matrix.single a b (1 : ℂ)) (Matrix.single c d 1)
+      = (if a = c then (1 : ℂ) else 0) * (if b = d then 1 else 0) := by
+  rw [hsInner_eq_sum_vec, Fintype.sum_prod_type]
+  simp only [vec_apply, Matrix.single_apply, ite_and, apply_ite (starRingEnd ℂ),
+    map_one, map_zero, ite_mul, zero_mul, mul_ite, mul_zero]
+  by_cases hac : a = c <;> by_cases hbd : b = d <;> simp [hac, hbd]
+
+end Pairings
+
+section Kronecker
+
+variable {U V : Type*} [Fintype U] [Fintype V]
+
+/-- The Hilbert--Schmidt inner product is multiplicative on Kronecker products. -/
+theorem hsInner_kron (A C : Matrix U U ℂ) (B D : Matrix V V ℂ) :
+    hsInner (A ⊗ₖ B) (C ⊗ₖ D) = hsInner A C * hsInner B D := by
+  rw [hsInner, hsInner, hsInner, Matrix.conjTranspose_kronecker, ← Matrix.mul_kronecker_mul,
+    Matrix.trace_kronecker]
+
+end Kronecker
 
 end RankR

@@ -11,6 +11,7 @@ two tensor factors.  The unnormalized diagonal vector used below turns
 `d |ω⟩⟨ω|` into `singleOmegaChoi`.
 -/
 import RankR.Companions.HigherChoi.Sharp
+import RankR.Library.Quantum.MaximallyEntangled
 
 namespace RankR
 

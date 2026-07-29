@@ -38,15 +38,6 @@ section Pairing
 
 variable {W : Type*} [Fintype W] [DecidableEq W]
 
-/-- `hsInner` of two elementary matrix units. -/
-theorem hsInner_single (a b c d : W) :
-    hsInner (Matrix.single a b (1 : ℂ)) (Matrix.single c d 1)
-      = (if a = c then (1 : ℂ) else 0) * (if b = d then 1 else 0) := by
-  rw [hsInner_eq_sum_vec, Fintype.sum_prod_type]
-  simp only [vec_apply, Matrix.single_apply, ite_and, apply_ite (starRingEnd ℂ),
-    map_one, map_zero, ite_mul, zero_mul, mul_ite, mul_zero]
-  by_cases hac : a = c <;> by_cases hbd : b = d <;> simp [hac, hbd]
-
 /-- **The elementary skew matrices are Frobenius-orthogonal**, with squared norm
 `2`.  Reading it at `(a, b) = (c, d)` gives `‖skewUnit a b‖₂² = 2` for `a ≠ b`;
 reading it at an unordered pair met in the opposite order gives `-2`; and any two
@@ -59,22 +50,6 @@ theorem hsInner_skewUnit (a b c d : W) :
   ring
 
 end Pairing
-
-/-! ## The Kronecker factorization of `hsInner` -/
-
-section Kron
-
-variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
-
-omit [DecidableEq U] [DecidableEq V] in
-/-- `⟪A ⊗ B, C ⊗ D⟫ = ⟪A, C⟫ ⟪B, D⟫`: the Hilbert-Schmidt inner product is
-multiplicative on elementary tensors. -/
-theorem hsInner_kron (A C : Matrix U U ℂ) (B D : Matrix V V ℂ) :
-    hsInner (A ⊗ₖ B) (C ⊗ₖ D) = hsInner A C * hsInner B D := by
-  rw [hsInner, hsInner, hsInner, Matrix.conjTranspose_kronecker, ← Matrix.mul_kronecker_mul,
-    Matrix.trace_kronecker]
-
-end Kron
 
 /-! ## The edge family -/
 

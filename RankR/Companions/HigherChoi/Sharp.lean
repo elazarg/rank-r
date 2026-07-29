@@ -11,7 +11,9 @@ handles `k = 3`; and one full elementary double-skew tensor, of rank at most
 four, handles every `k ≥ 4`.  Thus the valid constants are exactly the
 reals above `min(1,4/k)`.
 -/
-import RankR.Applications.SchmidtWitness
+import RankR.Core.DoubleSkew.Rank
+import RankR.Core.DoubleSkew.Action
+import RankR.Core.DoubleSkew.Sharp
 
 namespace RankR
 

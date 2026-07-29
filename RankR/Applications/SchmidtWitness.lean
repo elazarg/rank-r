@@ -15,67 +15,20 @@ The `k = 3` projection `S(k)` bound invoked from Johnston--Kribs in
 `cor:exact-schmidt-number` follows here from the level-three double-skew action
 bound by a projection-duality argument.
 -/
-import RankR.Applications.TraceDistance.Main
 import RankR.Core.DoubleSkew.Choi
-import RankR.Companions.HigherChoi.Action
+import RankR.Core.DoubleSkew.Action
+import RankR.Core.DoubleSkew.Rank
 import RankR.Core.DoubleSkew.Sharp
+import RankR.Library.Quantum.SchmidtNumber
 
 namespace RankR
 
 open Matrix Finset ComplexConjugate
 open scoped Kronecker
 
-/-! ## A rank-four pure-state decomposition of `Qm` -/
-
-section SkewRank
-
-variable {W : Type*} [DecidableEq W]
-
-/-- The two-column factor carrying the range of an elementary skew matrix. -/
-noncomputable def skewUnitLeft (a b : W) : Matrix W (Fin 2) ℂ :=
-  Matrix.of fun p i => ![eBasis a p, -(eBasis b p)] i
-
-/-- The two-row factor carrying the covectors of an elementary skew matrix. -/
-noncomputable def skewUnitRight (a b : W) : Matrix (Fin 2) W ℂ :=
-  Matrix.of fun i q => ![conj (eBasis b q), conj (eBasis a q)] i
-
-/-- Every elementary skew matrix factors through a two-dimensional space,
-including the degenerate case `a = b`. -/
-theorem skewUnit_eq_mul (a b : W) :
-    skewUnit a b = skewUnitLeft a b * skewUnitRight a b := by
-  by_cases hab : a = b
-  · subst b
-    ext p q
-    simp only [skewUnit, skewUnitLeft, skewUnitRight, Matrix.mul_apply,
-      Matrix.single_apply, Fin.sum_univ_two, Matrix.sub_apply, Matrix.of_apply,
-      Matrix.cons_val_zero, Matrix.cons_val_one, eBasis_apply,
-      apply_ite (starRingEnd ℂ), map_one, map_zero]
-    by_cases hqa : q = a <;> by_cases hpa : p = a <;> simp [hqa, hpa]
-  · ext p q
-    simp only [skewUnit, skewUnitLeft, skewUnitRight, Matrix.mul_apply,
-      Matrix.single_apply, Fin.sum_univ_two, Matrix.sub_apply, Matrix.of_apply,
-      Matrix.cons_val_zero, Matrix.cons_val_one, eBasis_apply,
-      apply_ite (starRingEnd ℂ), map_one, map_zero]
-    by_cases hpa : p = a <;> by_cases hqb : q = b <;> by_cases hpb : p = b <;>
-      by_cases hqa : q = a <;> simp_all [eq_comm]
-
-end SkewRank
-
 section DoubleSkewDecomposition
 
 variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
-
-/-- Every elementary double-skew Kraus operator has matrix rank at most four.
-The proof is the tensor product of the two explicit two-dimensional
-factorizations above. -/
-theorem rank_smul_skewKraus_le_four (c : ℂ) (f : KIdx U V) :
-    (c • skewKraus f).rank ≤ 4 := by
-  rw [skewKraus, skewUnit_eq_mul, skewUnit_eq_mul, Matrix.mul_kronecker_mul,
-    ← Matrix.smul_mul]
-  exact (Matrix.rank_mul_le_left _ _).trans (by
-    simpa only [Fintype.card_prod, Fintype.card_fin, Nat.reduceMul] using
-      Matrix.rank_le_card_width
-        (c • (skewUnitLeft f.1.1 f.1.2 ⊗ₖ skewUnitLeft f.2.1 f.2.2)))
 
 /-- The scaled redundant double-skew Kraus family whose pure projectors sum to
 `Qm`. -/

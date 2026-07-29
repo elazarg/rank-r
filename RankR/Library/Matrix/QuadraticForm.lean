@@ -2,10 +2,12 @@
 Quadratic forms of finite complex matrices.
 -/
 import RankR.Library.Matrix.Elementary
+import Mathlib.Analysis.Matrix.Order
 
 namespace RankR
 
 open Matrix Finset ComplexConjugate
+open scoped ComplexOrder
 
 variable {W : Type*} [Fintype W]
 
@@ -77,5 +79,15 @@ theorem qform_rankOne (y x : EuclideanSpace ℂ W) :
     exact Finset.sum_congr rfl fun p _ => by
       rw [RCLike.inner_apply', map_mul, Complex.conj_conj]; ring
   rw [h1, h2, Complex.normSq_eq_conj_mul_self]
+
+/-- Positive semidefiniteness implies nonnegativity of the real quadratic
+form. -/
+theorem qform_re_nonneg_of_posSemidef
+    {A : Matrix W W ℂ} (hA : A.PosSemidef) (x : EuclideanSpace ℂ W) :
+    0 ≤ (qform A x).re := by
+  have hq : 0 ≤ qform A x := by
+    have h := hA.dotProduct_mulVec_nonneg (x : W → ℂ)
+    simpa [qform, dotProduct, Matrix.mulVec, Finset.mul_sum, mul_assoc] using h
+  exact (Complex.nonneg_iff.mp hq).1
 
 end RankR

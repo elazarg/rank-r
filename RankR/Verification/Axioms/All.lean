@@ -29,7 +29,7 @@ import RankR.Core.PartialTrace.Optimality
 import RankR.Core.PartialTrace.OneSided
 import RankR.Core.PartialTrace.Main
 import RankR.Core.DoubleSkew.SeedBound
-import RankR.Companions.HigherChoi.Action
+import RankR.Core.DoubleSkew.Action
 import RankR.Companions.HigherArity.Exterior
 import RankR.Companions.HigherArity.Amplification
 import RankR.Companions.Graph.Family

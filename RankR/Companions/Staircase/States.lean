@@ -10,6 +10,7 @@ Schmidt cut, and the exact boundary operator equality.  It does not assert that
 the algebraic product-isotropic space is the range of a Haar twirl, or that the
 twirl preserves Schmidt number.
 -/
+import RankR.Applications.Reduction.Main
 import RankR.Companions.Staircase.ProductIsotropic
 import RankR.Companions.Staircase.Scalar
 

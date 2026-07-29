@@ -2914,10 +2914,14 @@ rank-sensitive estimate
 pairing \cref{eq:kronecker-pairing}, the centered Cauchy--Schwarz step
 \cref{eq:kronecker-CS}, the full Frobenius branch, both entries of the minimum,
 and the resulting normalized rank-constrained Frobenius test-supremum bound.
-\texttt{RankR/Applications/TraceDistance/Main.lean} defines
-Schmidt number at most $r$ by a finite sum of rank-constrained pure-state
-projectors, proves that block positivity extends to this cone, derives
-Hermitian trace-norm duality from the spectral theorem, and proves both the
+\texttt{RankR/Library/Quantum/SchmidtNumber.lean} defines Schmidt number at
+most $r$ by a finite sum of rank-constrained pure-state projectors and proves
+that block positivity extends to this cone.
+\texttt{RankR/Library/Matrix/HermitianTraceNorm.lean} and
+\texttt{RankR/Library/Quantum/WitnessDistance.lean} derive Hermitian
+trace-norm duality from the spectral theorem and the centered-witness
+separation bound.
+\texttt{RankR/Applications/TraceDistance/Main.lean} proves the two-copy
 spectral diameter and the pointwise form of
 \cref{cor:two-copy-trace-distance}.  The pointwise statement for every
 admissible $\sigma$ is equivalent to the displayed infimum bound.
