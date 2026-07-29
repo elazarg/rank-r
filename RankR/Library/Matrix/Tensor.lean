@@ -72,21 +72,4 @@ theorem ptraceU_kronecker
 
 end PartialTrace
 
-section Identity
-
-variable {D : Type*} [Fintype D] [DecidableEq D]
-
-/-- The identity is the trace functional in the first Hilbert--Schmidt slot. -/
-theorem hsInner_one_left (X : Matrix D D ℂ) :
-    hsInner (1 : Matrix D D ℂ) X = X.trace := by
-  simp [hsInner]
-
-/-- The identity is the conjugate trace functional in the second
-Hilbert--Schmidt slot. -/
-theorem hsInner_one_right (X : Matrix D D ℂ) :
-    hsInner X (1 : Matrix D D ℂ) = conj X.trace := by
-  simp [hsInner, Matrix.trace_conjTranspose, RCLike.star_def]
-
-end Identity
-
 end RankR

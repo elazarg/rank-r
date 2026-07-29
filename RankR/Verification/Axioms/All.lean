@@ -130,6 +130,10 @@ theorem. -/
 #guard_msgs in
 #print axioms balanced_partialTrace_rankFactor_defect_le
 
+/-- info: 'RankR.exists_balancedFactorization_centeredGram_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms exists_balancedFactorization_centeredGram_le
+
 /-- info: 'RankR.partialTrace_of_hasBalancedRankFactorization' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms partialTrace_of_hasBalancedRankFactorization

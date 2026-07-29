@@ -74,6 +74,48 @@ theorem rankFactorCrossGram_apply
     rankFactorCrossGram e d i j = inner ℂ (d i) (e j) :=
   rfl
 
+/-- The trace of a Gram matrix is the total squared norm of the family. -/
+theorem trace_rankFamilyGram
+    (e : Fin q → EuclideanSpace ℂ W) :
+    (rankFamilyGram e).trace = ((∑ i, ‖e i‖ ^ 2 : ℝ) : ℂ) := by
+  rw [Matrix.trace]
+  push_cast
+  exact Finset.sum_congr rfl fun i _ => inner_self_eq_norm_sq_to_K (e i)
+
+/-- The squared Hilbert--Schmidt norm of a Gram matrix is the total squared
+modulus of its entries. -/
+theorem hsNormSq_rankFamilyGram
+    (e : Fin q → EuclideanSpace ℂ W) :
+    hsNormSq (rankFamilyGram e) =
+      ∑ i, ∑ j, Complex.normSq (inner ℂ (e i) (e j)) :=
+  rfl
+
+/-- Centering a Gram matrix removes the squared mean of its diagonal. -/
+theorem hsNormSq_centered_rankFamilyGram
+    (e : Fin q → EuclideanSpace ℂ W) (hq : 0 < q) :
+    hsNormSq
+        (rankFamilyGram e
+          - ((rankFamilyGram e).trace / (q : ℂ))
+              • (1 : Matrix (Fin q) (Fin q) ℂ)) =
+      (∑ i, ∑ j, Complex.normSq (inner ℂ (e i) (e j)))
+        - (∑ i, ‖e i‖ ^ 2) ^ 2 / (q : ℝ) := by
+  have hcenter := hsNormSq_sub_trace_smul_one
+    (rankFamilyGram e) (by simpa using hq)
+  simp only [Fintype.card_fin] at hcenter
+  rw [hcenter, hsNormSq_rankFamilyGram, trace_rankFamilyGram,
+    Complex.normSq_ofReal]
+  ring
+
+/-- In a balanced factorization, the trace is the number of summands times
+their common scalar overlap. -/
+theorem trace_rankFactor_of_isBalanced
+    {e d : Fin q → EuclideanSpace ℂ W} {τ : ℂ}
+    (hbal : IsBalancedRankFactor e d τ) :
+    (rankFactor e d).trace = (q : ℂ) * τ := by
+  rw [contraction_trace]
+  simp_rw [hbal.2]
+  simp [Finset.sum_const, nsmul_eq_mul]
+
 /-- Mixing a family conjugates its Gram matrix. -/
 theorem rankFamilyGram_mixRankFamily
     (e : Fin q → EuclideanSpace ℂ W) (U : Matrix (Fin q) (Fin q) ℂ) :

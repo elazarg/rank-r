@@ -55,6 +55,37 @@ theorem balanced_partialTrace_rankFactor_defect_le
   rw [norm_partialTracePair_sq] at h
   linarith
 
+/-- The balanced complete-graph defect controls the centered equal-Gram
+matrix.  This is the factorization-level form of spectral stability. -/
+theorem balanced_partialTrace_centeredGram_le
+    (hq : 1 < q) (hbal : IsBalancedRankFactor e d τ) :
+    hsNormSq
+        (rankFamilyGram e
+          - ((rankFamilyGram e).trace / (q : ℂ))
+              • (1 : Matrix (Fin q) (Fin q) ℂ))
+      ≤ ((q : ℝ) * hsNormSq (rankFactor e d)
+          + (1 / (q : ℝ)) * Complex.normSq (rankFactor e d).trace
+          - hsNormSq (ptraceU (rankFactor e d))
+          - hsNormSq (ptraceV (rankFactor e d)))
+        / ((q : ℝ) - 1) := by
+  have h := balancedPolarization_centeredGram_le hq
+    partialTracePair_hasRankOneTraceBound
+    partialTracePair_hasCrossedPolarization hbal
+  rw [norm_partialTracePair_sq] at h
+  have hq0 : (q : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_zero_of_lt (lt_trans Nat.zero_lt_one hq))
+  have hscalar :
+      (q : ℝ) * Complex.normSq τ =
+        (1 / (q : ℝ)) * Complex.normSq (rankFactor e d).trace := by
+    rw [trace_rankFactor_of_isBalanced hbal, Complex.normSq_mul,
+      Complex.normSq_natCast]
+    field_simp
+  rw [hscalar] at h
+  have hqR : (1 : ℝ) < q := by exact_mod_cast hq
+  have hden : (0 : ℝ) < (q : ℝ) - 1 := by linarith
+  rw [le_div_iff₀ hden]
+  rw [mul_comm]
+  linarith
+
 section ExactRank
 
 variable (C : Matrix (U × V) (U × V) ℂ)
@@ -105,6 +136,25 @@ theorem partialTrace_via_balancedPolarization
       partialTracePair_hasRankOneTraceBound
       partialTracePair_hasCrossedPolarization r hrank
     rwa [norm_partialTracePair_sq] at h
+
+/-- Every matrix of rank at least two admits a balanced exact-rank
+factorization whose centered Gram matrix obeys the stability bound. -/
+theorem exists_balancedFactorization_centeredGram_le
+    (hrank : 1 < C.rank) :
+    ∃ (e d : Fin C.rank → EuclideanSpace ℂ (U × V)) (τ : ℂ),
+      C = rankFactor e d ∧ IsBalancedRankFactor e d τ ∧
+        hsNormSq
+            (rankFamilyGram e
+              - ((rankFamilyGram e).trace / (C.rank : ℂ))
+                  • (1 : Matrix (Fin C.rank) (Fin C.rank) ℂ))
+          ≤ ((C.rank : ℝ) * hsNormSq C
+              + (1 / (C.rank : ℝ)) * Complex.normSq C.trace
+              - hsNormSq (ptraceU C) - hsNormSq (ptraceV C))
+            / ((C.rank : ℝ) - 1) := by
+  obtain ⟨e, d, τ, hfac, hbal⟩ := hasBalancedRankFactorization C
+  refine ⟨e, d, τ, hfac, hbal, ?_⟩
+  have h := balanced_partialTrace_centeredGram_le hrank hbal
+  rwa [← hfac] at h
 
 end ExactRank
 

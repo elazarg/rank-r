@@ -278,6 +278,57 @@ theorem hsInner_self (A : Matrix m n ℂ) : hsInner A A = (hsNormSq A : ℂ) := 
     Complex.normSq_eq_conj_mul_self]
   exact Finset.sum_comm
 
+section Identity
+
+variable {D : Type*} [Fintype D] [DecidableEq D]
+
+/-- The identity is the trace functional in the first Hilbert--Schmidt slot. -/
+theorem hsInner_one_left (X : Matrix D D ℂ) :
+    hsInner (1 : Matrix D D ℂ) X = X.trace := by
+  simp [hsInner]
+
+/-- The identity is the conjugate trace functional in the second
+Hilbert--Schmidt slot. -/
+theorem hsInner_one_right (X : Matrix D D ℂ) :
+    hsInner X (1 : Matrix D D ℂ) = conj X.trace := by
+  simp [hsInner, Matrix.trace_conjTranspose, RCLike.star_def]
+
+/-- The squared Hilbert--Schmidt norm of the identity is the dimension. -/
+theorem hsNormSq_one :
+    hsNormSq (1 : Matrix D D ℂ) = Fintype.card D := by
+  rw [← Complex.ofReal_inj, ← hsInner_self]
+  simp [hsInner]
+
+omit [DecidableEq D] in
+/-- Sesquilinear expansion of a centered squared norm. -/
+theorem hsInner_sub_smul_self (X I : Matrix D D ℂ) (z : ℂ) :
+    hsInner (X - z • I) (X - z • I) =
+      hsInner X X - z * hsInner X I - conj z * hsInner I X
+        + conj z * z * hsInner I I := by
+  rw [hsInner_sub_left, hsInner_sub_right, hsInner_smul_left, hsInner_sub_right,
+    hsInner_smul_right, hsInner_smul_right]
+  ring
+
+/-- Orthogonal projection onto the traceless matrices, in squared
+Hilbert--Schmidt norm. -/
+theorem hsNormSq_sub_trace_smul_one (X : Matrix D D ℂ)
+    (hd : 0 < Fintype.card D) :
+    hsNormSq (X - (X.trace / (Fintype.card D : ℂ)) • (1 : Matrix D D ℂ)) =
+      hsNormSq X - Complex.normSq X.trace / (Fintype.card D : ℝ) := by
+  rw [← Complex.ofReal_inj]
+  let z := X.trace / (Fintype.card D : ℂ)
+  let H := X - z • (1 : Matrix D D ℂ)
+  rw [show ((hsNormSq H : ℝ) : ℂ) = hsInner H H from (hsInner_self H).symm]
+  rw [hsInner_sub_smul_self, hsInner_self, hsInner_one_right, hsInner_one_left,
+    hsInner_self, hsNormSq_one]
+  dsimp only [H, z]
+  push_cast
+  rw [map_div₀, map_natCast, Complex.normSq_eq_conj_mul_self]
+  field_simp [Nat.ne_of_gt hd]
+  ring
+
+end Identity
+
 theorem hsNormSq_eq_norm_sq (A : Matrix m n ℂ) : hsNormSq A = ‖vec A‖ ^ 2 := by
   have h : ((hsNormSq A : ℝ) : ℂ) = inner ℂ (vec A) (vec A) := by
     rw [← hsInner_self, hsInner_eq_inner]

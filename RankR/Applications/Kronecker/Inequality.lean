@@ -62,40 +62,6 @@ section Centering
 
 variable {D : Type*} [Fintype D] [DecidableEq D]
 
-/-- The squared Hilbert--Schmidt norm of the identity is the dimension. -/
-theorem hsNormSq_one :
-    hsNormSq (1 : Matrix D D ℂ) = Fintype.card D := by
-  rw [← Complex.ofReal_inj, ← hsInner_self]
-  simp [hsInner]
-
-omit [DecidableEq D] in
-/-- Sesquilinear expansion of a centered squared norm. -/
-theorem hsInner_sub_smul_self (X I : Matrix D D ℂ) (z : ℂ) :
-    hsInner (X - z • I) (X - z • I) =
-      hsInner X X - z * hsInner X I - conj z * hsInner I X
-        + conj z * z * hsInner I I := by
-  rw [hsInner_sub_left, hsInner_sub_right, hsInner_smul_left, hsInner_sub_right,
-    hsInner_smul_right, hsInner_smul_right]
-  ring
-
-/-- Orthogonal projection onto the traceless matrices, in squared
-Hilbert--Schmidt norm. -/
-theorem hsNormSq_sub_trace_smul_one (X : Matrix D D ℂ)
-    (hd : 0 < Fintype.card D) :
-    hsNormSq (X - (X.trace / (Fintype.card D : ℂ)) • (1 : Matrix D D ℂ)) =
-      hsNormSq X - Complex.normSq X.trace / (Fintype.card D : ℝ) := by
-  rw [← Complex.ofReal_inj]
-  let z := X.trace / (Fintype.card D : ℂ)
-  let H := X - z • (1 : Matrix D D ℂ)
-  rw [show ((hsNormSq H : ℝ) : ℂ) = hsInner H H from (hsInner_self H).symm]
-  rw [hsInner_sub_smul_self, hsInner_self, hsInner_one_right, hsInner_one_left,
-    hsInner_self, hsNormSq_one]
-  dsimp only [H, z]
-  push_cast
-  rw [map_div₀, map_natCast, Complex.normSq_eq_conj_mul_self]
-  field_simp [Nat.ne_of_gt hd]
-  ring
-
 /-- The sum of the two centered marginal norms is exactly the expression in
 `eq:kronecker-CS`. -/
 theorem centeredPartialTrace_normSq_eq

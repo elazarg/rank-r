@@ -332,6 +332,70 @@ theorem balancedPolarization_rankFactor_defect_le
   rw [hgram]
   linarith
 
+/-- The complete-graph defect controls the centered Gram matrix. -/
+theorem balancedPolarization_centeredGram_le
+    (hq : 1 < q)
+    (hOne : HasRankOneTraceBound L)
+    (hCross : HasCrossedPolarization L)
+    (hbal : IsBalancedRankFactor e d τ) :
+    ((q : ℝ) - 1) *
+        hsNormSq
+          (rankFamilyGram e
+            - ((rankFamilyGram e).trace / (q : ℂ))
+                • (1 : Matrix (Fin q) (Fin q) ℂ))
+      ≤ (q : ℝ) * hsNormSq (rankFactor e d)
+        + (q : ℝ) * Complex.normSq τ
+        - ‖L (rankFactor e d)‖ ^ 2 := by
+  let diag : ℝ := ∑ i, ‖e i‖ ^ 4
+  let off : ℝ := ∑ i, ∑ j,
+    (if i ≠ j then Complex.normSq (inner ℂ (e i) (e j)) else 0)
+  let total : ℝ := ∑ i, ∑ j,
+    Complex.normSq (inner ℂ (e i) (e j))
+  let s : ℝ := ∑ i, ‖e i‖ ^ 2
+  have hdef := balancedPolarization_rankFactor_defect_le hOne hCross hbal
+  change (q : ℝ) * diag - s ^ 2 + ((q : ℝ) - 1) * off ≤
+      (q : ℝ) * hsNormSq (rankFactor e d)
+        + (q : ℝ) * Complex.normSq τ
+        - ‖L (rankFactor e d)‖ ^ 2 at hdef
+  have hdiag :
+      ∑ i, Complex.normSq (inner ℂ (e i) (e i)) = diag := by
+    apply Finset.sum_congr rfl
+    intro i _
+    rw [inner_self_eq_norm_sq_to_K]
+    simp [Complex.normSq_eq_norm_sq, norm_pow]
+    ring
+  have hoff : off = total - diag := by
+    dsimp only [off, total]
+    rw [sum_sum_ite_ne_balanced, hdiag]
+  have htotal : total = diag + off := by linarith
+  have hdiagSq : ∑ i, (‖e i‖ ^ 2) ^ 2 = diag := by
+    dsimp only [diag]
+    apply Finset.sum_congr rfl
+    intro i _
+    ring
+  have hvar : s ^ 2 ≤ (q : ℝ) * diag := by
+    have h := sq_sum_le_card_mul_sum_sq
+      (s := (Finset.univ : Finset (Fin q)))
+      (f := fun i => ‖e i‖ ^ 2)
+    rw [Finset.card_univ, Fintype.card_fin, hdiagSq] at h
+    exact h
+  have hq0 : (0 : ℝ) < q := by exact_mod_cast (lt_trans Nat.zero_lt_one hq)
+  have hmean : 0 ≤ diag - s ^ 2 / (q : ℝ) := by
+    rw [sub_nonneg, div_le_iff₀ hq0]
+    simpa only [mul_comm] using hvar
+  rw [hsNormSq_centered_rankFamilyGram e (by omega)]
+  change ((q : ℝ) - 1) * (total - s ^ 2 / (q : ℝ)) ≤ _
+  rw [htotal]
+  calc
+    ((q : ℝ) - 1) * (diag + off - s ^ 2 / (q : ℝ))
+        ≤ ((q : ℝ) - 1) * (diag + off - s ^ 2 / (q : ℝ))
+          + (diag - s ^ 2 / (q : ℝ)) :=
+      le_add_of_nonneg_right hmean
+    _ = (q : ℝ) * diag - s ^ 2 + ((q : ℝ) - 1) * off := by
+      field_simp
+      ring
+    _ ≤ _ := hdef
+
 /-- The manuscript form of the balanced lift: a constant diagonal turns the
 scalar cost into `|Tr C|² / q`. -/
 theorem balancedPolarization_rankFactor_trace_le
@@ -342,10 +406,7 @@ theorem balancedPolarization_rankFactor_trace_le
       ≤ (q : ℝ) * hsNormSq (rankFactor e d)
         + (1 / (q : ℝ)) * Complex.normSq (rankFactor e d).trace := by
   have h := balancedPolarization_rankFactor_le hq hOne hCross hbal
-  have htrace : (rankFactor e d).trace = (q : ℂ) * τ := by
-    rw [contraction_trace]
-    simp_rw [hbal.2]
-    simp [Finset.sum_const, nsmul_eq_mul]
+  have htrace := trace_rankFactor_of_isBalanced hbal
   have hq0 : (q : ℝ) ≠ 0 := by exact_mod_cast hq.ne'
   have hscalar :
       (1 / (q : ℝ)) * ((q : ℝ) * (q : ℝ) * Complex.normSq τ)
