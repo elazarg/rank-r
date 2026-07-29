@@ -39,8 +39,8 @@ graph. The corresponding Lean layers are:
 The focused manuscript is `paper/rank-r.tex`.  Its central chain is the generic
 rank-two Choi lift, the double-skew local estimate, the partial-trace
 application, and the graph sharpness family.  The balanced-factorization
-comparison is checked through the equal-Gram construction; the
-constant-diagonal theorem used to complete that construction remains open.
+comparison is also checked through an independent construction of balanced
+exact-rank factorizations.
 
 | Manuscript item | Status | Lean certificate or remaining gap |
 | --- | --- | --- |
@@ -60,10 +60,10 @@ constant-diagonal theorem used to complete that construction remains open.
 | Theorem 5.1, exact-rank and rank-at-most partial-trace inequalities | **Checked** | `rank_r_partial_trace_exact`, `rank_r_partial_trace` |
 | Equality in Theorem 5.1 forces exact rank | **Checked** | `rank_r_partial_trace_strict`, `rank_eq_of_eq_rank_r_partial_trace` |
 | Proposition 5.2, optimal coefficients and witnesses | **Checked for coordinate-basis witnesses** | `projWit_bound_eq`, `le_coeff_hsNormSq_of_bound`, `inv_le_coeff_trace_of_bound`; arbitrary unit-vector formulas are not separately packaged because basis choices already force both constants |
-| Proposition 5.3, abstract balanced-polarization lift | **Conditional** | `balancedPolarization_rankFactor_trace_le` proves the generic lift along a supplied balanced exact-rank factorization; `partialTrace_of_hasBalancedRankFactorization` includes the exact-rank-to-`r` step |
+| Proposition 5.3, abstract balanced-polarization lift | **Checked** | `balancedPolarization_exact` is the exact-rank statement and `balancedPolarization` is its rank-at-most-`r` consequence. The proof composes `balancedPolarization_rankFactor_trace_le` with the unconditional balanced factorization |
 | Rank-one and crossing inputs for the partial-trace instance | **Checked** | `hsNormSq_partialTrace_rankOne_add_le` proves the sharp rank-one inequality from the double-antisymmetric projection certificate; `partialTracePair_hasCrossedPolarization` proves the four-state marginal identity |
 | Gram-operator rendering of Proposition 5.3 | **Open formalization** | No crossing-reshuffle operator or equivalence for `Γ = L* L` is defined |
-| Balanced rank factorization used in Proposition 5.3 | **Checked modulo Parker–Fillmore** | `hasEqualGramRankFactorization` constructs an equal-Gram factorization indexed by the exact matrix rank via spectral mixing and fourth-root rescaling. `exists_balanced_mixRankFamily` proves that constant-diagonal unitary mixing balances it without changing the represented matrix; `hasBalancedRankFactorization_of_constantDiagonals` isolates Parker–Fillmore (`HasConstantDiagonals`) as the remaining hypothesis |
+| Balanced rank factorization used in Proposition 5.3 | **Checked** | `hasEqualGramRankFactorization` constructs an equal-Gram factorization indexed by the exact matrix rank via spectral mixing and fourth-root rescaling. `hasTraceEntry` obtains a trace-average quadratic-form value by Hermitian spectral diagonalization, Boolean sign averaging, and phase interpolation; `hasConstantDiagonals` performs the Parker–Fillmore compression induction. `hasBalancedRankFactorization` then applies constant-diagonal unitary mixing without changing the represented matrix |
 | Equation (26), balanced complete-graph defect | **Checked along a supplied balanced factorization** | `balancedPolarization_rankFactor_defect_le` proves the generic ordered-pair form; `balanced_partialTrace_rankFactor_defect_le` specializes it to the two marginals. Ordered off-diagonal mass is twice the paper's sum over `i < j` |
 | Corollary 5.4, spectral stability | **Open formalization; defect checked** | The factorization-level defect is checked. The remaining bridge identifies the centered equal-Gram matrix with the variance of the nonzero singular values |
 | Graph family, symmetric Kraus operators and exact `β₂ = 1` | **Checked** | `graphKraus_transpose`, `choiTwoBound_graphKraus_iff` |
