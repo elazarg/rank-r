@@ -316,6 +316,7 @@ revision.
 | `HigherChoiSharp` | rank-three and rank-four witnesses and the exact higher Choi constants for every `k ≥ 2` |
 | `Exterior`, `HigherArity` | exterior-power bookkeeping and the generic pairwise-to-`k`-ary amplification mechanism |
 | `HigherAritySkew` | the normalized double-skew family and its exact complete-hypergraph specialization |
+| `KappaOne` | the correlated-skew level-one witness: closed form, action, norm, and attained lower-bound ratio |
 | `Sharp` | `ChoiTwoAttained`, the extremizer, and `β₂(Λ_U ⊗ Λ_V) = 1` as an equality |
 | `Parity` | `eq:T-orthogonal` as an equivalence, and a skew family refuting form (A) |
 | `GraphFamily` | the edge-Kraus family of a graph, and `lem:beta` two-sidedly |

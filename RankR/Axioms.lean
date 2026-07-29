@@ -48,6 +48,7 @@ import RankR.Kronecker
 import RankR.SchmidtWitness
 import RankR.HigherChoiSharp
 import RankR.HigherAritySkew
+import RankR.KappaOne
 import RankR.GenericApplications
 import RankR.Rigidity
 
@@ -650,6 +651,32 @@ info: 'RankR.sum_norm_sq_le_min_of_doubleSkewQm' depends on axioms: [propext, Cl
 /-- info: 'RankR.qform_normalizedSkewKraus_Phyp_univ_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms qform_normalizedSkewKraus_Phyp_univ_le
+
+/-! ## The level-one correlated-skew witness
+
+The closed form, distinguished eigenvector, Hilbert--Schmidt norm, and attained
+ratio behind the lower bound in the higher Choi constants note.  These guards
+do not claim the conjectured matching upper bound. -/
+
+/-- info: 'RankR.correlatedSkew_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms correlatedSkew_eq
+
+/-- info: 'RankR.mulVecE_correlatedSkew_singleOmega' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms mulVecE_correlatedSkew_singleOmega
+
+/-- info: 'RankR.hsNormSq_correlatedSkew' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms hsNormSq_correlatedSkew
+
+/-- info: 'RankR.correlatedSkew_levelOne_ratio' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms correlatedSkew_levelOne_ratio
+
+/-- info: 'RankR.quarter_lt_correlatedSkew_levelOne_ratio' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms quarter_lt_correlatedSkew_levelOne_ratio
 
 /-! ## Exterior indexing
 
