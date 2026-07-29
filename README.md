@@ -340,6 +340,10 @@ uses only that rank-two constant and frame symmetry. The double-skew layer
 supplies a concrete family and exact constant, while
 `RankR/Core/PartialTrace/DoubleSkew.lean` supplies the contraction identity
 needed by the flagship partial-trace application.
+`RankR/Core/Amplification/Gram.lean` gives the complementary balanced route in
+operator language: it identifies the coordinate Gram matrix with `L* L`,
+characterizes crossing as reshuffling symmetry, and states the lift as block
+positivity.
 
 ## A note on provenance
 
