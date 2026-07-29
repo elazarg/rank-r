@@ -327,6 +327,36 @@ theorem hsNormSq_sub_trace_smul_one (X : Matrix D D ℂ)
   field_simp [Nat.ne_of_gt hd]
   ring
 
+/-- Unitary conjugation preserves the Hilbert--Schmidt pairing. -/
+theorem hsInner_unitary_conjugate
+    (U A B : Matrix D D ℂ)
+    (hU : U ∈ Matrix.unitaryGroup D ℂ) :
+    hsInner (Uᴴ * A * U) (Uᴴ * B * U) = hsInner A B := by
+  have hrow : U * Uᴴ = (1 : Matrix D D ℂ) := by
+    simpa only [Matrix.star_eq_conjTranspose] using
+      (Matrix.mem_unitaryGroup_iff.mp hU)
+  rw [hsInner, hsInner, Matrix.conjTranspose_mul,
+    Matrix.conjTranspose_mul, Matrix.conjTranspose_conjTranspose]
+  calc
+    Matrix.trace (Uᴴ * (Aᴴ * U) * (Uᴴ * B * U)) =
+        Matrix.trace (Uᴴ * (Aᴴ * B) * U) := by
+          congr 1
+          rw [show Uᴴ * (Aᴴ * U) * (Uᴴ * B * U) =
+              Uᴴ * Aᴴ * (U * Uᴴ) * B * U by noncomm_ring,
+            hrow]
+          noncomm_ring
+    _ = Matrix.trace (U * Uᴴ * (Aᴴ * B)) :=
+      Matrix.trace_mul_cycle Uᴴ (Aᴴ * B) U
+    _ = Matrix.trace (Aᴴ * B) := by rw [hrow, Matrix.one_mul]
+
+/-- Unitary conjugation preserves the squared Hilbert--Schmidt norm. -/
+theorem hsNormSq_unitary_conjugate
+    (U A : Matrix D D ℂ)
+    (hU : U ∈ Matrix.unitaryGroup D ℂ) :
+    hsNormSq (Uᴴ * A * U) = hsNormSq A := by
+  rw [← Complex.ofReal_inj, ← hsInner_self, ← hsInner_self]
+  exact hsInner_unitary_conjugate U A A hU
+
 end Identity
 
 theorem hsNormSq_eq_norm_sq (A : Matrix m n ℂ) : hsNormSq A = ‖vec A‖ ^ 2 := by

@@ -4,7 +4,7 @@ Balanced finite-rank matrix factorizations.
 A balanced factorization has identical left and right Gram matrices, and each
 rank-one summand contributes the same scalar to the trace.
 -/
-import RankR.Library.Matrix.Rank
+import RankR.Library.Matrix.SingularFactorization
 import RankR.Library.Matrix.ConstantDiagonal
 import Mathlib.Analysis.InnerProductSpace.GramMatrix
 import Mathlib.Analysis.Matrix.PosDef
@@ -45,6 +45,14 @@ section Mixing
 
 variable {W : Type*} [Fintype W] {q : ℕ}
 
+/-- The square-root-scaled singular families have equal Gram matrices. -/
+theorem balancedSingular_isEqualGram
+    (C : Matrix W W ℂ) :
+    IsEqualGramRankFactor
+      (balancedSingularLeft C) (balancedSingularRight C) := by
+  intro i j
+  rw [inner_balancedSingularLeft, inner_balancedSingularRight]
+
 /-- Mix the members of a finite vector family by the columns of a matrix. -/
 noncomputable def mixRankFamily
     (e : Fin q → EuclideanSpace ℂ W) (U : Matrix (Fin q) (Fin q) ℂ) :
@@ -67,6 +75,16 @@ theorem rankFamilyGram_apply
     (e : Fin q → EuclideanSpace ℂ W) (i j : Fin q) :
     rankFamilyGram e i j = inner ℂ (e i) (e j) :=
   rfl
+
+/-- The common Gram matrix of the balanced singular families is diagonal,
+with the positive singular values on its diagonal. -/
+theorem rankFamilyGram_balancedSingular
+    (C : Matrix W W ℂ) :
+    rankFamilyGram (balancedSingularLeft C) =
+      Matrix.diagonal (RCLike.ofReal ∘ matrixSingularValue C) := by
+  ext i j
+  rw [rankFamilyGram_apply, inner_balancedSingularLeft]
+  simp [Matrix.diagonal_apply, Function.comp_apply]
 
 @[simp]
 theorem rankFactorCrossGram_apply
@@ -106,6 +124,70 @@ theorem hsNormSq_centered_rankFamilyGram
     Complex.normSq_ofReal]
   ring
 
+/-- The squared norm of a square-root-scaled singular vector is its singular
+value. -/
+theorem norm_balancedSingularLeft_sq
+    (C : Matrix W W ℂ) (i : Fin C.rank) :
+    ‖balancedSingularLeft C i‖ ^ 2 = matrixSingularValue C i := by
+  have h := inner_balancedSingularLeft C i i
+  rw [if_pos rfl, inner_self_eq_norm_sq_to_K] at h
+  apply Complex.ofReal_injective
+  simpa using h
+
+/-- The centered Gram norm of the singular factorization is exactly the
+variance of the positive singular values. -/
+theorem hsNormSq_centered_balancedSingular
+    (C : Matrix W W ℂ) (hq : 0 < C.rank) :
+    hsNormSq
+        (rankFamilyGram (balancedSingularLeft C)
+          - ((rankFamilyGram (balancedSingularLeft C)).trace / (C.rank : ℂ))
+              • (1 : Matrix (Fin C.rank) (Fin C.rank) ℂ)) =
+      ∑ i, (matrixSingularValue C i
+          - (∑ j, matrixSingularValue C j) / (C.rank : ℝ)) ^ 2 := by
+  rw [hsNormSq_centered_rankFamilyGram _ hq]
+  simp_rw [inner_balancedSingularLeft, norm_balancedSingularLeft_sq]
+  have htotal :
+      (∑ i : Fin C.rank, ∑ j : Fin C.rank,
+          Complex.normSq
+            (if i = j then (matrixSingularValue C i : ℂ) else 0)) =
+        ∑ i, (matrixSingularValue C i) ^ 2 := by
+    apply Finset.sum_congr rfl
+    intro i _
+    rw [Finset.sum_eq_single i]
+    · rw [if_pos rfl, Complex.normSq_ofReal]
+      ring
+    · intro j _ hji
+      rw [if_neg (Ne.symm hji), Complex.normSq_zero]
+    · simp
+  rw [htotal]
+  have hqR : (0 : ℝ) < C.rank := by exact_mod_cast hq
+  simp_rw [sub_sq]
+  rw [Finset.sum_add_distrib, Finset.sum_sub_distrib]
+  simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin,
+    nsmul_eq_mul]
+  have hlinear :
+      (∑ i : Fin C.rank,
+          2 * matrixSingularValue C i
+            * ((∑ j, matrixSingularValue C j) / (C.rank : ℝ))) =
+        2 * (∑ j, matrixSingularValue C j)
+          * ((∑ j, matrixSingularValue C j) / (C.rank : ℝ)) := by
+    calc
+      (∑ i : Fin C.rank,
+          2 * matrixSingularValue C i
+            * ((∑ j, matrixSingularValue C j) / (C.rank : ℝ))) =
+          ∑ i : Fin C.rank,
+            2 * ((∑ j, matrixSingularValue C j) / (C.rank : ℝ))
+              * matrixSingularValue C i := by
+          apply Finset.sum_congr rfl
+          intro i _
+          ring
+      _ = _ := by
+        rw [← Finset.mul_sum]
+        ring
+  rw [hlinear]
+  field_simp [ne_of_gt hqR]
+  ring
+
 /-- In a balanced factorization, the trace is the number of summands times
 their common scalar overlap. -/
 theorem trace_rankFactor_of_isBalanced
@@ -125,6 +207,42 @@ theorem rankFamilyGram_mixRankFamily
     inner_smul_left, inner_smul_right, Matrix.mul_apply,
     Matrix.conjTranspose_apply, RCLike.star_def]
   exact Finset.sum_congr rfl fun _ _ => by ring
+
+/-- Simultaneous unitary mixing preserves the squared norm of the centered
+Gram matrix. -/
+theorem hsNormSq_centeredGram_mixRankFamily
+    (e : Fin q → EuclideanSpace ℂ W)
+    (U : Matrix (Fin q) (Fin q) ℂ)
+    (hU : U ∈ Matrix.unitaryGroup (Fin q) ℂ) :
+    hsNormSq
+        (rankFamilyGram (mixRankFamily e U)
+          - ((rankFamilyGram (mixRankFamily e U)).trace / (q : ℂ))
+              • (1 : Matrix (Fin q) (Fin q) ℂ)) =
+      hsNormSq
+        (rankFamilyGram e
+          - ((rankFamilyGram e).trace / (q : ℂ))
+              • (1 : Matrix (Fin q) (Fin q) ℂ)) := by
+  let G := rankFamilyGram e
+  let z : ℂ := G.trace / (q : ℂ)
+  have hcol : Uᴴ * U = (1 : Matrix (Fin q) (Fin q) ℂ) := by
+    simpa only [Matrix.star_eq_conjTranspose] using
+      (Matrix.mem_unitaryGroup_iff'.mp hU)
+  have hscalar :
+      Uᴴ * (z • (1 : Matrix (Fin q) (Fin q) ℂ)) * U =
+        z • (1 : Matrix (Fin q) (Fin q) ℂ) := by
+    rw [Matrix.mul_smul, Matrix.smul_mul, Matrix.mul_one, hcol]
+  have hcenter :
+      rankFamilyGram (mixRankFamily e U)
+          - ((rankFamilyGram (mixRankFamily e U)).trace / (q : ℂ))
+              • (1 : Matrix (Fin q) (Fin q) ℂ) =
+        Uᴴ * (G - z • (1 : Matrix (Fin q) (Fin q) ℂ)) * U := by
+    rw [rankFamilyGram_mixRankFamily]
+    have htrace := trace_unitary_conjugate hU G
+    rw [htrace]
+    change Uᴴ * G * U - z • (1 : Matrix (Fin q) (Fin q) ℂ) =
+      Uᴴ * (G - z • (1 : Matrix (Fin q) (Fin q) ℂ)) * U
+    rw [Matrix.mul_sub, Matrix.sub_mul, hscalar]
+  rw [hcenter, hsNormSq_unitary_conjugate U _ hU]
 
 /-- Simultaneous mixing conjugates the cross-Gram matrix. -/
 theorem rankFactorCrossGram_mixRankFamily
@@ -406,6 +524,43 @@ theorem exists_balanced_mixRankFamily
         (rankFactorCrossGram e d).trace / (q : ℂ)
       rw [rankFactorCrossGram_mixRankFamily]
       exact hdiag i
+
+/-- Every positive-rank matrix has a balanced factorization whose centered
+Gram norm is the variance of the positive singular values. -/
+theorem exists_balancedSingularFactorization
+    (C : Matrix W W ℂ) (hrank : 0 < C.rank) :
+    ∃ (e d : Fin C.rank → EuclideanSpace ℂ W) (τ : ℂ),
+      C = rankFactor e d ∧ IsBalancedRankFactor e d τ ∧
+        hsNormSq
+            (rankFamilyGram e
+              - ((rankFamilyGram e).trace / (C.rank : ℂ))
+                  • (1 : Matrix (Fin C.rank) (Fin C.rank) ℂ)) =
+          ∑ i, (matrixSingularValue C i
+            - (∑ j, matrixSingularValue C j) / (C.rank : ℝ)) ^ 2 := by
+  classical
+  let e₀ := balancedSingularLeft C
+  let d₀ := balancedSingularRight C
+  let G := rankFactorCrossGram e₀ d₀
+  obtain ⟨Q, hQ, hdiag⟩ := hasConstantDiagonals C.rank G
+  refine ⟨mixRankFamily e₀ Q, mixRankFamily d₀ Q, G.trace / (C.rank : ℂ),
+    ?_, ?_, ?_⟩
+  · exact (rankFactor_balancedSingular C).trans
+      (rankFactor_mixRankFamily e₀ d₀ Q hQ).symm
+  · constructor
+    · have hGram : rankFamilyGram e₀ = rankFamilyGram d₀ := by
+        ext i j
+        exact balancedSingular_isEqualGram C i j
+      intro i j
+      change rankFamilyGram (mixRankFamily e₀ Q) i j =
+        rankFamilyGram (mixRankFamily d₀ Q) i j
+      rw [rankFamilyGram_mixRankFamily, rankFamilyGram_mixRankFamily, hGram]
+    · intro i
+      change rankFactorCrossGram (mixRankFamily e₀ Q)
+          (mixRankFamily d₀ Q) i i = G.trace / (C.rank : ℂ)
+      rw [rankFactorCrossGram_mixRankFamily]
+      exact hdiag i
+  · exact (hsNormSq_centeredGram_mixRankFamily e₀ Q hQ).trans
+      (hsNormSq_centered_balancedSingular C hrank)
 
 /-- Equal-Gram exact-rank factorizations and the constant-diagonal property
 produce balanced exact-rank factorizations. -/

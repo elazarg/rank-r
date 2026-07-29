@@ -134,6 +134,18 @@ theorem. -/
 #guard_msgs in
 #print axioms exists_balancedFactorization_centeredGram_le
 
+/-- info: 'RankR.rankFactor_balancedSingular' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rankFactor_balancedSingular
+
+/-- info: 'RankR.exists_balancedSingularFactorization' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms exists_balancedSingularFactorization
+
+/-- info: 'RankR.partialTrace_singularValueVariance_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms partialTrace_singularValueVariance_le
+
 /-- info: 'RankR.partialTrace_of_hasBalancedRankFactorization' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms partialTrace_of_hasBalancedRankFactorization

@@ -156,6 +156,22 @@ theorem exists_balancedFactorization_centeredGram_le
   have h := balanced_partialTrace_centeredGram_le hrank hbal
   rwa [← hfac] at h
 
+/-- Spectral stability for the partial-trace inequality: its slack controls
+the variance of the positive singular values. -/
+theorem partialTrace_singularValueVariance_le
+    (hrank : 1 < C.rank) :
+    ∑ i, (matrixSingularValue C i
+        - (∑ j, matrixSingularValue C j) / (C.rank : ℝ)) ^ 2
+      ≤ ((C.rank : ℝ) * hsNormSq C
+          + (1 / (C.rank : ℝ)) * Complex.normSq C.trace
+          - hsNormSq (ptraceU C) - hsNormSq (ptraceV C))
+        / ((C.rank : ℝ) - 1) := by
+  obtain ⟨e, d, τ, hfac, hbal, hvariance⟩ :=
+    exists_balancedSingularFactorization C (by omega)
+  have hbound := balanced_partialTrace_centeredGram_le hrank hbal
+  rw [hvariance] at hbound
+  rwa [← hfac] at hbound
+
 end ExactRank
 
 end RankR
