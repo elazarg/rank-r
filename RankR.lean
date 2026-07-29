@@ -1,67 +1,8 @@
-import RankR.Library.Conventions
-import RankR.Library.Matrix.HilbertSchmidt
-import RankR.Library.Matrix.Elementary
-import RankR.Core.PartialTrace.Operator
-import RankR.Library.Matrix.RankFactorization
-import RankR.Core.PartialTrace.FromOperator
-import RankR.Core.PartialTrace.DoubleSkew
-import RankR.Core.DoubleSkew.Basic
-import RankR.Library.Quantum.Kraus
-import RankR.Core.Amplification.Sectors
-import RankR.Core.DoubleSkew.Map
-import RankR.Core.Amplification.CompleteGraph
-import RankR.Core.Amplification.Frame
-import RankR.Core.DoubleSkew.Frame
-import RankR.Core.Amplification.Edge
-import RankR.Library.Analysis.Bessel
-import RankR.Library.Analysis.RestrictedFrame
-import RankR.Library.Quantum.Choi
-import RankR.Core.DoubleSkew.Choi
-import RankR.Core.DoubleSkew.MapIdentity
-import RankR.Core.Amplification.OperatorForms
-import RankR.Core.PartialTrace.Parameterized
-import RankR.Core.DoubleSkew.Antisymmetrizer
-import RankR.Core.DoubleSkew.FGP
-import RankR.Core.DoubleSkew.Extend
-import RankR.Core.PartialTrace.Optimality
-import RankR.Core.PartialTrace.OneSided
-import RankR.Core.DoubleSkew.Flip
-import RankR.Core.DoubleSkew.SymmetricOuter
-import RankR.Library.Analysis.Weights
-import RankR.Core.DoubleSkew.Takagi
-import RankR.Library.Analysis.Autonne
+/-
+The headline partial-trace theorem.
+
+Use `RankR.Core.Amplification` for the reusable amplification construction,
+`RankR.Applications` or `RankR.Companions` for the optional suites, and
+`RankR.All` for the complete mathematical development.
+-/
 import RankR.Core.PartialTrace.Main
-import RankR.Core.PartialTrace.BlockPositivity
-import RankR.Core.DoubleSkew.SeedBound
-import RankR.Companions.HigherChoi.Action
-import RankR.Companions.HigherArity.Exterior
-import RankR.Companions.HigherArity.Amplification
-import RankR.Core.DoubleSkew.Sharp
-import RankR.Core.Amplification.Parity
-import RankR.Core.DoubleSkew.Parity
-import RankR.Companions.Graph.Family
-import RankR.Companions.Graph.Threshold
-import RankR.Companions.Graph.PairBound
-import RankR.Applications.Reduction.Main
-import RankR.Library.Quantum.PositiveMaps
-import RankR.Applications.Reduction.PositiveMaps
-import RankR.Companions.Staircase.Scalar
-import RankR.Companions.Staircase.ProductIsotropic
-import RankR.Companions.Staircase.States
-import RankR.Applications.Certificates.Gram
-import RankR.Applications.Certificates.Defect
-import RankR.Applications.Certificates.LagrangeSOS
-import RankR.Applications.TraceDistance.Main
-import RankR.Applications.Kronecker.Inequality
-import RankR.Applications.Kronecker.KyFan
-import RankR.Applications.SchmidtWitness
-import RankR.Companions.HigherChoi.Sharp
-import RankR.Companions.HigherArity.DoubleSkew
-import RankR.Companions.HigherChoi.KappaOne
-import RankR.Companions.Graph.Layers
-import RankR.Companions.Graph.Inclusion
-import RankR.Companions.Graph.Dimensions
-import RankR.Companions.Graph.Rook
-import RankR.Applications.Aggregation.Main
-import RankR.Companions.Rigidity
-import RankR.Verification.Axioms.All

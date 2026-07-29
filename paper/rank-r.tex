@@ -2578,12 +2578,13 @@ formalized in Lean~4.  The development is available at
 \texttt{leanprover/lean4:v4.32.0}, and Mathlib is its only direct dependency,
 pinned in \texttt{lake-manifest.json} at revision
 \texttt{81a5d257c8e410db227a6665ed08f64fea08e997} (tag \texttt{v4.32.0});
-that manifest also pins every transitive dependency.  After \texttt{lake exe cache get}, the single command
-\texttt{lake build RankR} compiles it.  The sources contain no \texttt{sorry},
+that manifest also pins every transitive dependency.  After \texttt{lake exe cache get}, the command
+\texttt{lake build RankR.Verification.Axioms} compiles the audited development.  The sources contain no \texttt{sorry},
 no \texttt{axiom} declaration, no \texttt{native\_decide} and no
 \texttt{set\_option}, and \texttt{\#print axioms} applied to the main theorem
 reports only \texttt{propext}, \texttt{Classical.choice} and
-\texttt{Quot.sound}; the file \texttt{RankR/Axioms.lean} wraps that check in
+\texttt{Quot.sound}; the file
+\texttt{RankR/Verification/Axioms/All.lean} wraps that check in
 \texttt{\#guard\_msgs} for each headline theorem, so it is verified by the
 build rather than asserted here.
 \end{sloppypar}
@@ -2591,8 +2592,10 @@ build rather than asserted here.
 The formal counterpart of \cref{thm:rank_r} is
 \texttt{rank\_r\_partial\_trace}, and it has \emph{no}
 hypotheses.  The Autonne--Takagi factorization is itself proved, as
-\texttt{Matrix.exists\_takagi}; \texttt{Takagi.lean} derives
-\cref{lem:double-skew} from it, and \texttt{Equivalence.lean} supplies the
+\texttt{Matrix.exists\_takagi};
+\texttt{RankR/Core/DoubleSkew/Takagi.lean} derives
+\cref{lem:double-skew} from it, and
+\texttt{RankR/Core/DoubleSkew/FGP.lean} supplies the
 universal upper bound $\beta_2(\Lambda_U\otimes\Lambda_V)\le1$.
 \texttt{Sharp.lean} proves equality when both factors contain two distinct
 basis labels; in the degenerate dimensions
@@ -2850,9 +2853,11 @@ $r$-block positivity of $J(\Psi_r)$ is attained at the extremizer of
 
 \paragraph{A second instance of the mechanism.}
 The edge-Kraus family $A_e=(E_{ij}-E_{ji})\otimes(E_{01}-E_{10})$ attached to the
-edges of a graph is formalized in \texttt{GraphFamily.lean}, with
+edges of a graph is formalized in
+\texttt{RankR/Companions/Graph/Family.lean}, with
 $\beta_2(\Phi_G)=1$ exactly (\texttt{choiTwoBound\_graphKraus\_iff}), and
-\texttt{Theta.lean} together with \texttt{ThetaBound.lean} pin its amplification
+\texttt{RankR/Core/Amplification/Theta.lean} together with
+\texttt{RankR/Companions/Graph/PairBound.lean} pin its amplification
 threshold: for a graph containing an $R$-clique, $\Theta^{\Phi_G}_{R,\lambda}$ is
 $R$-positive precisely for $\lambda\ge R-1$
 (\texttt{thetaPositive\_graphKraus\_iff}).  The lower half is the witness
@@ -2887,7 +2892,8 @@ $\alpha<\beta$ polynomial sum in
 \cref{eq:sos-lagrange} with the exterior squared norm defined by that
 orthonormal-coordinate sum, so no separate exterior-algebra API is assumed.
 
-Within \cref{sec:applications}, \texttt{Applications.lean} covers the exact
+Within \cref{sec:applications},
+\texttt{RankR/Applications/Reduction/Main.lean} covers the exact
 two-copy and asymmetric score curves in an infimum-free but equivalent form:
 each branch is a pointwise lower bound and a displayed rank-exact matrix attains
 it.  It also covers factor interchange, the score nonnegativity thresholds for
@@ -2896,24 +2902,26 @@ coordinate Choi quadratic identities.  It identifies the reduction maps'
 Choi matrices, performs the output/input register permutation in their tensor
 product, and proves its block-positivity threshold for every positive $r$ in
 equal local dimensions, using a positive-semidefinite Choi argument past the
-local dimension.  \texttt{MapPos.lean} defines positivity of the actual
+local dimension.
+\texttt{RankR/Applications/Reduction/PositiveMaps.lean} defines positivity of the actual
 $\operatorname{id}_{\mathbb C^r}\otimes\Phi$ matrix ampliation, proves the
 finite-coordinate Choi equivalence, identifies the product map with the tensor
 product of the two reduction pencils, and derives the symmetric and asymmetric
 map-$r$-positivity classifications.  The development also covers the complete
 rank-sensitive estimate
-\cref{eq:kronecker-main-use}.  \texttt{Kronecker.lean} proves the exact
+\cref{eq:kronecker-main-use}.
+\texttt{RankR/Applications/Kronecker/Inequality.lean} proves the exact
 pairing \cref{eq:kronecker-pairing}, the centered Cauchy--Schwarz step
 \cref{eq:kronecker-CS}, the full Frobenius branch, both entries of the minimum,
 and the resulting normalized rank-constrained Frobenius test-supremum bound.
-\texttt{TraceSeparation.lean} defines
+\texttt{RankR/Applications/TraceDistance/Main.lean} defines
 Schmidt number at most $r$ by a finite sum of rank-constrained pure-state
 projectors, proves that block positivity extends to this cone, derives
 Hermitian trace-norm duality from the spectral theorem, and proves both the
 spectral diameter and the pointwise form of
 \cref{cor:two-copy-trace-distance}.  The pointwise statement for every
 admissible $\sigma$ is equivalent to the displayed infimum bound.
-\texttt{KyFanDuality.lean} proves the reusable equality
+\texttt{RankR/Applications/Kronecker/KyFan.lean} proves the reusable equality
 \texttt{kyFanFrobeniusDuality}, including an explicit optimal
 rank-constrained Frobenius test, and derives the unconditional theorem
 \texttt{kyFanSq\_kroneckerSum\_le}.  The file
@@ -2922,7 +2930,8 @@ used for the upper bound in \cref{cor:exact-schmidt-number}, proves the
 rank-two witness and its mixed-state inequality, derives the required
 rank-three projection bound from the level-three double-skew action theorem,
 and proves the rank-three witness, the exact lower bound, and both displayed
-witness expectations.  \texttt{GenericApplications.lean} extends the
+witness expectations.
+\texttt{RankR/Applications/Aggregation/Main.lean} extends the
 pure-state decomposition definition to rectangular bipartitions and proves
 the positive-map semidefinite cut of \cref{cor:positive-map-cut}, including
 the symmetric and asymmetric reduction-product specializations for arbitrary

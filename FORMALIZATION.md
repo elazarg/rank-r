@@ -24,6 +24,16 @@ rank of the coefficient matrix, `pureSchmidtRank_vec` proves
 `SR(vec A) = rank A`, and `rank_le_iff_exists_sum_rankOne` proves the exact
 rank-`k` decomposition used by the Choi bounds.
 
+The claim ledger follows the mathematical manuscripts rather than the import
+graph. The corresponding Lean layers are:
+
+- `RankR.Library` for reusable finite-coordinate infrastructure;
+- `RankR.Core.Amplification` for the generic pair construction;
+- `RankR` for the headline theorem;
+- `RankR.Applications` and `RankR.Companions` for the two optional suites;
+- `RankR.All` for the complete mathematical development; and
+- `RankR.Verification.Axioms` for the executable axiom audit.
+
 ## Main manuscript
 
 ### Mechanism and main theorem
@@ -50,10 +60,10 @@ rank-`k` decomposition used by the Choi bounds.
 
 ### Applications
 
-`Applications.lean` represents an infimum formula by the logically equivalent
-combination “pointwise lower bound for every admissible nonzero matrix +
-rank-exact matrix attaining the bound.” This avoids an unrelated
-extended-real-infimum layer.
+`RankR/Applications/Reduction/Main.lean` represents an infimum formula by the
+logically equivalent combination “pointwise lower bound for every admissible
+nonzero matrix + rank-exact matrix attaining the bound.” This avoids an
+unrelated extended-real-infimum layer.
 
 | Application | Status | Lean certificate or precise gap |
 | --- | --- | --- |
@@ -67,7 +77,7 @@ extended-real-infimum layer.
 | positive-semidefinite Choi continuation at `a,b ≤ 1/d` | **Checked** | `reductionChoi_posSemidef`, `productReductionChoi_posSemidef`; the generic map/Choi theorem transfers the latter to every ampliation level |
 | two-copy block positivity for every positive `r`, at equal local dimension `d ≥ 2` | **Checked** in explicit coordinate Choi form | `isBlockPositive_productReductionChoi_self_iff_le_inv_min` gives the threshold `t ≤ 1/min(r,d)` (and hence covers the manuscript range `r ≤ d²`) |
 | tensor-square map `r`-positivity classification | **Checked** in coordinates | `productReductionMapLinear_apply` identifies the map with the tensor product of the two reduction pencils; `isMapRPositive_productReductionMapLinear_self_iff_le_inv_min` gives the threshold for every positive `r` |
-| exact asymmetric score curve for `1 ≤ r ≤ d` | **Checked** | all four lower branches, factor swap, and all four attaining cases in `Applications.lean` |
+| exact asymmetric score curve for `1 ≤ r ≤ d` | **Checked** | all four lower branches, factor swap, and all four attaining cases in `RankR/Applications/Reduction/Main.lean` |
 | asymmetric score nonnegativity iff `max(a,b) ≤ 1/r`, for `1 ≤ r ≤ d` | **Checked** | `asymmetricNonnegative_iff` |
 | asymmetric product-Choi block positivity | **Checked** in coordinates | `isBlockPositive_productReductionChoi_iff_max_le_inv` handles `1 ≤ r ≤ min(dim U,dim V)`; `isBlockPositive_productReductionChoi_iff_max_le_inv_min` gives `max(a,b) ≤ 1/min(r,d)` for every positive `r` at equal local dimension `d ≥ 2` |
 | asymmetric map `r`-positivity classification | **Checked** in coordinates | `isMapRPositive_productReductionMapLinear_iff_max_le_inv` handles the rank-constrained range; `isMapRPositive_productReductionMapLinear_iff_max_le_inv_min` handles every positive `r` at equal local dimension |
@@ -87,7 +97,7 @@ extended-real-infimum layer.
 | local-channel aggregation | **Checked** at the finite Kraus level | `localKrausPullback` is the coordinate adjoint action; `rank_localCoeff_le` proves local rank monotonicity; `aggregateLocalWitnessDependent_isBlockPositiveBetween` and `trace_mul_aggregateLocalWitnessDependent_nonneg` allow term-dependent output spaces and Kraus index types; trace preservation is unnecessary for the conclusion |
 | local-Hamiltonian Schmidt-number certificate | **Checked** in finite coordinates | `not_schmidtNumberLEBetween_of_dependentReductionAggregate_neg` specializes the varying-output aggregation to the displayed reduction-product witnesses and proves that negative expectation refutes `SchmidtNumberLEBetween r` |
 | positive-semidefinite shifted pullbacks and explicit energy baseline | **Checked** in finite coordinates | `localKrausPullback_posSemidef` proves positivity of each pullback; `localKrausPullback_one` proves unitality from Kraus completeness; `aggregateLocalWitnessDependent_shift_eq` gives the exact weighted identity; `dependentReductionAggregate_shift_posSemidef` and `trace_mul_dependentReductionAggregate_shift_lower` prove the displayed positive-semidefinite aggregate and baseline. `productReductionChoi_inv_exactRayleighMinimum` proves that `1-d/r` is the exact minimum by combining the shifted positive decomposition with a nonzero attaining vector, including `d=1`. |
-| rigidity of the diagonal embedding among linear encodings | **Checked** | `Rigidity.lean`; linear expansion, positivity of point masses, and both marginal hypotheses are explicit |
+| rigidity of the diagonal embedding among linear encodings | **Checked** | `RankR/Companions/Rigidity.lean`; linear expansion, positivity of point masses, and both marginal hypotheses are explicit |
 
 ## Higher Choi constants note
 
@@ -108,7 +118,7 @@ extended-real-infimum layer.
 | orthonormal incidence and protected modes | **Checked** | `orthonormal_etaMode`, `orthonormal_deltaMode` |
 | face regrouping | **Checked**, stronger weighted form | `norm_sq_sum_placeAt_le_weighted` and downstream `PhypAmp` theorems |
 | unprotected exterior amplification, `k ≥ 1` | **Checked** | `qform_PhypAmp_le_of_norm`, `qform_PhypAmp_le` |
-| protected exterior amplification, `k ≥ 2` | **Checked** | weighted and uniform protected theorems in `HigherArity.lean` |
+| protected exterior amplification, `k ≥ 2` | **Checked** | weighted and uniform protected theorems in `RankR/Companions/HigherArity/Amplification.lean` |
 | protected-space dimension | **Checked** | modes are indexed by `Face r (k-2)` and proved orthonormal; `card_face` proves `|Face r (k-2)| = choose r (k-2)` |
 | `k=2` specialization | **Checked core** | pair-level corollaries and `upDeg_univ`; equality with every notation choice in the note is a rendering |
 | complete-hypergraph degree `r-k+1` | **Checked** | `upDeg_univ` |
