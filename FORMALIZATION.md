@@ -112,7 +112,7 @@ extended-real-infimum layer.
 | protected-space dimension | **Checked** | modes are indexed by `Face r (k-2)` and proved orthonormal; `card_face` proves `|Face r (k-2)| = choose r (k-2)` |
 | `k=2` specialization | **Checked core** | pair-level corollaries and `upDeg_univ`; equality with every notation choice in the note is a rendering |
 | complete-hypergraph degree `r-k+1` | **Checked** | `upDeg_univ` |
-| double-skew specialization with exact `beta_k` | **Checked** | `choiKBound_four_smul_Qm_min` discharges the `ChoiKBound` hypothesis and `choiKBound_four_smul_Qm_iff` proves the coefficient is least |
+| double-skew specialization with exact `beta_k` | **Checked** | `choiOf_normalizedSkewKraus` identifies the manuscript normalization, `choiKBound_four_smul_Qm_iff` proves the coefficient is least, and `qform_normalizedSkewKraus_Phyp_univ_le` is the complete-hypergraph corollary |
 | “no `r`-positivity hierarchy for `k>2`” explanatory spectral claim | **Open formalization** | no general partial-transpose spectral decomposition layer |
 
 ## Graph-inclusion note

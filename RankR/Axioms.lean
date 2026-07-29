@@ -47,6 +47,7 @@ import RankR.TraceSeparation
 import RankR.Kronecker
 import RankR.SchmidtWitness
 import RankR.HigherChoiSharp
+import RankR.HigherAritySkew
 import RankR.GenericApplications
 import RankR.Rigidity
 
@@ -641,6 +642,14 @@ info: 'RankR.sum_norm_sq_le_min_of_doubleSkewQm' depends on axioms: [propext, Cl
 /-- info: 'RankR.choiKBound_four_smul_Qm_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms choiKBound_four_smul_Qm_iff
+
+/-- info: 'RankR.choiOf_normalizedSkewKraus' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiOf_normalizedSkewKraus
+
+/-- info: 'RankR.qform_normalizedSkewKraus_Phyp_univ_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_normalizedSkewKraus_Phyp_univ_le
 
 /-! ## Exterior indexing
 

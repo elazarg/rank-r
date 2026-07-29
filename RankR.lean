@@ -49,6 +49,7 @@ import RankR.TraceSeparation
 import RankR.Kronecker
 import RankR.SchmidtWitness
 import RankR.HigherChoiSharp
+import RankR.HigherAritySkew
 import RankR.GenericApplications
 import RankR.Rigidity
 import RankR.Axioms
