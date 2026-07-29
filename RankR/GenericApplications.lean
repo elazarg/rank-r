@@ -15,13 +15,18 @@ import RankR.MapPos
 namespace RankR
 
 open Matrix Finset ComplexConjugate
-open scoped ComplexOrder MatrixOrder
+open scoped ComplexOrder Kronecker MatrixOrder
 
 /-! ## Schmidt number across a rectangular bipartition -/
 
 section SchmidtNumberBetween
 
 variable {A B : Type*} [Fintype A] [Fintype B]
+
+/-- Block positivity across a possibly rectangular coordinate bipartition. -/
+def IsBlockPositiveBetween (r : ℕ)
+    (M : Matrix (A × B) (A × B) ℂ) : Prop :=
+  ∀ C : Matrix A B ℂ, C.rank ≤ r → 0 ≤ (qform M (vec C)).re
 
 /-- Mixed-state Schmidt number at most `r` across the coordinate bipartition
 `A : B`.  The coefficient matrix of each pure vector is rectangular. -/
@@ -37,6 +42,44 @@ theorem schmidtNumberLEBetween_self_iff {r : ℕ}
     {ρ : Matrix (B × B) (B × B) ℂ} :
     SchmidtNumberLEBetween (A := B) (B := B) r ρ ↔ SchmidtNumberLE r ρ :=
   Iff.rfl
+
+/-- The original square block-positivity predicate is the corresponding
+instance of `IsBlockPositiveBetween`. -/
+theorem isBlockPositiveBetween_self_iff {r : ℕ}
+    {M : Matrix (B × B) (B × B) ℂ} :
+    IsBlockPositiveBetween (A := B) (B := B) r M ↔ IsBlockPositive r M :=
+  Iff.rfl
+
+/-- Rectangular block positivity extends to the corresponding mixed-state
+Schmidt-number cone. -/
+theorem re_hsInner_nonneg_of_schmidtNumberLEBetween {r : ℕ}
+    {M ρ : Matrix (A × B) (A × B) ℂ}
+    (hM : IsBlockPositiveBetween r M)
+    (hρ : SchmidtNumberLEBetween r ρ) :
+    0 ≤ (hsInner M ρ).re := by
+  obtain ⟨n, C, hCrank, rfl⟩ := hρ
+  rw [hsInner_sum_right, Complex.re_sum]
+  exact Finset.sum_nonneg fun i _ => by
+    rw [re_hsInner_rankOne]
+    exact hM (C i) (hCrank i)
+
+/-- The Hermitian trace/inner-product identity for an arbitrary finite
+coordinate type. -/
+theorem trace_mul_eq_hsInner_of_isHermitian_finite
+    {X : Type*} [Fintype X] {M ρ : Matrix X X ℂ}
+    (hM : M.IsHermitian) :
+    (M * ρ).trace = hsInner M ρ := by
+  rw [hsInner, hM.eq]
+
+/-- A rectangular block-positive Hermitian witness has nonnegative trace
+pairing with every operator in the matching Schmidt-number cone. -/
+theorem trace_mul_nonneg_of_schmidtNumberLEBetween {r : ℕ}
+    {M ρ : Matrix (A × B) (A × B) ℂ}
+    (hHerm : M.IsHermitian) (hM : IsBlockPositiveBetween r M)
+    (hρ : SchmidtNumberLEBetween r ρ) :
+    0 ≤ ((M * ρ).trace).re := by
+  rw [trace_mul_eq_hsInner_of_isHermitian_finite hHerm]
+  exact re_hsInner_nonneg_of_schmidtNumberLEBetween hM hρ
 
 end SchmidtNumberBetween
 
@@ -179,5 +222,403 @@ theorem productReduction_self_schmidtNumberLE_cut
   · exact hρ
 
 end ReductionCut
+
+/-! ## Local Kraus pullbacks and aggregation -/
+
+section RectangularAction
+
+variable {I O : Type*} [Fintype I] [Fintype O]
+
+/-- Matrix-vector multiplication between two different finite coordinate
+types. -/
+def mulVecRect (K : Matrix O I ℂ) (x : EuclideanSpace ℂ I) :
+    EuclideanSpace ℂ O :=
+  WithLp.toLp 2 (K.mulVec (WithLp.ofLp x))
+
+omit [Fintype O] in
+@[simp] theorem mulVecRect_apply (K : Matrix O I ℂ)
+    (x : EuclideanSpace ℂ I) (o : O) :
+    mulVecRect K x o = ∑ i, K o i * x i := rfl
+
+/-- Pulling a quadratic form back through a rectangular matrix. -/
+theorem qform_conj_rect (K : Matrix O I ℂ) (Y : Matrix O O ℂ)
+    (x : EuclideanSpace ℂ I) :
+    qform (Kᴴ * Y * K) x = qform Y (mulVecRect K x) := by
+  have hL : qform (Kᴴ * Y * K) x =
+      ∑ p, ∑ q, ∑ u, ∑ v,
+        conj (x p) * conj (K u p) * Y u v * K v q * x q := by
+    simp only [qform]
+    refine Finset.sum_congr rfl fun p _ =>
+      Finset.sum_congr rfl fun q _ => ?_
+    rw [Finset.sum_comm]
+    simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, RCLike.star_def,
+      Finset.sum_mul, Finset.mul_sum]
+    exact Finset.sum_congr rfl fun v _ =>
+      Finset.sum_congr rfl fun u _ => by ring
+  have hR : qform Y (mulVecRect K x) =
+      ∑ u, ∑ v, ∑ p, ∑ q,
+        conj (x p) * conj (K u p) * Y u v * K v q * x q := by
+    simp only [qform]
+    refine Finset.sum_congr rfl fun u _ =>
+      Finset.sum_congr rfl fun v _ => ?_
+    rw [Finset.sum_comm]
+    simp only [mulVecRect_apply, map_sum, map_mul,
+      Finset.sum_mul, Finset.mul_sum]
+    exact Finset.sum_congr rfl fun p _ =>
+      Finset.sum_congr rfl fun q _ => by ring
+  rw [hL, hR]
+  exact (sum4_swap fun p q u v =>
+    conj (x p) * conj (K u p) * Y u v * K v q * x q).symm
+
+end RectangularAction
+
+section LocalKraus
+
+variable {A B C D : Type*}
+  [Fintype A] [Fintype B] [Fintype C] [Fintype D]
+
+/-- The coefficient matrix obtained by applying local operators on the two
+sides of a pure bipartite vector. -/
+noncomputable def localCoeff
+    (L : Matrix C A ℂ) (R : Matrix D B ℂ) (X : Matrix A B ℂ) :
+    Matrix C D ℂ :=
+  L * X * Rᵀ
+
+/-- The product-space matrix of the local operator `L ⊗ R`. -/
+noncomputable def localKrausMatrix
+    (L : Matrix C A ℂ) (R : Matrix D B ℂ) :
+    Matrix (C × D) (A × B) ℂ :=
+  L ⊗ₖ R
+
+omit [Fintype C] [Fintype D] in
+/-- The local Kronecker action agrees with the coefficient-matrix action. -/
+theorem mulVecRect_localKrausMatrix_vec
+    (L : Matrix C A ℂ) (R : Matrix D B ℂ) (X : Matrix A B ℂ) :
+    mulVecRect (localKrausMatrix L R) (vec X) = vec (localCoeff L R X) := by
+  ext ⟨c, d⟩
+  simp only [mulVecRect_apply, localKrausMatrix, Matrix.kroneckerMap_apply,
+    vec_apply, Fintype.sum_prod_type, localCoeff, Matrix.mul_apply,
+    Matrix.transpose_apply]
+  rw [Finset.sum_comm]
+  exact Finset.sum_congr rfl fun a _ => by
+    rw [Finset.sum_mul]
+    exact Finset.sum_congr rfl fun b _ => by ring
+
+omit [Fintype C] in
+/-- Local left and right multiplication cannot increase the coefficient
+matrix rank. -/
+theorem rank_localCoeff_le (L : Matrix C A ℂ) (R : Matrix D B ℂ)
+    (X : Matrix A B ℂ) :
+    (localCoeff L R X).rank ≤ X.rank := by
+  exact (Matrix.rank_mul_le_left (L * X) Rᵀ).trans
+    (Matrix.rank_mul_le_right L X)
+
+variable {P Q : Type*} [Fintype P] [Fintype Q]
+
+/-- Pull a witness back through all pairs of two local Kraus families. -/
+noncomputable def localKrausPullback
+    (L : P → Matrix C A ℂ) (R : Q → Matrix D B ℂ)
+    (W : Matrix (C × D) (C × D) ℂ) :
+    Matrix (A × B) (A × B) ℂ :=
+  ∑ i, ∑ j,
+    (localKrausMatrix (L i) (R j))ᴴ * W *
+      localKrausMatrix (L i) (R j)
+
+/-- The quadratic form of a local Kraus pullback is the sum of the output
+witness forms on all locally transformed coefficient matrices. -/
+theorem qform_localKrausPullback
+    (L : P → Matrix C A ℂ) (R : Q → Matrix D B ℂ)
+    (W : Matrix (C × D) (C × D) ℂ) (X : Matrix A B ℂ) :
+    qform (localKrausPullback L R W) (vec X) =
+      ∑ i, ∑ j, qform W (vec (localCoeff (L i) (R j) X)) := by
+  rw [localKrausPullback, qform_sum]
+  exact Finset.sum_congr rfl fun i _ => by
+    rw [qform_sum]
+    exact Finset.sum_congr rfl fun j _ => by
+      rw [qform_conj_rect, mulVecRect_localKrausMatrix_vec]
+
+/-- Local Kraus pullback preserves block positivity.  Trace preservation is
+not needed for this conclusion. -/
+theorem localKrausPullback_isBlockPositiveBetween {r : ℕ}
+    (L : P → Matrix C A ℂ) (R : Q → Matrix D B ℂ)
+    {W : Matrix (C × D) (C × D) ℂ}
+    (hW : IsBlockPositiveBetween r W) :
+    IsBlockPositiveBetween r (localKrausPullback L R W) := by
+  intro X hrank
+  rw [qform_localKrausPullback, Complex.re_sum]
+  exact Finset.sum_nonneg fun i _ => by
+    rw [Complex.re_sum]
+    exact Finset.sum_nonneg fun j _ =>
+      hW (localCoeff (L i) (R j) X)
+        ((rank_localCoeff_le (L i) (R j) X).trans hrank)
+
+omit [Fintype A] [Fintype B] in
+/-- Pullback through local Kraus families preserves Hermiticity. -/
+theorem localKrausPullback_isHermitian
+    (L : P → Matrix C A ℂ) (R : Q → Matrix D B ℂ)
+    {W : Matrix (C × D) (C × D) ℂ} (hW : W.IsHermitian) :
+    (localKrausPullback L R W).IsHermitian := by
+  rw [Matrix.IsHermitian, localKrausPullback, Matrix.conjTranspose_sum]
+  exact Finset.sum_congr rfl fun i _ => by
+    rw [Matrix.conjTranspose_sum]
+    exact Finset.sum_congr rfl fun j _ => by
+      simp [Matrix.conjTranspose_mul, hW.eq, Matrix.mul_assoc]
+
+end LocalKraus
+
+section Aggregation
+
+variable {A B C D E P Q : Type*}
+  [Fintype A] [Fintype B] [Fintype C] [Fintype D]
+  [Fintype E] [Fintype P] [Fintype Q]
+
+/-- A weighted sum of witnesses pulled back through local Kraus families.
+The output and Kraus index types are common finite coordinate spaces; varying
+finite outputs can be embedded into a common direct-sum coordinate type. -/
+noncomputable def aggregateLocalWitness
+    (weights : E → ℝ)
+    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
+    (W : E → Matrix (C × D) (C × D) ℂ) :
+    Matrix (A × B) (A × B) ℂ :=
+  ∑ e, (weights e : ℂ) • localKrausPullback (L e) (R e) (W e)
+
+/-- Nonnegative weighted aggregation preserves block positivity. -/
+theorem aggregateLocalWitness_isBlockPositiveBetween {r : ℕ}
+    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
+    {W : E → Matrix (C × D) (C × D) ℂ}
+    (hW : ∀ e, IsBlockPositiveBetween r (W e)) :
+    IsBlockPositiveBetween r (aggregateLocalWitness weights L R W) := by
+  intro X hrank
+  rw [aggregateLocalWitness, qform_sum, Complex.re_sum]
+  exact Finset.sum_nonneg fun e _ => by
+    rw [qform_smul, Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im,
+      zero_mul, sub_zero]
+    exact mul_nonneg (hweights e)
+      (localKrausPullback_isBlockPositiveBetween
+        (L e) (R e) (hW e) X hrank)
+
+omit [Fintype A] [Fintype B] in
+/-- Nonnegative weighted aggregation of Hermitian witnesses is Hermitian. -/
+theorem aggregateLocalWitness_isHermitian
+    (weights : E → ℝ)
+    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
+    {W : E → Matrix (C × D) (C × D) ℂ}
+    (hW : ∀ e, (W e).IsHermitian) :
+    (aggregateLocalWitness weights L R W).IsHermitian := by
+  rw [Matrix.IsHermitian, aggregateLocalWitness, Matrix.conjTranspose_sum]
+  exact Finset.sum_congr rfl fun e _ => by
+    rw [Matrix.conjTranspose_smul]
+    rw [(localKrausPullback_isHermitian (L e) (R e) (hW e)).eq]
+    rw [RCLike.star_def, Complex.conj_ofReal]
+
+/-- The finite-coordinate local-channel aggregation theorem, stated at the
+Kraus level. -/
+theorem trace_mul_aggregateLocalWitness_nonneg {r : ℕ}
+    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
+    {W : E → Matrix (C × D) (C × D) ℂ}
+    (hWHerm : ∀ e, (W e).IsHermitian)
+    (hWBlock : ∀ e, IsBlockPositiveBetween r (W e))
+    {ρ : Matrix (A × B) (A × B) ℂ}
+    (hρ : SchmidtNumberLEBetween r ρ) :
+    0 ≤ ((aggregateLocalWitness weights L R W * ρ).trace).re :=
+  trace_mul_nonneg_of_schmidtNumberLEBetween
+    (aggregateLocalWitness_isHermitian weights L R hWHerm)
+    (aggregateLocalWitness_isBlockPositiveBetween hweights L R hWBlock) hρ
+
+/-- A negative aggregate energy certifies failure of the
+Schmidt-number-at-most-`r` promise. -/
+theorem not_schmidtNumberLEBetween_of_aggregateLocalWitness_neg {r : ℕ}
+    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
+    {W : E → Matrix (C × D) (C × D) ℂ}
+    (hWHerm : ∀ e, (W e).IsHermitian)
+    (hWBlock : ∀ e, IsBlockPositiveBetween r (W e))
+    {ρ : Matrix (A × B) (A × B) ℂ}
+    (hneg : ((aggregateLocalWitness weights L R W * ρ).trace).re < 0) :
+    ¬ SchmidtNumberLEBetween r ρ := by
+  intro hρ
+  exact (not_lt_of_ge
+    (trace_mul_aggregateLocalWitness_nonneg
+      hweights L R hWHerm hWBlock hρ)) hneg
+
+end Aggregation
+
+section DependentAggregation
+
+variable {A B E : Type*} [Fintype A] [Fintype B] [Fintype E]
+  {C D P Q : E → Type*}
+  [∀ e, Fintype (C e)] [∀ e, Fintype (D e)]
+  [∀ e, Fintype (P e)] [∀ e, Fintype (Q e)]
+
+/-- Local-witness aggregation with output spaces and Kraus index types allowed
+to depend on the term `e`. -/
+noncomputable def aggregateLocalWitnessDependent
+    (weights : E → ℝ)
+    (L : (e : E) → P e → Matrix (C e) A ℂ)
+    (R : (e : E) → Q e → Matrix (D e) B ℂ)
+    (W : (e : E) → Matrix (C e × D e) (C e × D e) ℂ) :
+    Matrix (A × B) (A × B) ℂ :=
+  ∑ e, (weights e : ℂ) • localKrausPullback (L e) (R e) (W e)
+
+/-- The varying-output aggregation is block positive. -/
+theorem aggregateLocalWitnessDependent_isBlockPositiveBetween {r : ℕ}
+    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (L : (e : E) → P e → Matrix (C e) A ℂ)
+    (R : (e : E) → Q e → Matrix (D e) B ℂ)
+    {W : (e : E) → Matrix (C e × D e) (C e × D e) ℂ}
+    (hW : ∀ e, IsBlockPositiveBetween r (W e)) :
+    IsBlockPositiveBetween r
+      (aggregateLocalWitnessDependent weights L R W) := by
+  intro X hrank
+  rw [aggregateLocalWitnessDependent, qform_sum, Complex.re_sum]
+  exact Finset.sum_nonneg fun e _ => by
+    rw [qform_smul, Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im,
+      zero_mul, sub_zero]
+    exact mul_nonneg (hweights e)
+      (localKrausPullback_isBlockPositiveBetween
+        (L e) (R e) (hW e) X hrank)
+
+omit [Fintype A] [Fintype B] in
+/-- The varying-output aggregation is Hermitian when every output witness is
+Hermitian. -/
+theorem aggregateLocalWitnessDependent_isHermitian
+    (weights : E → ℝ)
+    (L : (e : E) → P e → Matrix (C e) A ℂ)
+    (R : (e : E) → Q e → Matrix (D e) B ℂ)
+    {W : (e : E) → Matrix (C e × D e) (C e × D e) ℂ}
+    (hW : ∀ e, (W e).IsHermitian) :
+    (aggregateLocalWitnessDependent weights L R W).IsHermitian := by
+  rw [Matrix.IsHermitian, aggregateLocalWitnessDependent,
+    Matrix.conjTranspose_sum]
+  exact Finset.sum_congr rfl fun e _ => by
+    rw [Matrix.conjTranspose_smul]
+    rw [(localKrausPullback_isHermitian (L e) (R e) (hW e)).eq]
+    rw [RCLike.star_def, Complex.conj_ofReal]
+
+/-- The local-channel aggregation trace inequality with varying finite output
+spaces and varying finite Kraus families. -/
+theorem trace_mul_aggregateLocalWitnessDependent_nonneg {r : ℕ}
+    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (L : (e : E) → P e → Matrix (C e) A ℂ)
+    (R : (e : E) → Q e → Matrix (D e) B ℂ)
+    {W : (e : E) → Matrix (C e × D e) (C e × D e) ℂ}
+    (hWHerm : ∀ e, (W e).IsHermitian)
+    (hWBlock : ∀ e, IsBlockPositiveBetween r (W e))
+    {ρ : Matrix (A × B) (A × B) ℂ}
+    (hρ : SchmidtNumberLEBetween r ρ) :
+    0 ≤ ((aggregateLocalWitnessDependent weights L R W * ρ).trace).re :=
+  trace_mul_nonneg_of_schmidtNumberLEBetween
+    (aggregateLocalWitnessDependent_isHermitian weights L R hWHerm)
+    (aggregateLocalWitnessDependent_isBlockPositiveBetween
+      hweights L R hWBlock) hρ
+
+/-- Negative expectation of the varying-output aggregate certifies failure of
+the Schmidt-number-at-most-`r` promise. -/
+theorem not_schmidtNumberLEBetween_of_aggregateLocalWitnessDependent_neg
+    {r : ℕ}
+    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (L : (e : E) → P e → Matrix (C e) A ℂ)
+    (R : (e : E) → Q e → Matrix (D e) B ℂ)
+    {W : (e : E) → Matrix (C e × D e) (C e × D e) ℂ}
+    (hWHerm : ∀ e, (W e).IsHermitian)
+    (hWBlock : ∀ e, IsBlockPositiveBetween r (W e))
+    {ρ : Matrix (A × B) (A × B) ℂ}
+    (hneg :
+      ((aggregateLocalWitnessDependent weights L R W * ρ).trace).re < 0) :
+    ¬ SchmidtNumberLEBetween r ρ := by
+  intro hρ
+  exact (not_lt_of_ge
+    (trace_mul_aggregateLocalWitnessDependent_nonneg
+      hweights L R hWHerm hWBlock hρ)) hneg
+
+end DependentAggregation
+
+section ReductionAggregation
+
+variable {A B E P Q T : Type*}
+  [Fintype A] [Fintype B] [Fintype E] [Fintype P] [Fintype Q]
+  [Fintype T] [DecidableEq T]
+
+/-- The concrete local witness
+`(I - |Ω⟩⟨Ω|/r) ⊗ (I - |Ω⟩⟨Ω|/r)` is `r`-block-positive when
+`r ≤ d`. -/
+theorem productReductionChoi_inv_isBlockPositiveBetween
+    {r : ℕ} (hr : 0 < r) (hrT : r ≤ Fintype.card T)
+    (hTtwo : 2 ≤ Fintype.card T) :
+    IsBlockPositiveBetween r
+      (productReductionChoi (U := T) (V := T)
+        (1 / (r : ℝ)) (1 / (r : ℝ))) := by
+  change IsBlockPositive r
+    (productReductionChoi (U := T) (V := T)
+      (1 / (r : ℝ)) (1 / (r : ℝ)))
+  have hrR : (0 : ℝ) < r := by exact_mod_cast hr
+  apply (isBlockPositive_productReductionChoi_self_iff_le_inv_min
+    hr hTtwo (by positivity)).2
+  have hrTR : (r : ℝ) ≤ Fintype.card T := by exact_mod_cast hrT
+  rw [min_eq_left hrTR]
+
+/-- The local-Hamiltonian Schmidt-number certificate for a common local
+coordinate dimension.  Arbitrary local Kraus families are allowed; channel
+normalization is not required for the implication. -/
+theorem not_schmidtNumberLEBetween_of_reductionAggregate_neg
+    {r : ℕ} (hr : 0 < r) (hrT : r ≤ Fintype.card T)
+    (hTtwo : 2 ≤ Fintype.card T)
+    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (L : E → P → Matrix (T × T) A ℂ)
+    (R : E → Q → Matrix (T × T) B ℂ)
+    {ρ : Matrix (A × B) (A × B) ℂ}
+    (hneg :
+      ((aggregateLocalWitness weights L R
+        (fun _ => productReductionChoi (U := T) (V := T)
+          (1 / (r : ℝ)) (1 / (r : ℝ))) * ρ).trace).re < 0) :
+    ¬ SchmidtNumberLEBetween r ρ := by
+  apply not_schmidtNumberLEBetween_of_aggregateLocalWitness_neg
+    (W := fun _ => productReductionChoi (U := T) (V := T)
+      (1 / (r : ℝ)) (1 / (r : ℝ)))
+    hweights L R
+  · intro e
+    exact productReductionChoi_isHermitian (U := T) (V := T) _ _
+  · intro e
+    exact productReductionChoi_inv_isBlockPositiveBetween hr hrT hTtwo
+  · exact hneg
+
+end ReductionAggregation
+
+section DependentReductionAggregation
+
+variable {A B E : Type*} [Fintype A] [Fintype B] [Fintype E]
+  {T P Q : E → Type*}
+  [∀ e, Fintype (T e)] [∀ e, DecidableEq (T e)]
+  [∀ e, Fintype (P e)] [∀ e, Fintype (Q e)]
+
+/-- The local-Hamiltonian certificate with the local matched dimension and
+both Kraus index types allowed to vary with the term. -/
+theorem not_schmidtNumberLEBetween_of_dependentReductionAggregate_neg
+    {r : ℕ} (hr : 0 < r)
+    (hrT : ∀ e, r ≤ Fintype.card (T e))
+    (hTtwo : ∀ e, 2 ≤ Fintype.card (T e))
+    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (L : (e : E) → P e → Matrix (T e × T e) A ℂ)
+    (R : (e : E) → Q e → Matrix (T e × T e) B ℂ)
+    {ρ : Matrix (A × B) (A × B) ℂ}
+    (hneg :
+      ((aggregateLocalWitnessDependent weights L R
+        (fun e => productReductionChoi (U := T e) (V := T e)
+          (1 / (r : ℝ)) (1 / (r : ℝ))) * ρ).trace).re < 0) :
+    ¬ SchmidtNumberLEBetween r ρ := by
+  apply not_schmidtNumberLEBetween_of_aggregateLocalWitnessDependent_neg
+    (W := fun e => productReductionChoi (U := T e) (V := T e)
+      (1 / (r : ℝ)) (1 / (r : ℝ)))
+    hweights L R
+  · intro e
+    exact productReductionChoi_isHermitian (U := T e) (V := T e) _ _
+  · intro e
+    exact productReductionChoi_inv_isBlockPositiveBetween
+      hr (hrT e) (hTtwo e)
+  · exact hneg
+
+end DependentReductionAggregation
 
 end RankR

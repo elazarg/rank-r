@@ -2915,8 +2915,13 @@ witness expectations.  \texttt{GenericApplications.lean} extends the
 pure-state decomposition definition to rectangular bipartitions and proves
 the positive-map semidefinite cut of \cref{cor:positive-map-cut}, including
 the symmetric and asymmetric reduction-product specializations for arbitrary
-finite ancillas.  The local-channel applications at the end of
-\cref{app:generic} remain prose-only.
+finite ancillas.  The same file represents local channels by their finite
+Kraus families, proves rank monotonicity under each local Kraus pair, permits
+the output and Kraus index spaces to depend on the term, and proves
+\cref{prop:local-witness-aggregation,cor:local-hamiltonian-rank-certificate}
+in this coordinate form.  Trace preservation is not needed for either
+conclusion.  The positive-semidefinite shift and explicit energy-baseline
+remark following the corollary remain prose-only.
 
 \Cref{thm:amplification} is covered, in all four operator forms and for
 an arbitrary Kraus family: \texttt{Choi.lean} carries

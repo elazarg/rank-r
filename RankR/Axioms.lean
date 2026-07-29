@@ -334,6 +334,34 @@ Ky-Fan corollary. -/
 #guard_msgs in
 #print axioms productReduction_self_schmidtNumberLE_cut
 
+/-- info: 'RankR.qform_conj_rect' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_conj_rect
+
+/-- info: 'RankR.localKrausPullback_isBlockPositiveBetween' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms localKrausPullback_isBlockPositiveBetween
+
+/-- info: 'RankR.aggregateLocalWitnessDependent_isBlockPositiveBetween' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms aggregateLocalWitnessDependent_isBlockPositiveBetween
+
+/-- info: 'RankR.trace_mul_aggregateLocalWitnessDependent_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms trace_mul_aggregateLocalWitnessDependent_nonneg
+
+/-- info: 'RankR.not_schmidtNumberLEBetween_of_aggregateLocalWitnessDependent_neg' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms not_schmidtNumberLEBetween_of_aggregateLocalWitnessDependent_neg
+
+/-- info: 'RankR.not_schmidtNumberLEBetween_of_dependentReductionAggregate_neg' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms not_schmidtNumberLEBetween_of_dependentReductionAggregate_neg
+
 /-- info: 'RankR.staircaseP_eq_gamma_ratio' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms staircaseP_eq_gamma_ratio

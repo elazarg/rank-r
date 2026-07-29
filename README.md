@@ -133,7 +133,10 @@ Frobenius Ky Fan duality is the remaining operator-theoretic interface in the
 Kronecker and double-antisymmetric applications. `GenericApplications.lean`
 extends the decomposition definition to rectangular bipartitions and proves
 the positive-map semidefinite cut for arbitrary finite ancillas, including its
-symmetric and asymmetric reduction-product specializations.
+symmetric and asymmetric reduction-product specializations.  It also proves
+local Kraus pullback and nonnegative weighted aggregation for term-dependent
+finite output spaces and Kraus families, together with the concrete
+reduction-witness negative-energy certificate.
 The exact claim-by-claim boundary is maintained in `FORMALIZATION.md`.
 
 ### Two sharpenings not in the manuscript
@@ -316,7 +319,7 @@ revision.
 | `TraceSeparation` | mixed-state Schmidt-number cone, witness spectrum, Hermitian trace-norm separation |
 | `Kronecker` | Kronecker pairing, centered Cauchy--Schwarz, Frobenius rank-test bound, conditional Ky Fan conclusion |
 | `SchmidtWitness` | rank-four double-antisymmetric decomposition, \(W_2\), \(W_3\), and exact Schmidt number |
-| `GenericApplications` | rectangular Schmidt-number cone and reduction-product semidefinite cuts |
+| `GenericApplications` | rectangular Schmidt-number cone, semidefinite cuts, local Kraus aggregation, energy certificate |
 | `Axioms` | the axiom surface, checked by the build |
 
 Conceptually the proof has two halves joined in `Results`: the *reduction*
