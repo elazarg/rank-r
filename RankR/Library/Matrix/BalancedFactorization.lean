@@ -393,6 +393,18 @@ theorem hasBalancedRankFactorizations_of_constantDiagonals
     HasBalancedRankFactorizations W :=
   fun C => hasBalancedRankFactorization_of_constantDiagonals C (hdiag C.rank)
 
+/-- Every square complex matrix has a balanced exact-rank factorization. -/
+theorem hasBalancedRankFactorization (C : Matrix W W ℂ) :
+    HasBalancedRankFactorization C :=
+  hasBalancedRankFactorization_of_constantDiagonals C
+    (hasConstantDiagonals C.rank)
+
+/-- Every square complex matrix on `W` has a balanced exact-rank
+factorization. -/
+theorem hasBalancedRankFactorizations :
+    HasBalancedRankFactorizations W :=
+  fun C => hasBalancedRankFactorization C
+
 end Balance
 
 end RankR

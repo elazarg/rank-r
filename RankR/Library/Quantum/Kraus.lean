@@ -16,28 +16,6 @@ section Kraus
 
 variable {W : Type*} [Fintype W]
 
-/-- Conjugating a matrix by `A` pulls the test vector back through `Aᴴ`. -/
-theorem qform_conj (A Y : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
-    qform (A * Y * Aᴴ) x = qform Y (mulVecE Aᴴ x) := by
-  have hL : qform (A * Y * Aᴴ) x
-      = ∑ p, ∑ q, ∑ u, ∑ v, conj (x p) * A p u * Y u v * conj (A q v) * x q := by
-    simp only [qform]
-    refine Finset.sum_congr rfl fun p _ => Finset.sum_congr rfl fun q _ => ?_
-    rw [Finset.sum_comm]
-    simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, RCLike.star_def,
-      Finset.sum_mul, Finset.mul_sum]
-    exact Finset.sum_congr rfl fun v _ => Finset.sum_congr rfl fun u _ => by ring
-  have hR : qform Y (mulVecE Aᴴ x)
-      = ∑ u, ∑ v, ∑ p, ∑ q, conj (x p) * A p u * Y u v * conj (A q v) * x q := by
-    simp only [qform]
-    refine Finset.sum_congr rfl fun u _ => Finset.sum_congr rfl fun v _ => ?_
-    rw [Finset.sum_comm]
-    simp only [mulVecE_apply, Matrix.conjTranspose_apply, RCLike.star_def,
-      map_sum, map_mul, Complex.conj_conj, Finset.sum_mul, Finset.mul_sum]
-    exact Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => by ring
-  rw [hL, hR]
-  exact sum4_swap fun u v p q => conj (x p) * A p u * Y u v * conj (A q v) * x q
-
 /-- The Kraus sum `Y ↦ ∑ₐ Kₐ Y Kₐᴴ` with Kraus operators `K`. -/
 def krausSum {ι : Type*} [Fintype ι] (K : ι → Matrix W W ℂ) (Y : Matrix W W ℂ) :
     Matrix W W ℂ := ∑ a, K a * Y * (K a)ᴴ

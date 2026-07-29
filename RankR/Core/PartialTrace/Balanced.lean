@@ -94,6 +94,15 @@ theorem partialTrace_of_balancedRankFactorizations
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
   partialTrace_of_hasBalancedRankFactorization C (hbal C) r hrank
 
+/-- The rank-`r` partial-trace inequality obtained through balanced
+factorization and crossed polarization. -/
+theorem partialTrace_via_balancedPolarization
+    (r : ℕ) (hrank : C.rank ≤ r) :
+    hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
+      ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
+  partialTrace_of_balancedRankFactorizations
+    (C := C) hasBalancedRankFactorizations r hrank
+
 end ExactRank
 
 end RankR

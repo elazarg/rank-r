@@ -19,8 +19,8 @@ proofs in declarations not reachable from anything listed here.  For those, the
 following should print nothing (it excludes this file, whose prose would
 otherwise match itself):
 
-    grep -rn '^\s*axiom\s\|native_decide\|set_option\|\bsorry\b' \
-      RankR/ RankR.lean --exclude=Axioms.lean
+    rg -n '^\s*axiom\s|native_decide|set_option|\bsorry\b' \
+      RankR RankR.lean -g '!RankR/Verification/Axioms/All.lean'
 -/
 import RankR.Core.PartialTrace.BlockPositivity
 import RankR.Core.DoubleSkew.Extend
@@ -138,6 +138,14 @@ theorem. -/
 #guard_msgs in
 #print axioms hasConstantDiagonals_of_traceEntry
 
+/-- info: 'RankR.hasTraceEntry' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms hasTraceEntry
+
+/-- info: 'RankR.hasConstantDiagonals' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms hasConstantDiagonals
+
 /--
 info: 'RankR.hasBalancedRankFactorization_of_equalGram_of_constantDiagonals' depends on axioms: [propext,
  Classical.choice,
@@ -153,6 +161,14 @@ info: 'RankR.hasBalancedRankFactorization_of_equalGram_of_constantDiagonals' dep
 /-- info: 'RankR.hasBalancedRankFactorizations_of_constantDiagonals' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms hasBalancedRankFactorizations_of_constantDiagonals
+
+/-- info: 'RankR.hasBalancedRankFactorizations' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms hasBalancedRankFactorizations
+
+/-- info: 'RankR.partialTrace_via_balancedPolarization' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms partialTrace_via_balancedPolarization
 
 /-! ## Applications
 
