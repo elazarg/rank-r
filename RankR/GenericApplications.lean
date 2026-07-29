@@ -324,6 +324,12 @@ noncomputable def localKrausPullback
     (localKrausMatrix (L i) (R j))ᴴ * W *
       localKrausMatrix (L i) (R j)
 
+/-- Kraus completeness, equivalently trace preservation of the associated
+finite Kraus map. -/
+def IsTracePreservingKraus [DecidableEq A]
+    (L : P → Matrix C A ℂ) : Prop :=
+  ∑ i, (L i)ᴴ * L i = 1
+
 /-- The quadratic form of a local Kraus pullback is the sum of the output
 witness forms on all locally transformed coefficient matrices. -/
 theorem qform_localKrausPullback
@@ -363,6 +369,91 @@ theorem localKrausPullback_isHermitian
     rw [Matrix.conjTranspose_sum]
     exact Finset.sum_congr rfl fun j _ => by
       simp [Matrix.conjTranspose_mul, hW.eq, Matrix.mul_assoc]
+
+/-- Pullback through local Kraus families preserves positive
+semidefiniteness. -/
+theorem localKrausPullback_posSemidef
+    (L : P → Matrix C A ℂ) (R : Q → Matrix D B ℂ)
+    {W : Matrix (C × D) (C × D) ℂ} (hW : W.PosSemidef) :
+    (localKrausPullback L R W).PosSemidef := by
+  rw [localKrausPullback]
+  exact (Finset.sum_nonneg fun i _ =>
+    (Finset.sum_nonneg fun j _ =>
+      (hW.conjTranspose_mul_mul_same
+        (localKrausMatrix (L i) (R j))).nonneg).posSemidef.nonneg).posSemidef
+
+omit [Fintype A] [Fintype B] in
+/-- Local Kraus pullback is additive. -/
+theorem localKrausPullback_add
+    (L : P → Matrix C A ℂ) (R : Q → Matrix D B ℂ)
+    (W Z : Matrix (C × D) (C × D) ℂ) :
+    localKrausPullback L R (W + Z) =
+      localKrausPullback L R W + localKrausPullback L R Z := by
+  simp only [localKrausPullback, Matrix.mul_add, Matrix.add_mul,
+    Finset.sum_add_distrib]
+
+omit [Fintype A] [Fintype B] in
+/-- Local Kraus pullback commutes with scalar multiplication. -/
+theorem localKrausPullback_smul
+    (L : P → Matrix C A ℂ) (R : Q → Matrix D B ℂ)
+    (c : ℂ) (W : Matrix (C × D) (C × D) ℂ) :
+    localKrausPullback L R (c • W) =
+      c • localKrausPullback L R W := by
+  simp only [localKrausPullback, Matrix.mul_smul, Matrix.smul_mul,
+    Finset.smul_sum]
+
+omit [Fintype A] [Fintype B] in
+/-- Local Kraus pullback commutes with subtraction. -/
+theorem localKrausPullback_sub
+    (L : P → Matrix C A ℂ) (R : Q → Matrix D B ℂ)
+    (W Z : Matrix (C × D) (C × D) ℂ) :
+    localKrausPullback L R (W - Z) =
+      localKrausPullback L R W - localKrausPullback L R Z := by
+  simp only [localKrausPullback, Matrix.mul_sub, Matrix.sub_mul,
+    Finset.sum_sub_distrib]
+
+omit [Fintype A] [Fintype B] in
+/-- The adjoint of a product of trace-preserving local Kraus maps is unital. -/
+theorem localKrausPullback_one
+    [DecidableEq A] [DecidableEq B] [DecidableEq C] [DecidableEq D]
+    (L : P → Matrix C A ℂ) (R : Q → Matrix D B ℂ)
+    (hL : IsTracePreservingKraus L)
+    (hR : IsTracePreservingKraus R) :
+    localKrausPullback L R
+        (1 : Matrix (C × D) (C × D) ℂ) =
+      (1 : Matrix (A × B) (A × B) ℂ) := by
+  ext ⟨a, b⟩ ⟨a', b'⟩
+  have hLa := congrArg (fun M : Matrix A A ℂ => M a a') hL
+  have hRb := congrArg (fun M : Matrix B B ℂ => M b b') hR
+  simp only [Matrix.sum_apply, Matrix.one_apply] at hLa hRb
+  simp only [localKrausPullback, Matrix.sum_apply, Matrix.mul_one,
+    localKrausMatrix, Matrix.conjTranspose_kronecker, Matrix.one_apply]
+  simp_rw [← Matrix.mul_kronecker_mul, Matrix.kroneckerMap_apply]
+  calc
+    (∑ i, ∑ j, ((L i)ᴴ * L i) a a' * ((R j)ᴴ * R j) b b') =
+        (∑ i, ((L i)ᴴ * L i) a a') *
+          (∑ j, ((R j)ᴴ * R j) b b') := by
+            rw [Finset.sum_mul_sum]
+    _ = (if a = a' then 1 else 0) * (if b = b' then 1 else 0) := by
+      rw [hLa, hRb]
+    _ = if (a, b) = (a', b') then 1 else 0 := by
+      by_cases ha : a = a' <;> by_cases hb : b = b' <;> simp [ha, hb]
+
+omit [Fintype A] [Fintype B] in
+/-- Under Kraus completeness, shifting the output witness shifts its pullback
+by the same scalar identity. -/
+theorem localKrausPullback_sub_smul_one
+    [DecidableEq A] [DecidableEq B] [DecidableEq C] [DecidableEq D]
+    (L : P → Matrix C A ℂ) (R : Q → Matrix D B ℂ)
+    (hL : IsTracePreservingKraus L)
+    (hR : IsTracePreservingKraus R)
+    (W : Matrix (C × D) (C × D) ℂ) (c : ℂ) :
+    localKrausPullback L R
+        (W - c • (1 : Matrix (C × D) (C × D) ℂ)) =
+      localKrausPullback L R W -
+        c • (1 : Matrix (A × B) (A × B) ℂ) := by
+  rw [localKrausPullback_sub, localKrausPullback_smul,
+    localKrausPullback_one L R hL hR]
 
 end LocalKraus
 
@@ -533,6 +624,101 @@ theorem not_schmidtNumberLEBetween_of_aggregateLocalWitnessDependent_neg
     (trace_mul_aggregateLocalWitnessDependent_nonneg
       hweights L R hWHerm hWBlock hρ)) hneg
 
+omit [Fintype A] [Fintype B] in
+/-- Under trace-preserving local Kraus maps, shifting every output witness by
+`μ_e I` shifts the aggregate by exactly `(∑ e, w_e μ_e) I`. -/
+theorem aggregateLocalWitnessDependent_shift_eq
+    [DecidableEq A] [DecidableEq B]
+    [∀ e, DecidableEq (C e)] [∀ e, DecidableEq (D e)]
+    (weights mu : E → ℝ)
+    (L : (e : E) → P e → Matrix (C e) A ℂ)
+    (R : (e : E) → Q e → Matrix (D e) B ℂ)
+    (hL : ∀ e, IsTracePreservingKraus (L e))
+    (hR : ∀ e, IsTracePreservingKraus (R e))
+    (W : (e : E) → Matrix (C e × D e) (C e × D e) ℂ) :
+    aggregateLocalWitnessDependent weights L R
+        (fun e => W e -
+          (mu e : ℂ) •
+            (1 : Matrix (C e × D e) (C e × D e) ℂ)) =
+      aggregateLocalWitnessDependent weights L R W -
+        ((∑ e, weights e * mu e : ℝ) : ℂ) •
+          (1 : Matrix (A × B) (A × B) ℂ) := by
+  rw [aggregateLocalWitnessDependent, aggregateLocalWitnessDependent]
+  calc
+    (∑ e, (weights e : ℂ) •
+        localKrausPullback (L e) (R e)
+          (W e - (mu e : ℂ) •
+            (1 : Matrix (C e × D e) (C e × D e) ℂ))) =
+      ∑ e, (weights e : ℂ) •
+        (localKrausPullback (L e) (R e) (W e) -
+          (mu e : ℂ) • (1 : Matrix (A × B) (A × B) ℂ)) := by
+            exact Finset.sum_congr rfl fun e _ => by
+              rw [localKrausPullback_sub_smul_one
+                (L e) (R e) (hL e) (hR e)]
+    _ = (∑ e, (weights e : ℂ) •
+          localKrausPullback (L e) (R e) (W e)) -
+        ((∑ e, weights e * mu e : ℝ) : ℂ) •
+          (1 : Matrix (A × B) (A × B) ℂ) := by
+            simp_rw [smul_sub, smul_smul]
+            rw [Finset.sum_sub_distrib, ← Finset.sum_smul]
+            congr 2
+            norm_cast
+
+/-- Nonnegative weighted aggregation preserves positivity after each output
+witness has been shifted to be positive semidefinite. -/
+theorem aggregateLocalWitnessDependent_shift_posSemidef
+    [DecidableEq A] [DecidableEq B]
+    [∀ e, DecidableEq (C e)] [∀ e, DecidableEq (D e)]
+    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (mu : E → ℝ)
+    (L : (e : E) → P e → Matrix (C e) A ℂ)
+    (R : (e : E) → Q e → Matrix (D e) B ℂ)
+    {W : (e : E) → Matrix (C e × D e) (C e × D e) ℂ}
+    (hshift : ∀ e,
+      (W e - (mu e : ℂ) •
+        (1 : Matrix (C e × D e) (C e × D e) ℂ)).PosSemidef) :
+    (aggregateLocalWitnessDependent weights L R
+      (fun e => W e - (mu e : ℂ) •
+        (1 : Matrix (C e × D e) (C e × D e) ℂ))).PosSemidef := by
+  rw [aggregateLocalWitnessDependent]
+  exact
+    (Finset.sum_nonneg fun e _ =>
+      ((localKrausPullback_posSemidef (L e) (R e) (hshift e)).smul
+        ((RCLike.ofReal_nonneg (K := ℂ)).mpr (hweights e))).nonneg).posSemidef
+
+/-- For a normalized state of Schmidt number at most `r`, the shifted local
+aggregate is bounded below by the explicit scalar baseline
+`-∑ e, w_e μ_e`. -/
+theorem trace_mul_aggregateLocalWitnessDependent_shift_lower
+    [DecidableEq A] [DecidableEq B]
+    [∀ e, DecidableEq (C e)] [∀ e, DecidableEq (D e)]
+    {r : ℕ} {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (mu : E → ℝ)
+    (L : (e : E) → P e → Matrix (C e) A ℂ)
+    (R : (e : E) → Q e → Matrix (D e) B ℂ)
+    (hL : ∀ e, IsTracePreservingKraus (L e))
+    (hR : ∀ e, IsTracePreservingKraus (R e))
+    {W : (e : E) → Matrix (C e × D e) (C e × D e) ℂ}
+    (hWHerm : ∀ e, (W e).IsHermitian)
+    (hWBlock : ∀ e, IsBlockPositiveBetween r (W e))
+    {ρ : Matrix (A × B) (A × B) ℂ}
+    (hρ : SchmidtNumberLEBetween r ρ) (htrace : ρ.trace = 1) :
+    -(∑ e, weights e * mu e) ≤
+      ((aggregateLocalWitnessDependent weights L R
+        (fun e => W e - (mu e : ℂ) •
+          (1 : Matrix (C e × D e) (C e × D e) ℂ)) * ρ).trace).re := by
+  have hnonneg :=
+    trace_mul_aggregateLocalWitnessDependent_nonneg
+      hweights L R hWHerm hWBlock hρ
+  rw [aggregateLocalWitnessDependent_shift_eq
+    weights mu L R hL hR W]
+  simp only [Matrix.sub_mul, Matrix.smul_mul, Matrix.one_mul,
+    Matrix.trace_sub, Matrix.trace_smul, htrace, smul_eq_mul, mul_one]
+  change -(∑ e, weights e * mu e) ≤
+    (aggregateLocalWitnessDependent weights L R W * ρ).trace.re -
+      ∑ e, weights e * mu e
+  linarith
+
 end DependentAggregation
 
 section ReductionAggregation
@@ -558,6 +744,41 @@ theorem productReductionChoi_inv_isBlockPositiveBetween
     hr hTtwo (by positivity)).2
   have hrTR : (r : ℝ) ≤ Fintype.card T := by exact_mod_cast hrT
   rw [min_eq_left hrTR]
+
+/-- The displayed shift by `1 - d/r` makes the concrete local witness positive
+semidefinite.  This is the order-theoretic content of the minimum-eigenvalue
+claim in the positive-pullback remark. -/
+theorem productReductionChoi_inv_shift_posSemidef
+    {r : ℕ} (hr : 0 < r) (hrT : r ≤ Fintype.card T) :
+    (productReductionChoi (U := T) (V := T)
+        (1 / (r : ℝ)) (1 / (r : ℝ))
+      - (((1 : ℝ) - Fintype.card T / r : ℝ) : ℂ) • 1).PosSemidef := by
+  let γ := traceSeparationGamma (T := T) r
+  have hTpos : 0 < Fintype.card T := hr.trans_le hrT
+  have hrR : (0 : ℝ) < r := by exact_mod_cast hr
+  have hγ : 0 ≤ γ := by
+    dsimp only [γ, traceSeparationGamma]
+    rw [sub_nonneg, le_div_iff₀ hrR]
+    have hrTR : (r : ℝ) ≤ Fintype.card T := by exact_mod_cast hrT
+    simpa using hrTR
+  have heq :
+      productReductionChoi (U := T) (V := T)
+          (1 / (r : ℝ)) (1 / (r : ℝ))
+        - (((1 : ℝ) - Fintype.card T / r : ℝ) : ℂ) • 1 =
+      (((1 + γ : ℝ) : ℂ) • twoCopySectorCC (T := T))
+        + (((γ + γ ^ 2 : ℝ) : ℂ) • twoCopySectorPP (T := T)) := by
+    rw [productReductionChoi_inv_eq_twoCopySectors hr hTpos,
+      ← twoCopySectors_sum (T := T)]
+    dsimp only [γ, traceSeparationGamma]
+    module
+  rw [heq]
+  exact
+    ((twoCopySectorCC_posSemidef hTpos).smul
+      ((RCLike.ofReal_nonneg (K := ℂ)).mpr
+        (add_nonneg zero_le_one hγ))).add
+    ((twoCopySectorPP_posSemidef hTpos).smul
+      ((RCLike.ofReal_nonneg (K := ℂ)).mpr
+        (add_nonneg hγ (sq_nonneg γ))))
 
 /-- The local-Hamiltonian Schmidt-number certificate for a common local
 coordinate dimension.  Arbitrary local Kraus families are allowed; channel
@@ -618,6 +839,71 @@ theorem not_schmidtNumberLEBetween_of_dependentReductionAggregate_neg
     exact productReductionChoi_inv_isBlockPositiveBetween
       hr (hrT e) (hTtwo e)
   · exact hneg
+
+/-- The weighted aggregate of the concretely shifted reduction-product
+witnesses is positive semidefinite. -/
+theorem dependentReductionAggregate_shift_posSemidef
+    [DecidableEq A] [DecidableEq B]
+    {r : ℕ} (hr : 0 < r)
+    (hrT : ∀ e, r ≤ Fintype.card (T e))
+    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (L : (e : E) → P e → Matrix (T e × T e) A ℂ)
+    (R : (e : E) → Q e → Matrix (T e × T e) B ℂ) :
+    (aggregateLocalWitnessDependent weights L R
+      (fun e =>
+        productReductionChoi (U := T e) (V := T e)
+            (1 / (r : ℝ)) (1 / (r : ℝ)) -
+          (((1 : ℝ) - Fintype.card (T e) / r : ℝ) : ℂ) •
+            (1 : Matrix
+              ((T e × T e) × (T e × T e))
+              ((T e × T e) × (T e × T e)) ℂ))).PosSemidef := by
+  apply aggregateLocalWitnessDependent_shift_posSemidef
+    hweights
+    (mu := fun e => (1 : ℝ) - Fintype.card (T e) / r)
+    L R
+  intro e
+  exact productReductionChoi_inv_shift_posSemidef hr (hrT e)
+
+/-- The concrete reduction-product construction has the explicit normalized
+energy baseline `∑ e, w_e (d_e / r - 1)`. -/
+theorem trace_mul_dependentReductionAggregate_shift_lower
+    [DecidableEq A] [DecidableEq B]
+    {r : ℕ} (hr : 0 < r)
+    (hrT : ∀ e, r ≤ Fintype.card (T e))
+    (hTtwo : ∀ e, 2 ≤ Fintype.card (T e))
+    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (L : (e : E) → P e → Matrix (T e × T e) A ℂ)
+    (R : (e : E) → Q e → Matrix (T e × T e) B ℂ)
+    (hL : ∀ e, IsTracePreservingKraus (L e))
+    (hR : ∀ e, IsTracePreservingKraus (R e))
+    {ρ : Matrix (A × B) (A × B) ℂ}
+    (hρ : SchmidtNumberLEBetween r ρ) (htrace : ρ.trace = 1) :
+    (∑ e, weights e *
+      (Fintype.card (T e) / r - 1 : ℝ)) ≤
+      ((aggregateLocalWitnessDependent weights L R
+        (fun e =>
+          productReductionChoi (U := T e) (V := T e)
+              (1 / (r : ℝ)) (1 / (r : ℝ)) -
+            (((1 : ℝ) - Fintype.card (T e) / r : ℝ) : ℂ) •
+              (1 : Matrix
+                ((T e × T e) × (T e × T e))
+                ((T e × T e) × (T e × T e)) ℂ)) * ρ).trace).re := by
+  have hbase :=
+    trace_mul_aggregateLocalWitnessDependent_shift_lower
+      hweights
+      (mu := fun e => (1 : ℝ) - Fintype.card (T e) / r)
+      L R hL hR
+      (W := fun e =>
+        productReductionChoi (U := T e) (V := T e)
+          (1 / (r : ℝ)) (1 / (r : ℝ)))
+      (fun e => productReductionChoi_isHermitian
+        (U := T e) (V := T e) _ _)
+      (fun e => productReductionChoi_inv_isBlockPositiveBetween
+        hr (hrT e) (hTtwo e))
+      hρ htrace
+  convert hbase using 1
+  rw [← Finset.sum_neg_distrib]
+  exact Finset.sum_congr rfl fun e _ => by ring
 
 end DependentReductionAggregation
 

@@ -2920,8 +2920,16 @@ Kraus families, proves rank monotonicity under each local Kraus pair, permits
 the output and Kraus index spaces to depend on the term, and proves
 \cref{prop:local-witness-aggregation,cor:local-hamiltonian-rank-certificate}
 in this coordinate form.  Trace preservation is not needed for either
-conclusion.  The positive-semidefinite shift and explicit energy-baseline
-remark following the corollary remain prose-only.
+conclusion.  For the subsequent remark,
+\texttt{localKrausPullback\_one} proves unitality from Kraus completeness,
+\texttt{aggregateLocalWitnessDependent\_shift\_eq} proves the exact weighted
+shift identity, and
+\texttt{dependentReductionAggregate\_shift\_posSemidef} together with
+\texttt{trace\_mul\_dependentReductionAggregate\_shift\_lower} proves
+positive semidefiniteness and the displayed energy baseline.  The sector
+decomposition proves that the shift by $1-d_e/r$ is positive semidefinite;
+identifying it through a literal minimum-eigenvalue API remains a
+finite-coordinate rendering step.
 
 \Cref{thm:amplification} is covered, in all four operator forms and for
 an arbitrary Kraus family: \texttt{Choi.lean} carries

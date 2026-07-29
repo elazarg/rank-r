@@ -362,6 +362,38 @@ Ky-Fan corollary. -/
 #guard_msgs in
 #print axioms not_schmidtNumberLEBetween_of_dependentReductionAggregate_neg
 
+/-- info: 'RankR.localKrausPullback_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms localKrausPullback_one
+
+/-- info: 'RankR.localKrausPullback_posSemidef' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms localKrausPullback_posSemidef
+
+/-- info: 'RankR.aggregateLocalWitnessDependent_shift_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms aggregateLocalWitnessDependent_shift_eq
+
+/-- info: 'RankR.aggregateLocalWitnessDependent_shift_posSemidef' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms aggregateLocalWitnessDependent_shift_posSemidef
+
+/-- info: 'RankR.trace_mul_aggregateLocalWitnessDependent_shift_lower' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms trace_mul_aggregateLocalWitnessDependent_shift_lower
+
+/-- info: 'RankR.productReductionChoi_inv_shift_posSemidef' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms productReductionChoi_inv_shift_posSemidef
+
+/-- info: 'RankR.dependentReductionAggregate_shift_posSemidef' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms dependentReductionAggregate_shift_posSemidef
+
+/-- info: 'RankR.trace_mul_dependentReductionAggregate_shift_lower' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms trace_mul_dependentReductionAggregate_shift_lower
+
 /-- info: 'RankR.staircaseP_eq_gamma_ratio' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms staircaseP_eq_gamma_ratio

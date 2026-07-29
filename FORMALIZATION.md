@@ -85,7 +85,7 @@ extended-real-infimum layer.
 | positive-map semidefinite cut | **Checked** in finite coordinates | `SchmidtNumberLEBetween` handles arbitrary rectangular ancillas; `mapAmplification_posSemidef_of_schmidtNumberLEBetween` proves the generic Choi cut; `productReduction_schmidtNumberLE_cut` and its symmetric specialization instantiate the all-rank reduction-product threshold |
 | local-channel aggregation | **Checked** at the finite Kraus level | `localKrausPullback` is the coordinate adjoint action; `rank_localCoeff_le` proves local rank monotonicity; `aggregateLocalWitnessDependent_isBlockPositiveBetween` and `trace_mul_aggregateLocalWitnessDependent_nonneg` allow term-dependent output spaces and Kraus index types; trace preservation is unnecessary for the conclusion |
 | local-Hamiltonian Schmidt-number certificate | **Checked** in finite coordinates | `not_schmidtNumberLEBetween_of_dependentReductionAggregate_neg` specializes the varying-output aggregation to the displayed reduction-product witnesses and proves that negative expectation refutes `SchmidtNumberLEBetween r` |
-| positive-semidefinite shifted pullbacks and explicit energy baseline | **Open formalization** | positivity of individual pullbacks is standard matrix order; the channel completeness identity, minimum-eigenvalue shift, and displayed baseline have not been composed |
+| positive-semidefinite shifted pullbacks and explicit energy baseline | **Checked core** in finite coordinates | `localKrausPullback_posSemidef` proves positivity of each pullback; `localKrausPullback_one` proves unitality from Kraus completeness; `aggregateLocalWitnessDependent_shift_eq` gives the exact weighted identity; `dependentReductionAggregate_shift_posSemidef` and `trace_mul_dependentReductionAggregate_shift_lower` prove the displayed positive-semidefinite aggregate and baseline. `productReductionChoi_inv_shift_posSemidef` proves that shifting by `1-d/r` is valid; packaging this scalar as a literal minimum eigenvalue still requires a nonzero sector-attainment/eigenvalue interface. |
 | rigidity of the diagonal embedding among linear encodings | **Checked** | `Rigidity.lean`; linear expansion, positivity of point masses, and both marginal hypotheses are explicit |
 
 ## Higher Choi constants note
@@ -153,10 +153,11 @@ The shortest route to a fully formalized application suite is:
 
 1. prove `KyFanFrobeniusDuality`, the equality between `kyFanSq` and
    `frobeniusRankTestSq`;
-2. add projection duality and the mixed-state decompositions for the
-   antisymmetric-projector applications;
-3. define pure-vector Schmidt rank and identify it with matrix rank under
+2. define pure-vector Schmidt rank and identify it with matrix rank under
    `vec`, closing the remaining wording-level interfaces;
+3. package the reduction-product sector lower bound and a nonzero attaining
+   sector as the literal minimum-eigenvalue statement used by the shifted
+   local-Hamiltonian remark;
 4. add isotropic states and the product-isotropic twirl;
 5. add operator systems/free spectrahedra for the graph-inclusion translation.
 
