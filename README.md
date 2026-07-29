@@ -15,11 +15,11 @@ Let $\Phi$ be a completely positive map and let
 
 $$
 \beta _2(\Phi)
-=\frac12\sup_{\operatorname{SR}(z)\le 2,\ \lVert z\rVert=1}
+=\frac12\sup_{\mathrm{SR}(z)\le 2,\ \lVert z\rVert=1}
   \langle z,J(\Phi)z\rangle .
 $$
 
-Here $J(\Phi)$ is the Choi operator and $\operatorname{SR}$ denotes
+Here $J(\Phi)$ is the Choi operator and $\mathrm{SR}$ denotes
 Schmidt rank. Equivalently, $\beta _2(\Phi)$ measures the largest total
 action of a normalized linear combination of Kraus operators on an
 orthonormal pair. The main theorem proves, for every integer $r\ge1$, that
@@ -27,11 +27,11 @@ orthonormal pair. The main theorem proves, for every integer $r\ge1$, that
 $$
 \Phi\circ\tau
 +(r-1)\beta _2(\Phi)
-  \left(\Delta-\frac1r\operatorname{id}\right)
+  \left(\Delta-\frac1r\mathrm{id}\right)
 $$
 
 is $r$-positive whenever the Kraus space of $\Phi$ is fixed by transpose.
-Here $\tau$ is transpose and $\Delta(X)=\operatorname{Tr}(X)I$. Without the
+Here $\tau$ is transpose and $\Delta(X)=\mathrm{Tr}(X)I$. Without the
 transpose symmetry, the unprotected correction
 
 $$
@@ -46,7 +46,7 @@ The proof decomposes the negative Choi sector into the edges of a complete
 graph. Each edge is controlled by the rank-two input, while the vertex degree
 $r-1$ determines the amplification coefficient. Transpose symmetry removes
 one scalar direction and produces the protected
-$-\operatorname{id}/r$ term. Graph examples show that the universal
+$-\mathrm{id}/r$ term. Graph examples show that the universal
 coefficient cannot be improved.
 
 For the concrete double-skew Kraus family, the local constant is at most one
@@ -55,11 +55,11 @@ two. After a map identity and four elementary Choi contractions, the lift
 gives the flagship inequality
 
 $$
-\lVert\operatorname{Tr}_U C\rVert_2^2
-+\lVert\operatorname{Tr}_V C\rVert_2^2
+\lVert\mathrm{Tr}_U C\rVert_2^2
++\lVert\mathrm{Tr}_V C\rVert_2^2
 \le
-r\lVert C\rVert_2^2+\frac1r|\operatorname{Tr}C|^2,
-\qquad \operatorname{rank}C\le r .
+r\lVert C\rVert_2^2+\frac1r|\mathrm{Tr}C|^2,
+\qquad \mathrm{rank}(C)\le r .
 $$
 
 Both coefficients are dimension-uniform and sharp in the ranges stated in the
