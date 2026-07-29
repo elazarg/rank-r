@@ -1054,7 +1054,8 @@ particularly simple tensor-product reduction map does not.
 
 The finite-coordinate development proves \cref{thm:double-skew}, both the
 protected and unprotected parts of \cref{thm:lift},
-\cref{cor:beta-upper}, \cref{thm:marginal,thm:graph}, the exact-rank
+\cref{cor:beta-upper},
+\cref{thm:marginal,cor:spectral-stability,thm:graph}, the exact-rank
 extension, both optimality witnesses, and the parity counterexample.  The
 accompanying repository
 \cite{RankRRepository} is cited at the immutable revision inspected for this
@@ -1079,7 +1080,10 @@ also constructs the exact-rank equal-Gram factorization by spectral mixing and
 fourth-root rescaling, and checks that constant-diagonal unitary mixing
 balances it without changing the represented matrix.  The trace-entry
 construction and Parker--Fillmore constant-diagonal induction are formalized
-as part of that route.
+as part of that route.  Starting from the exact-rank singular factorization,
+the same unitary mixing preserves the centered Gram norm and identifies it
+with the variance of the positive singular values, yielding
+\cref{cor:spectral-stability}.
 
 \appendix
 
@@ -1279,9 +1283,9 @@ W. V. Parker.
 \bibitem{RankRRepository}
 Elazar Gershuni.
 \newblock \emph{Rank-$r$ partial-trace formalization}.
-\newblock Lean~4 source, commit \texttt{12e7bd0}, July 29, 2026.
+\newblock Lean~4 source, commit \texttt{0092628}, July 29, 2026.
 \newblock
-\url{https://github.com/elazarg/rank-r/tree/12e7bd0e2385599c18cbfdd8ee84dbdecb84094d}
+\url{https://github.com/elazarg/rank-r/tree/00926283fe5627875d03339554c3b7713ba4e93b}
 
 \bibitem{SongChen2026}
 Zhiwei Song and Lin Chen.
