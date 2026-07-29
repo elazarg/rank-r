@@ -614,10 +614,9 @@ theorem staircaseState_normalized_posSemidef
   constructor
   · rw [staircaseState]
     apply Matrix.PosSemidef.add
-    · apply hseed.smul
-      exact (RCLike.ofReal_nonneg (K := ℂ)).mpr hp0
-    · apply hnoise.smul
-      exact (RCLike.ofReal_nonneg (K := ℂ)).mpr (sub_nonneg.mpr hp1)
+    · exact hseed.smul ((RCLike.ofReal_nonneg (K := ℂ)).mpr hp0)
+    · exact hnoise.smul
+        ((RCLike.ofReal_nonneg (K := ℂ)).mpr (sub_nonneg.mpr hp1))
   · rw [staircaseState, Matrix.trace_add, Matrix.trace_smul,
       Matrix.trace_smul, staircaseSeedState, staircaseWhiteNoiseState,
       trace_biIsotropicState hU hV, trace_biIsotropicState hU hV]
@@ -745,10 +744,9 @@ theorem staircaseBoundaryState_normalized_posSemidef
   constructor
   · rw [staircaseBoundaryState]
     apply Matrix.PosSemidef.add
-    · apply hfirst.smul
-      exact (RCLike.ofReal_nonneg (K := ℂ)).mpr (sub_nonneg.mpr hα1)
-    · apply hsecond.smul
-      exact (RCLike.ofReal_nonneg (K := ℂ)).mpr hα0
+    · exact hfirst.smul
+        ((RCLike.ofReal_nonneg (K := ℂ)).mpr (sub_nonneg.mpr hα1))
+    · exact hsecond.smul ((RCLike.ofReal_nonneg (K := ℂ)).mpr hα0)
   · exact trace_staircaseBoundaryState hU hV k α
 
 theorem biIsotropicMomentU_staircaseState

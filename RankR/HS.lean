@@ -251,13 +251,15 @@ theorem hsInner_neg_neg (A B : Matrix m n ℂ) : hsInner (-A) (-B) = hsInner A B
   simp [hsInner]
 
 /-- `hsInner` is additive in its first argument, over an arbitrary finite index. -/
-theorem hsInner_sum_left {ι : Type*} [Fintype ι] (A : ι → Matrix m n ℂ) (B : Matrix m n ℂ) :
+theorem hsInner_sum_left {ι : Type*} [Fintype ι]
+    (A : ι → Matrix m n ℂ) (B : Matrix m n ℂ) :
     hsInner (∑ a, A a) B = ∑ a, hsInner (A a) B := by
   simp only [hsInner, Matrix.conjTranspose_sum]
   rw [Matrix.sum_mul, Matrix.trace_sum]
 
 /-- `hsInner` is additive in its second argument, over an arbitrary finite index. -/
-theorem hsInner_sum_right {ι : Type*} [Fintype ι] (A : Matrix m n ℂ) (B : ι → Matrix m n ℂ) :
+theorem hsInner_sum_right {ι : Type*} [Fintype ι]
+    (A : Matrix m n ℂ) (B : ι → Matrix m n ℂ) :
     hsInner A (∑ b, B b) = ∑ b, hsInner A (B b) := by
   simp [hsInner, Matrix.mul_sum, Matrix.trace_sum]
 
@@ -288,14 +290,6 @@ theorem sum_apply_euclidean {ι T : Type*} (t : Finset ι)
     (∑ a ∈ t, f a) x = ∑ a ∈ t, f a x := by
   show WithLp.ofLp (∑ a ∈ t, f a) x = _
   rw [WithLp.ofLp_sum, Finset.sum_apply]
-
-/-- The squared norm of a Euclidean vector is the total squared modulus of its
-coordinates.  `EuclideanSpace.norm_eq` states this with a square root on the
-outside; clearing it once here saves repeating `Real.sq_sqrt`. -/
-theorem norm_sq_eq_sum_normSq {T : Type*} [Fintype T] (v : EuclideanSpace ℂ T) :
-    ‖v‖ ^ 2 = ∑ p, Complex.normSq (v p) := by
-  rw [EuclideanSpace.norm_eq, Real.sq_sqrt (Finset.sum_nonneg fun _ _ => sq_nonneg _)]
-  exact Finset.sum_congr rfl fun p _ => (Complex.normSq_eq_norm_sq _).symm
 
 theorem hsNormSq_nonneg (A : Matrix m n ℂ) : 0 ≤ hsNormSq A := by
   rw [hsNormSq_eq_norm_sq]; positivity

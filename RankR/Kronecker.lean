@@ -268,7 +268,9 @@ theorem inner_matrixPairVec (X Y A B : Matrix D D ℂ) :
 omit [DecidableEq D] in
 theorem normSq_matrixPairVec (X Y : Matrix D D ℂ) :
     ‖matrixPairVec X Y‖ ^ 2 = hsNormSq X + hsNormSq Y := by
-  rw [norm_sq_eq_sum_normSq, Fintype.sum_sum_type]
+  rw [EuclideanSpace.norm_sq_eq]
+  simp_rw [← Complex.normSq_eq_norm_sq]
+  rw [Fintype.sum_sum_type]
   simp only [matrixPairVec_inl, matrixPairVec_inr, hsNormSq, Fintype.sum_prod_type]
 
 omit [DecidableEq D] in

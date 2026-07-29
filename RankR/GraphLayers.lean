@@ -285,11 +285,9 @@ theorem graphReduction_mem_graphOperatorSpace
   intro e _
   refine skewUnit_conj_entry_eq_zero X hij ?_ ?_
   · intro h
-    apply hsupport (Or.inr (Or.inl ?_))
-    exact h.symm ▸ e.property
+    exact hsupport (Or.inr (Or.inl (h.symm ▸ e.property)))
   · intro h
-    apply hsupport (Or.inr (Or.inr ?_))
-    exact h.symm ▸ e.property
+    exact hsupport (Or.inr (Or.inr (h.symm ▸ e.property)))
 
 /-- The two-layer coefficient space
 `U_G = {X ⊗ p + Y ⊗ q : X,Y ∈ S_G}`. -/

@@ -58,10 +58,13 @@ theorem hsNormSq_mul_le (A : Matrix l m ℂ) (B : Matrix m n ℂ) :
       rw [RCLike.inner_apply']
       simp [hu, hv]
     have hnu : ‖u‖ ^ 2 = ∑ j, Complex.normSq (A i j) := by
-      rw [norm_sq_eq_sum_normSq]
+      rw [EuclideanSpace.norm_sq_eq]
+      simp_rw [← Complex.normSq_eq_norm_sq]
       exact Finset.sum_congr rfl fun j _ => by simp [hu]
     have hnv : ‖v‖ ^ 2 = ∑ j, Complex.normSq (B j k) := by
-      rw [norm_sq_eq_sum_normSq]
+      rw [EuclideanSpace.norm_sq_eq]
+      simp_rw [← Complex.normSq_eq_norm_sq]
+      exact Finset.sum_congr rfl fun j _ => by simp [hv]
     have hcs := norm_inner_le_norm (𝕜 := ℂ) u v
     have h0 : (0 : ℝ) ≤ ‖inner ℂ u v‖ := norm_nonneg _
     have hnn : (0 : ℝ) ≤ ‖u‖ * ‖v‖ := by positivity
@@ -100,7 +103,9 @@ omit [Fintype U] [Fintype V] in
     matOf x a b = x (a, b) := rfl
 
 theorem hsNormSq_matOf (x : EuclideanSpace ℂ (U × V)) : hsNormSq (matOf x) = ‖x‖ ^ 2 := by
-  rw [norm_sq_eq_sum_normSq, hsNormSq]
+  rw [EuclideanSpace.norm_sq_eq]
+  simp_rw [← Complex.normSq_eq_norm_sq]
+  rw [hsNormSq]
   exact (Fintype.sum_prod_type fun p : U × V => Complex.normSq (x p)).symm
 
 omit [Fintype U] in

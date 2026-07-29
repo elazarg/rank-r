@@ -613,9 +613,9 @@ theorem graphLevelInclusion_at_threshold_of_card_le
         (choiTwoBound_graphKraus hE)
         (graphKraus_transpose E) R
     simpa using h
-  apply graphLevelInclusion_of_isMapPositiveAt
-  exact isMapPositiveAt_graphThetaLinear_of_thetaPositive
-    E ((R : ℝ) - 1) hTheta hcard
+  exact graphLevelInclusion_of_isMapPositiveAt E R ((R : ℝ) - 1)
+    (isMapPositiveAt_graphThetaLinear_of_thetaPositive
+      E ((R : ℝ) - 1) hTheta hcard)
 
 omit [DecidableEq U] [LinearOrder U] in
 /-- Positive semidefiniteness makes every quadratic form nonnegative. -/

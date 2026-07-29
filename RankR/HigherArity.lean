@@ -119,10 +119,12 @@ theorem norm_sq_eq_sum_blockAt (y : EuclideanSpace ℂ (W × Face r m)) :
     ‖y‖ ^ 2 = ∑ J : Face r m, ‖blockAt y J‖ ^ 2 := by
   have h : ∀ J : Face r m, ‖blockAt y J‖ ^ 2 = ∑ p : W, Complex.normSq (y (p, J)) :=
     fun J => by
-    rw [norm_sq_eq_sum_normSq]
+    rw [EuclideanSpace.norm_sq_eq]
+    simp_rw [← Complex.normSq_eq_norm_sq]
     exact Finset.sum_congr rfl fun p _ => rfl
-  rw [Finset.sum_congr rfl fun J _ => h J, norm_sq_eq_sum_normSq, Fintype.sum_prod_type,
-    Finset.sum_comm]
+  rw [Finset.sum_congr rfl fun J _ => h J, EuclideanSpace.norm_sq_eq]
+  simp_rw [← Complex.normSq_eq_norm_sq]
+  rw [Fintype.sum_prod_type, Finset.sum_comm]
 
 /-- Each item of a labelling is counted by at most one face, because a face is
 determined by its underlying set. -/
@@ -947,9 +949,11 @@ theorem card_filter_subset_univ (hk : 1 ≤ k) (hkr : k ≤ r) (J : Face r (k - 
         rw [J.2, I.2] at hcc
         omega
       obtain ⟨v, hvI, hvJ⟩ := Finset.exists_of_ssubset hlt
-      refine ⟨⟨v, Finset.mem_compl.mpr hvJ⟩, Finset.mem_attach _ _, Subtype.ext ?_⟩
-      exact Finset.eq_of_subset_of_card_le (Finset.insert_subset hvI hsub)
-        (by rw [hcard ⟨v, Finset.mem_compl.mpr hvJ⟩, I.2])
+      exact
+        ⟨⟨v, Finset.mem_compl.mpr hvJ⟩, Finset.mem_attach _ _,
+          Subtype.ext
+            (Finset.eq_of_subset_of_card_le (Finset.insert_subset hvI hsub)
+              (by rw [hcard ⟨v, Finset.mem_compl.mpr hvJ⟩, I.2]))⟩
     · rintro ⟨v, _, rfl⟩
       exact Finset.subset_insert _ _
   rw [himg, Finset.card_image_of_injective _ hfinj, Finset.card_attach, Finset.card_compl, J.2,

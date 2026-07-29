@@ -54,10 +54,9 @@ theorem choiKAttained_Qm_of_four_le
   let f : KIdx U V := ((a₀, a₁), (b₀, b₁))
   let K : Matrix (U × V) (U × V) ℂ := skewKraus f
   have hrank : K.rank ≤ k := by
-    apply (show K.rank ≤ 4 by
+    exact (show K.rank ≤ 4 by
       simpa [K] using
-        rank_smul_skewKraus_le_four (U := U) (V := V) (1 : ℂ) f).trans
-    exact hk
+        rank_smul_skewKraus_le_four (U := U) (V := V) (1 : ℂ) f).trans hk
   have hne : K ≠ 0 := by
     simpa [K, f] using skewKraus_ne_zero_of_ne ha hb
   apply choiKAttained_of_matrix hrank hne

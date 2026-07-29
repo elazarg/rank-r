@@ -342,9 +342,9 @@ theorem rank_rankOne_add_le {W : Type*} [Fintype W]
     ext p q
     simp [Matrix.mul_apply, rankOne, Fin.sum_univ_two]
   rw [hfac]
-  refine (Matrix.rank_mul_le_left _ _).trans ?_
-  simpa using Matrix.rank_le_card_width
-    (Matrix.of fun (p : W) (i : Fin 2) => ![u₁ p, u₂ p] i)
+  exact (Matrix.rank_mul_le_left _ _).trans (by
+    simpa using Matrix.rank_le_card_width
+      (Matrix.of fun (p : W) (i : Fin 2) => ![u₁ p, u₂ p] i))
 
 /-- The explicit `k`-term formulation of the Choi bound is exactly the direct
 pure-Schmidt-rank formulation. -/

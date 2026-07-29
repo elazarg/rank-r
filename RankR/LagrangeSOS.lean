@@ -66,9 +66,9 @@ theorem complex_lagrange_sos_ordered (u v : ι → ℂ) :
       = 2 * Complex.normSq I := by
     calc
       _ = ∑ a, 2 * ∑ b, (u a * v b * conj (u b * v a)).re := by
-            refine Finset.sum_congr rfl fun a _ => ?_
-            exact (Finset.mul_sum Finset.univ
-              (fun b => (u a * v b * conj (u b * v a)).re) 2).symm
+            exact Finset.sum_congr rfl fun a _ =>
+              (Finset.mul_sum Finset.univ
+                (fun b => (u a * v b * conj (u b * v a)).re) 2).symm
       _ = 2 * ∑ a, ∑ b, (u a * v b * conj (u b * v a)).re := by
             exact (Finset.mul_sum Finset.univ
               (fun a => ∑ b, (u a * v b * conj (u b * v a)).re) 2).symm

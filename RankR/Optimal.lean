@@ -63,8 +63,8 @@ variable [Fintype U] [Fintype V]
 /-- The extremizer has rank at most `S.card`, since it factors through `S`. -/
 theorem rank_projWit_le : (projWit S x₀ x₁).rank ≤ S.card := by
   rw [projWit_eq_mul]
-  refine (Matrix.rank_mul_le_left _ _).trans ?_
-  simpa using Matrix.rank_le_card_width (projWitCol S x₀)
+  exact (Matrix.rank_mul_le_left _ _).trans (by
+    simpa using Matrix.rank_le_card_width (projWitCol S x₀))
 
 /-- The two factors compose to the identity on `S` in the other order. -/
 theorem projWitRow_mul_projWitCol (x : V) :

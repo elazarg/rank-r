@@ -359,9 +359,9 @@ theorem singleOmegaChoi_posSemidef :
 
 theorem omegaProjection_posSemidef (hT : 0 < Fintype.card T) :
     (omegaProjection (T := T)).PosSemidef := by
-  apply singleOmegaChoi_posSemidef.smul
-  exact (RCLike.ofReal_nonneg (K := ℂ)).mpr
-    (one_div_nonneg.mpr (by exact_mod_cast hT.le))
+  exact singleOmegaChoi_posSemidef.smul
+    ((RCLike.ofReal_nonneg (K := ℂ)).mpr
+      (one_div_nonneg.mpr (by exact_mod_cast hT.le)))
 
 theorem omegaComplement_eq_reductionChoi :
     omegaComplement (T := T)

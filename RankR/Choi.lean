@@ -453,9 +453,11 @@ theorem norm_sq_le_of_choiKBound {A : ι → Matrix W W ℂ} {β : ℝ} (hβ : 0
   -- the coefficient vector and the vector of overlaps, as Euclidean vectors
   set cv : EuclideanSpace ℂ ι := WithLp.toLp 2 c with hcv
   set zv : EuclideanSpace ℂ ι := WithLp.toLp 2 (fun a => hsInner (A a) M) with hzv
-  have hcvn : ‖cv‖ ^ 2 = ∑ a, Complex.normSq (c a) := norm_sq_eq_sum_normSq _
+  have hcvn : ‖cv‖ ^ 2 = ∑ a, Complex.normSq (c a) := by
+    simpa only [Complex.normSq_eq_norm_sq] using EuclideanSpace.norm_sq_eq cv
   have hzvn : ‖zv‖ ^ 2 = ∑ a, Complex.normSq (inner ℂ (vec (A a)) (vec M)) := by
-    rw [norm_sq_eq_sum_normSq]
+    rw [EuclideanSpace.norm_sq_eq]
+    simp_rw [← Complex.normSq_eq_norm_sq]
     exact Finset.sum_congr rfl fun a _ => congrArg Complex.normSq (hsInner_eq_inner _ _)
   -- `⟪c, z⟫ = ⟪K, K P⟫ = ‖K P‖₂²`
   have hpair : (inner ℂ cv zv : ℂ) = (N : ℂ) := by

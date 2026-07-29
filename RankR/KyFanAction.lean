@@ -50,7 +50,8 @@ theorem inner_krow (K : Matrix W W ℂ) (p : W) (x : EuclideanSpace ℂ W) :
 /-- The rows of `K` carry its whole Hilbert-Schmidt mass. -/
 theorem sum_norm_sq_krow (K : Matrix W W ℂ) : ∑ p, ‖krow K p‖ ^ 2 = hsNormSq K :=
   Finset.sum_congr rfl fun p _ => by
-    rw [norm_sq_eq_sum_normSq]
+    rw [EuclideanSpace.norm_sq_eq]
+    simp_rw [← Complex.normSq_eq_norm_sq]
     exact Finset.sum_congr rfl fun q _ => by rw [krow_apply, Complex.normSq_conj]
 
 /-- **Compressing by a projection does not increase the Hilbert-Schmidt norm.**
@@ -65,7 +66,8 @@ theorem sum_norm_sq_le_hsNormSq (K : Matrix W W ℂ) {k : ℕ}
     ∑ i, ‖mulVecE K (x i)‖ ^ 2 ≤ hsNormSq K := by
   have hrow : ∀ i : Fin k,
       ‖mulVecE K (x i)‖ ^ 2 = ∑ p, ‖inner ℂ (x i) (krow K p)‖ ^ 2 := fun i => by
-    rw [norm_sq_eq_sum_normSq]
+    rw [EuclideanSpace.norm_sq_eq]
+    simp_rw [← Complex.normSq_eq_norm_sq]
     exact Finset.sum_congr rfl fun p _ => by
       rw [← inner_krow, ← inner_conj_symm, Complex.normSq_conj, Complex.normSq_eq_norm_sq]
   rw [Finset.sum_congr rfl fun i _ => hrow i, Finset.sum_comm, ← sum_norm_sq_krow K]

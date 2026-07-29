@@ -239,10 +239,10 @@ theorem isotropicState_posSemidef
     (hT : 2 ≤ Fintype.card T) {F : ℝ} (hF0 : 0 ≤ F) (hF1 : F ≤ 1) :
     (isotropicState (T := T) F).PosSemidef := by
   apply Matrix.PosSemidef.add
-  · apply (isotropicComplementState_posSemidef hT).smul
-    exact (RCLike.ofReal_nonneg (K := ℂ)).mpr (sub_nonneg.mpr hF1)
-  · apply (omegaProjection_posSemidef (by omega)).smul
-    exact (RCLike.ofReal_nonneg (K := ℂ)).mpr hF0
+  · exact (isotropicComplementState_posSemidef hT).smul
+      ((RCLike.ofReal_nonneg (K := ℂ)).mpr (sub_nonneg.mpr hF1))
+  · exact (omegaProjection_posSemidef (by omega)).smul
+      ((RCLike.ofReal_nonneg (K := ℂ)).mpr hF0)
 
 theorem isotropicState_isDensityMatrix
     (hT : 2 ≤ Fintype.card T) {F : ℝ} (hF0 : 0 ≤ F) (hF1 : F ≤ 1) :
@@ -268,19 +268,27 @@ section Product
 variable {U V : Type*} [Fintype U] [Fintype V]
   [DecidableEq U] [DecidableEq V]
 
+/-- The complement-complement basis element of the product-isotropic
+four-sector space. -/
 noncomputable def biIsotropicCC :
     Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ :=
   isotropicComplementState (T := U) ⊗ₖ
     isotropicComplementState (T := V)
 
+/-- The complement-projector basis element of the product-isotropic
+four-sector space. -/
 noncomputable def biIsotropicCP :
     Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ :=
   isotropicComplementState (T := U) ⊗ₖ omegaProjection (T := V)
 
+/-- The projector-complement basis element of the product-isotropic
+four-sector space. -/
 noncomputable def biIsotropicPC :
     Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ :=
   omegaProjection (T := U) ⊗ₖ isotropicComplementState (T := V)
 
+/-- The projector-projector basis element of the product-isotropic
+four-sector space. -/
 noncomputable def biIsotropicPP :
     Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ :=
   omegaProjection (T := U) ⊗ₖ omegaProjection (T := V)
@@ -294,6 +302,7 @@ noncomputable def biIsotropicForm (cCC cCP cPC cPP : ℝ) :
     + (cPC : ℂ) • biIsotropicPC
     + (cPP : ℂ) • biIsotropicPP
 
+/-- Membership in the real span of the four product-isotropic sectors. -/
 def MemBiIsotropicSpace
     (ρ : Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ) : Prop :=
   ∃ cCC cCP cPC cPP : ℝ,
@@ -324,18 +333,21 @@ noncomputable def biIsotropicState (F G : ℝ) :
     Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ :=
   isotropicState (T := U) F ⊗ₖ isotropicState (T := V) G
 
+/-- Overlap with the maximally entangled projector on the `U` factor. -/
 noncomputable def biIsotropicMomentU
     (ρ : Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ) : ℝ :=
   (hsInner
     (omegaProjection (T := U) ⊗ₖ
       (1 : Matrix (V × V) (V × V) ℂ)) ρ).re
 
+/-- Overlap with the maximally entangled projector on the `V` factor. -/
 noncomputable def biIsotropicMomentV
     (ρ : Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ) : ℝ :=
   (hsInner
     ((1 : Matrix (U × U) (U × U) ℂ) ⊗ₖ
       omegaProjection (T := V)) ρ).re
 
+/-- Joint overlap with the maximally entangled projectors on both factors. -/
 noncomputable def biIsotropicMomentUV
     (ρ : Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ) : ℝ :=
   (hsInner

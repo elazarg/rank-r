@@ -116,9 +116,9 @@ theorem rank_choiContraction_vec_le {r : ℕ} (C : Matrix A W ℂ)
       rw [Finset.sum_mul]
       exact Finset.sum_congr rfl fun a _ => by ring
   rw [hfac]
-  refine (Matrix.rank_mul_le_left _ _).trans ?_
-  simpa using Matrix.rank_le_card_width
-    (Z * X.map (starRingEnd ℂ))
+  exact (Matrix.rank_mul_le_left _ _).trans (by
+    simpa using Matrix.rank_le_card_width
+      (Z * X.map (starRingEnd ℂ)))
 
 omit [DecidableEq A] in
 /-- An `r`-block-positive Choi operator sends a pure input of Schmidt rank at

@@ -56,9 +56,8 @@ theorem frame_le_sub_proj {w : ι → E} {z : E} {n : ℝ} (hn : 0 < n) (hzn : �
       ≤ M * (‖y‖ ^ 2 - Complex.normSq (inner ℂ z y) / n) := by
   have h := hb (y - ((inner ℂ z y / (n : ℂ)) • z))
   rw [norm_sub_proj_sq hn hzn] at h
-  refine le_trans (le_of_eq ?_) h
-  exact Finset.sum_congr rfl fun k _ => by
-    rw [inner_sub_smul_of_orthogonal (horth k)]
+  exact le_trans (le_of_eq (Finset.sum_congr rfl fun k _ => by
+    rw [inner_sub_smul_of_orthogonal (horth k)])) h
 
 end Ortho
 

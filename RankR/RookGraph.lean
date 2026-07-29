@@ -60,8 +60,7 @@ def rookDiagonalPairsEquiv (q : ℕ) :
   toFun p := p.1.1
   invFun x := ⟨(x, x), by simp [rookDiagonalPairs]⟩
   left_inv p := by
-    apply Subtype.ext
-    exact Prod.ext rfl (Finset.mem_filter.mp p.property).2
+    exact Subtype.ext (Prod.ext rfl (Finset.mem_filter.mp p.property).2)
   right_inv x := rfl
 
 /-- Ordered distinct pairs from `Fin q`. -/
@@ -123,8 +122,7 @@ def rookAdjacentPairsEquivCoordinates (q : ℕ) :
           toLex ((ofLex p.1.1).1, (ofLex p.1.2).2)) = p.1
       apply Prod.ext
       · rfl
-      · apply ofLex.injective
-        exact Prod.ext hrow rfl
+      · exact ofLex.injective (Prod.ext hrow rfl)
     · have hcol :
           (ofLex p.1.1).2 = (ofLex p.1.2).2 := by
         rcases (Finset.mem_filter.mp p.property).2 with h | h
@@ -135,8 +133,7 @@ def rookAdjacentPairsEquivCoordinates (q : ℕ) :
           toLex ((ofLex p.1.2).1, (ofLex p.1.1).2)) = p.1
       apply Prod.ext
       · rfl
-      · apply ofLex.injective
-        exact Prod.ext rfl hcol
+      · exact ofLex.injective (Prod.ext rfl hcol)
   right_inv z := by
     rcases z with z | z
     · simp [rookAdjacentPairCoordinates, rookCoordinatesAdjacentPair]

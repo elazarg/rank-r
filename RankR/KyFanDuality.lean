@@ -14,6 +14,8 @@ namespace RankR
 
 open Finset
 
+/-- A finite rearrangement inequality: bounded nonnegative weights of total
+mass `r` maximize an antitone nonnegative sequence on its first `r` terms. -/
 theorem weighted_antitone_sum_le_head
     {n r : ℕ} (hr : r ≤ n) (lam w : Fin n → ℝ)
     (hlam : Antitone lam) (hlam0 : ∀ i, 0 ≤ lam i)
@@ -91,6 +93,8 @@ theorem weighted_antitone_sum_le_head
 
 open Matrix ComplexConjugate
 
+/-- Spectral expansion of the squared norm of a finite complex matrix acting
+on a Euclidean vector. -/
 theorem norm_sq_toEuclideanLin_eq_sum_eigenvalues
     {W : Type*} [Fintype W] [DecidableEq W]
     (M : Matrix W W ℂ) (x : EuclideanSpace ℂ W) :
@@ -140,6 +144,8 @@ theorem norm_sq_toEuclideanLin_eq_sum_eigenvalues
   exact congrArg (fun z : ℝ => hS.eigenvalues finrank_euclideanSpace i * z)
     (Complex.normSq_eq_norm_sq _)
 
+/-- A right singular eigenvector is sent to a vector whose squared norm is its
+eigenvalue for `MᴴM`. -/
 theorem norm_sq_mulVecE_eigenvector
     {W : Type*} [Fintype W] [DecidableEq W]
     (M : Matrix W W ℂ) (i : Fin (Fintype.card W)) :
@@ -169,6 +175,7 @@ theorem norm_sq_mulVecE_eigenvector
       rw [inner_smul_right, inner_self_eq_norm_sq_to_K, b.norm_eq_one]
       simp
 
+/-- The top right singular eigenvectors attain the squared Ky Fan sum. -/
 theorem sum_norm_sq_top_eigenvectors_eq_kyFanSq
     {W : Type*} [Fintype W] [DecidableEq W]
     (k : ℕ) (M : Matrix W W ℂ) :
@@ -221,6 +228,8 @@ theorem sum_norm_sq_top_eigenvectors_eq_kyFanSq
       rw [T.singularValues_of_finrank_le (by simpa [finrank_euclideanSpace])]
       simp
 
+/-- An orthonormal tuple captures at most the leading spectral mass of
+`MᴴM`. -/
 theorem sum_norm_sq_mulVecE_le_eigenvalue_head
     {W : Type*} [Fintype W] [DecidableEq W]
     {r : ℕ} (hr : r ≤ Fintype.card W)
@@ -275,6 +284,8 @@ theorem sum_norm_sq_mulVecE_le_eigenvalue_head
   simp_rw [← Finset.mul_sum]
   exact hweighted
 
+/-- The action of a matrix on any orthonormal `r`-tuple is bounded by its
+squared Ky Fan `k`-sum whenever `r ≤ k`. -/
 theorem sum_norm_sq_mulVecE_le_kyFanSq
     {W : Type*} [Fintype W] [DecidableEq W]
     {r k : ℕ} (hrk : r ≤ k)
@@ -300,6 +311,8 @@ theorem sum_norm_sq_mulVecE_le_kyFanSq
   exact hhead.trans (Finset.sum_le_sum_of_subset_of_nonneg
     (Finset.range_mono hrk) (fun i hi hik => sq_nonneg _))
 
+/-- Hilbert--Schmidt pairing against a rank-one matrix is matrix action inside
+the vector inner product. -/
 theorem hsInner_rankOne_left
     {W : Type*} [Fintype W]
     (x y : EuclideanSpace ℂ W) (M : Matrix W W ℂ) :
@@ -310,6 +323,8 @@ theorem hsInner_rankOne_left
     _ = inner ℂ x (mulVecE M y) := by
       rw [hsInner_rankOne_right, Complex.conj_conj]
 
+/-- Every square matrix has a rank-exact decomposition with an orthonormal
+right family and the correct Frobenius energy. -/
 theorem exists_right_orthonormal_rankFactor
     {W : Type*} [Fintype W] [DecidableEq W]
     (C : Matrix W W ℂ) :
@@ -335,6 +350,8 @@ theorem exists_right_orthonormal_rankFactor
       hsNormSq_rankFactor_eq e₀ d₀ he₀]
     exact Finset.sum_congr rfl fun i _ => by rw [norm_bar]
 
+/-- A rank-one sum with an orthonormal right family has Frobenius energy equal
+to the total squared norm of its left vectors. -/
 theorem hsNormSq_sum_rankOne_right
     {W : Type*} [Fintype W]
     {r : ℕ} (d e : Fin r → EuclideanSpace ℂ W)
@@ -384,8 +401,7 @@ theorem exists_kyFan_optimal_test
     exact sum_norm_sq_top_eigenvectors_eq_kyFanSq k M
   refine ⟨C, ?_, ?_, ?_⟩
   · have hrankEll : C.rank ≤ ell := by
-      apply (rank_le_iff_exists_sum_rankOne (k := ell) C).2
-      exact ⟨d, e, rfl⟩
+      exact (rank_le_iff_exists_sum_rankOne (k := ell) C).2 ⟨d, e, rfl⟩
     exact hrankEll.trans (min_le_left _ _)
   · change hsNormSq (∑ i, rankOne (d i) (e i)) = kyFanSq k M
     rw [hsNormSq_sum_rankOne_right d e he, henergy]

@@ -72,10 +72,10 @@ theorem rank_smul_skewKraus_le_four (c : ℂ) (f : KIdx U V) :
     (c • skewKraus f).rank ≤ 4 := by
   rw [skewKraus, skewUnit_eq_mul, skewUnit_eq_mul, Matrix.mul_kronecker_mul,
     ← Matrix.smul_mul]
-  refine (Matrix.rank_mul_le_left _ _).trans ?_
-  simpa only [Fintype.card_prod, Fintype.card_fin, Nat.reduceMul] using
-    Matrix.rank_le_card_width
-      (c • (skewUnitLeft f.1.1 f.1.2 ⊗ₖ skewUnitLeft f.2.1 f.2.2))
+  exact (Matrix.rank_mul_le_left _ _).trans (by
+    simpa only [Fintype.card_prod, Fintype.card_fin, Nat.reduceMul] using
+      Matrix.rank_le_card_width
+        (c • (skewUnitLeft f.1.1 f.1.2 ⊗ₖ skewUnitLeft f.2.1 f.2.2)))
 
 /-- The scaled redundant double-skew Kraus family whose pure projectors sum to
 `Qm`. -/

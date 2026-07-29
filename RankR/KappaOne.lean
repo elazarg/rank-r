@@ -83,7 +83,9 @@ variable {T : Type*} [Fintype T] [DecidableEq T]
 /-- The unnormalized diagonal vector has squared norm `card T`. -/
 theorem norm_sq_singleOmegaVec :
     ‖singleOmegaVec (T := T)‖ ^ 2 = Fintype.card T := by
-  rw [norm_sq_eq_sum_normSq, Fintype.sum_prod_type]
+  rw [EuclideanSpace.norm_sq_eq]
+  simp_rw [← Complex.normSq_eq_norm_sq]
+  rw [Fintype.sum_prod_type]
   simp [singleOmegaVec_apply, Complex.normSq]
 
 /-- The tensor flip acts by swapping the two coordinates. -/

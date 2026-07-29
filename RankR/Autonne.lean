@@ -256,8 +256,8 @@ theorem IsConjSymmetric.exists_orthonormalBasis {σ : E →ₗ⋆[ℂ] E} (hσ :
       (∀ i, 0 ≤ d i) ∧ ∀ i, σ (e i) = (d i : ℂ) • e i := by
   obtain ⟨e, d, hd, he⟩ := exists_orthonormalBasis_aux (Module.finrank ℂ E) σ hσ rfl
   let g : Fin (Module.finrank ℂ E) ≃ ι := (Fintype.equivFinOfCardEq hι).symm
-  refine ⟨e.reindex g, fun i => d (g.symm i), fun i => hd _, fun i => ?_⟩
-  simpa using he (g.symm i)
+  exact ⟨e.reindex g, fun i => d (g.symm i), fun i => hd _,
+    fun i => by simpa using he (g.symm i)⟩
 
 end Main
 

@@ -43,8 +43,8 @@ theorem qform_Phi4_Pneg_le (hβ : ChoiTwoBound (choiOf (skewKraus (U := U) (V :=
     (y : EuclideanSpace ℂ ((U × V) × Fin s)) :
     (qform (Phi4 (Pneg e)) y).re
       ≤ 8 * ((s : ℝ) - 1) * (‖y‖ ^ 2 - Complex.normSq (inner ℂ (delta e) y) / s) := by
-  refine (qform_Phi4_Pneg_le_param (by norm_num) hβ hs he y).trans (le_of_eq ?_)
-  ring
+  exact (qform_Phi4_Pneg_le_param (by norm_num) hβ hs he y).trans
+    (le_of_eq (by ring))
 
 /-- The contraction-ready form of the parameterized double-skew estimate.
 For `β = 4` its left side vanishes and this is Proposition 2.2.  Leaving `β`
