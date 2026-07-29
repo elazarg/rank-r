@@ -316,6 +316,14 @@ Ky-Fan corollary. -/
 #guard_msgs in
 #print axioms re_hsInner_nonneg_of_schmidtNumberLE
 
+/-- info: 'RankR.SchmidtNumberLE.nonneg_smul' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms SchmidtNumberLE.nonneg_smul
+
+/-- info: 'RankR.schmidtNumberLE_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms schmidtNumberLE_one
+
 /-- info: 'RankR.abs_re_hsInner_le_hermitianTraceNorm' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms abs_re_hsInner_le_hermitianTraceNorm
@@ -580,6 +588,24 @@ info: 'RankR.trace_mul_staircaseUnprotectedWitness_staircaseState_neg_iff' depen
 /-- info: 'RankR.staircase_boundary_operator_identity' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms staircase_boundary_operator_identity
+
+/-- info: 'RankR.schmidtNumberLE_one_regroupProductOperator_staircaseWhiteNoiseState' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms schmidtNumberLE_one_regroupProductOperator_staircaseWhiteNoiseState
+
+/-- info: 'RankR.schmidtNumberLE_staircaseStateAcrossCut_at_threshold_of_seeds' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms schmidtNumberLE_staircaseStateAcrossCut_at_threshold_of_seeds
+
+/-- info: 'RankR.schmidtNumberLE_staircaseStateAcrossCut_of_le_threshold_of_seeds' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms schmidtNumberLE_staircaseStateAcrossCut_of_le_threshold_of_seeds
 
 /-- info: 'RankR.staircaseState_at_threshold_normalized_posSemidef' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

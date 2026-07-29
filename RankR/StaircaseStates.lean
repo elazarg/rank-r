@@ -38,6 +38,21 @@ theorem regroupProductOperator_smul
     regroupProductOperator (c • M) = c • regroupProductOperator M := by
   rfl
 
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
+theorem regroupProductOperator_add
+    (M N : Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ) :
+    regroupProductOperator (M + N) =
+      regroupProductOperator M + regroupProductOperator N := by
+  rfl
+
+omit [Fintype U] [Fintype V] in
+theorem regroupProductOperator_one :
+    regroupProductOperator
+        (1 : Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ) =
+      (1 : Matrix ((U × V) × (U × V)) ((U × V) × (U × V)) ℂ) := by
+  ext p q
+  simp [regroupProductOperator, Matrix.reindex_apply, Matrix.one_apply]
+
 theorem regroupProductOperator_mul
     (M N : Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ) :
     regroupProductOperator (M * N) =
@@ -111,6 +126,20 @@ noncomputable def staircaseStateAcrossCut (s p : ℝ) :
     Matrix ((U × V) × (U × V)) ((U × V) × (U × V)) ℂ :=
   regroupProductOperator (staircaseState s p)
 
+/-- Every point below a nonzero mixing parameter `q` is the affine
+combination of the point at `q` and white noise with coefficient `p/q`. -/
+theorem staircaseState_eq_threshold_whiteNoise_mix
+    (s p q : ℝ) (hq : q ≠ 0) :
+    staircaseState (U := U) (V := V) s p =
+      ((p / q : ℝ) : ℂ) • staircaseState s q
+        + ((1 - p / q : ℝ) : ℂ) • staircaseWhiteNoiseState := by
+  ext x y
+  simp only [staircaseState, Matrix.add_apply, Matrix.smul_apply, smul_eq_mul]
+  push_cast
+  have hqC : (q : ℂ) ≠ 0 := by exact_mod_cast hq
+  field_simp [hqC]
+  ring
+
 /-- The two-term candidate in the boundary decomposition. -/
 noncomputable def staircaseBoundaryState (k α : ℝ) :
     Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ :=
@@ -120,6 +149,11 @@ noncomputable def staircaseBoundaryState (k α : ℝ) :
       biIsotropicState
         (1 / (Fintype.card U : ℝ) ^ 2)
         (k / Fintype.card V)
+
+/-- The boundary decomposition in the register order of the Schmidt cut. -/
+noncomputable def staircaseBoundaryStateAcrossCut (k α : ℝ) :
+    Matrix ((U × V) × (U × V)) ((U × V) × (U × V)) ℂ :=
+  regroupProductOperator (staircaseBoundaryState k α)
 
 /-- One factor of the lifted witness, written with the normalized maximally
 entangled projection. -/
@@ -530,6 +564,17 @@ theorem staircaseWhiteNoiseState_eq
   push_cast
   ring
 
+/-- White noise is separable across the stated Schmidt cut, expressed as
+Schmidt number at most one. -/
+theorem schmidtNumberLE_one_regroupProductOperator_staircaseWhiteNoiseState
+    (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V) :
+    SchmidtNumberLE 1
+      (regroupProductOperator
+        (staircaseWhiteNoiseState (U := U) (V := V))) := by
+  rw [staircaseWhiteNoiseState_eq hU hV,
+    regroupProductOperator_smul, regroupProductOperator_one]
+  exact schmidtNumberLE_one.nonneg_smul (by positivity)
+
 theorem staircaseSeedState_normalized_posSemidef
     (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
     {s : ℝ} (hs0 : 0 ≤ s) (hsU : s ≤ Fintype.card U) :
@@ -804,6 +849,95 @@ theorem staircase_boundary_operator_identity
   · rw [biIsotropicMomentUV_staircaseState hU hV,
       biIsotropicMomentUV_staircaseBoundaryState hU hV]
     exact hUVmoment
+
+/-- The boundary identity gives the Schmidt-number upper bound once its two
+product-isotropic seed obligations are supplied.
+
+This theorem isolates all remaining semantic content of the boundary step in
+the two hypotheses; the convex-cone argument and the register regrouping are
+fully explicit. -/
+theorem schmidtNumberLE_staircaseStateAcrossCut_at_threshold_of_seeds
+    (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
+    {s : ℝ} {k : ℕ} (hk : 0 < k) (hks : (k : ℝ) < s)
+    (hseedU :
+      SchmidtNumberLE k
+        (regroupProductOperator
+          (biIsotropicState (U := U) (V := V)
+            ((k : ℝ) / Fintype.card U) 0)))
+    (hseedV :
+      SchmidtNumberLE k
+        (regroupProductOperator
+          (biIsotropicState (U := U) (V := V)
+            (1 / (Fintype.card U : ℝ) ^ 2)
+            ((k : ℝ) / Fintype.card V)))) :
+    SchmidtNumberLE k
+      (staircaseStateAcrossCut (U := U) (V := V) s
+        (staircaseP (Fintype.card U) (Fintype.card V) s k)) := by
+  have hkR : (1 : ℝ) ≤ k := by exact_mod_cast hk
+  have hm : (2 : ℝ) ≤ Fintype.card U := by exact_mod_cast hU
+  have hn : (2 : ℝ) ≤ Fintype.card V := by exact_mod_cast hV
+  have hα :=
+    staircaseAlpha_mem_Ioo hm hn hkR hks
+  rw [staircaseStateAcrossCut,
+    staircase_boundary_operator_identity hU hV hkR hks,
+    staircaseBoundaryState, regroupProductOperator_add,
+    regroupProductOperator_smul, regroupProductOperator_smul]
+  exact
+    (hseedU.nonneg_smul (sub_nonneg.mpr hα.2.le)).add
+      (hseedV.nonneg_smul hα.1.le)
+
+/-- The entire upper-bound side `0 ≤ p ≤ p_k` follows from the two boundary
+seed obligations.
+
+White noise is handled by its explicit computational-basis decomposition.
+Thus all affine and cone bookkeeping in the staircase upper bound is checked;
+only the two displayed product-seed inputs remain semantic obligations. -/
+theorem schmidtNumberLE_staircaseStateAcrossCut_of_le_threshold_of_seeds
+    (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
+    {s : ℝ} {k : ℕ} (hk : 0 < k) (hks : (k : ℝ) < s)
+    (hseedU :
+      SchmidtNumberLE k
+        (regroupProductOperator
+          (biIsotropicState (U := U) (V := V)
+            ((k : ℝ) / Fintype.card U) 0)))
+    (hseedV :
+      SchmidtNumberLE k
+        (regroupProductOperator
+          (biIsotropicState (U := U) (V := V)
+            (1 / (Fintype.card U : ℝ) ^ 2)
+            ((k : ℝ) / Fintype.card V))))
+    {p : ℝ} (hp0 : 0 ≤ p)
+    (hp :
+      p ≤ staircaseP (Fintype.card U) (Fintype.card V) s k) :
+    SchmidtNumberLE k
+      (staircaseStateAcrossCut (U := U) (V := V) s p) := by
+  let q := staircaseP
+    (Fintype.card U : ℝ) (Fintype.card V : ℝ) s (k : ℝ)
+  have hkR : (1 : ℝ) ≤ k := by exact_mod_cast hk
+  have hm : (2 : ℝ) ≤ Fintype.card U := by exact_mod_cast hU
+  have hn : (2 : ℝ) ≤ Fintype.card V := by exact_mod_cast hV
+  have hq : 0 < q :=
+    (staircaseP_mem_Ioo hm hn hkR hks).1
+  have hboundary :
+      SchmidtNumberLE k
+        (staircaseStateAcrossCut (U := U) (V := V) s q) := by
+    exact
+      schmidtNumberLE_staircaseStateAcrossCut_at_threshold_of_seeds
+        hU hV hk hks hseedU hseedV
+  have hwhite :
+      SchmidtNumberLE k
+        (regroupProductOperator
+          (staircaseWhiteNoiseState (U := U) (V := V))) :=
+    (schmidtNumberLE_one_regroupProductOperator_staircaseWhiteNoiseState
+      hU hV).mono (by omega)
+  rw [staircaseStateAcrossCut,
+    staircaseState_eq_threshold_whiteNoise_mix s p q (ne_of_gt hq),
+    regroupProductOperator_add, regroupProductOperator_smul,
+    regroupProductOperator_smul]
+  exact
+    (hboundary.nonneg_smul (div_nonneg hp0 hq.le)).add
+      (hwhite.nonneg_smul
+        (sub_nonneg.mpr ((div_le_one hq).mpr hp)))
 
 /-- At an admissible threshold, the left-hand state in the boundary identity
 is normalized and positive semidefinite. -/
