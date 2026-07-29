@@ -36,6 +36,7 @@ import RankR.Companions.Graph.Family
 import RankR.Companions.Graph.Threshold
 import RankR.Companions.Graph.PairBound
 import RankR.Core.Amplification.Parity
+import RankR.Core.DoubleSkew.Parity
 import RankR.Core.DoubleSkew.Sharp
 import RankR.Applications.Reduction.Main
 import RankR.Library.Quantum.PositiveMaps

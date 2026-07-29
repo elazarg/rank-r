@@ -11,6 +11,7 @@ subspace.
 -/
 import RankR.Core.DoubleSkew.Flip
 import RankR.Core.PartialTrace.OneSided
+import RankR.Library.Matrix.Conjugate
 
 namespace RankR
 
@@ -21,12 +22,6 @@ open Matrix Finset ComplexConjugate
 section Entrywise
 
 variable {W : Type*}
-
-/-- The entrywise conjugate of a vector. -/
-def bar (w : EuclideanSpace ℂ W) : EuclideanSpace ℂ W :=
-  WithLp.toLp 2 (fun p => conj (w p))
-
-@[simp] theorem bar_apply (w : EuclideanSpace ℂ W) (p : W) : bar w p = conj (w p) := rfl
 
 /-- `w wᵀ`, the symmetric rank-one matrix built from a vector.  This is
 `|w⟩⟨w̄|`, not `|w⟩⟨w|`: it is symmetric, not positive semidefinite. -/

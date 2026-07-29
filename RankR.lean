@@ -6,10 +6,11 @@ import RankR.Library.Matrix.RankFactorization
 import RankR.Core.PartialTrace.FromOperator
 import RankR.Core.DoubleSkew.Basic
 import RankR.Library.Quantum.Kraus
-import RankR.Core.DoubleSkew.Sectors
+import RankR.Core.Amplification.Sectors
 import RankR.Core.DoubleSkew.Map
 import RankR.Core.Amplification.CompleteGraph
 import RankR.Core.Amplification.Frame
+import RankR.Core.DoubleSkew.Frame
 import RankR.Core.Amplification.Edge
 import RankR.Library.Analysis.Bessel
 import RankR.Library.Analysis.RestrictedFrame
@@ -36,6 +37,7 @@ import RankR.Companions.HigherArity.Exterior
 import RankR.Companions.HigherArity.Amplification
 import RankR.Core.DoubleSkew.Sharp
 import RankR.Core.Amplification.Parity
+import RankR.Core.DoubleSkew.Parity
 import RankR.Companions.Graph.Family
 import RankR.Companions.Graph.Threshold
 import RankR.Companions.Graph.PairBound

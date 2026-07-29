@@ -7,7 +7,7 @@ sum of the squared moduli of all two-by-two minors.  We first prove a
 choice-free ordered-pair form on any finite coordinate type, then recover the
 usual `α < β` form when the coordinates carry a linear order.
 -/
-import RankR.Core.DoubleSkew.Sectors
+import RankR.Core.Amplification.Sectors
 import Mathlib.Data.Prod.Lex
 
 namespace RankR

@@ -1,89 +1,14 @@
 /-
-The amplified map `Θ^Φ_{R,λ}` and its positivity threshold.
-
-`paper/derivation-graph-inclusion.tex` studies
-
-    Θ^Φ_{R,λ} = Φ ∘ τ + λ (Δ_d - id/R),        Δ_d(X) = Tr(X) I,
-
-and its threshold `λ*_R(Φ) = inf {λ ≥ 0 : Θ^Φ_{R,λ} is R-positive}`.  Pair
-amplification says `λ*_R(Φ) ≤ (R-1)β₂(Φ)`; `thm:clique` of that manuscript says
-the bound is attained, and identifies the general obstruction as the maximum
-induced average degree.
-
-`R`-positivity is taken in its Choi form throughout: `Ψ` is `R`-positive when
-`⟪vec C, J(Ψ) vec C⟫ ≥ 0` for every `C` of rank at most `R`.  Rather than build
-`J(Θ)` as a matrix, the three terms are unrolled the way `ChoiTwoBound` unrolls
-its rank hypothesis.  In that normalization `Δ_d` contributes `‖C‖₂²` and `id`
-contributes `|Tr C|²`, and a computation with the Choi convention of
-`Conventions.lean` gives the first term as
-
-    ⟪vec C, J(Φ_A ∘ τ) vec C⟫ = ∑_a ⟪A_a C, (A_a C)ᵀ⟫,
-
-the Hilbert-Schmidt pairing of each `A_a C` against its own transpose --- a
-signed measure of how far `A_a C` is from antisymmetric.  That reading is what
-makes the graph computation immediate: for a skew `L_e` and the diagonal
-projection `P_S`, the product `L_e P_S` pairs against its transpose to `-2`
-exactly when both endpoints of `e` lie in `S`.
-
-`thetaPositive_mono` records that the condition is monotone in `λ` --- via the
-trace-rank bound `|Tr C|² ≤ R‖C‖₂²`, which is what makes the correction term
-nonnegative --- so `λ*` is a genuine threshold and, as with `ChoiTwoBound`, the
-condition alone names no number.  `Sharp.lean` supplies the pattern for pinning
-it: a witness attaining the bound.
-
-The obstruction is `two_mul_card_le_of_thetaPositive`, and the clique reading is
-`sub_one_le_lam_of_clique`.  Both run on the extremizer of `Optimal.lean`: the
-witness `C = P_S ⊗ E_{01}` of `thm:clique` is `projWit S 0 1`, so its rank,
-Hilbert-Schmidt norm and trace are already known.
+Graph-specific witnesses and obstructions for the pair-amplification
+positivity threshold.
 -/
+import RankR.Core.Amplification.Theta
 import RankR.Companions.Graph.Family
 
 namespace RankR
 
 open Matrix Finset ComplexConjugate
 open scoped Kronecker
-
-/-! ## The Choi pairing of `Φ ∘ τ` -/
-
-section Theta
-
-variable {W : Type*} [Fintype W] [DecidableEq W] {ι : Type*} [Fintype ι]
-
-/-- `⟪vec C, J(Φ_A ∘ τ) vec C⟫`, the Choi pairing of the transposed Kraus sum. -/
-noncomputable def thetaPair (A : ι → Matrix W W ℂ) (C : Matrix W W ℂ) : ℂ :=
-  ∑ a, hsInner (A a * C) ((A a * C)ᵀ)
-
-/-- **`R`-positivity of `Θ^Φ_{R,λ}`**, in Choi form and with each term unrolled.
-
-`Δ_d` contributes `‖C‖₂²` and `id` contributes `|Tr C|²`, so the correction is
-`λ(‖C‖₂² - |Tr C|²/R)`. -/
-def ThetaPositive (A : ι → Matrix W W ℂ) (R : ℕ) (lam : ℝ) : Prop :=
-  ∀ C : Matrix W W ℂ, C.rank ≤ R →
-    0 ≤ (thetaPair A C).re + lam * (hsNormSq C - Complex.normSq C.trace / R)
-
-omit [DecidableEq W] in
-/-- The correction term is nonnegative at rank `R`, by the trace-rank bound. -/
-theorem correction_nonneg {C : Matrix W W ℂ} {R : ℕ} (hR : 0 < R) (hrank : C.rank ≤ R) :
-    0 ≤ hsNormSq C - Complex.normSq C.trace / R := by
-  have htr : Complex.normSq C.trace ≤ (C.rank : ℝ) * hsNormSq C := normSq_trace_le_rank C
-  have hRr : (C.rank : ℝ) ≤ R := by exact_mod_cast hrank
-  have hn : (0 : ℝ) ≤ hsNormSq C := hsNormSq_nonneg C
-  have hRpos : (0 : ℝ) < R := by exact_mod_cast hR
-  rw [sub_nonneg, div_le_iff₀ hRpos]
-  nlinarith
-
-omit [DecidableEq W] in
-/-- **`ThetaPositive` is monotone in `λ`.**  As with `choiTwoBound_mono`, this is
-why the condition alone determines no number: the threshold needs a witness at
-the other end. -/
-theorem thetaPositive_mono {A : ι → Matrix W W ℂ} {R : ℕ} (hR : 0 < R) {lam lam' : ℝ}
-    (h : ThetaPositive A R lam) (hle : lam ≤ lam') : ThetaPositive A R lam' := by
-  intro C hrank
-  have hc := correction_nonneg (C := C) hR hrank
-  have := h C hrank
-  nlinarith
-
-end Theta
 
 /-! ## The diagonal projection, and the witness as a Kronecker product -/
 

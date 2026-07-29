@@ -15,8 +15,9 @@ The combinatorics is that of the complete graph on the `s` ancilla coordinates,
 and the edge data is a family of operators on one space `W`.  Section 3 reads it
 at `W = U ⊗ V`.
 -/
-import RankR.Core.DoubleSkew.Map
-import RankR.Core.DoubleSkew.Basic
+import RankR.Core.Amplification.Sectors
+import RankR.Library.Matrix.Conjugate
+import RankR.Library.Matrix.Placement
 
 namespace RankR
 
