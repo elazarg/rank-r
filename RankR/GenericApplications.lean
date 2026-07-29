@@ -462,85 +462,6 @@ theorem localKrausPullback_sub_smul_one
 
 end LocalKraus
 
-section Aggregation
-
-variable {A B C D E P Q : Type*}
-  [Fintype A] [Fintype B] [Fintype C] [Fintype D]
-  [Fintype E] [Fintype P] [Fintype Q]
-
-/-- A weighted sum of witnesses pulled back through local Kraus families.
-The output and Kraus index types are common finite coordinate spaces; varying
-finite outputs can be embedded into a common direct-sum coordinate type. -/
-noncomputable def aggregateLocalWitness
-    (weights : E → ℝ)
-    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
-    (W : E → Matrix (C × D) (C × D) ℂ) :
-    Matrix (A × B) (A × B) ℂ :=
-  ∑ e, (weights e : ℂ) • localKrausPullback (L e) (R e) (W e)
-
-/-- Nonnegative weighted aggregation preserves block positivity. -/
-theorem aggregateLocalWitness_isBlockPositiveBetween {r : ℕ}
-    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
-    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
-    {W : E → Matrix (C × D) (C × D) ℂ}
-    (hW : ∀ e, IsBlockPositiveBetween r (W e)) :
-    IsBlockPositiveBetween r (aggregateLocalWitness weights L R W) := by
-  intro X hrank
-  rw [aggregateLocalWitness, qform_sum, Complex.re_sum]
-  exact Finset.sum_nonneg fun e _ => by
-    rw [qform_smul, Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im,
-      zero_mul, sub_zero]
-    exact mul_nonneg (hweights e)
-      (localKrausPullback_isBlockPositiveBetween
-        (L e) (R e) (hW e) X hrank)
-
-omit [Fintype A] [Fintype B] in
-/-- Nonnegative weighted aggregation of Hermitian witnesses is Hermitian. -/
-theorem aggregateLocalWitness_isHermitian
-    (weights : E → ℝ)
-    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
-    {W : E → Matrix (C × D) (C × D) ℂ}
-    (hW : ∀ e, (W e).IsHermitian) :
-    (aggregateLocalWitness weights L R W).IsHermitian := by
-  rw [Matrix.IsHermitian, aggregateLocalWitness, Matrix.conjTranspose_sum]
-  exact Finset.sum_congr rfl fun e _ => by
-    rw [Matrix.conjTranspose_smul]
-    rw [(localKrausPullback_isHermitian (L e) (R e) (hW e)).eq]
-    rw [RCLike.star_def, Complex.conj_ofReal]
-
-/-- The finite-coordinate local-channel aggregation theorem, stated at the
-Kraus level. -/
-theorem trace_mul_aggregateLocalWitness_nonneg {r : ℕ}
-    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
-    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
-    {W : E → Matrix (C × D) (C × D) ℂ}
-    (hWHerm : ∀ e, (W e).IsHermitian)
-    (hWBlock : ∀ e, IsBlockPositiveBetween r (W e))
-    {ρ : Matrix (A × B) (A × B) ℂ}
-    (hρ : SchmidtNumberLEBetween r ρ) :
-    0 ≤ ((aggregateLocalWitness weights L R W * ρ).trace).re :=
-  trace_mul_nonneg_of_schmidtNumberLEBetween
-    (aggregateLocalWitness_isHermitian weights L R hWHerm)
-    (aggregateLocalWitness_isBlockPositiveBetween hweights L R hWBlock) hρ
-
-/-- A negative aggregate energy certifies failure of the
-Schmidt-number-at-most-`r` promise. -/
-theorem not_schmidtNumberLEBetween_of_aggregateLocalWitness_neg {r : ℕ}
-    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
-    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
-    {W : E → Matrix (C × D) (C × D) ℂ}
-    (hWHerm : ∀ e, (W e).IsHermitian)
-    (hWBlock : ∀ e, IsBlockPositiveBetween r (W e))
-    {ρ : Matrix (A × B) (A × B) ℂ}
-    (hneg : ((aggregateLocalWitness weights L R W * ρ).trace).re < 0) :
-    ¬ SchmidtNumberLEBetween r ρ := by
-  intro hρ
-  exact (not_lt_of_ge
-    (trace_mul_aggregateLocalWitness_nonneg
-      hweights L R hWHerm hWBlock hρ)) hneg
-
-end Aggregation
-
 section DependentAggregation
 
 variable {A B E : Type*} [Fintype A] [Fintype B] [Fintype E]
@@ -725,6 +646,76 @@ theorem trace_mul_aggregateLocalWitnessDependent_shift_lower
   linarith
 
 end DependentAggregation
+
+section Aggregation
+
+variable {A B C D E P Q : Type*}
+  [Fintype A] [Fintype B] [Fintype C] [Fintype D]
+  [Fintype E] [Fintype P] [Fintype Q]
+
+/-- A weighted sum of witnesses pulled back through local Kraus families.
+This is the constant-output specialization of
+`aggregateLocalWitnessDependent`. -/
+noncomputable def aggregateLocalWitness
+    (weights : E → ℝ)
+    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
+    (W : E → Matrix (C × D) (C × D) ℂ) :
+    Matrix (A × B) (A × B) ℂ :=
+  aggregateLocalWitnessDependent weights L R W
+
+/-- Nonnegative weighted aggregation preserves block positivity. -/
+theorem aggregateLocalWitness_isBlockPositiveBetween {r : ℕ}
+    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
+    {W : E → Matrix (C × D) (C × D) ℂ}
+    (hW : ∀ e, IsBlockPositiveBetween r (W e)) :
+    IsBlockPositiveBetween r (aggregateLocalWitness weights L R W) := by
+  simpa only [aggregateLocalWitness] using
+    aggregateLocalWitnessDependent_isBlockPositiveBetween
+      hweights L R hW
+
+omit [Fintype A] [Fintype B] in
+/-- Nonnegative weighted aggregation of Hermitian witnesses is Hermitian. -/
+theorem aggregateLocalWitness_isHermitian
+    (weights : E → ℝ)
+    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
+    {W : E → Matrix (C × D) (C × D) ℂ}
+    (hW : ∀ e, (W e).IsHermitian) :
+    (aggregateLocalWitness weights L R W).IsHermitian := by
+  simpa only [aggregateLocalWitness] using
+    aggregateLocalWitnessDependent_isHermitian weights L R hW
+
+/-- The finite-coordinate local-channel aggregation theorem, stated at the
+Kraus level. -/
+theorem trace_mul_aggregateLocalWitness_nonneg {r : ℕ}
+    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
+    {W : E → Matrix (C × D) (C × D) ℂ}
+    (hWHerm : ∀ e, (W e).IsHermitian)
+    (hWBlock : ∀ e, IsBlockPositiveBetween r (W e))
+    {ρ : Matrix (A × B) (A × B) ℂ}
+    (hρ : SchmidtNumberLEBetween r ρ) :
+    0 ≤ ((aggregateLocalWitness weights L R W * ρ).trace).re := by
+  simpa only [aggregateLocalWitness] using
+    trace_mul_aggregateLocalWitnessDependent_nonneg
+      hweights L R hWHerm hWBlock hρ
+
+/-- A negative aggregate energy certifies failure of the
+Schmidt-number-at-most-`r` promise. -/
+theorem not_schmidtNumberLEBetween_of_aggregateLocalWitness_neg {r : ℕ}
+    {weights : E → ℝ} (hweights : ∀ e, 0 ≤ weights e)
+    (L : E → P → Matrix C A ℂ) (R : E → Q → Matrix D B ℂ)
+    {W : E → Matrix (C × D) (C × D) ℂ}
+    (hWHerm : ∀ e, (W e).IsHermitian)
+    (hWBlock : ∀ e, IsBlockPositiveBetween r (W e))
+    {ρ : Matrix (A × B) (A × B) ℂ}
+    (hneg : ((aggregateLocalWitness weights L R W * ρ).trace).re < 0) :
+    ¬ SchmidtNumberLEBetween r ρ := by
+  simpa only [aggregateLocalWitness] using
+    not_schmidtNumberLEBetween_of_aggregateLocalWitnessDependent_neg
+      hweights L R hWHerm hWBlock hneg
+
+end Aggregation
 
 section ReductionAggregation
 
