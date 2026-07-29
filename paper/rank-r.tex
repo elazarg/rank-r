@@ -1076,10 +1076,10 @@ For the balanced-polarization route in \cref{sec:balanced-route}, the cited
 revision checks the generic lift, its complete-graph defect, the sharp
 rank-one marginal estimate, the crossed-polarization identity, and the
 partial-trace specialization along a supplied balanced factorization.  It
-also checks that constant-diagonal unitary mixing balances an equal-Gram
-factorization without changing the represented matrix.  Existence of such an
-exact-rank equal-Gram factorization and the Parker--Fillmore
-constant-diagonal theorem remain open library items.
+also constructs the exact-rank equal-Gram factorization by spectral mixing and
+fourth-root rescaling, and checks that constant-diagonal unitary mixing
+balances it without changing the represented matrix.  The Parker--Fillmore
+constant-diagonal theorem is not yet formalized.
 
 \appendix
 
@@ -1279,9 +1279,9 @@ W. V. Parker.
 \bibitem{RankRRepository}
 Elazar Gershuni.
 \newblock \emph{Rank-$r$ partial-trace formalization}.
-\newblock Lean~4 source, commit \texttt{01008e7}, July 29, 2026.
+\newblock Lean~4 source, commit \texttt{198eb78}, July 29, 2026.
 \newblock
-\url{https://github.com/elazarg/rank-r/tree/01008e7385546c1214db128c7d2da01d506f63a0}
+\url{https://github.com/elazarg/rank-r/tree/198eb78e21b133e50e5eb79f2603096b964ad5df}
 
 \bibitem{SongChen2026}
 Zhiwei Song and Lin Chen.

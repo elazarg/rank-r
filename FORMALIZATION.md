@@ -39,8 +39,8 @@ graph. The corresponding Lean layers are:
 The focused manuscript is `paper/rank-r.tex`.  Its central chain is the generic
 rank-two Choi lift, the double-skew local estimate, the partial-trace
 application, and the graph sharpness family.  The balanced-factorization
-comparison is checked from an explicit balanced factorization; existence of
-that factorization remains an open library theorem.
+comparison is checked through the equal-Gram construction; the
+constant-diagonal theorem used to complete that construction remains open.
 
 | Manuscript item | Status | Lean certificate or remaining gap |
 | --- | --- | --- |
@@ -63,7 +63,7 @@ that factorization remains an open library theorem.
 | Proposition 5.3, abstract balanced-polarization lift | **Conditional** | `balancedPolarization_rankFactor_trace_le` proves the generic lift along a supplied balanced exact-rank factorization; `partialTrace_of_hasBalancedRankFactorization` includes the exact-rank-to-`r` step |
 | Rank-one and crossing inputs for the partial-trace instance | **Checked** | `hsNormSq_partialTrace_rankOne_add_le` proves the sharp rank-one inequality from the double-antisymmetric projection certificate; `partialTracePair_hasCrossedPolarization` proves the four-state marginal identity |
 | Gram-operator rendering of Proposition 5.3 | **Open formalization** | No crossing-reshuffle operator or equivalence for `Γ = L* L` is defined |
-| Balanced rank factorization used in Proposition 5.3 | **Checked construction; open existence inputs** | `exists_balanced_mixRankFamily` proves that constant-diagonal unitary mixing balances any equal-Gram factorization while preserving the represented matrix. `hasBalancedRankFactorization_of_equalGram_of_constantDiagonals` isolates the two missing general theorems: existence of an equal-Gram exact-rank factorization and Parker–Fillmore (`HasConstantDiagonals`) |
+| Balanced rank factorization used in Proposition 5.3 | **Checked modulo Parker–Fillmore** | `hasEqualGramRankFactorization` constructs an equal-Gram factorization indexed by the exact matrix rank via spectral mixing and fourth-root rescaling. `exists_balanced_mixRankFamily` proves that constant-diagonal unitary mixing balances it without changing the represented matrix; `hasBalancedRankFactorization_of_constantDiagonals` isolates Parker–Fillmore (`HasConstantDiagonals`) as the remaining hypothesis |
 | Equation (26), balanced complete-graph defect | **Checked along a supplied balanced factorization** | `balancedPolarization_rankFactor_defect_le` proves the generic ordered-pair form; `balanced_partialTrace_rankFactor_defect_le` specializes it to the two marginals. Ordered off-diagonal mass is twice the paper's sum over `i < j` |
 | Corollary 5.4, spectral stability | **Open formalization; defect checked** | The factorization-level defect is checked. The remaining bridge identifies the centered equal-Gram matrix with the variance of the nonzero singular values |
 | Graph family, symmetric Kraus operators and exact `β₂ = 1` | **Checked** | `graphKraus_transpose`, `choiTwoBound_graphKraus_iff` |
