@@ -134,6 +134,10 @@ theorem. -/
 #guard_msgs in
 #print axioms hasEqualGramRankFactorization
 
+/-- info: 'RankR.hasConstantDiagonals_of_traceEntry' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms hasConstantDiagonals_of_traceEntry
+
 /--
 info: 'RankR.hasBalancedRankFactorization_of_equalGram_of_constantDiagonals' depends on axioms: [propext,
  Classical.choice,

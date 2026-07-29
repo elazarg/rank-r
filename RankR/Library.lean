@@ -9,6 +9,7 @@ import RankR.Library.Analysis.Weights
 import RankR.Library.Matrix.Action
 import RankR.Library.Matrix.BalancedFactorization
 import RankR.Library.Matrix.Conjugate
+import RankR.Library.Matrix.ConstantDiagonal
 import RankR.Library.Matrix.Contraction
 import RankR.Library.Matrix.Elementary
 import RankR.Library.Matrix.HermitianTraceNorm

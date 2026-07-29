@@ -5,6 +5,7 @@ A balanced factorization has identical left and right Gram matrices, and each
 rank-one summand contributes the same scalar to the trace.
 -/
 import RankR.Library.Matrix.Rank
+import RankR.Library.Matrix.ConstantDiagonal
 import Mathlib.Analysis.InnerProductSpace.GramMatrix
 import Mathlib.Analysis.Matrix.PosDef
 
@@ -322,38 +323,6 @@ theorem spectralBalance_isEqualGram
                 rw [inner_smul_left, inner_smul_right]
 
 end Mixing
-
-section ConstantDiagonal
-
-variable {q : ℕ}
-
-/-- A matrix has a constant diagonal up to unitary similarity. -/
-def HasConstantDiagonal (A : Matrix (Fin q) (Fin q) ℂ) : Prop :=
-  ∃ U : Matrix (Fin q) (Fin q) ℂ,
-    U ∈ Matrix.unitaryGroup (Fin q) ℂ
-      ∧ ∀ i, (Uᴴ * A * U) i i = A.trace / (q : ℂ)
-
-/-- The Parker--Fillmore property in a fixed dimension. -/
-def HasConstantDiagonals (q : ℕ) : Prop :=
-  ∀ A : Matrix (Fin q) (Fin q) ℂ, HasConstantDiagonal A
-
-/-- The constant-diagonal property in dimension zero. -/
-theorem hasConstantDiagonals_zero : HasConstantDiagonals 0 := by
-  intro A
-  refine ⟨1, by simp, ?_⟩
-  intro i
-  exact Fin.elim0 i
-
-/-- The constant-diagonal property in dimension one. -/
-theorem hasConstantDiagonals_one : HasConstantDiagonals 1 := by
-  intro A
-  refine ⟨1, by simp, ?_⟩
-  intro i
-  have hi : i = 0 := Subsingleton.elim _ _
-  subst i
-  simp [Matrix.trace]
-
-end ConstantDiagonal
 
 section Balance
 
