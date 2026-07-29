@@ -1,6 +1,6 @@
 /-
-The pair-amplification construction, its double-skew seed, and the resulting
-partial-trace theorem.
+The rank-two Choi lift, its double-skew seed, and the resulting partial-trace
+theorem.
 -/
 import RankR.Core.Amplification
 import RankR.Core.Amplification.Gram

@@ -1,5 +1,5 @@
 /-
-The reusable pair-amplification construction.
+The reusable rank-two Choi lifting construction.
 -/
 import RankR.Core.Amplification.CompleteGraph
 import RankR.Core.Amplification.Balanced

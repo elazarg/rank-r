@@ -28,7 +28,7 @@ The claim ledger follows the mathematical manuscripts rather than the import
 graph. The corresponding Lean layers are:
 
 - `RankR.Library` for reusable finite-coordinate infrastructure;
-- `RankR.Core.Amplification` for the generic pair construction;
+- `RankR.Core.Amplification` for the generic rank-two Choi lift;
 - `RankR` for the flagship partial-trace theorem;
 - `RankR.Applications` and `RankR.Companions` for the two optional suites;
 - `RankR.All` for the complete mathematical development; and
