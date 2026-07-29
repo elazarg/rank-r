@@ -14,10 +14,12 @@ import RankR.OneSided
 import RankR.Optimal
 import RankR.Results
 import RankR.BlockPos
+import Mathlib.Analysis.Matrix.Order
 
 namespace RankR
 
 open Matrix Finset
+open scoped ComplexOrder
 
 section Scores
 
@@ -546,6 +548,204 @@ end Scores
 section ScoreOperators
 
 variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
+open scoped Kronecker
+
+/-- The permutation from product-Choi register order
+`(U_out,U_in):(V_out,V_in)` to vectorization order
+`(U_out,V_out):(U_in,V_in)`. -/
+def choiRegroupEquiv : (U × U) × (V × V) ≃ (U × V) × (U × V) where
+  toFun p := ((p.1.1, p.2.1), (p.1.2, p.2.2))
+  invFun p := ((p.1.1, p.2.1), (p.1.2, p.2.2))
+  left_inv := fun _ => rfl
+  right_inv := fun _ => rfl
+
+/-- A product of two one-factor Choi matrices, in vectorization register
+order. -/
+def regroupChoi (A : Matrix (U × U) (U × U) ℂ)
+    (B : Matrix (V × V) (V × V) ℂ) :
+    Matrix (((U × V) × (U × V))) (((U × V) × (U × V))) ℂ :=
+  Matrix.reindex (choiRegroupEquiv (U := U) (V := V))
+    (choiRegroupEquiv (U := U) (V := V)) (A ⊗ₖ B)
+
+theorem regroupChoi_sub_left (A A' : Matrix (U × U) (U × U) ℂ)
+    (B : Matrix (V × V) (V × V) ℂ) :
+    regroupChoi (A - A') B = regroupChoi A B - regroupChoi A' B := by
+  ext X Y
+  simp [regroupChoi, Matrix.sub_apply]
+  ring
+
+theorem regroupChoi_sub_right (A : Matrix (U × U) (U × U) ℂ)
+    (B B' : Matrix (V × V) (V × V) ℂ) :
+    regroupChoi A (B - B') = regroupChoi A B - regroupChoi A B' := by
+  ext X Y
+  simp [regroupChoi, Matrix.sub_apply]
+  ring
+
+theorem regroupChoi_smul_left (c : ℂ) (A : Matrix (U × U) (U × U) ℂ)
+    (B : Matrix (V × V) (V × V) ℂ) :
+    regroupChoi (c • A) B = c • regroupChoi A B := by
+  ext X Y
+  simp [regroupChoi]
+  ring
+
+theorem regroupChoi_smul_right (c : ℂ) (A : Matrix (U × U) (U × U) ℂ)
+    (B : Matrix (V × V) (V × V) ℂ) :
+    regroupChoi A (c • B) = c • regroupChoi A B := by
+  ext X Y
+  simp [regroupChoi]
+  ring
+
+/-- The one-factor maximally entangled vector. -/
+def singleOmegaVec {T : Type*} [DecidableEq T] :
+    EuclideanSpace ℂ (T × T) :=
+  WithLp.toLp 2 fun p => if p.1 = p.2 then (1 : ℂ) else 0
+
+@[simp]
+theorem singleOmegaVec_apply {T : Type*} [DecidableEq T] (p : T × T) :
+    singleOmegaVec p = if p.1 = p.2 then (1 : ℂ) else 0 := rfl
+
+/-- The Choi matrix of a coordinate map, with output index first and input
+index second. -/
+noncomputable def mapChoi {I O : Type*} [DecidableEq I]
+    (Φ : Matrix I I ℂ → Matrix O O ℂ) :
+    Matrix (O × I) (O × I) ℂ :=
+  Matrix.of fun p q => Φ (Matrix.single p.2 q.2 1) p.1 q.1
+
+/-- The one-factor reduction pencil `R_{-a}(X) = Tr(X)I - aX`. -/
+noncomputable def reductionMap {T : Type*} [Fintype T] [DecidableEq T]
+    (a : ℝ) (X : Matrix T T ℂ) : Matrix T T ℂ :=
+  X.trace • 1 - (a : ℂ) • X
+
+/-- `|Ω_T⟩⟨Ω_T|`, the nontrivial term in the Choi matrix of a reduction
+pencil. -/
+noncomputable def singleOmegaChoi {T : Type*} [DecidableEq T] :
+    Matrix (T × T) (T × T) ℂ :=
+  rankOne (singleOmegaVec (T := T)) singleOmegaVec
+
+/-- The Choi matrix `I - a|Ω⟩⟨Ω|` of the reduction pencil
+`R_{-a}(X) = Tr(X)I - aX`. -/
+noncomputable def reductionChoi {T : Type*} [DecidableEq T] (a : ℝ) :
+    Matrix (T × T) (T × T) ℂ :=
+  1 - (a : ℂ) • singleOmegaChoi
+
+theorem mapChoi_reductionMap {T : Type*} [Fintype T] [DecidableEq T] (a : ℝ) :
+    mapChoi (reductionMap (T := T) a) = reductionChoi (T := T) a := by
+  ext p q
+  obtain ⟨i, k⟩ := p
+  obtain ⟨j, l⟩ := q
+  by_cases hkl : k = l
+  · subst l
+    simp [mapChoi, reductionMap, Matrix.trace_single_eq_same, reductionChoi,
+      singleOmegaChoi, rankOne, Matrix.one_apply, Matrix.single_apply, eq_comm]
+    split_ifs <;> simp_all
+  · simp [mapChoi, reductionMap, Matrix.trace_single_eq_of_ne k l (1 : ℂ) hkl,
+      reductionChoi, singleOmegaChoi, rankOne, Matrix.one_apply,
+      Matrix.single_apply, hkl, eq_comm]
+    split_ifs <;> simp_all
+
+/-- The product Choi matrix of two reduction pencils, with output and input
+registers regrouped to the vectorization order used by `IsBlockPositive`. -/
+noncomputable def productReductionChoi (a b : ℝ) :
+    Matrix (((U × V) × (U × V))) (((U × V) × (U × V))) ℂ :=
+  regroupChoi (reductionChoi (T := U) a) (reductionChoi (T := V) b)
+
+/-- The product object is literally the regrouped tensor product of the Choi
+matrices of the two coordinate reduction maps. -/
+theorem productReductionChoi_eq_regroup_mapChoi (a b : ℝ) :
+    productReductionChoi (U := U) (V := V) a b
+      = regroupChoi (mapChoi (reductionMap (T := U) a))
+          (mapChoi (reductionMap (T := V) b)) := by
+  rw [mapChoi_reductionMap, mapChoi_reductionMap]
+  rfl
+
+theorem inner_singleOmegaVec {T : Type*} [Fintype T] [DecidableEq T]
+    (C : Matrix T T ℂ) :
+    inner ℂ (singleOmegaVec (T := T)) (vec C) = C.trace := by
+  rw [PiLp.inner_apply, Fintype.sum_prod_type, Matrix.trace]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  rw [Matrix.diag_apply]
+  have h : ∀ y : T,
+      (inner ℂ (singleOmegaVec (T := T) (x, y)) (vec C (x, y)) : ℂ)
+        = if x = y then C x y else 0 := by
+    intro y
+    rw [RCLike.inner_apply', singleOmegaVec_apply, vec_apply]
+    by_cases hxy : x = y <;> simp [hxy]
+  rw [Finset.sum_congr rfl fun y _ => h y, Finset.sum_ite_eq]
+  simp
+
+theorem qform_reductionChoi {T : Type*} [Fintype T] [DecidableEq T]
+    (a : ℝ) (C : Matrix T T ℂ) :
+    qform (reductionChoi (T := T) a) (vec C)
+      = ((hsNormSq C - a * Complex.normSq C.trace : ℝ) : ℂ) := by
+  rw [reductionChoi, qform_sub, qform_smul, qform_one, singleOmegaChoi,
+    qform_rankOne, inner_singleOmegaVec, hsNormSq_eq_norm_sq]
+  norm_cast
+
+private theorem reductionChoi_isHermitian {T : Type*} [DecidableEq T] (a : ℝ) :
+    (reductionChoi (T := T) a).IsHermitian := by
+  rw [Matrix.IsHermitian]
+  simp [reductionChoi, singleOmegaChoi, Matrix.conjTranspose_sub, Matrix.conjTranspose_smul,
+    rankOne_conjTranspose]
+
+/-- The reduction-pencil Choi matrix is positive semidefinite in its
+completely-positive range `0 ≤ a ≤ 1 / dim(T)`. -/
+theorem reductionChoi_posSemidef {T : Type*} [Fintype T] [DecidableEq T]
+    {a : ℝ} (ha0 : 0 ≤ a) (hT : 0 < Fintype.card T)
+    (ha : a ≤ 1 / (Fintype.card T : ℝ)) :
+    (reductionChoi (T := T) a).PosSemidef := by
+  refine Matrix.PosSemidef.of_dotProduct_mulVec_nonneg
+    (reductionChoi_isHermitian a) ?_
+  intro x
+  let C : Matrix T T ℂ := Matrix.of fun i j => x (i, j)
+  have hvec : vec C = WithLp.toLp 2 x := rfl
+  have htrace_rank := normSq_trace_le_rank C
+  have hrank : (C.rank : ℝ) ≤ Fintype.card T := by
+    exact_mod_cast Matrix.rank_le_card_width C
+  have hnorm := hsNormSq_nonneg C
+  have htrace :
+      Complex.normSq C.trace ≤ (Fintype.card T : ℝ) * hsNormSq C :=
+    htrace_rank.trans (mul_le_mul_of_nonneg_right hrank hnorm)
+  have hcard : (0 : ℝ) < Fintype.card T := by exact_mod_cast hT
+  have hacard : a * (Fintype.card T : ℝ) ≤ 1 :=
+    (le_div_iff₀ hcard).mp ha
+  have hatrace := mul_le_mul_of_nonneg_left htrace ha0
+  have hacard_norm := mul_le_mul_of_nonneg_right hacard hnorm
+  have hreal : 0 ≤ hsNormSq C - a * Complex.normSq C.trace := by
+    rw [sub_nonneg]
+    calc
+      a * Complex.normSq C.trace
+          ≤ a * ((Fintype.card T : ℝ) * hsNormSq C) := hatrace
+      _ = (a * (Fintype.card T : ℝ)) * hsNormSq C := by ring
+      _ ≤ 1 * hsNormSq C := hacard_norm
+      _ = hsNormSq C := one_mul _
+  have hdot :
+      star x ⬝ᵥ (reductionChoi (T := T) a *ᵥ x)
+        = qform (reductionChoi (T := T) a) (WithLp.toLp 2 x) := by
+    simp [qform, dotProduct, Matrix.mulVec, Finset.mul_sum, mul_assoc]
+  rw [hdot, ← hvec, qform_reductionChoi]
+  exact (RCLike.ofReal_nonneg (K := ℂ)).mpr hreal
+
+/-- A positive semidefinite Choi matrix is block-positive at every level. -/
+theorem isBlockPositive_of_posSemidef {W : Type*} [Fintype W]
+    {M : Matrix (W × W) (W × W) ℂ} (hM : M.PosSemidef) (r : ℕ) :
+    IsBlockPositive r M := by
+  intro C _
+  have hq : 0 ≤ qform M (vec C) := by
+    have hdot := hM.dotProduct_mulVec_nonneg (vec C)
+    simpa [qform, dotProduct, Matrix.mulVec, Finset.mul_sum, mul_assoc] using hdot
+  exact (Complex.nonneg_iff.mp hq).1
+
+/-- In the completely-positive parameter range, the regrouped product Choi
+matrix is positive semidefinite and hence block-positive at every rank. -/
+theorem productReductionChoi_posSemidef
+    {a b : ℝ} (ha0 : 0 ≤ a) (hb0 : 0 ≤ b)
+    (hU : 0 < Fintype.card U) (hV : 0 < Fintype.card V)
+    (ha : a ≤ 1 / (Fintype.card U : ℝ))
+    (hb : b ≤ 1 / (Fintype.card V : ℝ)) :
+    (productReductionChoi (U := U) (V := V) a b).PosSemidef := by
+  rw [productReductionChoi, regroupChoi, Matrix.reindex_apply]
+  exact (reductionChoi_posSemidef ha0 hU ha).kronecker
+    (reductionChoi_posSemidef hb0 hV hb) |>.submatrix _
 
 /-- The sum of rank-one Choi terms whose quadratic form is
 `‖Tr_U C‖₂²`. -/
@@ -563,6 +763,85 @@ noncomputable def marginalChoiV :
 noncomputable def traceChoi :
     Matrix (((U × V) × (U × V))) (((U × V) × (U × V))) ℂ :=
   rankOne (omegaVec (U := U) (V := V)) omegaVec
+
+private theorem sum_pair_indicator {T : Type*} [Fintype T] [DecidableEq T]
+    (a b c d : T) :
+    ∑ p : T × T,
+        (if a = p.1 ∧ b = p.2 then
+          if c = p.1 ∧ d = p.2 then (1 : ℂ) else 0
+        else 0)
+      = if a = c ∧ b = d then 1 else 0 := by
+  rw [Fintype.sum_eq_single (a, b) (fun p hp => by
+    have hne : ¬(a = p.1 ∧ b = p.2) := by
+      rintro ⟨h₁, h₂⟩
+      exact hp (Prod.ext h₁.symm h₂.symm)
+    simp [hne])]
+  simp [eq_comm]
+
+private theorem marginalChoiU_apply (u u' w w' : U) (v v' x x' : V) :
+    marginalChoiU (U := U) (V := V) ((u, v), (u', v')) ((w, x), (w', x'))
+      = if u = u' ∧ w = w' ∧ v = x ∧ v' = x' then 1 else 0 := by
+  simp only [marginalChoiU, Matrix.sum_apply, rankOne, Matrix.of_apply, gU_apply]
+  by_cases hu : u = u' <;> by_cases hw : w = w'
+  · subst u'
+    subst w'
+    simpa [eq_comm] using sum_pair_indicator x x' v v'
+  · simp [hu, hw]
+  · simp [hu, hw]
+  · simp [hu, hw]
+
+private theorem marginalChoiV_apply (u u' w w' : U) (v v' x x' : V) :
+    marginalChoiV (U := U) (V := V) ((u, v), (u', v')) ((w, x), (w', x'))
+      = if v = v' ∧ x = x' ∧ u = w ∧ u' = w' then 1 else 0 := by
+  simp only [marginalChoiV, Matrix.sum_apply, rankOne, Matrix.of_apply, gV_apply]
+  by_cases hv : v = v' <;> by_cases hx : x = x'
+  · subst v'
+    subst x'
+    simpa [eq_comm] using sum_pair_indicator w w' u u'
+  · simp [hv, hx]
+  · simp [hv, hx]
+  · simp [hv, hx]
+
+theorem regroupChoi_singleOmega_one :
+    regroupChoi (singleOmegaChoi (T := U))
+        (1 : Matrix (V × V) (V × V) ℂ)
+      = marginalChoiU (U := U) (V := V) := by
+  ext X Y
+  obtain ⟨⟨u, v⟩, u', v'⟩ := X
+  obtain ⟨⟨w, x⟩, w', x'⟩ := Y
+  simp [regroupChoi, choiRegroupEquiv, singleOmegaChoi, marginalChoiU_apply,
+    rankOne, Matrix.one_apply, Prod.ext_iff]
+  aesop
+
+theorem regroupChoi_one_singleOmega :
+    regroupChoi (1 : Matrix (U × U) (U × U) ℂ)
+        (singleOmegaChoi (T := V))
+      = marginalChoiV (U := U) (V := V) := by
+  ext X Y
+  obtain ⟨⟨u, v⟩, u', v'⟩ := X
+  obtain ⟨⟨w, x⟩, w', x'⟩ := Y
+  simp [regroupChoi, choiRegroupEquiv, singleOmegaChoi, marginalChoiV_apply,
+    rankOne, Matrix.one_apply, Prod.ext_iff]
+  aesop
+
+theorem regroupChoi_singleOmega_singleOmega :
+    regroupChoi (singleOmegaChoi (T := U)) (singleOmegaChoi (T := V))
+      = traceChoi (U := U) (V := V) := by
+  ext X Y
+  obtain ⟨⟨u, v⟩, u', v'⟩ := X
+  obtain ⟨⟨w, x⟩, w', x'⟩ := Y
+  simp [regroupChoi, choiRegroupEquiv, singleOmegaChoi, traceChoi,
+    rankOne, omegaVec] <;> split_ifs <;> simp_all
+
+theorem regroupChoi_one_one :
+    regroupChoi (1 : Matrix (U × U) (U × U) ℂ)
+        (1 : Matrix (V × V) (V × V) ℂ)
+      = 1 := by
+  ext X Y
+  obtain ⟨⟨u, v⟩, u', v'⟩ := X
+  obtain ⟨⟨w, x⟩, w', x'⟩ := Y
+  simp [regroupChoi, choiRegroupEquiv, Matrix.one_apply, Prod.ext_iff] <;>
+    split_ifs <;> simp_all
 
 theorem re_qform_marginalChoiU (C : Matrix (U × V) (U × V) ℂ) :
     (qform (marginalChoiU (U := U) (V := V)) (vec C)).re
@@ -591,6 +870,20 @@ noncomputable def asymmetricScoreOperator (a b : ℝ) :
     - (b : ℂ) • marginalChoiV
     + ((a * b : ℝ) : ℂ) • traceChoi
 
+/-- The coordinate score operator is exactly the regrouped tensor product
+`J(R_{-a}) ⊗ J(R_{-b})`, not merely an operator with the same tested quadratic
+form. -/
+theorem productReductionChoi_eq_asymmetricScoreOperator (a b : ℝ) :
+    productReductionChoi (U := U) (V := V) a b
+      = asymmetricScoreOperator (U := U) (V := V) a b := by
+  simp only [productReductionChoi, reductionChoi, regroupChoi_sub_left,
+    regroupChoi_sub_right, regroupChoi_smul_left, regroupChoi_smul_right,
+    regroupChoi_one_one, regroupChoi_singleOmega_one,
+    regroupChoi_one_singleOmega, regroupChoi_singleOmega_singleOmega]
+  ext X Y
+  simp [asymmetricScoreOperator]
+  ring
+
 /-- `eq:q2-vectorization` and its asymmetric analogue in the coordinate
 Choi rendering used by `IsBlockPositive`. -/
 theorem re_qform_asymmetricScoreOperator (a b : ℝ)
@@ -616,6 +909,12 @@ theorem isBlockPositive_asymmetricScoreOperator_iff (r : ℕ) (a b : ℝ) :
 noncomputable def twoCopyScoreOperator (t : ℝ) :
     Matrix (((U × V) × (U × V))) (((U × V) × (U × V))) ℂ :=
   asymmetricScoreOperator (U := U) (V := V) t t
+
+theorem productReductionChoi_self_eq_twoCopyScoreOperator (t : ℝ) :
+    productReductionChoi (U := U) (V := V) t t
+      = twoCopyScoreOperator (U := U) (V := V) t := by
+  rw [productReductionChoi_eq_asymmetricScoreOperator]
+  rfl
 
 theorem asymmetricScore_self (t : ℝ) (C : Matrix (U × V) (U × V) ℂ) :
     asymmetricScore t t C = twoCopyScore t C := by
@@ -655,6 +954,75 @@ theorem isBlockPositive_asymmetricScoreOperator_iff_max_le_inv {r : ℕ}
       ↔ max a b ≤ 1 / (r : ℝ) := by
   rw [isBlockPositive_asymmetricScoreOperator_iff]
   exact asymmetricNonnegative_iff hr hU hV hUtwo hVtwo ha0 hb0
+
+/-- The asymmetric threshold in the rank-constrained range, stated for the
+actual regrouped tensor product of the two one-factor Choi matrices. -/
+theorem isBlockPositive_productReductionChoi_iff_max_le_inv {r : ℕ}
+    (hr : 0 < r) (hU : r ≤ Fintype.card U) (hV : r ≤ Fintype.card V)
+    (hUtwo : 2 ≤ Fintype.card U) (hVtwo : 2 ≤ Fintype.card V)
+    {a b : ℝ} (ha0 : 0 ≤ a) (hb0 : 0 ≤ b) :
+    IsBlockPositive r (productReductionChoi (U := U) (V := V) a b)
+      ↔ max a b ≤ 1 / (r : ℝ) := by
+  rw [productReductionChoi_eq_asymmetricScoreOperator]
+  exact isBlockPositive_asymmetricScoreOperator_iff_max_le_inv
+    hr hU hV hUtwo hVtwo ha0 hb0
+
+/-- Once the tested rank reaches the local dimension, complete positivity of
+both factors gives sufficiency at `1 / dim`, while the rank-`dim` witness gives
+necessity. -/
+theorem isBlockPositive_productReductionChoi_iff_max_le_inv_card
+    {T : Type*} [Fintype T] [DecidableEq T] {r : ℕ}
+    (hTtwo : 2 ≤ Fintype.card T) (hTr : Fintype.card T ≤ r)
+    {a b : ℝ} (ha0 : 0 ≤ a) (hb0 : 0 ≤ b) :
+    IsBlockPositive r (productReductionChoi (U := T) (V := T) a b)
+      ↔ max a b ≤ 1 / (Fintype.card T : ℝ) := by
+  have hTpos : 0 < Fintype.card T := by omega
+  constructor
+  · intro h
+    have hdim :
+        IsBlockPositive (Fintype.card T)
+          (productReductionChoi (U := T) (V := T) a b) := by
+      intro C hrank
+      exact h C (hrank.trans hTr)
+    rw [productReductionChoi_eq_asymmetricScoreOperator] at hdim
+    exact (isBlockPositive_asymmetricScoreOperator_iff_max_le_inv
+      hTpos le_rfl le_rfl hTtwo hTtwo ha0 hb0).mp hdim
+  · intro hmax
+    have ha : a ≤ 1 / (Fintype.card T : ℝ) := (le_max_left a b).trans hmax
+    have hb : b ≤ 1 / (Fintype.card T : ℝ) := (le_max_right a b).trans hmax
+    exact isBlockPositive_of_posSemidef
+      (productReductionChoi_posSemidef ha0 hb0 hTpos hTpos ha hb) r
+
+/-- `cor:asymmetric-block-positive`, including the completely-positive
+continuation past the local dimension.  The theorem is stated for every
+positive `r`; the manuscript only needs `r ≤ d²`. -/
+theorem isBlockPositive_productReductionChoi_iff_max_le_inv_min
+    {T : Type*} [Fintype T] [DecidableEq T] {r : ℕ}
+    (hr : 0 < r) (hTtwo : 2 ≤ Fintype.card T)
+    {a b : ℝ} (ha0 : 0 ≤ a) (hb0 : 0 ≤ b) :
+    IsBlockPositive r (productReductionChoi (U := T) (V := T) a b)
+      ↔ max a b ≤ 1 / (min r (Fintype.card T) : ℝ) := by
+  by_cases hrT : r ≤ Fintype.card T
+  · have hrTR : (r : ℝ) ≤ Fintype.card T := by exact_mod_cast hrT
+    rw [min_eq_left hrTR]
+    exact isBlockPositive_productReductionChoi_iff_max_le_inv
+      hr hrT hrT hTtwo hTtwo ha0 hb0
+  · have hTr : Fintype.card T ≤ r := by omega
+    have hTrR : (Fintype.card T : ℝ) ≤ r := by exact_mod_cast hTr
+    rw [min_eq_right hTrR]
+    exact isBlockPositive_productReductionChoi_iff_max_le_inv_card
+      hTtwo hTr ha0 hb0
+
+/-- `cor:two-copy-block-positive`, for the regrouped tensor square and all
+positive ranks. -/
+theorem isBlockPositive_productReductionChoi_self_iff_le_inv_min
+    {T : Type*} [Fintype T] [DecidableEq T] {r : ℕ}
+    (hr : 0 < r) (hTtwo : 2 ≤ Fintype.card T)
+    {t : ℝ} (ht0 : 0 ≤ t) :
+    IsBlockPositive r (productReductionChoi (U := T) (V := T) t t)
+      ↔ t ≤ 1 / (min r (Fintype.card T) : ℝ) := by
+  simpa using (isBlockPositive_productReductionChoi_iff_max_le_inv_min
+    (T := T) hr hTtwo ht0 ht0)
 
 end ScoreOperators
 

@@ -167,6 +167,38 @@ Ky-Fan corollary. -/
 #guard_msgs in
 #print axioms isBlockPositive_asymmetricScoreOperator_iff_max_le_inv
 
+/-- info: 'RankR.mapChoi_reductionMap' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms mapChoi_reductionMap
+
+/-- info: 'RankR.productReductionChoi_eq_regroup_mapChoi' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms productReductionChoi_eq_regroup_mapChoi
+
+/-- info: 'RankR.productReductionChoi_eq_asymmetricScoreOperator' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms productReductionChoi_eq_asymmetricScoreOperator
+
+/-- info: 'RankR.reductionChoi_posSemidef' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms reductionChoi_posSemidef
+
+/-- info: 'RankR.productReductionChoi_posSemidef' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms productReductionChoi_posSemidef
+
+/-- info: 'RankR.isBlockPositive_productReductionChoi_self_iff_le_inv_min' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms isBlockPositive_productReductionChoi_self_iff_le_inv_min
+
+/-- info: 'RankR.isBlockPositive_productReductionChoi_iff_max_le_inv_min' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms isBlockPositive_productReductionChoi_iff_max_le_inv_min
+
 /-- info: 'RankR.centeredPartialTrace_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms centeredPartialTrace_le

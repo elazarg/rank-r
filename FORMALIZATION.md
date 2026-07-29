@@ -61,14 +61,14 @@ extended-real-infimum layer.
 | adjacent-rank endpoint score `-1/r` | **Checked core** | `twoCopyScore_adjacent_endpoint`; normalization and the vectorized Schmidt-rank wording remain interface steps |
 | strict signed adjacent-rank separation | **Checked core** | `twoCopyScore_strict_separation_pos`, `twoCopyScore_adjacent_strict_neg` |
 | symmetric score nonnegativity iff `t ≤ 1/r`, for `1 ≤ r ≤ d` | **Checked** | `twoCopyNonnegative_iff` |
-| two-copy block positivity for `1 ≤ r ≤ d` | **Checked** in explicit coordinate Choi form | `re_qform_twoCopyScoreOperator`, `isBlockPositive_twoCopyScoreOperator_iff_le_inv`; identification with the displayed tensor-product Choi matrix remains a rendering |
-| two-copy block positivity for `d < r ≤ d²` | **Open formalization** | requires the completely-positive continuation at `t ≤ 1/d` |
-| tensor-square `r`-positivity classification | **Open formalization** | requires a generic map/Choi `r`-positivity equivalence, plus the preceding `r > d` continuation |
+| reduction pencil and displayed product Choi matrices | **Checked** in coordinates | `mapChoi_reductionMap`, `productReductionChoi_eq_regroup_mapChoi`, and `productReductionChoi_eq_asymmetricScoreOperator` include the output/input register permutation explicitly |
+| positive-semidefinite Choi continuation at `a,b ≤ 1/d` | **Checked** | `reductionChoi_posSemidef`, `productReductionChoi_posSemidef`; calling this complete positivity of the maps still uses the generic Choi correspondence |
+| two-copy block positivity for every positive `r`, at equal local dimension `d ≥ 2` | **Checked** in explicit coordinate Choi form | `isBlockPositive_productReductionChoi_self_iff_le_inv_min` gives the threshold `t ≤ 1/min(r,d)` (and hence covers the manuscript range `r ≤ d²`) |
+| tensor-square map `r`-positivity classification | **Open formalization** | the exact Choi matrix and its all-rank block-positivity threshold are checked; a generic equivalence with ampliation-based map `r`-positivity is absent |
 | exact asymmetric score curve for `1 ≤ r ≤ d` | **Checked** | all four lower branches, factor swap, and all four attaining cases in `Applications.lean` |
 | asymmetric score nonnegativity iff `max(a,b) ≤ 1/r`, for `1 ≤ r ≤ d` | **Checked** | `asymmetricNonnegative_iff` |
-| asymmetric block positivity for `1 ≤ r ≤ d` | **Checked** in explicit coordinate Choi form | `re_qform_asymmetricScoreOperator`, `isBlockPositive_asymmetricScoreOperator_iff_max_le_inv`; tensor-product identification remains a rendering |
-| asymmetric map positivity for `1 ≤ r ≤ d` | **Open formalization** | needs a generic map/Choi `r`-positivity equivalence |
-| asymmetric threshold for `r > d` | **Open formalization** | needs complete positivity of each reduction-map factor |
+| asymmetric product-Choi block positivity | **Checked** in coordinates | `isBlockPositive_productReductionChoi_iff_max_le_inv` handles `1 ≤ r ≤ min(dim U,dim V)`; `isBlockPositive_productReductionChoi_iff_max_le_inv_min` gives `max(a,b) ≤ 1/min(r,d)` for every positive `r` at equal local dimension `d ≥ 2` |
+| asymmetric map `r`-positivity classification | **Open formalization** | the exact product Choi matrix and its all-rank block-positivity threshold are checked; a generic equivalence with ampliation-based map `r`-positivity is absent |
 | quantitative trace-norm separation | **Open formalization** | requires Hermitian spectral diameter and Schatten-1/operator-norm duality |
 | Kronecker-sum Ky Fan bound | **Checked core** | `centeredPartialTrace_le` is the complete use of the rank theorem; Frobenius Ky Fan duality, the Kronecker pairing, and the final singular-value statement remain |
 | exact Schmidt number of the product of antisymmetric projector states | **Open formalization** | needs mixed-state Schmidt number, projection `S(k)` duality at `k=3`, and convex decompositions |

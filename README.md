@@ -110,13 +110,13 @@ development contains no definition of Schmidt rank at all. The estimate itself
 applications: both branches and attaining matrices of the symmetric and
 asymmetric score curves; their exact score-nonnegativity thresholds for
 `1 ≤ r ≤ d`; the endpoint and strict adjacent-rank score separations; factor
-interchange; explicit Choi-form quadratic identities and block-positivity
-thresholds; and the rank-sensitive estimate used by the Kronecker-sum
-corollary. Identification of the assembled score operators with the displayed
-tensor-product Choi matrices, map `r`-positivity, the completely-positive
-continuation for `r > d`, trace-norm and Ky Fan duality, and mixed-state
-Schmidt-number claims remain outside the formal vocabulary. The exact
-claim-by-claim boundary is maintained in `FORMALIZATION.md`.
+interchange; the coordinate Choi matrices of the reduction maps and their
+regrouped tensor product; block-positivity thresholds at every positive rank
+in equal local dimensions; and the rank-sensitive estimate used by the
+Kronecker-sum corollary. The generic passage from Choi block positivity to
+ampliation-based map `r`-positivity, trace-norm and Ky Fan duality, and
+mixed-state Schmidt-number claims remain outside the formal vocabulary. The
+exact claim-by-claim boundary is maintained in `FORMALIZATION.md`.
 
 ### Two sharpenings not in the manuscript
 
