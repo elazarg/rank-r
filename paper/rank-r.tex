@@ -1052,12 +1052,11 @@ particularly simple tensor-product reduction map does not.
 \section{Formal verification and scope}
 \label{sec:formal}
 
-The finite-coordinate development proves \cref{thm:double-skew}, the protected
-part of \cref{thm:lift}, both operator estimates underlying its unprotected
-part, \cref{thm:marginal,thm:graph}, the exact-rank extension, both optimality
-witnesses, and the parity counterexample.  The unprotected map-level statement
-and \cref{cor:beta-upper} are short assemblies of these checked estimates but
-are not separately named Lean declarations.  The accompanying repository
+The finite-coordinate development proves \cref{thm:double-skew}, both the
+protected and unprotected parts of \cref{thm:lift},
+\cref{cor:beta-upper}, \cref{thm:marginal,thm:graph}, the exact-rank
+extension, both optimality witnesses, and the parity counterexample.  The
+accompanying repository
 \cite{RankRRepository} is cited at the immutable revision inspected for this
 manuscript.  It also proves the Autonne--Takagi factorization used in
 \cref{app:double-skew}.  The main declarations contain no \texttt{sorry};
@@ -1280,9 +1279,9 @@ W. V. Parker.
 \bibitem{RankRRepository}
 Elazar Gershuni.
 \newblock \emph{Rank-$r$ partial-trace formalization}.
-\newblock Lean~4 source, commit \texttt{cb1fd48}, July 29, 2026.
+\newblock Lean~4 source, commit \texttt{12e7bd0}, July 29, 2026.
 \newblock
-\url{https://github.com/elazarg/rank-r/tree/cb1fd48c3e569a4c3e26b3d40c0eb6bfa588303f}
+\url{https://github.com/elazarg/rank-r/tree/12e7bd0e2385599c18cbfdd8ee84dbdecb84094d}
 
 \bibitem{SongChen2026}
 Zhiwei Song and Lin Chen.
