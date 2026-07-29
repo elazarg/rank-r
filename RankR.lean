@@ -51,6 +51,7 @@ import RankR.SchmidtWitness
 import RankR.HigherChoiSharp
 import RankR.HigherAritySkew
 import RankR.KappaOne
+import RankR.GraphLayers
 import RankR.GenericApplications
 import RankR.Rigidity
 import RankR.Axioms

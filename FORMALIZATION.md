@@ -124,7 +124,7 @@ extended-real-infimum layer.
 | general amplification upper bound | **Checked** | `thetaPositive_of_choiTwoBound` |
 | induced-average-degree obstruction | **Checked** | `two_mul_card_le_of_thetaPositive` |
 | clique sharpness and exact threshold `lambda = R-1` | **Checked** | `thetaPositive_graphKraus_iff` |
-| invariant operator system and layer action | **Open formalization** | `S_G`, `U_G`, and the layer decomposition are absent |
+| invariant operator system and layer action | **Checked** in finite coordinates | `graphOperatorSpace` and `graphTwoLayerSpace` define `S_G` and `U_G`; their `one_mem` and `conjTranspose_mem` theorems prove the unital self-adjoint structure; `graphPhiTranspose_layers` and `graphTheta_layers` prove the displayed action; `graphReduction_mem_graphOperatorSpace` and `graphTheta_mem_graphTwoLayerSpace` prove invariance |
 | inclusion dictionary | **Open formalization** | no operator-system/free-spectrahedral vocabulary |
 | compressed clique expectation | **Open formalization** | the underlying uncompressed witness count is checked |
 | exact protected inclusion through level `R`, failure at `R+1` | **Open formalization** | depends on the preceding dictionary and compression |

@@ -49,6 +49,7 @@ import RankR.SchmidtWitness
 import RankR.HigherChoiSharp
 import RankR.HigherAritySkew
 import RankR.KappaOne
+import RankR.GraphLayers
 import RankR.GenericApplications
 import RankR.Rigidity
 
@@ -677,6 +678,36 @@ do not claim the conjectured matching upper bound. -/
 /-- info: 'RankR.quarter_lt_correlatedSkew_levelOne_ratio' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms quarter_lt_correlatedSkew_levelOne_ratio
+
+/-! ## The graph two-layer compression
+
+The concrete graph and two-layer coefficient spaces, the exact layer action,
+and invariance of the corrected map.  The free-spectrahedral inclusion
+dictionary is a separate interface and is not asserted here. -/
+
+/-- info: 'RankR.graphPhiTranspose_layers' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms graphPhiTranspose_layers
+
+/-- info: 'RankR.graphTheta_layers' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms graphTheta_layers
+
+/-- info: 'RankR.conjTranspose_mem_graphOperatorSpace' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms conjTranspose_mem_graphOperatorSpace
+
+/-- info: 'RankR.graphReduction_mem_graphOperatorSpace' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms graphReduction_mem_graphOperatorSpace
+
+/-- info: 'RankR.conjTranspose_mem_graphTwoLayerSpace' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms conjTranspose_mem_graphTwoLayerSpace
+
+/-- info: 'RankR.graphTheta_mem_graphTwoLayerSpace' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms graphTheta_mem_graphTwoLayerSpace
 
 /-! ## Exterior indexing
 

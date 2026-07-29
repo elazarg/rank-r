@@ -421,8 +421,9 @@ searches did not surface it, which is not the same thing.
 
 \section*{Formal verification}
 
-\Cref{lem:beta} and both halves of \cref{thm:clique} are machine-checked in the
-Lean~4 development accompanying \texttt{rank-r.tex},
+\Cref{lem:beta}, both halves of \cref{thm:clique}, and the finite-coordinate
+content of \cref{prop:layers} are machine-checked in the Lean~4 development
+accompanying \texttt{rank-r.tex},
 \url{https://github.com/elazarg/rank-r}, in the files \texttt{GraphFamily.lean},
 \texttt{Theta.lean} and \texttt{ThetaBound.lean}.
 
@@ -438,6 +439,8 @@ $\lambda^*_R(\Phi)\le(R-1)\beta_2(\Phi)$ of \cref{eq:lamstar}
   & \texttt{thetaPositive\_of\_choiTwoBound}\\
 \cref{eq:avgdeg} & \texttt{two\_mul\_card\_le\_of\_thetaPositive}\\
 \cref{thm:clique}, clique case & \texttt{thetaPositive\_graphKraus\_iff}\\
+\cref{prop:layers} & \texttt{graphTheta\_layers},
+  \texttt{graphTheta\_mem\_graphTwoLayerSpace}\\
 \hline
 \end{tabular}
 \end{center}
@@ -458,10 +461,13 @@ $\norm{Q_-}_{S(2)}=\frac12$, which \texttt{rank-r.tex} already carries.  The
 lower bound runs on the witness $C=P_S\otimes E_{01}$, which in the development
 is the extremizer already built for the sharpness half of Theorem~1.1 there.
 
-Not formalized: \cref{prop:layers}, \cref{lem:dict}, \cref{lem:witness} and
-\cref{thm:inclusion}, together with the operator systems $\cS_G$ and $\cU_G$ and
-the free-spectrahedral dictionary they rest on.  Those restate \cref{thm:clique}
-in matrix-convexity language and introduce no new constant.
+Not formalized: \cref{lem:dict}, \cref{lem:witness} and
+\cref{thm:inclusion}, together with the free-spectrahedral dictionary they rest
+on.  The concrete spaces $\cS_G$ and $\cU_G$, their unital and adjoint
+structure, the graph-reduction range, the displayed layer formula, and
+invariance of the corrected map are formalized.  The remaining statements
+restate \cref{thm:clique} in matrix-convexity language and introduce no new
+constant.
 
 \section*{Numerical corroboration}
 
