@@ -323,7 +323,8 @@ forces $b\ge1/r$.
 The proof of \cref{thm:rank_r}, and of every result it depends on, has been
 formalized in Lean~4, as have the statements of \cref{rem:optimality} and
 \cref{lem:one-sided-partial-trace}, the algebraic score applications, and the
-rank-sensitive core of \cref{cor:kronecker}.
+Kronecker pairing, centered Cauchy--Schwarz argument, and rank-constrained
+Frobenius dual bound underlying \cref{cor:kronecker}.
 \Cref{app:formal} records the repository, the toolchain and Mathlib pins, the
 reported axioms, and the correspondence between the formal and informal
 statements.
@@ -1564,8 +1565,13 @@ finite-coordinate map ampliations, the resulting symmetric and asymmetric map
 classifications, and the rank-sensitive estimate \cref{eq:kronecker-main-use}.
 The trace-distance corollary is checked using a finite pure-state decomposition
 definition of mixed-state Schmidt number and the Hermitian trace norm, rendered
-as the sum of absolute eigenvalues.  Singular-value Ky Fan duality and the
-remaining mixed-state Schmidt-number arguments are not formalized.
+as the sum of absolute eigenvalues.  For the Kronecker corollary, the
+development also checks the exact pairing, centered Cauchy--Schwarz step, both
+branches of the minimum, and the normalized rank-constrained Frobenius
+test-supremum bound.  The identification of that supremum with the sum of the
+first $k$ squared singular values is isolated as
+\texttt{KyFanFrobeniusDuality} and is not proved.  The remaining mixed-state
+Schmidt-number arguments are not formalized.
 
 The consequences at $r=2$ --- the two-copy distillability threshold and the
 statements at the endpoint $\alpha=-\frac12$ --- are also reached in
@@ -2783,6 +2789,16 @@ map $r$-positivity classifications
       iff\_\allowbreak max\_\allowbreak le\_\allowbreak inv\_\allowbreak min}\\
 \cref{eq:kronecker-main-use}
   & \texttt{centeredPartialTrace\_le}\\
+\cref{eq:kronecker-pairing}
+  & \texttt{hsInner\_kroneckerSum\_centered}\\
+\cref{eq:kronecker-CS}
+  & \texttt{normSq\_hsInner\_kroneckerSum\_le}\\
+both entries of the minimum in \cref{eq:kronecker-bound}
+  & \texttt{normSq\_hsInner\_kroneckerSum\_le\_min}\\
+rank-constrained Frobenius dual form of \cref{cor:kronecker}
+  & \texttt{frobeniusRankTestSq\_kroneckerSum\_le}\\
+\cref{cor:kronecker}, conditional on \cref{eq:ky-fan-duality}
+  & \texttt{kyFanSq\_kroneckerSum\_le}\\
 \end{longtable}
 
 Three respects in which the formal statements are renderings rather than
@@ -2874,14 +2890,20 @@ finite-coordinate Choi equivalence, identifies the product map with the tensor
 product of the two reduction pencils, and derives the symmetric and asymmetric
 map-$r$-positivity classifications.  The development also covers the complete
 rank-sensitive estimate
-\cref{eq:kronecker-main-use}.  \texttt{TraceSeparation.lean} defines
+\cref{eq:kronecker-main-use}.  \texttt{Kronecker.lean} proves the exact
+pairing \cref{eq:kronecker-pairing}, the centered Cauchy--Schwarz step
+\cref{eq:kronecker-CS}, the full Frobenius branch, both entries of the minimum,
+and the resulting normalized rank-constrained Frobenius test-supremum bound.
+\texttt{TraceSeparation.lean} defines
 Schmidt number at most $r$ by a finite sum of rank-constrained pure-state
 projectors, proves that block positivity extends to this cone, derives
 Hermitian trace-norm duality from the spectral theorem, and proves both the
 spectral diameter and the pointwise form of
 \cref{cor:two-copy-trace-distance}.  The pointwise statement for every
 admissible $\sigma$ is equivalent to the displayed infimum bound.  The final
-singular-value Ky Fan step of \cref{cor:kronecker} remains prose-only.  The
+singular-value step of \cref{cor:kronecker} is represented conditionally by
+\texttt{kyFanSq\_kroneckerSum\_le}; its sole unproved hypothesis is the
+reusable equality \texttt{KyFanFrobeniusDuality}.  The
 mixed-state arguments specific to
 \cref{cor:exact-schmidt-number,cor:explicit-witnesses}, and the
 positive-map and local-channel applications at the end of \cref{app:gram},

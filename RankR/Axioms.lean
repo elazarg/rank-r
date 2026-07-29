@@ -44,6 +44,8 @@ import RankR.Gram
 import RankR.Defect
 import RankR.LagrangeSOS
 import RankR.TraceSeparation
+import RankR.Kronecker
+import RankR.Rigidity
 
 namespace RankR
 
@@ -257,6 +259,22 @@ Ky-Fan corollary. -/
 /-- info: 'RankR.centeredPartialTrace_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms centeredPartialTrace_le
+
+/-- info: 'RankR.hsInner_kroneckerSum_centered' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms hsInner_kroneckerSum_centered
+
+/-- info: 'RankR.normSq_hsInner_kroneckerSum_le_min' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms normSq_hsInner_kroneckerSum_le_min
+
+/-- info: 'RankR.frobeniusRankTestSq_kroneckerSum_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms frobeniusRankTestSq_kroneckerSum_le
+
+/-- info: 'RankR.kyFanSq_kroneckerSum_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms kyFanSq_kroneckerSum_le
 
 /-- info: 'RankR.staircaseP_eq_gamma_ratio' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
@@ -689,5 +707,15 @@ info: 'RankR.thetaPositive_graphKraus_iff' depends on axioms: [propext, Classica
 -/
 #guard_msgs in
 #print axioms thetaPositive_graphKraus_iff
+
+/-! ## Rigidity of linear marginal-preserving encodings -/
+
+/-- info: 'RankR.eq_diagonal_embedding' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms eq_diagonal_embedding
+
+/-- info: 'RankR.rank_eq_card_support' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rank_eq_card_support
 
 end RankR

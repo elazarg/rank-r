@@ -71,7 +71,7 @@ extended-real-infimum layer.
 | asymmetric product-Choi block positivity | **Checked** in coordinates | `isBlockPositive_productReductionChoi_iff_max_le_inv` handles `1 ≤ r ≤ min(dim U,dim V)`; `isBlockPositive_productReductionChoi_iff_max_le_inv_min` gives `max(a,b) ≤ 1/min(r,d)` for every positive `r` at equal local dimension `d ≥ 2` |
 | asymmetric map `r`-positivity classification | **Checked** in coordinates | `isMapRPositive_productReductionMapLinear_iff_max_le_inv` handles the rank-constrained range; `isMapRPositive_productReductionMapLinear_iff_max_le_inv_min` handles every positive `r` at equal local dimension |
 | quantitative trace-norm separation | **Checked** in Hermitian spectral rendering | `SchmidtNumberLE` is the finite pure-state decomposition definition; `abs_re_hsInner_le_hermitianTraceNorm` proves Hölder duality from the spectral theorem; `abs_re_qform_twoCopyWitness_centered_le` proves the exact diameter `γ + max(1,γ²)`; `twoCopy_traceDistance_lower` is the pointwise form of the displayed infimum bound |
-| Kronecker-sum Ky Fan bound | **Checked core** | `centeredPartialTrace_le` is the complete use of the rank theorem; Frobenius Ky Fan duality, the Kronecker pairing, and the final singular-value statement remain |
+| Kronecker-sum Ky Fan bound | **Checked through the Frobenius dual bound; singular-value conclusion conditional** | `hsInner_kroneckerSum_centered`, `normSq_hsInner_kroneckerSum_le`, `hsNormSq_kroneckerSum`, and `normSq_hsInner_kroneckerSum_le_min` prove the displayed pairing, Cauchy--Schwarz step, and both branches of the minimum; `frobeniusRankTestSq_kroneckerSum_le` proves the normalized rank-test supremum bound; `kyFanSq_kroneckerSum_le` and its `d ≤ 2k` specialization derive the literal singular-value conclusion from the precisely isolated proposition `KyFanFrobeniusDuality` |
 | exact Schmidt number of the product of antisymmetric projector states | **Open formalization** | the mixed-state definition `SchmidtNumberLE` is present; projection `S(k)` duality at `k=3` and the upper-bound decomposition remain |
 | explicit Schmidt-number witnesses | **Open formalization** | the mixed-state definition and block-positive-to-cone implication are present; the antisymmetric projection pairing is not composed |
 
@@ -150,14 +150,15 @@ extended-real-infimum layer.
 
 The shortest route to a fully formalized application suite is:
 
-1. define vector Schmidt rank and prove its equality with matrix rank under
-   `vec`, then package Choi block positivity and map `r`-positivity;
-2. formalize complete positivity of the reduction map for the `r>d` branches;
-3. add singular values and Frobenius Ky Fan duality;
-4. add projection duality and the required mixed-state decompositions;
-5. add isotropic states and the product-isotropic twirl;
-6. add operator systems/free spectrahedra for the graph-inclusion translation;
+1. prove `KyFanFrobeniusDuality`, the equality between `kyFanSq` and
+   `frobeniusRankTestSq`;
+2. add projection duality and the mixed-state decompositions for the
+   antisymmetric-projector applications;
+3. define pure-vector Schmidt rank and identify it with matrix rank under
+   `vec`, closing the remaining wording-level interfaces;
+4. add isotropic states and the product-isotropic twirl;
+5. add operator systems/free spectrahedra for the graph-inclusion translation.
 
-Items 1–2 close the score and positivity applications. Items 3–4 close the
-remaining main-paper applications. Items 5–6 concern companion constructions
-and appendices rather than the proof of the central theorem.
+Items 1–3 close the remaining main-paper interfaces and applications. Items
+4–5 concern companion constructions and appendices rather than the proof of
+the central theorem.

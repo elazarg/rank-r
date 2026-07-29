@@ -46,5 +46,6 @@ import RankR.Gram
 import RankR.Defect
 import RankR.LagrangeSOS
 import RankR.TraceSeparation
-import RankR.Axioms
+import RankR.Kronecker
 import RankR.Rigidity
+import RankR.Axioms

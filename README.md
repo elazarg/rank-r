@@ -117,11 +117,16 @@ regrouped tensor product; block-positivity thresholds at every positive rank
 in equal local dimensions; the finite-coordinate equivalence with positivity
 of the actual `Fin r` map ampliation; the symmetric and asymmetric map
 classifications; and the rank-sensitive estimate used by the Kronecker-sum
-corollary. `TraceSeparation.lean` adds the finite mixed-state
+corollary. `Kronecker.lean` proves the exact Kronecker pairing, centered
+Cauchy--Schwarz identity, both branches of the minimum, and the resulting
+rank-constrained Frobenius test-supremum bound. It also states the
+singular-value conclusion conditional on the one remaining reusable equality,
+`KyFanFrobeniusDuality`. `TraceSeparation.lean` adds the finite mixed-state
 Schmidt-number cone and proves the quantitative trace-distance corollary using
 the Hermitian trace norm (the sum of absolute eigenvalues), including the exact
-witness spectral diameter. Singular-value Ky Fan duality and the remaining
-mixed-state Schmidt-number applications stay outside the checked conclusions.
+witness spectral diameter. Frobenius Ky Fan duality itself and the remaining
+mixed-state Schmidt-number applications stay outside the unconditional checked
+conclusions.
 The exact claim-by-claim boundary is maintained in `FORMALIZATION.md`.
 
 ### Two sharpenings not in the manuscript
@@ -302,6 +307,7 @@ revision.
 | `Defect` | the exact complete-graph vertex-variance and edge-deficit certificate |
 | `LagrangeSOS` | the coordinate Lagrange identity and polynomial SOS for the trace--rank residual |
 | `TraceSeparation` | mixed-state Schmidt-number cone, witness spectrum, Hermitian trace-norm separation |
+| `Kronecker` | Kronecker pairing, centered Cauchy--Schwarz, Frobenius rank-test bound, conditional Ky Fan conclusion |
 | `Axioms` | the axiom surface, checked by the build |
 
 Conceptually the proof has two halves joined in `Results`: the *reduction*
