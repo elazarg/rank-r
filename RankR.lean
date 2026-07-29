@@ -53,6 +53,8 @@ import RankR.HigherAritySkew
 import RankR.KappaOne
 import RankR.GraphLayers
 import RankR.GraphSpectrahedron
+import RankR.GraphDimensions
+import RankR.RookGraph
 import RankR.GenericApplications
 import RankR.Rigidity
 import RankR.Axioms

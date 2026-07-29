@@ -426,7 +426,9 @@ content of \cref{prop:layers} and \cref{lem:witness} are machine-checked in the
 Lean~4 development accompanying \texttt{rank-r.tex},
 \url{https://github.com/elazarg/rank-r}, in the files \texttt{GraphFamily.lean},
 \texttt{Theta.lean}, \texttt{ThetaBound.lean}, \texttt{GraphLayers.lean} and
-\texttt{GraphSpectrahedron.lean}.  The basis-free positive-cone rendering of
+\texttt{GraphSpectrahedron.lean}.  The rook specialization and the
+coefficient-space dimensions are checked in \texttt{GraphDimensions.lean} and
+\texttt{RookGraph.lean}.  The basis-free positive-cone rendering of
 \cref{lem:dict} and the exact threshold \cref{eq:exact} are checked there as
 well.
 
@@ -456,6 +458,12 @@ inclusion through level $R$ and failure at $R+1$
     \texttt{not\_graphCliqueNextLevelInclusion}\\
 \cref{eq:levels}
   & \texttt{graphProtectedLevelInclusion\_iff}\\
+\cref{cor:rook}, threshold and level separation
+  & \texttt{rookGraphLevelInclusion\_iff},
+    \texttt{rookGraphProtectedLevelInclusion\_iff}\\
+\cref{cor:rook}, coefficient counts
+  & \texttt{rookGraphTwoLayerDimension\_sub\_one},
+    \texttt{rookAmbientDimension\_sub\_one}\\
 \hline
 \end{tabular}
 \end{center}

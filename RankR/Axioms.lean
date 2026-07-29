@@ -51,6 +51,8 @@ import RankR.HigherAritySkew
 import RankR.KappaOne
 import RankR.GraphLayers
 import RankR.GraphSpectrahedron
+import RankR.GraphDimensions
+import RankR.RookGraph
 import RankR.GenericApplications
 import RankR.Rigidity
 
@@ -749,6 +751,31 @@ threshold. -/
 /-- info: 'RankR.graphProtectedLevelInclusion_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms graphProtectedLevelInclusion_iff
+
+/-! ## The rook-graph application
+
+The exact threshold and all-level separation, together with the dimensions of
+the protected and tomographically complete coefficient spaces. -/
+
+/-- info: 'RankR.finrank_rookGraphTwoLayerSpace' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms finrank_rookGraphTwoLayerSpace
+
+/-- info: 'RankR.rookGraphTwoLayerDimension_sub_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rookGraphTwoLayerDimension_sub_one
+
+/-- info: 'RankR.rookAmbientDimension_sub_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rookAmbientDimension_sub_one
+
+/-- info: 'RankR.rookGraphLevelInclusion_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rookGraphLevelInclusion_iff
+
+/-- info: 'RankR.rookGraphProtectedLevelInclusion_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rookGraphProtectedLevelInclusion_iff
 
 /-! ## Exterior indexing
 

@@ -129,7 +129,7 @@ extended-real-infimum layer.
 | compressed clique expectation | **Checked** in finite coordinates | `cliqueLayerWitness_posSemidef` proves that `Y_S` is positive; `cliqueLayerWitness_mem_matrixLevelSpace` places all of its blocks in `U_G`; `qform_graphThetaCliqueOutput` proves the exact value `|S|(λ-(|S|-1))`, independently of `R` |
 | exact protected threshold `λ=R-1` at level `R` | **Checked** in the basis-free rendering | `graphCliqueLevelInclusion_iff`; `isBlockPositive_mapChoi_graphThetaLinear_iff` and `isMapPositiveAt_graphThetaLinear_of_thetaPositive` supply the Choi-to-ampliation bridge |
 | protected inclusion through level `R`, failure above it | **Checked** in the basis-free rendering | `graphLevelInclusion_at_threshold_of_card_le` proves inclusion for every finite level of cardinality at most `R`; `not_graphCliqueNextLevelInclusion` proves the adjacent obstruction; `graphLevelInclusion_of_embedding` pads/compresses levels, and `graphProtectedLevelInclusion_iff` proves the literal all-`n` biconditional in `eq:levels` |
-| rook-graph corollary | **Open formalization** | depends on exact inclusion |
+| rook-graph corollary | **Checked** in the basis-free rendering | `rookGraphLevelInclusion_iff` and `rookGraphProtectedLevelInclusion_iff` instantiate the threshold and all-level separation; `finrank_rookGraphTwoLayerSpace`, `rookGraphTwoLayerDimension_sub_one`, and `rookAmbientDimension_sub_one` certify the two displayed coefficient counts |
 | exact invariant for clique-free graphs | **Not claimed** | the note states only upper and lower bounds |
 
 ## Schmidt-staircase note
@@ -156,9 +156,11 @@ The shortest route to a fully formalized application suite is:
 1. prove `KyFanFrobeniusDuality`, the equality between `kyFanSq` and
    `frobeniusRankTestSq`;
 2. add isotropic states and the product-isotropic twirl;
-3. finish the graph note's presentation layer: choose the displayed real monic
-   pencil basis and instantiate the rook-graph combinatorics.
+3. finish the graph note's presentation layer by choosing the displayed real
+   monic pencil basis.
 
 Item 1 closes the remaining main-paper application interface. Items 2–3
 concern companion constructions and appendices rather than the proof of the
-central theorem.
+central theorem.  The rook-graph combinatorics and coefficient-space
+dimensions are checked; item 3 is only the remaining explicit basis/pencil
+interface.

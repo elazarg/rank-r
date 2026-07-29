@@ -324,6 +324,8 @@ revision.
 | `ThetaBound` | pair amplification in Choi form, and `thm:clique` |
 | `GraphLayers` | the graph and two-layer coefficient spaces, their exact layer action and invariance, and the compressed clique witness |
 | `GraphSpectrahedron` | the Choi/ampliation bridge, basis-free positive-cone inclusion dictionary, exact clique threshold, and all-level separation |
+| `GraphDimensions` | coordinate-support and two-layer linear equivalences, with exact finite dimensions |
+| `RookGraph` | the rook graph, canonical row cliques, exact threshold and all-level separation, and protected/full coefficient counts |
 | `Applications` | exact score bounds, extremizers and thresholds; reduction-product Choi matrices; adjacent separation; Kronecker rank core |
 | `MapPos` | actual finite-coordinate map ampliations, the map/Choi `r`-positivity equivalence, and the symmetric and asymmetric map classifications |
 | `Staircase` | exact threshold algebra, convex boundary coefficient, moment identities, strict threshold ordering, and protected/unprotected and marginal threshold comparisons |
