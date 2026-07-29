@@ -45,6 +45,16 @@ noncomputable def skewKraus (f : KIdx U V) : Matrix (U × V) (U × V) ℂ :=
   skewUnit f.1.1 f.1.2 ⊗ₖ skewUnit f.2.1 f.2.2
 
 omit [Fintype U] [Fintype V] in
+/-- If the left local index type is a subsingleton, every double-skew Kraus
+operator vanishes. -/
+theorem skewKraus_eq_zero_of_subsingleton
+    [Subsingleton U] (f : KIdx U V) :
+    skewKraus f = 0 := by
+  have h : f.1.1 = f.1.2 := Subsingleton.elim _ _
+  rw [skewKraus, h]
+  simp [skewUnit]
+
+omit [Fintype U] [Fintype V] in
 /-- Every Kraus operator of the family lies in the double-skew subspace. -/
 theorem skewKraus_mem_doubleSkew (f : KIdx U V) : skewKraus f ∈ doubleSkew U V :=
   kron_mem_doubleSkew (skewUnit_isSkew _ _) (skewUnit_isSkew _ _)
@@ -104,6 +114,42 @@ theorem choiOf_skewKraus :
   rw [hL, sum_kron_coeff (a, b) (c, d) (a', b') (c', d'), Matrix.smul_apply,
     smul_eq_mul, Qm_apply_prod]
   ring
+
+/-- If either factor has cardinality below two, the entire ordered Kraus family
+vanishes. -/
+theorem skewKraus_family_eq_zero_of_card_lt_two
+    (hcard : Fintype.card U < 2 ∨ Fintype.card V < 2) :
+    skewKraus (U := U) (V := V) = 0 := by
+  rcases hcard with hU | hV
+  · letI : Subsingleton U :=
+      Fintype.card_le_one_iff_subsingleton.mp (by omega)
+    funext f
+    exact skewKraus_eq_zero_of_subsingleton f
+  · letI : Subsingleton V :=
+      Fintype.card_le_one_iff_subsingleton.mp (by omega)
+    funext f
+    rw [skewKraus]
+    have h : f.2.1 = f.2.2 := Subsingleton.elim _ _
+    rw [h]
+    simp [skewUnit]
+
+/-- In a degenerate local dimension the Choi operator of the double-skew map is
+zero. -/
+theorem choiOf_skewKraus_eq_zero_of_card_lt_two
+    (hcard : Fintype.card U < 2 ∨ Fintype.card V < 2) :
+    choiOf (skewKraus (U := U) (V := V)) = 0 := by
+  rw [skewKraus_family_eq_zero_of_card_lt_two hcard]
+  ext X Y
+  simp [choiOf, rankOne]
+
+/-- In a degenerate local dimension the double-skew Choi bound holds with
+constant zero. -/
+theorem choiTwoBound_skewKraus_zero_of_card_lt_two
+    (hcard : Fintype.card U < 2 ∨ Fintype.card V < 2) :
+    ChoiTwoBound (choiOf (skewKraus (U := U) (V := V))) 0 := by
+  rw [choiOf_skewKraus_eq_zero_of_card_lt_two hcard]
+  intro u₁ v₁ u₂ v₂
+  simp [qform]
 
 /-- The rank-two bound for the family, at `β = 4`.
 

@@ -34,10 +34,10 @@ rank-`k` decomposition used by the Choi bounds.
 | Fu–Gao–Park projection estimate and its equivalence with the double-skew bound | **Checked** in finite coordinates | `FGPBound_of_doubleSkewBoundQm`, `doubleSkewBound_of_FGP`, `fgpBound_holds`; `fgpBound_iff_pureSchmidtKBound_two` proves equivalence with the direct pure-Schmidt-rank-two statement |
 | `def:beta2`, Choi quadratic-form bound | **Checked rendering** | `ChoiTwoBound`; the equality with the published `S(2)`-norm definition is not a theorem about an independently defined norm |
 | `beta_2(Λ_U ⊗ Λ_V) ≤ 1` in all dimensions | **Checked** | `choiTwoBound_skewKraus` after scaling |
-| `beta_2(Λ_U ⊗ Λ_V) = 1` when both dimensions are at least two; value zero in degenerate dimensions | **Checked** | `choiTwoBound_skewKraus_iff` and the vanishing-family lemmas in `Sharp.lean` |
+| `beta_2(Λ_U ⊗ Λ_V) = 1` when both dimensions are at least two; value zero in degenerate dimensions | **Checked in the Choi-bound rendering** | `choiTwoBound_skewKraus_iff` proves leastness in nondegenerate dimensions; `skewKraus_family_eq_zero_of_card_lt_two`, `choiOf_skewKraus_eq_zero_of_card_lt_two`, and `choiTwoBound_skewKraus_zero_of_card_lt_two` prove the zero map, zero Choi operator, and zero bound in degenerate dimensions |
 | `thm:amplification`, all four operator forms | **Checked** | `qform_krausQ_Pneg_le_of_norm`, `qform_krausQ_Pneg_le`, `qform_krausQ_ptransposeUV_ge_of_norm`, `qform_krausQ_ptransposeUV_ge` |
 | `thm:pair-amplification` for every `r`, including `r > dim H` | **Checked** in unrolled Choi form | `thetaPositive_of_choiTwoBound`; `ThetaPositive` quantifies over every test matrix of rank at most `r` and does not require an `r`-frame |
-| exactness of transpose symmetry / parity remark | **Checked** | `inner_delta_placeQ_zetaV_iff`, `not_qform_krausQ_Pneg_le_skewFam` |
+| exactness of transpose symmetry / parity remark | **Checked** | `inner_delta_placeT_zetaV_iff`, `not_qform_krausQ_Pneg_le_skewFam` |
 | `prop:operator_ineq` | **Checked** | `operatorIneq_holds`, with conditional variants retaining the Choi-bound input |
 | map identity `eq:map-identity` | **Checked** | `Psi_eq_tensor_square`, with monoidality and transpose identities separately checked |
 | partial-trace contraction lemma | **Checked** | `contraction_norm`, `contraction_trace`, `hsNormSq_ptraceU_rankFactor`, `hsNormSq_ptraceV_rankFactor` |
@@ -81,7 +81,7 @@ extended-real-infimum layer.
 | Claim | Status | Gap |
 | --- | --- | --- |
 | polynomial SOS for the trace–rank residual | **Checked** in coordinates | `complex_lagrange_sos_ordered` proves the choice-free half-double-sum identity; `complex_lagrange_sos` and `rankFactor_traceRankResidual_eq_lagrangeSOS` prove the literal `α < β` formula; `rankFactor_traceRankResidual_eq_wedgeNormSq` gives `eq:sos-lagrange` with the exterior squared norm defined by that orthonormal-coordinate sum |
-| complete-graph defect certificate | **Checked** | `completeGraph_defect_certificate` is the exact edge-matrix identity; `hsNormSq_sum_smul_of_hsInner_four` proves `eq:Kc-norm` from the stated basis normalization; `completeGraph_defect_certificate_coeff` is the displayed coefficient form; `completeGraph_defect_nonneg_holds` proves all edge and vertex deficits nonnegative |
+| complete-graph defect certificate | **Checked at edge-matrix level; coefficient form conditional on the stated normalization** | `completeGraph_defect_certificate` is the exact edge-matrix identity; `hsNormSq_sum_smul_of_hsInner_four` proves `eq:Kc-norm` from an orthogonal Kraus basis with squared norm four; `completeGraph_defect_certificate_coeff` assumes the resulting coefficient normalization, which the repository does not instantiate for a manuscript basis; `completeGraph_defect_nonneg_holds` proves all edge and vertex deficits nonnegative |
 | exact positive/negative-sector Gram identity | **Checked** in quadratic-form rendering | `rankFactor_partialTraceGap_eq_sector_gram` is the scaled boxed identity; `qform_negativeSectorDefectScaled_nonneg_holds` proves the defect positive, with Kraus quadratic forms representing the two synthesis Grams |
 | positive-map semidefinite cut | **Checked** in finite coordinates | `SchmidtNumberLEBetween` handles arbitrary rectangular ancillas; `mapAmplification_posSemidef_of_schmidtNumberLEBetween` proves the generic Choi cut; `productReduction_schmidtNumberLE_cut` and its symmetric specialization instantiate the all-rank reduction-product threshold |
 | local-channel aggregation | **Checked** at the finite Kraus level | `localKrausPullback` is the coordinate adjoint action; `rank_localCoeff_le` proves local rank monotonicity; `aggregateLocalWitnessDependent_isBlockPositiveBetween` and `trace_mul_aggregateLocalWitnessDependent_nonneg` allow term-dependent output spaces and Kraus index types; trace preservation is unnecessary for the conclusion |
@@ -112,7 +112,7 @@ extended-real-infimum layer.
 | protected-space dimension | **Checked** | modes are indexed by `Face r (k-2)` and proved orthonormal; `card_face` proves `|Face r (k-2)| = choose r (k-2)` |
 | `k=2` specialization | **Checked core** | pair-level corollaries and `upDeg_univ`; equality with every notation choice in the note is a rendering |
 | complete-hypergraph degree `r-k+1` | **Checked** | `upDeg_univ` |
-| double-skew specialization with exact `beta_k` | **Checked** | `choiOf_normalizedSkewKraus` identifies the manuscript normalization, `choiKBound_four_smul_Qm_iff` proves the coefficient is least, and `qform_normalizedSkewKraus_Phyp_univ_le` is the complete-hypergraph corollary |
+| double-skew specialization with exact `beta_k` | **Checked** | `choiOf_normalizedSkewKraus` identifies the manuscript normalization; `choiKBound_four_smul_Qm_iff` proves the coefficient is least when both factors contain distinct labels; `qform_normalizedSkewKraus_Phyp_univ_le` is the complete-hypergraph upper-bound corollary in all dimensions |
 | “no `r`-positivity hierarchy for `k>2`” explanatory spectral claim | **Open formalization** | no general partial-transpose spectral decomposition layer |
 
 ## Graph-inclusion note

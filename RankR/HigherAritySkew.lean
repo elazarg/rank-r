@@ -64,9 +64,11 @@ variable {U V : Type*} [Fintype U] [Fintype V]
   {r k : ℕ}
 
 /-- Exterior amplification for the normalized double-skew family on an
-arbitrary `k`-uniform hypergraph, with the exact level-`k` Choi coefficient. -/
+arbitrary `k`-uniform hypergraph, with the universal level-`k` Choi
+coefficient.  `choiKBound_four_smul_Qm_iff` proves this coefficient is exact
+when both local factors contain two distinct labels; the inequality itself
+also applies in degenerate dimensions. -/
 theorem qform_normalizedSkewKraus_Phyp_le
-    {a₀ a₁ : U} {b₀ b₁ : V} (ha : a₀ ≠ a₁) (hb : b₀ ≠ b₁)
     (hk : 2 ≤ k) (hkr : k ≤ r)
     {e : Fin r → EuclideanSpace ℂ (U × V)} (he : Orthonormal ℂ e)
     (H : Finset (Face r k))
@@ -83,7 +85,7 @@ theorem qform_normalizedSkewKraus_Phyp_le
     · positivity
   apply qform_krausF_Phyp_le hβ
   · rw [choiOf_normalizedSkewKraus]
-    exact (choiKBound_four_smul_Qm_iff ha hb hk _).mpr le_rfl
+    exact choiKBound_four_smul_Qm_min hk
   · intro f
     exact isFrameSymmetric_of_transpose_eq
       (normalizedSkewKraus_transpose f) e
@@ -92,10 +94,9 @@ theorem qform_normalizedSkewKraus_Phyp_le
   · exact he
 
 /-- **The double-skew complete-hypergraph corollary.**  The largest facet
-degree is `r-k+1`, giving precisely the coefficient stated in the
-higher-arity note. -/
+degree is `r-k+1`, giving precisely the coefficient stated in the higher-arity
+note.  No nondegeneracy hypothesis is needed for this upper bound. -/
 theorem qform_normalizedSkewKraus_Phyp_univ_le
-    {a₀ a₁ : U} {b₀ b₁ : V} (ha : a₀ ≠ a₁) (hb : b₀ ≠ b₁)
     (hk : 2 ≤ k) (hkr : k ≤ r)
     {e : Fin r → EuclideanSpace ℂ (U × V)} (he : Orthonormal ℂ e)
     (y : EuclideanSpace ℂ ((U × V) × Face r (k - 1))) :
@@ -106,7 +107,7 @@ theorem qform_normalizedSkewKraus_Phyp_univ_le
           * (‖y‖ ^ 2
             - ∑ L : Face r (k - 2),
                 Complex.normSq (inner ℂ (deltaMode (k := k) e L) y)) := by
-  have h := qform_normalizedSkewKraus_Phyp_le ha hb hk hkr he
+  have h := qform_normalizedSkewKraus_Phyp_le hk hkr he
     (Finset.univ : Finset (Face r k)) y
   rw [upDeg_univ (by omega) hkr] at h
   exact h

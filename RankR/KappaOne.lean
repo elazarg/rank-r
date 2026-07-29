@@ -250,9 +250,10 @@ theorem correlatedSkew_spectral_actions :
     fun x => mulVecE_correlatedSkew_of_flip_eq,
     fun x => mulVecE_correlatedSkew_of_tensorFlip_eq_neg⟩
 
-/-- In every dimension at least two the `+1/2` antisymmetric sector is
-nonzero.  Thus at dimension two it ties the distinguished diagonal
-eigenvalue `(d-1)/2 = 1/2`; that eigenvalue is not simple there. -/
+/-- In every dimension at least two there is a nonzero `+1/2`
+flip-antisymmetric eigenvector.  At dimension two this eigenvalue coincides
+with the distinguished diagonal value `(d-1)/2 = 1/2`; this theorem records
+the antisymmetric witness, not an eigenspace-multiplicity calculation. -/
 theorem exists_ne_zero_correlatedSkew_half_eigenvector
     (hT : 2 ≤ Fintype.card T) :
     ∃ x : EuclideanSpace ℂ (T × T), x ≠ 0 ∧
@@ -374,7 +375,9 @@ theorem correlatedSkew_mem_doubleSkew :
   exact kron_mem_doubleSkew (skewUnit_isSkew _ _) (skewUnit_isSkew _ _)
 
 /-- The exact level-one ratio attained by the correlated skew witness.  This
-is the proved lower bound `κ₁ ≥ (d-1)/(2d)`; no upper bound is asserted. -/
+is the witness identity underlying the manuscript's lower bound
+`κ₁ ≥ (d-1)/(2d)`; this development does not define the supremum `κ₁` itself,
+and no upper bound is asserted. -/
 theorem correlatedSkew_levelOne_ratio
     (hT : 2 ≤ Fintype.card T) :
     ‖mulVecE (correlatedSkew (T := T)) singleOmegaVec‖ ^ 2

@@ -360,6 +360,10 @@ Ky-Fan corollary. -/
 #guard_msgs in
 #print axioms kyFanSq_kroneckerSum_le
 
+/-- info: 'RankR.kyFanSq_kroneckerSum_le_of_card_le_two_mul' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms kyFanSq_kroneckerSum_le_of_card_le_two_mul
+
 /-- info: 'RankR.sum_rankOne_scaledSkewKraus' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms sum_rankOne_scaledSkewKraus
@@ -526,6 +530,10 @@ The Haar-twirl and Schmidt-number interfaces remain outside the development.
 These guards cover the finite matrix statements that do not need them:
 normalized isotropic states, the four-sector moment coordinates, the witness
 trace formula and the exact boundary operator identity. -/
+
+/-- info: 'RankR.isotropicState_isDensityMatrix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms isotropicState_isDensityMatrix
 
 /-- info: 'RankR.isotropicState_whiteNoise' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
@@ -1105,6 +1113,10 @@ that certifies `β₂(Λ_U ⊗ Λ_V) = 1` as an equality. -/
 /-- info: 'RankR.choiTwoBound_skewKraus_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms choiTwoBound_skewKraus_iff
+
+/-- info: 'RankR.choiTwoBound_skewKraus_zero_of_card_lt_two' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiTwoBound_skewKraus_zero_of_card_lt_two
 
 /-- info: 'RankR.re_qform_psiChoi_projWit' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

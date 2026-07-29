@@ -2595,8 +2595,11 @@ hypotheses.  The Autonne--Takagi factorization is itself proved, as
 \cref{lem:double-skew} from it, and \texttt{Equivalence.lean} supplies the
 universal upper bound $\beta_2(\Lambda_U\otimes\Lambda_V)\le1$.
 \texttt{Sharp.lean} proves equality when both factors contain two distinct
-basis labels; in the degenerate dimensions the map is zero and the sharp
-constant is zero.  \texttt{Results.lean} composes the upper-bound chain, so the
+basis labels; in the degenerate dimensions
+\path{skewKraus_family_eq_zero_of_card_lt_two} and
+\path{choiTwoBound_skewKraus_zero_of_card_lt_two} prove that the map
+vanishes and satisfies the zero bound, hence its norm-defined sharp constant
+is zero.  \texttt{Results.lean} composes the upper-bound chain, so the
 development is proved end to end.  The single quantitative input is that upper
 bound: the development's only route from
 \cref{sec:double-skew} to \cref{sec:proof} is \cref{def:beta2}.  Beyond
@@ -2691,10 +2694,10 @@ nonnegativity in \cref{prop:sos-complete-graph}
   & \texttt{completeGraph\_defect\_nonneg\_holds}\\
 \cref{eq:T-by-vertices} & \texttt{Tsyn\_eq\_delta\_vtx}\\
 \cref{eq:T-operator-bound} & \texttt{norm\_Tsyn\_sq\_le}\\
-\cref{eq:T-orthogonal} & \texttt{inner\_delta\_placeQ\_kron\_zetaV}\\
-\cref{eq:T-orthogonal}, converse & \texttt{inner\_delta\_placeQ\_zetaV\_iff}\\
+\cref{eq:T-orthogonal} & \texttt{inner\_delta\_placeT\_kron\_zetaV}\\
+\cref{eq:T-orthogonal}, converse & \texttt{inner\_delta\_placeT\_zetaV\_iff}\\
 \cref{rem:parity}, odd degree
-  & \texttt{inner\_delta\_placeQ\_zetaV\_of\_isSkew},\\
+  & \texttt{inner\_delta\_placeT\_zetaV\_of\_isSkew},\\
  & \texttt{not\_qform\_krausQ\_Pneg\_le\_skewFam}\\
 \cref{lem:partial-trace-contractions} & \texttt{contraction\_norm},
   \texttt{contraction\_trace},\\
@@ -2837,7 +2840,10 @@ basis labels, the conclusion is
 \texttt{choiTwoBound\_skewKraus\_iff}: the constants valid for
 $\Lambda_U\otimes\Lambda_V$ are exactly the reals $\ge4$ in the $\Phi_4$ scaling,
 so \cref{eq:beta2-double-skew} is an equality.  If a factor has cardinality below
-two, the family vanishes and the sharp constant is zero.
+two, \path{skewKraus_family_eq_zero_of_card_lt_two} and
+\path{choiTwoBound_skewKraus_zero_of_card_lt_two} prove that the family
+vanishes and satisfies the zero bound, hence its norm-defined sharp constant is
+zero.
 \texttt{re\_qform\_psiChoi\_projWit} does the same for the conclusion --- the
 $r$-block positivity of $J(\Psi_r)$ is attained at the extremizer of
 \cref{rem:optimality}, hence cannot be sharpened to a strict inequality.
@@ -2987,11 +2993,11 @@ decomposition.  In particular,
 \texttt{choiKBound\_iff\_pureSchmidtKBound} and its Fu--Gao--Park specialization
 identify the unrolled Choi bounds with their direct pure-Schmidt-rank
 statements.  \Cref{rem:parity} is formalized, in both directions and
-past the point the remark itself argues.  \texttt{inner\_delta\_placeQ\_zetaV\_iff}
+past the point the remark itself argues.  \texttt{inner\_delta\_placeT\_zetaV\_iff}
 upgrades \cref{eq:T-orthogonal} to an equivalence --- orthogonality of every
 $(N\otimes I_Q)\zeta_{ij}$ to $\delta_e$ \emph{is} the degree-$0$ hypothesis, so
 that hypothesis is exact and not merely sufficient --- and
-\texttt{inner\_delta\_placeQ\_zetaV\_of\_isSkew} evaluates the same pairing in
+\texttt{inner\_delta\_placeT\_zetaV\_of\_isSkew} evaluates the same pairing in
 odd degree, where the two terms add instead of cancelling.  That the
 \emph{conclusion} and not only the proof is then lost is a separate statement,
 and is \texttt{not\_qform\_krausQ\_Pneg\_le\_skewFam}: for the one-element family

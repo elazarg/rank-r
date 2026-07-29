@@ -204,18 +204,21 @@ principle it generates, then exhibits an extremizer: `M = NP` with `N = J_U ⊗ 
 unitary and `P` a rank-two projection, so its two singular values coincide. The
 result is `choiTwoBound_skewKraus_iff` — the valid constants for the double-skew
 family are exactly the reals `≥ 4`, which is `β₂ = 1` in the `Phi4` scaling.
-If either index type has cardinality below two, the Kraus family is zero and the
-sharp constant is zero; the dimension-free upper bound used by the main theorem
-remains valid.
+If either index type has cardinality below two,
+`skewKraus_family_eq_zero_of_card_lt_two` and
+`choiOf_skewKraus_eq_zero_of_card_lt_two` prove that the Kraus family and Choi
+operator vanish, while `choiTwoBound_skewKraus_zero_of_card_lt_two` checks the
+zero bound. Thus the norm-defined sharp constant is zero; the dimension-free
+upper bound used by the main theorem remains valid.
 `re_qform_psiChoi_projWit` records the same for the conclusion: the `r`-block
 positivity of `J(Ψ_r)` is attained, so it cannot be sharpened to a strict
 inequality.
 
 **The parity hypothesis is exact, and load-bearing.** `Parity.lean` upgrades
-`eq:T-orthogonal` to an equivalence (`inner_delta_placeQ_zetaV_iff`):
+`eq:T-orthogonal` to an equivalence (`inner_delta_placeT_zetaV_iff`):
 orthogonality of every placed edge vector to `δ_e` *is* `IsFrameSymmetric`. On a
 skew operator the same pairing doubles instead of cancelling
-(`inner_delta_placeQ_zetaV_of_isSkew`). Losing the hypothesis loses the
+(`inner_delta_placeT_zetaV_of_isSkew`). Losing the hypothesis loses the
 *conclusion*, not merely the proof: for the one-element family `J = E₀₁ - E₁₀` on
 `ℂ²` at `s = 2` and `y = δ_e`, the protected right-hand side of form (A) is
 exactly `0` for every `β` while the left-hand side is `4`
