@@ -7,13 +7,16 @@
 \usepackage{mathtools}
 \usepackage{amssymb}
 \usepackage{xcolor}
-\usepackage{braket}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit}
 \usepackage[
   colorlinks=true,
   linkcolor=blue!55!black,
   citecolor=blue!55!black,
   urlcolor=blue!55!black
 ]{hyperref}
+\usepackage[nameinlink,capitalize,noabbrev]{cleveref}
 \allowdisplaybreaks
 
 \newtheorem{theorem}{Theorem}[section]
@@ -23,3414 +26,1198 @@
 \newtheorem{definition}[theorem]{Definition}
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
-\newtheorem*{hypothesis}{Hypothesis}
-
-\usepackage{longtable}
-\usepackage[nameinlink,capitalize,noabbrev]{cleveref}
 
 \DeclareMathOperator{\Tr}{Tr}
 \DeclareMathOperator{\rank}{rank}
-\DeclareMathOperator{\SN}{SN}
-\DeclareMathOperator{\SR}{SR}
 \DeclareMathOperator{\ran}{ran}
-\DeclareMathOperator{\card}{card}
-
-\newcommand{\cL}{\mathcal L}
+\DeclareMathOperator{\SR}{SR}
 \newcommand{\id}{\mathrm{id}}
-\newcommand{\ketbra}[2]{\lvert #1\rangle\!\langle #2\rvert}
+\newcommand{\cL}{\mathcal L}
+\newcommand{\C}{\mathbb C}
 \newcommand{\ip}[2]{\langle #1,#2\rangle}
 \newcommand{\norm}[1]{\lVert #1\rVert}
 \newcommand{\abs}[1]{\lvert #1\rvert}
-\newcommand{\C}{\mathbb C}
-\newcommand{\Z}{\mathbb Z}
+\newcommand{\ketbra}[2]{\lvert #1\rangle\!\langle #2\rvert}
+\newcommand{\vecop}{\operatorname{vec}}
+\newcommand{\succeqop}{\mathrel{\succeq}}
+\newcommand{\preceqop}{\mathrel{\preceq}}
 
-\title[A Sharp Rank-$r$ Partial-Trace Inequality]
-{A Sharp Rank-$r$ Partial-Trace Inequality via Double-Skew Singular-Value Bounds}
+\title[Lifting Rank-Two Choi Bounds to $r$-Positive Maps]
+{Lifting Rank-Two Choi Bounds to \(r\)-Positive Maps}
 \author{Elazar Gershuni}
-
 \subjclass[2020]{15A45; 15A18, 15A69, 46L07, 81P40, 68V20}
-
-\keywords{partial trace inequality, rank constraint, $k$-positive map,
-completely positive map, Choi matrix, $S(k)$-norm, Ky Fan norm,
-Autonne--Takagi factorization, Werner state, two-copy distillability,
-formalized mathematics, Lean~4}
-% The first version is fixed; the current one is the compile date, so it is
-% correct by construction rather than by remembering to bump it.
-\date{First version July 26, 2026; this version \today.}
+\keywords{positive map, Choi matrix, Schmidt rank, partial trace inequality,
+Kraus operator, complete graph, double-skew matrix, formalized mathematics}
+\date{July 29, 2026}
 
 \hypersetup{
-  pdftitle={A Sharp Rank-r Partial-Trace Inequality via Double-Skew Singular-Value Bounds},
+  pdftitle={Lifting Rank-Two Choi Bounds to r-Positive Maps},
   pdfauthor={Elazar Gershuni},
-  pdfsubject={Rank-constrained partial-trace inequalities and applications}
+  pdfsubject={A rank-two lifting principle for positive maps}
 }
 
 \begin{document}
 
 \begin{abstract}
-For a completely positive map
-$\Phi:\cL(H)\to\cL(H)$ admitting a Kraus representation with
-$A_a^T=A_a$, we show that a single rank-two bound on its Choi operator
-generates an $r$-positive map for every $r$.  We call this
-\emph{pair amplification}.  Specifically, attach
-$\beta_2(\Phi)=\frac12\norm{J(\Phi)}_{S(2)}$, the rank-two operator norm
-of the Choi operator.  Then
-$\Phi\circ\tau+(r-1)\beta_2(\Phi)\bigl(\Delta-\frac1r\id\bigr)$ is
-$r$-positive for every $r$, where $\Delta(X)=\Tr(X)I$ and $\tau$ is
-transposition.  Two mechanisms drive it: an ancilla construction and a
-partial transpose reduce the assertion to pair-indexed antisymmetric
-modes, over which a complete-graph summation costs only the vertex
-degree $r-1$; and transpose symmetry --- a $\Z/2$-degree condition on
-the Kraus space --- protects one distinguished direction, which sharpens
-the trace coefficient from $1$ to $1/r$.
-
-Its principal corollary, at $\Phi=\Lambda_U\otimes\Lambda_V$ together
-with a contraction identity for that map, is the arbitrary-matrix
-rank-$r$ partial-trace inequality: for every operator $C$ of rank at
-most $r$ on a finite-dimensional bipartite space,
+Let $\Phi:M_d(\C)\to M_d(\C)$ be a completely positive map with a
+transpose-symmetric Kraus representation.  Its Choi operator determines the
+rank-two constant
 \[
-    \norm{\Tr_U C}_2^2+\norm{\Tr_V C}_2^2
-    \le r\norm{C}_2^2+\frac{1}{r}\abs{\Tr C}^2.
+  \beta_2(\Phi)
+  =\frac12\sup_{\substack{\norm z=1\\ \SR(z)\le2}}
+       \ip z{J(\Phi)z}.
 \]
-Both coefficients are optimal --- the first outright, the second once
-the first is fixed --- whenever one factor has dimension at least $r$
-and the other at least $2$, and for nonzero $C$ equality forces
-$\rank C=r$.  This is the extension beyond normal matrices that Costa
-Rico and Wolf identify as open.  When both local dimensions are at least two,
-the sharp value $\beta_2=1$ is a two-vector
-action bound on the double-skew space
-$\mathfrak{so}(U)\otimes\mathfrak{so}(V)$, proved here from the
-Autonne--Takagi factorization and equivalent to Fu, Gao, and Park's
-sharp Schmidt-rank-two projection estimate.
+We prove that, for every $r\ge1$,
+\[
+  \Phi\circ\tau+(r-1)\beta_2(\Phi)
+       \left(\Delta-\frac1r\id\right)
+\]
+is $r$-positive, where $\tau$ is transposition and
+$\Delta(X)=\Tr(X)I$.  The proof turns the negative spectrum of a partially
+transposed rank-one operator into the edges of the complete graph $K_r$.
+Regrouping by vertices costs its degree $r-1$, rather than its
+$\binom r2$ edges.  Transpose symmetry protects one direction and is exactly
+what produces the term $-\id/r$.
 
-The pair-amplification theorem, the main partial-trace theorem, and their
-dependency chain are machine-checked in Lean~4 end to end.  What is certified
-is the deduction, not the faithfulness of
-the formal definitions to their informal counterparts;
-\cref{app:formal} gives the repository, the versions, the reported
-axioms, and the formal--informal correspondence.
-
-Consequences include the exact rank-constrained two-copy score curve,
-an exact asymmetric tensor-product score theorem with the resulting
-$r$-positivity classification, Kronecker-sum Ky Fan bounds, and
-Schmidt-number witnesses.  The score inequalities, their extremizers and
-rank-constrained thresholds, the Frobenius--Ky Fan duality, and the
-Kronecker singular-value bound are machine-checked; other application
-interfaces are tracked explicitly in \cref{app:formal}.
+For $\Phi=\Lambda_U\otimes\Lambda_V$, with
+$\Lambda_E(X)=\Tr(X)I-X^T$, a sharp double-skew singular-value estimate gives
+$\beta_2\le1$, with equality when both local dimensions are at least two.  A
+map identity then yields, for every operator $C$ of rank at most $r$ on
+$U\otimes V$,
+\[
+  \norm{\Tr_U C}_2^2+\norm{\Tr_V C}_2^2
+  \le r\norm C_2^2+\frac1r\abs{\Tr C}^2,
+\]
+with dimension-uniform coefficients that are sharp whenever one local
+dimension is at least $r$ and the other is at least two.  A second family,
+built from the edges of an arbitrary graph, has the same local constant and
+attains the universal coefficient $r-1$ whenever the graph contains an
+$r$-clique.  The Choi lifting chain through the partial-trace and graph
+results, together with its sharpness witnesses, is formalized in Lean~4.
 \end{abstract}
 
 \maketitle
 
-\begin{quote}\small
+\vspace{-3pt}
+\begingroup\footnotesize\noindent
 \textbf{AI-generation and verification disclosure.}
-The problem selection, prompting, and iterative direction were supplied
-by the author. The mathematical arguments, claimed results,
-applications, and exposition were generated by OpenAI's GPT-5.6 and Claude Opus 5.
-The Lean development of \cref{app:formal} was generated by
-Claude Fable 5 and Claude Opus 5 under the author's direction.
-It includes a proof of the Autonne--Takagi factorization, so that the
-development is proved end to end.
-What a human checked there is the interface --- the definitions and the
-conventions they encode --- while Lean checks the deductions built on it.
-The author did not independently derive the proofs, and no claim of
-independent human verification is made. The manuscript has not received independent expert review and should not
-be relied upon until its arguments have been checked by qualified experts.
-\end{quote}
+The author selected the problem, supplied the prompts, and directed the
+iterations.  The arguments, applications, and exposition were generated with
+OpenAI GPT-5.6 and Anthropic Claude Opus~5; the Lean development was generated
+with Claude Fable~5 and Claude Opus~5.  The author checked the
+formal--informal interfaces but did not independently derive every proof.
+Lean checks deductions, not whether the formal definitions faithfully
+represent the informal mathematics.  The manuscript has not received
+independent expert review.
+\par\endgroup
 
-\section{Introduction}
+\section{The result behind the motivating inequality}
 
-Costa Rico proved the rank-sensitive partial-trace inequality below
-for normal operators and related its unrestricted rank-two case to
-two-copy distillability of Werner states \cite{CostaRico}. Costa Rico
-and Wolf subsequently developed partial-trace relations for general
-matrices, including singular-value majorization results for Kronecker
-sums and applications to Schmidt-number witnesses and positive maps,
-while identifying the extension of the same sharp rank-sensitive bound
-beyond normal matrices as an open problem \cite{CostaRicoWolf}. Fu,
-Gao, and Park recently resolved the rank-two endpoint through a sharp
-estimate for the $S(2)$-norm of a double-antisymmetric projection
-\cite{fu2026solution2copydistillabilitywerner}. Their estimate
-supplies the sharp local rank-two input, but not by itself a mechanism
-for combining such information across an $r$-dimensional range.
-
-The argument below supplies that mechanism and obtains the
-arbitrary-matrix inequality for every rank, unconditionally.  The
-rank-two input is \cref{lem:double-skew}, a two-vector action bound on
-the double-skew space $\mathfrak{so}(U)\otimes\mathfrak{so}(V)$, which
-\cref{sec:double-skew} proves from the Autonne--Takagi factorization by
-the argument of
-\cite[\S2]{fu2026solution2copydistillabilitywerner}; the reduction
-across an $r$-dimensional range is new.  An $r$-dimensional ancilla recording an
-orthonormal basis of the range of $C$, a partial transpose, and a
-completely positive map then represent the potentially negative
-sector by antisymmetric modes indexed by pairs $1\le i<j\le r$, each
-controlled by that bound. Grouping the modes by the vertices of the
-complete graph $K_r$, rather than estimating its $\binom r2$ edges
-independently, costs only the vertex degree $r-1$; a cancellation in
-the distinguished code direction then improves the coefficient of
-$\abs{\Tr C}^2$ from $1$ to the sharp $1/r$.
-
-That mechanism never looks at the double-skew space, and
-\cref{sec:amplification} states it separately as \cref{thm:amplification},
-\emph{pair amplification}.  Its inputs are two: a completely positive $\Phi$
-whose Kraus operators are transpose-symmetric, and the single number
-$\beta_2(\Phi)$ of \cref{def:beta2}.  \Cref{thm:rank_r} is the instance
-$\Phi=\Lambda_U\otimes\Lambda_V$, where $\beta_2=1$; \cref{rem:scope} records
-what the two obvious further instances need. Beyond threshold statements, the applications determine the exact
-rank-constrained score curves --- the minimum of the normalized
-two-copy filter form over nonzero matrices of rank at most $r$, as in
-\cref{eq:exact-q2-score} --- for both symmetric and asymmetric
-two-copy filters; the asymmetric formula yields a complete
-$r$-positivity classification for the corresponding tensor-product
-maps.
-
-The Werner-state and distillability terminology used in the applications
-follows the standard conventions \cite{Werner1989,Horodecki1998}.
-Throughout, $\norm{\cdot}_2$ denotes the Hilbert--Schmidt, or
-Schatten-$2$, norm. The notation $\Tr_U$ means the partial trace
-\emph{over} the factor $U$. Inner products are conjugate-linear in the
-first argument and linear in the second. Relative to chosen orthonormal
-bases, vectorization is normalized by
-\[
-    \operatorname{vec}(\ketbra{x}{y})
-    =x\otimes\overline y.
-\]
-The symbol $\SR(z)$ denotes the Schmidt rank of a vector $z$, and
-$\SN(\sigma)$ denotes the Schmidt number of a positive operator or
-state $\sigma$, always across the bipartition indicated in context.
-With the above normalization, a vector has Schmidt rank at most $k$
-across the output--input cut exactly when it is the vectorization of a
-matrix of rank at most $k$; that is,
+The motivating statement is a rank-sensitive relation among the two
+marginals of an arbitrary bipartite matrix.  If
+$C\in\cL(U\otimes V)$ and $\rank C\le r$, then
 \begin{equation}
-\label{eq:SR-vec-rank}
-    \SR\bigl(\operatorname{vec}(A)\bigr)=\rank A ,
+\label{eq:intro-marginal}
+  \norm{\Tr_U C}_2^2+\norm{\Tr_V C}_2^2
+  \le r\norm C_2^2+\frac1r\abs{\Tr C}^2.
 \end{equation}
-a fact used repeatedly below.  Finally, for an operator on a twofold
-tensor power, $\Tr_1$ denotes the partial trace \emph{over} the first
-local factor, leaving an operator on the second, and $\Tr_2$ traces
-over the second.
+Here $\norm\cdot_2$ is the Hilbert--Schmidt norm and $\Tr_U$ means that
+the $U$ factor is traced out.  Neither normality nor self-adjointness is
+assumed.  The coefficients are sharp when one local dimension is at least
+$r$ and the other is at least two.
 
-The paper is self-contained modulo one classical ingredient, the
-Autonne--Takagi factorization of a complex symmetric matrix
-\cite[Cor.~4.4.4(c)]{HornJohnson}, from which \cref{lem:double-skew} is
-proved in \cref{sec:double-skew} following the strategy of
-\cite[\S2]{fu2026solution2copydistillabilitywerner}; so
-\cref{lem:double-skew} is not imported from their work but proved, and
-the formal development of \cref{app:formal} proves the Autonne--Takagi
-factorization as well, making that chain complete end to end.  \Cref{rem:fgp-equivalence} records that
-\cref{lem:double-skew} is \emph{equivalent} to the sharp projection
-estimate of Fu, Gao, and Park, so their Theorem~2.4 may be substituted
-for the proof given here, and conversely.
+Costa Rico proved \cref{eq:intro-marginal} for normal matrices and connected
+its rank-two case with the two-copy distillability problem for Werner states
+\cite{CostaRico}; Costa Rico and Wolf identified its extension beyond normal
+matrices as an open problem \cite{CostaRicoWolf}.  Fu, Gao, and Park proved the
+sharp rank-two double-skew estimate that supplies the local input used here
+\cite{FuGaoPark2026}.  The arbitrary-$r$ inequality also appears, by a
+balanced-factorization route, in Fraser, Huber, Pozsgay, and Vona
+\cite{FraserHuberPozsgayVona2026}; the two lifting mechanisms are compared in
+\cref{sec:balanced-route}.  Song and Chen
+\cite{SongChen2026} and Bharti, Gajjala, and Haug
+\cite{BhartiGajjalaHaug2026} prove the rank-two case and further consequences.
+The contributions of this account are the general rank-two-to-$r$ lifting
+theorem, the protected direction supplied by transpose symmetry, the graph
+family showing universal sharpness, and the formal verification.  The
+partial-trace inequality is the flagship application and a point of overlap
+with the cited work.
 
-The main theorem is the mechanism.  For a completely positive $\Phi$ on
-$\cL(H)$ with Choi operator $J(\Phi)=\sum_a\ketbra{\operatorname{vec}A_a}
-{\operatorname{vec}A_a}$, write $\beta_2(\Phi):=\frac12\norm{J(\Phi)}_{S(2)}$
-for half the supremum of $\ip z{J(\Phi)z}$ over unit vectors of Schmidt rank at
-most two (\cref{def:beta2}), and let $\Delta(X):=\Tr(X)I$ and $\tau$ be
-transposition.
-
-\begin{theorem}[Pair amplification]
-\label[theorem]{thm:pair-amplification}
-Let $\Phi$ be completely positive on $\cL(H)$, $\dim H<\infty$, admitting a
-Kraus representation with $A_a^T=A_a$.  Then for every $r\ge1$ the map
+Fix orthonormal bases whenever a transpose is used.  For a completely positive
+map
 \[
-    \Psi_{r,\Phi}
-    :=
-    \Phi\circ\tau
-    +(r-1)\beta_2(\Phi)\left(\Delta-\tfrac1r\id\right)
+  \Phi(X)=\sum_a A_aXA_a^*
 \]
+on $\cL(H)$, let
+\[
+  J(\Phi)=\sum_a
+  \ketbra{\vecop A_a}{\vecop A_a}
+\]
+be its Choi operator.  For a positive operator $X$ on a tensor product, set
+\[
+  \norm X_{S(k)}
+  :=\sup_{\substack{\norm z=1\\\SR(z)\le k}}\ip z{Xz}.
+\]
+The convention $\vecop(\ketbra{x}{y})=x\otimes\overline y$ gives
+$\SR(\vecop C)=\rank C$.
+
+The \emph{Kraus space} of $\Phi$ is
+\[
+  \mathcal K_\Phi:=\operatorname{span}\{A_a\};
+\]
+equivalently, its vectorization is the range of $J(\Phi)$, so it is
+independent of the Kraus representation.  We say that it has
+\emph{even transpose parity} when $K^T=K$ for every
+$K\in\mathcal K_\Phi$.
+
+\paragraph{The rank-two Choi constant.}
+For a completely positive map $\Phi$, define
+\begin{equation}
+\label{eq:beta}
+  \beta_2(\Phi):=\frac12\norm{J(\Phi)}_{S(2)}.
+\end{equation}
+
+This depends on the map, not on a chosen Kraus representation.  If
+$K_c=\sum_a c_aA_a$, then the projection duality for $S(k)$-norms
+\cite{JohnstonKribs2010} gives the useful equivalent formula
+\begin{equation}
+\label{eq:beta-action}
+  2\beta_2(\Phi)
+  =\sup_{\norm c_2=1}
+     \left(s_1(K_c)^2+s_2(K_c)^2\right),
+\end{equation}
+where $\norm c_2$ is the Euclidean coefficient norm and the singular values
+are in decreasing order, padded by zeros beyond the matrix dimension.
+
+\begin{theorem}[Rank-two lifting]
+\label{thm:lift}
+Let $\Phi:\cL(H)\to\cL(H)$ be completely positive.  For every integer
+$r\ge1$, the map
+\begin{equation}
+\label{eq:unprotected}
+  \Phi\circ\tau+(r-1)\beta_2(\Phi)\Delta
+\end{equation}
+is $r$-positive.
+
+If $\mathcal K_\Phi$ has even transpose parity, then the sharper map
+\begin{equation}
+\label{eq:psi}
+  \Psi_{r,\Phi}
+  :=
+  \Phi\circ\tau+(r-1)\beta_2(\Phi)
+       \left(\Delta-\frac1r\id\right),
+  \qquad \Delta(X)=\Tr(X)I,
+\end{equation}
 is $r$-positive.
 \end{theorem}
 
-One number, computed at level two, controls every level $r$; the cost grows
-linearly, with slope $\beta_2(\Phi)$, and vanishes at $r=1$, where the assertion
-is that $\Phi\circ\tau$ is positive.  The two hypotheses act separately, and
-\cref{thm:amplification} states the operator forms this splits into: complete
-positivity and $\beta_2$ give the bound, and transpose symmetry --- a
-$\Z/2$-degree condition on the Kraus space, \cref{rem:parity} --- supplies the
-$\frac1r\id$, which is exactly the difference between the coefficients $1$ and
-$1/r$ below.  \Cref{sec:amplification} proves it.
+Here a map is $r$-positive when its ampliation by the identity on
+$M_r(\C)$ is positive.  Equivalently, its Choi operator has nonnegative
+expectation on every vector of Schmidt rank at most $r$
+\cite{Choi1975,JohnstonKribs2010}.
 
-Its principal corollary is the estimate the introduction began with.  It is not
-a special case: passing from $r$-positivity to the marginals needs a contraction
-identity for the particular map $\Lambda_U\otimes\Lambda_V$
-(\cref{eq:Phi-rhoT}), and \cref{rem:constant-dependence} shows that $\beta_2$
-alone cannot carry it.
-
-\begin{theorem}[Rank-$r$ partial-trace inequality]
-\label[theorem]{thm:rank_r}
-Let $U$ and $V$ be finite-dimensional complex Hilbert spaces. If
-$C\in\cL(U\otimes V)$ is nonzero and $r_0:=\rank C$, then
-\begin{equation}
-\label{eq:main-bound-exact-rank}
-    \norm{\Tr_U C}_2^2+\norm{\Tr_V C}_2^2
-    \le r_0\norm{C}_2^2+\frac{1}{r_0}\abs{\Tr C}^2.
-\end{equation}
-Consequently, for every $r\in\mathbb N_{\ge1}$ such that $\rank C\le r$,
-\begin{equation}
-\label{eq:main-bound}
-    \norm{\Tr_U C}_2^2+\norm{\Tr_V C}_2^2
-    \le r\norm{C}_2^2+\frac{1}{r}\abs{\Tr C}^2.
-\end{equation}
-The assertion is immediate when $C=0$.
-\end{theorem}
-
-\Cref{eq:main-bound} was obtained independently and concurrently by Fraser,
-Huber, Pozsgay and Vona \cite{FraserHuberPozsgayVona2026}, by a different
-route.  Song and Chen \cite{SongChen2026} and Bharti, Gajjala and Haug
-\cite{BhartiGajjalaHaug2026} obtain the rank-two case; Song and Chen also give a
-two-parameter extension and an activation result, while Bharti, Gajjala and
-Haug give finite-copy extensions.  All four accounts resolve the two-copy
-distillability question through Costa Rico's equivalence.  The overlap is the
-inequality and its rank-two consequences; what is particular to this account
-is the reusable derivation from \cref{thm:pair-amplification}, together with
-the formal development of \cref{app:formal}.
-
-\begin{remark}[Optimality of the coefficients]
-\label[remark]{rem:optimality}
-The coefficients are optimal whenever $\dim U\ge r$ and $\dim V\ge2$,
-or with $U$ and $V$ interchanged. More precisely, the coefficient $r$
-of $\norm{C}_2^2$ is optimal, and conditional on choosing this optimal
-coefficient, the coefficient $1/r$ of $\abs{\Tr C}^2$ is optimal.
-
-Indeed, choose
+\begin{corollary}[Using an upper bound for the local constant]
+\label{cor:beta-upper}
+Under the protected hypothesis of \cref{thm:lift}, let $r\ge1$ be an integer
+and let $\gamma\ge\beta_2(\Phi)$.  Then
 \[
-    C=P_r\otimes\ketbra{v}{w},
+  \Phi\circ\tau+(r-1)\gamma
+  \left(\Delta-\frac1r\id\right)
 \]
-where $P_r$ is a rank-$r$ projection on $U$ and $v,w\in V$ are unit
-vectors. Then
-\[
-\begin{aligned}
-    \norm{\Tr_U C}_2^2&=r^2,\\
-    \norm{\Tr_V C}_2^2&=r\abs{\ip{w}{v}}^2,\\
-    \norm{C}_2^2&=r,\\
-    \abs{\Tr C}^2&=r^2\abs{\ip{w}{v}}^2.
-\end{aligned}
-\]
-Thus equality holds in \cref{eq:main-bound}, and the displayed
-extremizer has $\rank C=r$ exactly.  More generally, for nonzero $C$
-equality in the rank-$r$ inequality requires $\rank C=r$; the passage
-from the exact-rank inequality to a strictly larger rank parameter is
-strict.  This is why the sharpness example is built from a rank-$r$
-projection. For a bound of the form
-\[
-    \norm{\Tr_U C}_2^2+\norm{\Tr_V C}_2^2
-    \le a\norm{C}_2^2+b\abs{\Tr C}^2,
-\]
-taking $v\perp w$ forces $a\ge r$. Once $a=r$ is fixed, taking $v=w$
-forces $b\ge1/r$.
-\end{remark}
-
-The proof of \cref{thm:rank_r}, and of every result it depends on, has been
-formalized in Lean~4, as have the statements of \cref{rem:optimality} and
-\cref{lem:one-sided-partial-trace}, the algebraic score applications, and the
-Kronecker pairing, centered Cauchy--Schwarz argument, and rank-constrained
-Frobenius dual bound underlying \cref{cor:kronecker}.
-\Cref{app:formal} records the repository, the toolchain and Mathlib pins, the
-reported axioms, and the correspondence between the formal and informal
-statements.
-
-\section{Double-Skew Estimates and the Marginal Operator Inequality}
-\label{sec:double-skew}
-
-We first prove the double-skew action bound used below.  The route is that
-of \cite[\S2]{fu2026solution2copydistillabilitywerner}, with the
-Autonne--Takagi factorization in place of their Theorem~2.4;
-\cref{rem:fgp-equivalence} records that the two are equivalent.
-
-\begin{lemma}[Double-skew action bound]
-\label[lemma]{lem:double-skew}
-Fix orthonormal bases of $U$ and $V$, and let
-\[
-    \mathfrak{so}(U)
-    :=\{L\in\cL(U):L^T=-L\},
-    \qquad
-    \mathfrak{so}(V)
-    :=\{M\in\cL(V):M^T=-M\}.
-\]
-For every $K$ in the linear span of
-\[
-    \{L\otimes M:
-      L\in\mathfrak{so}(U),\ M\in\mathfrak{so}(V)\},
-\]
-and every orthonormal pair $x,y\in U\otimes V$,
-\begin{equation}
-\label{eq:double-skew-action}
-    \norm{Kx}^2+\norm{Ky}^2
-    \le\frac12\norm{K}_2^2.
-\end{equation}
-\end{lemma}
+is $r$-positive.
+\end{corollary}
 
 \begin{proof}
-Index operators on $U\otimes V$ by pairs relative to the fixed bases,
-writing $N_{(a,b),(a',b')}$, and define the two partial transposes
+The map $\Delta-\frac1r\id$ is $r$-positive: for every
+$C$ with $\rank C\le r$, its Choi quadratic form is
 \[
-    (N^{T_U})_{(a,b),(a',b')}:=N_{(a',b),(a,b')},
-    \qquad
-    (N^{T_V})_{(a,b),(a',b')}:=N_{(a,b'),(a',b)},
+  \norm C_2^2-\frac1r\abs{\Tr C}^2\ge0
 \]
-whose composite is the ordinary transpose.  Both are self-adjoint
-involutions for the Hilbert--Schmidt inner product and they commute, so
-\[
-    \Pi:=\tfrac12\bigl(1-T_U\bigr)\,\tfrac12\bigl(1-T_V\bigr)
-\]
-is the orthogonal projection of $\cL(U\otimes V)$ onto
-$\mathfrak{so}(U)\otimes\mathfrak{so}(V)$.  Hence $\Pi K=K$; and since a
-tensor product of two skew-symmetric matrices is symmetric, also
-$K^T=K$.
-
-\emph{Step 1: a symmetric Schmidt decomposition.}  Because $K^T=K$, the
-Autonne--Takagi factorization \cite[Cor.~4.4.4(c)]{HornJohnson} supplies an
-orthonormal basis $w_1,\ldots,w_n$ of $U\otimes V$ and reals $s_i\ge0$
-with
-\begin{equation}
-\label{eq:takagi-K}
-    K=\sum_i s_i\,w_iw_i^T .
-\end{equation}
-The $w_iw_i^T$ are themselves orthonormal in the Hilbert--Schmidt inner
-product, because
-$\ip{uu^T}{vv^T}_{\mathrm{HS}}=\ip uv^2$.
-
-\emph{Step 2: the two-term bound.}  Write $M_u$ for the
-$\dim U\times\dim V$ coefficient matrix of $u\in U\otimes V$, so that
-$\norm{M_u}_2=\norm u$.  Carrying out the two inner sums separately
-gives the flip trace identity
-\begin{equation}
-\label{eq:flip-trace}
-    \ip{uu^T}{(vv^T)^{T_U}}_{\mathrm{HS}}
-    =\Tr\bigl((M_u^*M_v)^2\bigr).
-\end{equation}
-Let $N:=s_1w_1w_1^T+s_2w_2w_2^T$ with $s_1,s_2\ge0$, write $M_i:=M_{w_i}$
-and $c_i:=\norm{M_i^*M_i}_2$.  Expanding by \cref{eq:flip-trace}, using
-that $M_i^*M_i$ is self-adjoint for the diagonal terms and that the two
-cross terms are complex conjugates,
-\[
-    \ip N{N^{T_U}}_{\mathrm{HS}}
-    =s_1^2c_1^2
-      +2s_1s_2\,\operatorname{Re}\Tr\bigl((M_1^*M_2)^2\bigr)
-      +s_2^2c_2^2 .
-\]
-Two applications of Cauchy--Schwarz for
-$\ip\cdot\cdot_{\mathrm{HS}}$, namely
-\[
-    \abs{\Tr(X^2)}=\bigl|\ip{X^*}{X}_{\mathrm{HS}}\bigr|\le\norm X_2^2,
-    \qquad
-    \norm{A^*B}_2^2=\ip{AA^*}{BB^*}_{\mathrm{HS}}
-      \le\norm{A^*A}_2\,\norm{B^*B}_2,
-\]
-the second using $\norm{AA^*}_2=\norm{A^*A}_2$, bound the cross term
-below by $-2s_1s_2c_1c_2$.  Therefore
-\begin{equation}
-\label{eq:two-term-nonneg}
-    \ip N{N^{T_U}}_{\mathrm{HS}}\ge(s_1c_1-s_2c_2)^2\ge0 .
-\end{equation}
-Since $N^T=N$ forces $N^{T_V}=N^{T_U}$, expanding $\Pi$ leaves only two
-distinct terms, and \cref{eq:two-term-nonneg} gives
-\begin{equation}
-\label{eq:pi-symmetric}
-    \ip N{\Pi N}_{\mathrm{HS}}
-    =\tfrac12\bigl(\norm N_2^2-\ip N{N^{T_U}}_{\mathrm{HS}}\bigr)
-    \le\tfrac12\norm N_2^2 .
-\end{equation}
-This is the only place the hypothesis $\dim\le2$ of
-\cite[Lem.~2.3]{fu2026solution2copydistillabilitywerner} is used, and
-\cref{eq:two-term-nonneg} is that lemma.
-
-\emph{Step 3: truncation.}  Fix $a\ne b$ and put
-$K_{ab}:=s_aw_aw_a^T+s_bw_bw_b^T$.  Orthonormality of the $w_iw_i^T$ gives
-$\norm{K_{ab}}_2^2=\ip K{K_{ab}}_{\mathrm{HS}}=s_a^2+s_b^2=:A$.  As $\Pi$ is a
-self-adjoint idempotent with $\Pi K=K$,
-\[
-    A=\ip K{K_{ab}}_{\mathrm{HS}}=\ip{\Pi K}{K_{ab}}_{\mathrm{HS}}
-     =\ip K{\Pi K_{ab}}_{\mathrm{HS}}
-     \le\norm{K}_2\,\norm{\Pi K_{ab}}_2,
-\]
-while $\norm{\Pi K_{ab}}_2^2=\ip{K_{ab}}{\Pi K_{ab}}_{\mathrm{HS}}\le\frac12A$ by
-\cref{eq:pi-symmetric}.  Squaring the first display and substituting the
-second yields $A^2\le\frac12A\norm{K}_2^2$.  If $A=0$ there is nothing to
-prove; otherwise one factor of $A$ cancels, and
-\begin{equation}
-\label{eq:pair-bound}
-    s_a^2+s_b^2\le\tfrac12\norm{K}_2^2
-    \qquad\text{for \emph{every} pair }a\ne b .
-\end{equation}
-
-\emph{Step 4: from pairs to the action.}  By \cref{eq:takagi-K} and
-orthonormality,
-$K^*K=\sum_i s_i^2\ketbra{\overline{w_i}}{\overline{w_i}}$, so for an
-orthonormal pair $x,y$,
-\[
-    \norm{Kx}^2+\norm{Ky}^2=\sum_i s_i^2\theta_i,
-    \qquad
-    \theta_i:=\abs{\ip{\overline{w_i}}x}^2+\abs{\ip{\overline{w_i}}y}^2 .
-\]
-Each $\theta_i$ equals $\norm{P\overline{w_i}}^2$ for the rank-two
-orthogonal projection $P$ onto $\operatorname{span}\{x,y\}$, so
-$\theta_i\in[0,1]$; and $\sum_i\theta_i=\Tr P=2$ because
-$\{\overline{w_i}\}$ is an orthonormal basis.  For weights of this kind
-and any $c_i\ge0$, letting $a,b$ index the two largest $c_i$ and
-bounding every remaining term by $c_b\theta_i$,
-\[
-    \sum_i c_i\theta_i
-    \le c_a\theta_a+c_b(2-\theta_a)
-    =2c_b+\theta_a(c_a-c_b)
-    \le c_a+c_b .
-\]
-Applying this with $c_i=s_i^2$, and then \cref{eq:pair-bound} to that
-pair, gives \cref{eq:double-skew-action}.
+by the trace--rank inequality.  Add
+$(r-1)(\gamma-\beta_2(\Phi))
+(\Delta-\frac1r\id)$ to the protected map of \cref{thm:lift}.
 \end{proof}
 
-\begin{remark}[Equivalence with the Fu--Gao--Park estimate]
-\label[remark]{rem:fgp-equivalence}
-\Cref{lem:double-skew} is equivalent to
-\cite[Thm.~2.4]{fu2026solution2copydistillabilitywerner}, so that
-estimate may be substituted for the proof above.
+The theorem is not an induction on $r$, nor does it tensorize a rank-two
+statement.  A partial transpose produces pair-indexed negative modes at level
+$r$; the rank-two Choi bound controls each mode, and a complete-graph estimate
+assembles them.  This distinction is useful when looking for new instances:
+one needs a local two-vector estimate, not a recursive relation between
+successive levels.
 
-Label the four vectorization factors
-$U_{\mathrm{out}},V_{\mathrm{out}},U_{\mathrm{in}},V_{\mathrm{in}}$ as
-$1,2,3,4$; then the antisymmetrized pairs
-$(U_{\mathrm{out}},U_{\mathrm{in}})$ and
-$(V_{\mathrm{out}},V_{\mathrm{in}})$ are Fu--Gao--Park's $(1,3)$ and
-$(2,4)$, the cut
-$(U_{\mathrm{out}}V_{\mathrm{out}}):(U_{\mathrm{in}}V_{\mathrm{in}})$ is
-their $12{:}34$, and $\operatorname{vec}$ intertwines $\Pi$ with
-$Q_-:=P_{\wedge^2U}^{(1,3)}\otimes P_{\wedge^2V}^{(2,4)}$.  Their
-estimate states that, for every $z$ of Schmidt rank at most two across
-that cut,
-\begin{equation}
-\label{eq:fgp-bound-homogeneous}
-    \ip z{Q_-z}\le\tfrac12\norm z^2 ,
-\end{equation}
-both sides being homogeneous of degree two, so that no normalization is
-needed.  By \cref{eq:SR-vec-rank} this says exactly that
-$\ip M{\Pi M}_{\mathrm{HS}}\le\frac12\norm M_2^2$ for every
-$M\in\cL(U\otimes V)$ with $\rank M\le2$.
+\section{Using the theorem}
+\label{sec:using}
 
-\emph{Their estimate implies \cref{lem:double-skew}.}  Let
-$P=\ketbra xx+\ketbra yy$ and $A=\norm{KP}_2^2$.  Since $P^2=P=P^*$,
-$\norm{Kx}^2+\norm{Ky}^2=A$ and $\rank(KP)\le2$; and as $\Pi$ is a
-self-adjoint idempotent fixing $K$,
-$A=\ip K{KP}_{\mathrm{HS}}=\ip K{\Pi(KP)}_{\mathrm{HS}}
-\le\norm{K}_2\norm{\Pi(KP)}_2$, while
-$\norm{\Pi(KP)}_2^2\le\frac12A$.  Cancelling one factor of $A$ gives
-\cref{eq:double-skew-action}.  (A block-zero extension reduces unequal
-local dimensions to the square case they state, since extending a
-skew-symmetric matrix by zero preserves skew-symmetry and the
-Hilbert--Schmidt norm.)
+\Cref{fig:diagnostic} separates the universal argument from the work specific
+to an application.  The first row gives the unprotected theorem; the second
+adds even transpose parity and the protected direction.  The final
+application-specific identity is optional: it is needed only to translate
+$r$-positivity into a concrete inequality or inclusion.
 
-\emph{Conversely.}  Given $M$ with $\rank M\le2$, choose an orthonormal
-pair $v_1,v_2$ spanning a subspace that contains the row space
-$\operatorname{ran}M^*=(\ker M)^\perp$, and set $u_i:=Mv_i$; then
-$M=\sum_{i\le2}\ketbra{u_i}{v_i}$ and
-$\norm{M}_2^2=\sum_i\norm{u_i}^2$.  (If $\dim(U\otimes V)=1$ then
-$\Pi=0$ and there is nothing to prove.)  Put $K:=\Pi M$.  Then
-$\norm{K}_2^2=\ip K M_{\mathrm{HS}}=\sum_i\ip{Kv_i}{u_i}
-\le\bigl(\sum_i\norm{Kv_i}^2\bigr)^{1/2}\norm{M}_2
-\le\bigl(\tfrac12\norm{K}_2^2\bigr)^{1/2}\norm{M}_2$
-by \cref{eq:double-skew-action}, whence
-$\ip M{\Pi M}_{\mathrm{HS}}=\norm{\Pi M}_2^2\le\frac12\norm{M}_2^2$.
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+  x=1mm,y=1mm,
+  box/.style={
+    draw=blue!55!black,
+    rounded corners,
+    fill=blue!3,
+    align=center,
+    text width=31mm,
+    minimum height=12mm,
+    inner sep=3pt
+  },
+  result/.style={
+    draw=green!45!black,
+    rounded corners,
+    fill=green!5,
+    align=center,
+    text width=34mm,
+    minimum height=12mm,
+    inner sep=3pt
+  },
+  stop/.style={
+    draw=red!60!black,
+    rounded corners,
+    fill=red!3,
+    align=center,
+    text width=34mm,
+    minimum height=12mm,
+    inner sep=3pt
+  },
+  arrow/.style={-{Latex[length=2.2mm]},thick}
+]
+  \node[box] (cp) at (0,0) {CP map $\Phi$\\and $\beta_2(\Phi)$};
+  \node[box] (graph) at (55,0) {$K_r$ edge lift\\cost $(r-1)\beta_2$};
+  \node[result] (unprotected) at (110,0)
+    {unprotected\\$r$-positive map};
 
-Both directions are machine-checked; see \cref{app:formal}.
-\end{remark}
+  \node[box] (parity) at (0,-22) {symmetric Kraus span\\$K^T=K$};
+  \node[box] (direction) at (55,-22) {protected direction\\
+    $\ran\mathcal T\perp\delta_e$};
+  \node[result] (positive) at (110,-22) {protected map\\\eqref{eq:psi}};
 
-\subsection{Pair amplification}
-\label{sec:amplification}
+  \node[stop] (odd) at (0,-48) {odd parity:\\protection fails};
+  \node[box] (identity) at (55,-48) {application-specific\\map or
+    contraction identity};
+  \node[result] (application) at (110,-48) {matrix inequality,\\threshold,
+    or inclusion};
 
-\Cref{lem:double-skew} is one instance of a general mechanism, and it is
-cleaner to state the general form first and specialize.  What the argument of
-\cref{sec:proof} consumes is a single number attached to a completely positive
-map.
+  \draw[arrow] (cp) -- (graph);
+  \draw[arrow] (graph) -- (unprotected);
+  \draw[arrow] (graph) -- (direction);
+  \draw[arrow] (parity) -- (direction);
+  \draw[arrow] (direction) -- (positive);
+  \draw[arrow] (unprotected) -- (positive);
+  \draw[arrow] (positive) -- (identity);
+  \draw[arrow] (identity) -- (application);
+  \draw[arrow,red!60!black] (parity) -- (odd);
+\end{tikzpicture}
+\caption{A diagnostic for applying the rank-two lifting theorem.  The
+rank-two constant and even transpose parity are universal inputs.  Concrete
+downstream formulae require a separate identity for the chosen map.}
+\label{fig:diagnostic}
+\end{figure}
 
-\begin{definition}[Rank-two Choi constant]
-\label[definition]{def:beta2}
-Let $\Phi$ be completely positive on $\cL(H)$ with Kraus family $\{A_a\}$, and
-let
+For a prospective application, four questions suffice.
+
+\begin{enumerate}
+\item Is $\Phi$ completely positive, and does its Kraus span have even
+transpose parity?  Complete positivity gives \cref{eq:unprotected}; even
+parity gives the protected pencil \cref{eq:psi}.
+\item Can one bound the two-vector quantity
+$s_1(K_c)^2+s_2(K_c)^2$?  This determines the universal sufficient
+coefficient $(r-1)\beta_2(\Phi)$.
+\item Is that coefficient necessary for the particular map?  This requires a
+rank-$r$ Choi witness; saturation of the local two-vector bound alone need not
+propagate through the complete-graph estimate.
+\item Is there a map or contraction identity that turns the corrected Choi
+form into the desired matrix expression?  Without one, the conclusion is
+$r$-positivity, not the proposed matrix inequality.
+\end{enumerate}
+
+The improvement from \cref{eq:unprotected} to \cref{eq:psi} is a rank-one
+protection, not a change in the complete-graph estimate.  The example in
+\cref{sec:limits} shows that this improvement genuinely fails for an odd
+Kraus space.
+
+\section{The complete-graph proof}
+\label{sec:proof}
+
+The proof is included in the main text because its two structural steps---the
+edge decomposition and the protected direction---are the information needed
+to adapt the theorem.
+
+Let $e_1,\dots,e_s$ be an orthonormal family in $H$, let
+$q_1,\dots,q_s$ be the standard basis of $Q=\C^s$, and set
 \[
-    J(\Phi):=\sum_a\ketbra{\operatorname{vec}A_a}{\operatorname{vec}A_a}
+  \delta_e=\sum_{i=1}^s e_i\otimes q_i,\qquad
+  \rho_e=\ketbra{\delta_e}{\delta_e},\qquad
+  \Pi_e=\frac1s\rho_e.
 \]
-be its Choi operator.  Set
-\[
-    \beta_2(\Phi)
-    :=\tfrac12\norm{J(\Phi)}_{S(2)}
-    =\tfrac12\sup\bigl\{\ip z{J(\Phi)z}:
-      \operatorname{SR}(z)\le2,\ \norm z=1\bigr\}.
-\]
-\end{definition}
-
-$J(\Phi)$ is the same operator for every Kraus family of $\Phi$, so
-$\beta_2$ depends on $\Phi$ alone --- no minimality and no orthogonality of the
-family is required.  It is positively homogeneous in $\Phi$ --- and convex, being
-a supremum of linear functionals, but not additive --- so a map and its constant
-always carry the same scale and no normalization convention has to be tracked.
-
-Writing $K_\zeta:=\sum_a\zeta_aA_a$ and $s_i$ for singular values, three
-descriptions coincide:
+The partial transpose of $\rho_e$ on $H$ is the flip between
+$\operatorname{span}\{\overline e_i\}$ and $Q$.  Its negative spectral
+projection is
 \begin{equation}
-\label{eq:beta2-three-ways}
-    2\beta_2(\Phi)
-    =\norm{J(\Phi)}_{S(2)}
-    =\sup_{\norm\zeta=1}\bigl(s_1(K_\zeta)^2+s_2(K_\zeta)^2\bigr)
-    =\sup_{\norm\zeta=1}\bigl\Vert K_\zeta K_\zeta^*\bigr\Vert_{(2)},
+\label{eq:pminus}
+  P_-=\sum_{1\le i<j\le s}\ketbra{\eta_{ij}}{\eta_{ij}},
+  \qquad
+  \eta_{ij}=
+  \frac{\overline e_i\otimes q_j-\overline e_j\otimes q_i}{\sqrt2}.
 \end{equation}
-$\norm\cdot_{(k)}$ being the Ky Fan $k$-norm; any of the three may serve as the
-definition.  The middle equality is the $S(k)$-norm projection duality of
-\cite{JohnstonKribs2010} at $k=2$, and the right-hand quantity is the threshold
-characterizing $k$-positivity of $a\Tr(\cdot)I-\Phi$ in
-\cite[Thm.~3.2]{MlynikOsakaMarciniak2025}, so $2\beta_2$ is their $a_2$.
-By \cref{rem:fgp-equivalence}, $J(\Lambda_U\otimes\Lambda_V)$ is $4Q_-$.  If
-$\dim U,\dim V\ge2$, then $\norm{Q_-}_{S(2)}=\frac12$, so
+Writing $P_+$ for the positive projection,
 \begin{equation}
-\label{eq:beta2-double-skew}
-    \beta_2(\Lambda_U\otimes\Lambda_V)=1 .
+\label{eq:flip}
+  \rho_e^{T_H}=P_+-P_-.
 \end{equation}
-If either local dimension is below two, the double-skew space and the map
-vanish, and the sharp value is instead $\beta_2=0$.  The upper bound
-$\beta_2\le1$, which is all the proof of \cref{thm:rank_r} consumes, is valid
-in every dimension.
+The vectors $\eta_{ij}$ are naturally indexed by the edges of $K_s$.
 
-\begin{theorem}[Pair amplification, operator forms]
-\label[theorem]{thm:amplification}
-Let $\Phi$ be completely positive on $\cL(U\otimes V)$.  Then, in the notation
-of \cref{prop:operator_ineq}, for every $r\ge1$ and every orthonormal family
-$e_1,\ldots,e_r$ in $U\otimes V$,
+\begin{proposition}[Negative-sector estimate]
+\label{prop:negative}
+For every completely positive $\Phi$ and every orthonormal family as above,
 \begin{equation}
-\label{eq:amplification-A0}
-    (\Phi\otimes\id_Q)(P_-)
-    \preceq
-    (r-1)\beta_2(\Phi)\,I_{UVQ},
+\label{eq:negative-unprotected}
+  (\Phi\otimes\id_Q)(P_-)
+  \preceqop (s-1)\beta_2(\Phi)I.
 \end{equation}
+If $\Phi$ has a transpose-symmetric Kraus representation, then
 \begin{equation}
-\label{eq:amplification-B0}
-    (\Phi\otimes\id_Q)\bigl(\rho_0^{T_{UV}}\bigr)
-    +(r-1)\beta_2(\Phi)\,I_{UVQ}
-    \succeq0 .
+\label{eq:negative-protected}
+  (\Phi\otimes\id_Q)(P_-)
+  \preceqop (s-1)\beta_2(\Phi)(I-\Pi_e).
 \end{equation}
-If moreover the Kraus operators of $\Phi$ are \emph{transpose-symmetric},
-$A_a^T=A_a$, then $I_{UVQ}$ may be replaced by $I_{UVQ}-\Pi_e$ throughout:
-\begin{equation}
-\label{eq:amplification-A}
-    (\Phi\otimes\id_Q)(P_-)
-    \preceq
-    (r-1)\beta_2(\Phi)\,(I_{UVQ}-\Pi_e),
-\end{equation}
-\begin{equation}
-\label{eq:amplification-B}
-    (\Phi\otimes\id_Q)\bigl(\rho_0^{T_{UV}}\bigr)
-    +(r-1)\beta_2(\Phi)\,(I_{UVQ}-\Pi_e)
-    \succeq0 .
-\end{equation}
-\end{theorem}
-
-The two hypotheses act separately, and the gap between the two pairs of displays
-is the single direction $\delta_e$.  Complete positivity and $\beta_2$ give
-\cref{eq:amplification-A0,eq:amplification-B0}; transpose symmetry, and nothing
-else, supplies the projection.  \Cref{rem:parity} identifies that hypothesis as
-a $\Z/2$-degree condition and shows what the sharpening is worth: the
-coefficient $1/r$ of $\abs{\Tr C}^2$ in \cref{thm:rank_r} rather than $1$.
-
-In the transpose-symmetric case \cref{eq:amplification-B} is
-\cref{thm:pair-amplification}: it says that
-\[
-    \Psi_{r,\Phi}
-    :=
-    \Phi\circ\tau
-    +(r-1)\beta_2(\Phi)\left(\Delta-\tfrac1r\id\right)
-\]
-is \emph{$r$-positive}, meaning that
-$(\Psi_{r,\Phi}\otimes\id_{\C^r})(\rho)\succeq0$ for every positive
-semidefinite $\rho$ on $(U\otimes V)\otimes\C^r$ --- equivalently, by the
-Choi--Jamiołkowski correspondence used throughout \cref{sec:applications}, that
-its Choi operator has nonnegative expectation on every vector of Schmidt rank at
-most $r$.  \Cref{rem:operator-ineq-as-map} carries out that translation and
-identifies the resulting map.
-
-The proof occupies \cref{sec:proof}; \cref{eq:amplification-A} is
-\cref{eq:Phi-Pminus-goal} with $\beta_2$ in place of $1$, and each of
-\cref{eq:amplification-B0,eq:amplification-B} follows from the display above it
-because $P_+$ survives $\Phi$ and $P_+-P_-$ is twice the partial transpose.  The
-constant $\beta_2$ enters through one estimate on the Kraus span
-(\cref{eq:kraus-pair-bound}), and transpose symmetry through one orthogonality
-(\cref{eq:T-orthogonal}).  Nothing else about $\Phi$ is used --- in particular
-nothing about $\mathfrak{so}(U)\otimes\mathfrak{so}(V)$ beyond
-\cref{eq:beta2-double-skew}.
-
-At $\Phi=\Lambda_U\otimes\Lambda_V$ and $\beta_2=1$, \cref{thm:amplification} is
-the operator inequality we now record in the form \cref{sec:proof} uses.
-
-\begin{proposition}[Rank-$r$ marginal operator inequality]
-\label[proposition]{prop:operator_ineq}
-Let $Q=\C^r$, let $e_1,\ldots,e_r$ be an orthonormal family in
-$U\otimes V$, and let $q_1,\ldots,q_r$ be an orthonormal basis of
-$Q$. Define the unnormalized code vector and its rank-one operator by
-\[
-    \delta_e:=\sum_{i=1}^r e_i\otimes q_i,
-    \qquad
-    \rho_0:=\ketbra{\delta_e}{\delta_e},
-    \qquad
-    \Pi_e:=\frac1r\rho_0.
-\]
-Thus $\Pi_e$ is the orthogonal projection onto
-$\operatorname{span}\{\delta_e\}$.  Write
-\[
-    \rho^0_{UQ}:=\Tr_V\rho_0,
-    \qquad
-    \rho^0_{VQ}:=\Tr_U\rho_0.
-\]
-Then
-\begin{equation}
-\label{eq:H_r}
-    H_r^{(0)}
-    :=
-    rI_{UVQ}+\Pi_e
-    -\iota_{UQ}(\rho^0_{UQ})
-    -\iota_{VQ}(\rho^0_{VQ})
-    \succeq0.
-\end{equation}
-For $S\subseteq\{U,V,Q\}$, the map
-\[
-    \iota_S:
-    \cL\!\left(\bigotimes_{X\in S}X\right)
-    \longrightarrow \cL(U\otimes V\otimes Q)
-\]
-uses the order inherited from $U,V,Q$: it tensors with identities on
-omitted factors and conjugates by the unique permutation unitary that
-restores the order $U\otimes V\otimes Q$.  For example,
-$\iota_{UQ}(X)$ is the operator that acts as $X$ on the labeled
-$U,Q$ factors and as the identity on $V$.
 \end{proposition}
 
 \begin{proof}
-Fix orthonormal bases of $U$ and $V$, relative to which transposition
-and the skew-symmetric operator spaces are defined. Although the proof
-uses these bases, the resulting operator inequality is basis
-independent.
-
-Expanding $\rho_0$ and transposing the $UV$ factor gives
+Choose Kraus operators $\{A_a\}$ for $\Phi$.  For coefficients
+$c=(c_a^{(ij)})$, indexed by edges $i<j$ and Kraus labels $a$, define
+\[
+  \mathcal Tc
+  =\sum_{i<j}\sum_a c_a^{(ij)}
+     (A_a\otimes I_Q)\eta_{ij},
+  \qquad
+  K^{(ij)}=\sum_a c_a^{(ij)}A_a.
+\]
+The Kraus formula and \cref{eq:pminus} give
+\begin{equation}
+\label{eq:ttstar}
+  \mathcal T\mathcal T^*=(\Phi\otimes\id_Q)(P_-).
+\end{equation}
+Grouping the output by vertices rather than edges,
+\begin{equation}
+\label{eq:vertex-group}
+  \mathcal Tc
+  =\frac1{\sqrt2}\sum_{k=1}^s
+   \left(
+      \sum_{i<k}K^{(ik)}\overline e_i
+      -\sum_{k<j}K^{(kj)}\overline e_j
+   \right)\otimes q_k.
+\end{equation}
+There are $s-1$ incident terms at each vertex.  Cauchy--Schwarz at each
+vertex therefore gives
 \begin{align}
-    \rho_0^{T_{UV}}
-    &=
-    \sum_{i,j=1}^r
-    \bigl(\ketbra{e_i}{e_j}\bigr)^T
-    \otimes\ketbra{q_i}{q_j}
-    \notag\\
-    &=
-    \sum_{i,j=1}^r
-    \ketbra{\overline e_j\otimes q_i}
-            {\overline e_i\otimes q_j}.
-\label{eq:rho-partial-transpose-expanded}
+  \norm{\mathcal Tc}^2
+  &\le\frac{s-1}{2}
+    \sum_{i<j}
+       \left(
+         \norm{K^{(ij)}\overline e_i}^2+
+         \norm{K^{(ij)}\overline e_j}^2
+       \right).
+\label{eq:vertex-cs}
 \end{align}
-Let
-\[
-    S:=\operatorname{span}
-    \{\overline e_1,\ldots,\overline e_r\},
-\]
-and let $J:Q\to S$ be the unitary determined by
-$Jq_i=\overline e_i$. Define a self-adjoint unitary $F_J$ on
-$S\otimes Q$ by
-\[
-    F_J(s\otimes q)
-    :=Jq\otimes J^{-1}s.
-\]
-In particular,
-\[
-    F_J(\overline e_i\otimes q_j)
-    =\overline e_j\otimes q_i.
-\]
-Thus the sum in \cref{eq:rho-partial-transpose-expanded} is $F_J$ on
-$S\otimes Q$. Let
-\[
-    P_\pm:=\frac12(I_{S\otimes Q}\pm F_J)
-\]
-be its positive and negative eigenspace projections, extended by zero
-on $(S\otimes Q)^\perp$; thus $P_++P_-$ is the orthogonal projection
-onto $S\otimes Q$, not the identity on $U\otimes V\otimes Q$. Then
+For any orthonormal $x,y$ and $K=\sum_ac_aA_a$,
 \begin{equation}
-\label{eq:rho-partial-transpose}
-    \rho_0^{T_{UV}}
-    =P_+-P_-.
+\label{eq:pair-action}
+  \norm{Kx}^2+\norm{Ky}^2
+  \le 2\beta_2(\Phi)\norm c_2^2.
 \end{equation}
-Explicitly,
+Indeed, if $P=\ketbra{x}{x}+\ketbra{y}{y}$, the Ky Fan variational
+principle and the homogeneous form of \cref{eq:beta-action} give
 \[
-    P_-
-    =
-    \sum_{1\le i<j\le r}
-    \ketbra{\eta_{ij}}{\eta_{ij}},
+  \norm{Kx}^2+\norm{Ky}^2
+  =\norm{KP}_2^2
+  \le s_1(K)^2+s_2(K)^2
+  \le2\beta_2(\Phi)\norm c_2^2.
 \]
-where
+Substitution into \cref{eq:vertex-cs} yields
 \begin{equation}
-\label{eq:eta-ij}
-    \eta_{ij}
-    =
-    \frac1{\sqrt2}
-    \bigl(
-      \overline e_i\otimes q_j
-      -
-      \overline e_j\otimes q_i
-    \bigr).
+\label{eq:Tnorm}
+  \norm{\mathcal Tc}^2
+  \le(s-1)\beta_2(\Phi)\norm c_2^2.
 \end{equation}
+Together with \cref{eq:ttstar}, this proves
+\cref{eq:negative-unprotected}.
 
-For a finite-dimensional Hilbert space $E$, define
+Suppose now that $A_a^T=A_a$.  Then every $K^{(ij)}$ is symmetric, and
+\begin{align*}
+  \ip{\delta_e}{\mathcal Tc}
+  &=
+  \frac1{\sqrt2}\sum_{i<j}
+   \left(
+     \overline e_j^{\,T}K^{(ij)}\overline e_i
+     -\overline e_i^{\,T}K^{(ij)}\overline e_j
+   \right)=0.
+\end{align*}
+Thus $\ran\mathcal T\subseteq\delta_e^\perp$, and therefore
 \[
-    \Lambda_E(X)
-    :=
-    \Tr(X)I_E-X^T.
+  \mathcal T\mathcal T^*
+  =(I-\Pi_e)\mathcal T\mathcal T^*(I-\Pi_e)
+  \preceqop\norm{\mathcal T}^2(I-\Pi_e).
+\]
+Together with \cref{eq:Tnorm}, this proves
+\cref{eq:negative-protected}.
+\end{proof}
+
+\begin{proof}[Proof of \cref{thm:lift}]
+By \cref{eq:flip}, complete positivity of $\Phi$, and
+\cref{eq:negative-unprotected},
+\[
+  (\Phi\otimes\id_Q)(\rho_e^{T_H})
+  +(s-1)\beta_2(\Phi)I\succeqop0.
+\]
+Here
+$I=(\Delta\otimes\id_Q)(\rho_e)$ because
+$\Tr_H\rho_e=I_Q$.  Filtering on $Q$ produces every generating vector of
+Schmidt rank at most $s$, and hence proves positivity on every corresponding
+rank-one input.  Thus the map in
+\cref{eq:unprotected} is $s$-positive at parameter $s$.  For a test vector
+of Schmidt rank $s\le r$, increasing the parameter adds
+$(r-s)\beta_2(\Phi)\Delta$, a completely positive map.  This proves the
+unprotected assertion for every $r$.
+
+Suppose now that the Kraus operators are transpose-symmetric.  Replacing
+\cref{eq:negative-unprotected} by \cref{eq:negative-protected} gives
+\begin{equation}
+\label{eq:rho-positive}
+  (\Phi\otimes\id_Q)(\rho_e^{T_H})
+  +(s-1)\beta_2(\Phi)(I-\Pi_e)\succeqop0.
+\end{equation}
+Since $\Tr_H\rho_e=I_Q$ and $\rho_e=s\Pi_e$,
+\[
+  I-\Pi_e
+  =
+  \left[\left(\Delta-\frac1s\id\right)\otimes\id_Q\right](\rho_e).
+\]
+Hence \cref{eq:rho-positive} says
+$(\Psi_{s,\Phi}\otimes\id_Q)(\rho_e)\succeqop0$.
+Filtering on $Q$ proves the same assertion for every rank-one positive
+operator whose generating vector has exact Schmidt rank $s$.
+
+It remains to test the Choi operator of $\Psi_{r,\Phi}$ on a vector of Schmidt rank
+$s\le r$.  Let $C$ be its inverse vectorization, so $\rank C=s$.  The
+difference between the $\Psi_{r,\Phi}$ and $\Psi_{s,\Phi}$ Choi quadratic
+forms is
+\begin{equation}
+\label{eq:rank-extension}
+  (r-s)\beta_2(\Phi)
+  \left(\norm C_2^2-\frac{\abs{\Tr C}^2}{rs}\right)\ge0,
+\end{equation}
+because $\abs{\Tr C}^2\le s\norm C_2^2$.  Thus the Choi operator of
+$\Psi_{r,\Phi}$ is nonnegative on every vector of Schmidt rank at most
+$r$, which is equivalent to $r$-positivity.
+\end{proof}
+
+The use of exact Schmidt rank $s$ in the final paragraph matters when
+$r>\dim H$: an orthonormal $r$-frame in $H$ need not exist.  No padding
+argument is required.
+
+\section{The double-skew input}
+\label{sec:double-skew}
+
+For a finite-dimensional coordinate Hilbert space $E$, define
+\[
+  \Lambda_E(X)=\Tr(X)I_E-X^T.
 \]
 If $L_{ab}=E_{ab}-E_{ba}$, then
 \begin{equation}
-\label{eq:Lambda-kraus}
-    \Lambda_E(X)
-    =
-    \sum_{a<b}L_{ab}XL_{ab}^*.
+\label{eq:lambda-kraus}
+  \Lambda_E(X)=\sum_{a<b}L_{ab}XL_{ab}^*.
 \end{equation}
-Thus $\Lambda_E$ is completely positive. Equivalently, its Choi
-operator is
-\[
-    J(\Lambda_E)
-    =
-    \sum_{i,j}
-    \ketbra{i}{j}\otimes\Lambda_E(E_{ij})
-    =I-F,
-\]
-whose spectrum is contained in $\{0,2\}$.
+Thus $\Lambda_E$ is completely positive.  The Kraus operators of
+$\Lambda_U\otimes\Lambda_V$ are $L_{ab}\otimes L_{cd}$, which are
+transpose-symmetric because both factors are skew-symmetric.
 
-Define
+The value of its Choi constant is the only map-specific input needed by
+\cref{thm:lift}.
+
+\begin{theorem}[Double-skew action bound]
+\label{thm:double-skew}
+Let
 \[
-    \Phi:=\Lambda_U\otimes\Lambda_V
-    \quad\text{on }\cL(U\otimes V),
-    \qquad
-    \Phi_Q:=\Phi\otimes\id_Q .
+  \mathfrak{so}(E)=\{L\in\cL(E):L^T=-L\}.
 \]
-Thus $\Phi$ is the map to which $\beta_2$ of \cref{def:beta2} is attached, and
-$\Phi_Q$ is its amplification, the operator that acts on $U\otimes V\otimes Q$.
-For an operator $Y$ on $U\otimes V\otimes Q$, direct expansion gives
+For every
+$K\in\mathfrak{so}(U)\otimes\mathfrak{so}(V)$ and every orthonormal
+$x,y\in U\otimes V$,
 \begin{equation}
-\label{eq:Phi-expansion}
-\begin{aligned}
-    \Phi_Q(Y)
-    ={}&
-    \iota_Q(\Tr_{UV}Y)
-    -\iota_{VQ}\!\left((\Tr_UY)^{T_V}\right)\\
-    &-\iota_{UQ}\!\left((\Tr_VY)^{T_U}\right)
-    +Y^{T_{UV}}.
-\end{aligned}
-\end{equation}
-Applying \cref{eq:Phi-expansion} to $Y=\rho_0^{T_{UV}}$ gives
-\begin{equation}
-\label{eq:Phi-rhoT}
-    \Phi_Q(\rho_0^{T_{UV}})
-    =
-    I_{UVQ}
-    -\iota_{UQ}(\rho^0_{UQ})
-    -\iota_{VQ}(\rho^0_{VQ})
-    +\rho_0.
-\end{equation}
-Using \cref{eq:rho-partial-transpose}, we therefore obtain
-\begin{equation}
-\label{eq:H-decomposition}
-    H_r^{(0)}
-    =
-    \Phi_Q(P_+)
-    +
-    \Bigl[
-      (r-1)(I_{UVQ}-\Pi_e)-\Phi_Q(P_-)
-    \Bigr].
-\end{equation}
-Since $\Phi_Q(P_+)\succeq0$, it remains to prove
-\begin{equation}
-\label{eq:Phi-Pminus-goal}
-    \Phi_Q(P_-)
-    \preceq
-    (r-1)(I_{UVQ}-\Pi_e).
-\end{equation}
-
-Let $\{L_\alpha\}_{\alpha\in\mathcal A_U}$ and
-$\{M_\beta\}_{\beta\in\mathcal A_V}$ be the standard
-skew-symmetric Kraus operators for $\Lambda_U$ and $\Lambda_V$,
-normalized by
-\[
-    \langle L_\alpha,L_{\alpha'}\rangle_{\mathrm{HS}}
-    =2\delta_{\alpha\alpha'},
-    \qquad
-    \langle M_\beta,M_{\beta'}\rangle_{\mathrm{HS}}
-    =2\delta_{\beta\beta'}.
-\]
-Put
-\[
-    \mathcal I_r
-    :=
-    \{(i,j,\alpha,\beta):
-       1\le i<j\le r,
-       \ \alpha\in\mathcal A_U,
-       \ \beta\in\mathcal A_V\}.
-\]
-Define
-$\mathcal T:\ell_2(\mathcal I_r)\to U\otimes V\otimes Q$ by
-\begin{equation}
-\label{eq:T-definition}
-    \mathcal Tc
-    :=
-    \sum_{1\le i<j\le r}
-    \sum_{\alpha,\beta}
-    c_{\alpha\beta}^{(ij)}
-    (L_\alpha\otimes M_\beta\otimes I_Q)\eta_{ij}.
-\end{equation}
-Thus the column indexed by
-$(i,j,\alpha,\beta)\in\mathcal I_r$ is
-$(L_\alpha\otimes M_\beta\otimes I_Q)\eta_{ij}$.  Using the Kraus
-form of $\Phi_Q$ and the rank-one expansion of $P_-$ therefore gives
-\begin{align}
-    \Phi_Q(P_-)
-    &=
-    \sum_{i<j}\sum_{\alpha,\beta}
-    \ketbra{
-      (L_\alpha\otimes M_\beta\otimes I_Q)\eta_{ij}}
-      {(L_\alpha\otimes M_\beta\otimes I_Q)\eta_{ij}}
-    \notag\\
-    &=\mathcal T\mathcal T^*.
-\label{eq:Phi-Pminus-TTstar}
-\end{align}
-
-For each edge $(i,j)$ of the complete graph $K_r$, define
-\[
-    K_c^{(ij)}
-    :=
-    \sum_{\alpha,\beta}
-    c_{\alpha\beta}^{(ij)}
-    L_\alpha\otimes M_\beta.
-\]
-Then $K_c^{(ij)}$ lies in the linear span of
-\[
-    \{L\otimes M:
-      L\in\mathfrak{so}(U),\ M\in\mathfrak{so}(V)\},
-\]
-and orthogonality of the Kraus operators gives
-\begin{equation}
-\label{eq:Kc-norm}
-\begin{aligned}
-    \norm{K_c^{(ij)}}_2^2
-    &=
-    \sum_{\alpha,\beta}
-    \abs{c_{\alpha\beta}^{(ij)}}^2
-    \norm{L_\alpha\otimes M_\beta}_2^2\\
-    &=4\norm{c^{(ij)}}_2^2.
-\end{aligned}
-\end{equation}
-
-Grouping the output of $\mathcal T$ according to the basis
-$\{q_k\}$ gives
-\begin{equation}
-\label{eq:T-by-vertices}
-    \mathcal Tc
-    =
-    \frac1{\sqrt2}
-    \sum_{k=1}^r
-    \left(
-      \sum_{i<k}K_c^{(ik)}\overline e_i
-      -
-      \sum_{k<j}K_c^{(kj)}\overline e_j
-    \right)
-    \otimes q_k.
-\end{equation}
-At each vertex $k$, there are $r-1$ incident terms. Hence
-Cauchy--Schwarz yields
-\begin{align}
-    \norm{\mathcal Tc}^2
-    &\le
-    \frac{r-1}{2}
-    \sum_{k=1}^r
-    \left(
-      \sum_{i<k}
-      \norm{K_c^{(ik)}\overline e_i}^2
-      +
-      \sum_{k<j}
-      \norm{K_c^{(kj)}\overline e_j}^2
-    \right)
-    \notag\\
-    &=
-    \frac{r-1}{2}
-    \sum_{1\le i<j\le r}
-    \left(
-      \norm{K_c^{(ij)}\overline e_i}^2
-      +
-      \norm{K_c^{(ij)}\overline e_j}^2
-    \right).
-\label{eq:T-Cauchy}
-\end{align}
-Each parenthesized expression is bounded by $\beta_2(\Phi)$ directly, without
-\cref{eq:Kc-norm} and without any property of
-$\mathfrak{so}(U)\otimes\mathfrak{so}(V)$.  Write $\{A_a\}$ for the Kraus family
-of $\Phi$ on $\cL(U\otimes V)$, here $A_{\alpha\beta}=L_\alpha\otimes M_\beta$,
-and let $S:c\mapsto\sum_ac_aA_a$ be its synthesis operator, so that
-$SS^*=J(\Phi)$ under $\operatorname{vec}$.  For an orthonormal pair $x,y$ and
-$P:=\ketbra xx+\ketbra yy$, self-adjoint idempotence of $P$ gives
-$\ip K{KP}_{\mathrm{HS}}=\norm{KP}_2^2$, so $M:=KP/\norm{KP}_2$ has
-$\rank M\le2$, $\norm M_2=1$ and $\ip MK_{\mathrm{HS}}=\norm{KP}_2$; hence
-$\norm{KP}_2\le\sup\{\abs{\ip MK_{\mathrm{HS}}}:\rank M\le2,\ \norm M_2=1\}$,
-with equality only when $P$ compresses onto a dominant pair of singular
-directions.  With $K=Sc$ this suffices:
-\begin{equation}
-\label{eq:kraus-cauchy-schwarz}
-    \norm{Kx}^2+\norm{Ky}^2
-    =\norm{KP}_2^2
-    \le\sup_M\abs{\ip{S^*M}{c}}^2
-    \le\norm c_2^2\,\sup_M\norm{S^*M}_2^2
-    =\norm c_2^2\,\norm{J(\Phi)}_{S(2)},
-\end{equation}
-the suprema being over $\rank M\le2$, $\norm M_2=1$.  Hence
-\begin{equation}
-\label{eq:kraus-pair-bound}
-    \norm{Kx}^2+\norm{Ky}^2
-    \le
-    2\beta_2(\Phi)\norm c_2^2 .
-\end{equation}
-This is $\norm S^2\le\norm{SS^*}$ in the $S(2)$-norm, and is the elementary
-half of the projection duality of \cite{JohnstonKribs2010}; that a rank-two
-compression suffices to test the pair is
-\cite[Prop.~1.1]{TakasakiTomiyama1983}.  Neither minimality nor orthogonality of
-$\{A_a\}$ is used --- the projection $Q_-$ enters only through the number
-$\beta_2(\Phi)$, and $\Pi K=K$ is replaced by membership of $K$ in the Kraus
-span.  Substituting \cref{eq:kraus-pair-bound} into \cref{eq:T-Cauchy},
-\begin{align}
-    \norm{\mathcal Tc}^2
-    &\le
-    \frac{r-1}{2}\cdot2\beta_2(\Phi)
-    \sum_{i<j}\norm{c^{(ij)}}_2^2
-    \notag\\
-    &=(r-1)\beta_2(\Phi)\norm{c}_2^2 .
-\label{eq:T-operator-bound}
-\end{align}
-For $\Phi=\Lambda_U\otimes\Lambda_V$ this is $(r-1)\norm c_2^2$ by
-\cref{eq:beta2-double-skew}, and the estimate is attained already when
-$r=2$ and $\dim U=\dim V=2$.  Then every vertex has degree one and
-$\mathfrak{so}(2)\otimes\mathfrak{so}(2)$ is one-dimensional; its
-nonzero elements are scalar multiples of a unitary, so every
-orthonormal pair saturates \cref{eq:double-skew-action}.  There is no
-slack anywhere in that $r=2$ chain.
-
-Thus
-\[
-    \mathcal T\mathcal T^*
-    \preceq
-    (r-1)\beta_2(\Phi)\,I_{UVQ}.
-\]
-It remains to use the orthogonality of the range of $\mathcal T$ to
-$\delta_e$. Since each tensor product of two skew-symmetric operators
-is symmetric,
-\[
-    K^T=K
-    \qquad
-    \text{for every }K
-    \text{ in the above linear span}.
-\]
-Consequently,
-\begin{align}
-    \ip{\delta_e}{\mathcal Tc}
-    &=
-    \frac1{\sqrt2}
-    \sum_{i<j}
-    \left(
-      \overline e_j^T
-      K_c^{(ij)}
-      \overline e_i
-      -
-      \overline e_i^T
-      K_c^{(ij)}
-      \overline e_j
-    \right)
-    \notag\\
-    &=0.
-\label{eq:T-orthogonal}
-\end{align}
-Hence
-\[
-    \ran\mathcal T\subseteq\delta_e^\perp,
-    \qquad
-    P_{\delta_e^\perp}=I_{UVQ}-\Pi_e.
-\]
-Since \cref{eq:T-operator-bound} says that
-$\norm{\mathcal T}^2\le(r-1)\beta_2(\Phi)$, for every vector $x$,
-\[
-\begin{aligned}
-    \ip{x}{\mathcal T\mathcal T^*x}
-    &=
-    \ip{P_{\delta_e^\perp}x}
-       {\mathcal T\mathcal T^*P_{\delta_e^\perp}x}\\
-    &\le
-    (r-1)\beta_2(\Phi)\norm{P_{\delta_e^\perp}x}^2.
-\end{aligned}
-\]
-Equivalently,
-\[
-    \mathcal T\mathcal T^*
-    \preceq
-    (r-1)\beta_2(\Phi)(I_{UVQ}-\Pi_e).
-\]
-This is \cref{eq:amplification-A}, and \cref{eq:beta2-double-skew} specializes
-it to \cref{eq:Phi-Pminus-goal}, whence $H_r^{(0)}\succeq0$ by
-\cref{eq:H-decomposition}.
-\end{proof}
-
-\begin{proof}[Proof of \cref{thm:amplification}]
-The argument just given uses $\Phi$ only through three facts, and they enter at
-separate points.  That $\Phi$ is a Kraus sum gives
-$(\Phi\otimes\id_Q)(P_+)\succeq0$ and
-\cref{eq:Phi-Pminus-TTstar}.  That its Kraus span obeys
-\cref{eq:kraus-pair-bound} --- which needs only $\beta_2(\Phi)$ --- gives
-\cref{eq:T-operator-bound}, hence
-$\mathcal T\mathcal T^*\preceq(r-1)\beta_2(\Phi)I$, which is
-\cref{eq:amplification-A0}.  Transpose symmetry of the Kraus operators enters
-only in \cref{eq:T-orthogonal}, and only to replace $I$ by $I-\Pi_e$, giving
-\cref{eq:amplification-A}.
-
-Each of \cref{eq:amplification-B0,eq:amplification-B} follows from the
-corresponding upper bound: $\rho_0^{T_{UV}}=P_+-P_-$ and
-$(\Phi\otimes\id_Q)(P_+)\succeq0$, so
-$(\Phi\otimes\id_Q)(\rho_0^{T_{UV}})\succeq-(\Phi\otimes\id_Q)(P_-)$.
-
-For the positivity assertion at the size of the displayed frame no further
-identity is needed.  Since the $e_i$ are orthonormal,
-$\Tr_{UV}\rho_0=I_Q$ and $\rho_0=r\Pi_e$, so
-\[
-    I-\Pi_e
-    =\bigl[(\Delta-\tfrac1r\id)\otimes\id_Q\bigr](\rho_0),
-    \qquad
-    (\Phi\circ\tau\otimes\id_Q)(\rho_0)
-    =(\Phi\otimes\id_Q)\bigl(\rho_0^{T_{UV}}\bigr),
-\]
-so \cref{eq:amplification-B} is exactly
-$(\Psi_{r,\Phi}\otimes\id_Q)(\rho_0)\succeq0$.
-
-It remains to avoid padding a Schmidt decomposition by an orthonormal
-$r$-frame, which need not exist when $r>\dim H$.  Let a nonzero test vector have
-exact Schmidt rank $s\le r$, and write it as
-$(I\otimes D)\delta_e$ for an orthonormal $s$-frame, using
-\cref{eq:C-decomposition}.  The preceding argument at size $s$, conjugated by
-$I\otimes D$, proves nonnegativity for $\Psi_{s,\Phi}$.  If $C$ is the matrix
-obtained by inverse vectorization of the test vector, then the difference of
-the two Choi quadratic forms is
-\[
-  (r-s)\beta_2(\Phi)
-  \left(\norm C_2^2-\frac{\abs{\Tr C}^2}{rs}\right)\ge0,
-\]
-because $\abs{\Tr C}^2\le s\norm C_2^2$.  Thus the same vector is nonnegative
-for $\Psi_{r,\Phi}$.  The zero vector is immediate.  This proves the assertion
-for every $r$, including $r>\dim H$.
-\end{proof}
-
-\begin{remark}[Transpose parity, and where the trace term comes from]
-\label[remark]{rem:parity}
-Since $\operatorname{vec}(K^T)=F\operatorname{vec}(K)$ for the flip $F$ on the
-two vectorization slots, transposition is an involution of the Kraus space and
-grades it by the flip eigenvalue: $\wedge^2\!H$ has degree $1$ and
-$\operatorname{Sym}^2\!H$ degree $0$.  Kraus spaces multiply under $\otimes$ and
-the degree is additive, so the grading is by $\Z/2$.  In this language:
-
-\begin{quote}
-The hypothesis of \cref{eq:T-orthogonal} is that the Kraus space has degree
-$0$; each $\mathfrak{so}$ factor has degree $1$; hence exactly the products of
-an \emph{even} number of skew factors qualify.
-\end{quote}
-
-Concretely, every $K$ in the span of $\{L\otimes M\}$ satisfies $K^T=K$, which
-is what makes the two terms of \cref{eq:T-orthogonal} cancel.  In odd degree
-$K^T=-K$, the two terms add, and $\ran\mathcal T$ does not lie in
-$\delta_e^\perp$; the argument then yields only
-$\mathcal T\mathcal T^*\preceq(r-1)I$ in place of $(r-1)(I-\Pi_e)$, giving
-$rI+\rho_0-\iota_{UQ}(\rho^0_{UQ})-\iota_{VQ}(\rho^0_{VQ})\succeq0$ and hence
-the coefficient $1$ rather than the sharp $1/r$ in front of $\abs{\Tr C}^2$.
-
-So the $\frac1r\abs{\Tr C}^2$ term of \cref{thm:rank_r} is exactly the
-contribution of the single protected direction $\delta_e$, and the grading is
-what protects it: the generalizations that keep the sharp trace coefficient are
-the even-degree ones.
-\end{remark}
-
-\begin{remark}[The marginal inequality as an $r$-positivity statement]
-\label[remark]{rem:operator-ineq-as-map}
-Recall $\Delta$ and $\tau$ from \cref{thm:amplification}, and
-$\mathcal R_\alpha(X)=\Tr(X)I+\alpha X$ from \cref{cor:tensor-square}.  Put
-\[
-    S:=\mathcal R_{-1}=\Delta-\id,
-    \qquad
-    t:=\frac{r-1}{r},
-    \qquad\text{so that}\qquad
-    \mathcal R_{-1/r}=S+t\,\id .
-\]
-
-Two facts suffice.  First, both $\Delta$ and $\tau$ factor across tensor
-products: $\tau_{U\otimes V}=\tau_U\otimes\tau_V$, and
-$\Delta_{U\otimes V}=\Delta_U\otimes\Delta_V$ because discarding a composite
-system and repreparing it is discarding and repreparing each factor.  Since
-$\Lambda(Y)=\Tr(Y)I-Y^T$ gives $\Lambda\circ\tau=\Delta-\id=S$ on a single
-factor,
-\begin{equation}
-\label{eq:lambda-tau-monoidal}
-    (\Lambda_U\otimes\Lambda_V)\circ\tau
-    =(\Lambda_U\circ\tau_U)\otimes(\Lambda_V\circ\tau_V)
-    =S_U\otimes S_V .
-\end{equation}
-Second, $\{\id,\Delta\}$ spans a two-dimensional commutative algebra, and the
-rest is a binomial expansion in it: using $\Delta=S+\id$ on each factor,
-\begin{align*}
-    S\otimes S+(r-1)\,\Delta_U\otimes\Delta_V-t\,\id
-    &=S\otimes S+(r-1)(S+\id)\otimes(S+\id)-t\,\id\\
-    &=r\,S\otimes S+(r-1)(S\otimes\id+\id\otimes S)+\tfrac{(r-1)^2}{r}\,\id\\
-    &=r\bigl[S\otimes S+t(S\otimes\id+\id\otimes S)+t^2\,\id\bigr],
-\end{align*}
-by $rt=r-1$ and $rt^2=(r-1)^2/r$.  The bracket is
-$(S+t\,\id)^{\otimes2}$, so for every $r\ge1$
-\begin{equation}
-\label{eq:map-identity}
-    (\Lambda_U\otimes\Lambda_V)\circ\tau
-    +(r-1)\left(\Delta-\tfrac1r\id\right)
-    =
-    r\,\mathcal R^U_{-1/r}\otimes\mathcal R^V_{-1/r}.
-\end{equation}
-
-Now $\Tr_{UV}\rho_0=I_Q$ because the $e_i$ are orthonormal, and
-$\rho_0=r\Pi_e$, so
-$I-\Pi_e=\bigl[(\Delta-\tfrac1r\id)\otimes\id_Q\bigr](\rho_0)$.  Combining
-this with \cref{eq:Phi-rhoT} and \cref{eq:map-identity} rewrites \cref{eq:H_r}
-as
-\[
-    H_r^{(0)}
-    =
-    \bigl[
-      \bigl(r\,\mathcal R^U_{-1/r}\otimes\mathcal R^V_{-1/r}\bigr)
-      \otimes\id_Q
-    \bigr](\rho_0).
-\]
-Thus \cref{prop:operator_ineq} states precisely that
-$\mathcal R_{-1/r}\otimes\mathcal R_{-1/r}$ is $r$-positive.  The passage from
-orthonormal frames $e_1,\ldots,e_r$ to arbitrary vectors of Schmidt rank at most
-$r$ is the range factorization \cref{eq:C-decomposition}, which produces the
-frame $\{e_i\}$ and the test vector $\delta_d$ in one step; no filtering or
-limiting argument is involved.  Equivalently, this is the sufficiency half of
-\cref{cor:asymmetric-block-positive} at $a=b=1/r$, available here, before
-\cref{thm:rank_r}.
-\end{remark}
-
-\begin{remark}[Why the correction term has this shape]
-\label[remark]{rem:covariance}
-$\cL(H)=\C I\oplus\{\text{traceless}\}$ is a decomposition into inequivalent
-$\mathrm U(d)$-representations, so the commutant --- the $\mathrm
-U(d)$-covariant superoperators on $\cL(H)$ --- is exactly
-$\operatorname{span}\{\id,\Delta\}$, of dimension two, with $\mathcal R_{-a}$
-acting as $d-a$ on $\C I$ and as $-a$ on the traceless part.  A covariant
-correction to $\Phi\circ\tau$ therefore lies in a one-parameter pencil once its
-scale is fixed, and $1/r$ is the single free coefficient; \cref{rem:parity}
-identifies what pins it, namely the protected direction $\delta_e$.  The
-correction term is not a choice.  The geometry of that pencil --- the segment
-from $\id$ to $\Delta$, its extension, and the nested $k$-positive cones along
-it --- is the subject of \cite{Tomiyama1985}, and $\mathcal R_{-1/r}$ is its
-$r$-positivity boundary.
-
-The same count explains the shape of the \emph{conclusion}, not merely of the
-correction.  On a bipartite space the covariant superoperators are the tensor
-square of the above, of dimension four, and the four basis elements evaluate on
-$C$ to
-\[
-    \norm C_2^2,\qquad
-    \norm{\Tr_U C}_2^2,\qquad
-    \norm{\Tr_V C}_2^2,\qquad
-    \abs{\Tr C}^2 .
-\]
-So every Hermitian sesquilinear functional of degree $(1,1)$ in
-$(C,\overline C)$ that is invariant under local unitaries
-$C\mapsto(U\otimes V)C(U\otimes V)^*$ is a combination of exactly these four,
-and \cref{thm:rank_r} is an inequality between the only quantities available
-within that class.  The qualifier is essential: real quadratic expressions
-such as $\operatorname{Re}\Tr(C^2)$ obey different representation-theoretic
-rules and are not classified by this commutant count.  This is also why the
-same four terms recur in otherwise unrelated settings --- Gaussian fourth
-moments with product structure, subsystem purities --- since a Haar average of
-a Hermitian sesquilinear form lands in the commutant by construction.  The
-hypothesis is the full local unitary group: a quantity invariant only under the
-stabilizer of some fixed structure has a larger commutant and need not lie in
-this span.
-
-The collapse in \cref{eq:map-identity} is specific to two factors.  For $n$
-factors the same factorization gives
-$\Delta=\sum_{T\subseteq[n]}\bigotimes_{i\in T}S_i$, and matching against
-$c\bigotimes(S+t\,\id)$ forces $r-1=r\,t^{\,n-\abs T}$ for every $T$ with
-$\abs T<n$.  At $\abs T=n-1$ this reads $r-1=rt$, which holds; for $n=2$ the
-$-t\,\id$ term repairs $\abs T=0$; but for $n\ge3$ the equation at
-$\abs T=n-2$ is $r-1=(r-1)^2/r$, i.e.\ $r=1$.  So the even-partite
-generalizations of \cref{rem:parity} are genuine inequalities and cannot be
-recast as a map identity of the form $\bigotimes\mathcal R_{-a}$.
-\end{remark}
-
-\section{Proof of the Rank-\texorpdfstring{$r$}{r}
-Partial-Trace Inequality}
-\label{sec:proof}
-
-\begin{lemma}[Partial-trace contraction identities]
-\label[lemma]{lem:partial-trace-contractions}
-Let $e_1,\ldots,e_s\in U\otimes V$ be orthonormal, let
-$d_1,\ldots,d_s\in U\otimes V$, and let $q_1,\ldots,q_s$ be an
-orthonormal basis of $Q=\C^s$. Define
-\[
-    C:=\sum_{i=1}^s\ketbra{e_i}{d_i},
-    \qquad
-    \delta_e:=\sum_{i=1}^s e_i\otimes q_i,
-    \qquad
-    \rho_0:=\ketbra{\delta_e}{\delta_e},
-\]
-and
-\[
-    \delta_d:=\sum_{i=1}^s d_i\otimes q_i,
-    \qquad
-    \rho^0_{UQ}:=\Tr_V\rho_0,
-    \qquad
-    \rho^0_{VQ}:=\Tr_U\rho_0.
-\]
-Then
-\begin{align}
-    \ip{\delta_d}{\delta_d}
-    &=\norm{C}_2^2,
-\label{eq:contraction-norm}\\
-    \ip{\delta_d}{\rho_0\delta_d}
-    &=\abs{\Tr C}^2,
-\label{eq:contraction-trace}\\
-    \ip{\delta_d}{\iota_{UQ}(\rho^0_{UQ})\delta_d}
-    &=\norm{\Tr_U C}_2^2,
-\label{eq:contraction-U}\\
-    \ip{\delta_d}{\iota_{VQ}(\rho^0_{VQ})\delta_d}
-    &=\norm{\Tr_V C}_2^2.
-\label{eq:contraction-V}
-\end{align}
-\end{lemma}
-
-\begin{proof}
-The first identity follows from the orthonormality of the $e_i$:
-\[
-    \norm{C}_2^2
-    =\sum_i\norm{d_i}^2
-    =\ip{\delta_d}{\delta_d}.
-\]
-Since $\Tr C=\sum_i\ip{d_i}{e_i}$ under the stated inner-product
-convention,
-\[
-    \ip{\delta_e}{\delta_d}
-    =\sum_i\ip{e_i}{d_i}
-    =\overline{\Tr C},
-\]
-which proves \cref{eq:contraction-trace}.
-
-For the first marginal contraction,
-\[
-    \rho^0_{UQ}
-    =\sum_{i,j}
-      \Tr_V\ketbra{e_i}{e_j}\otimes\ketbra{q_i}{q_j},
-\]
-and hence
-\begin{equation}
-\label{eq:contraction-U-expansion}
-    \ip{\delta_d}{\iota_{UQ}(\rho^0_{UQ})\delta_d}
-    =\sum_{i,j}
-      \ip{d_i}{
-        (\Tr_V\ketbra{e_i}{e_j}\otimes I_V)d_j
-      }.
-\end{equation}
-Choose product bases $\{u_a\}$ of $U$ and $\{v_b\}$ of $V$, and
-write
-\[
-    e_i=\sum_{a,b}e_{i,ab}u_a\otimes v_b,
-    \qquad
-    d_i=\sum_{a,b}d_{i,ab}u_a\otimes v_b.
-\]
-Then
-\[
-    (\Tr_UC)_{b,c}
-    =\sum_{i,a}e_{i,ab}\overline{d_{i,ac}},
-\]
-so
-\begin{equation}
-\label{eq:contraction-U-common-sum}
-    \norm{\Tr_UC}_2^2
-    =\sum_{i,j}\sum_{a,a'}\sum_{b,c}
-      e_{i,ab}\overline{d_{i,ac}}
-      \overline{e_{j,a'b}}d_{j,a'c}.
-\end{equation}
-Expanding the right-hand side of
-\cref{eq:contraction-U-expansion} gives, explicitly,
-\[
-\begin{aligned}
-    &\sum_{i,j}
-      \ip{d_i}{
-        (\Tr_V\ketbra{e_i}{e_j}\otimes I_V)d_j
-      }\\
-    &\qquad=
-    \sum_{i,j}\sum_{a,a'}\sum_{b,c}
-      e_{i,ab}\overline{d_{i,ac}}
-      \overline{e_{j,a'b}}d_{j,a'c},
-\end{aligned}
-\]
-the same quadruple sum as in
-\cref{eq:contraction-U-common-sum}.  This proves
-\cref{eq:contraction-U}. Interchanging $U$ and $V$ proves
-\cref{eq:contraction-V}.
-\end{proof}
-
-\begin{proof}[Proof of \cref{thm:rank_r}]
-The case $C=0$ is immediate. Suppose $C\ne0$, and let
-\[
-    r_0:=\rank C.
-\]
-Choose an orthonormal basis
-$\{e_i\}_{i=1}^{r_0}$ of $\operatorname{ran}C$ and set
-\[
-    d_i:=C^*e_i.
-\]
-Then
-\begin{equation}
-\label{eq:C-decomposition}
-    C
-    =
-    \sum_{i=1}^{r_0}\ketbra{e_i}{d_i},
-    \qquad
-    \sum_{i=1}^{r_0}\norm{d_i}^2
-    =\norm{C}_2^2.
-\end{equation}
-Since $\rank C\le r$, one has $1\le r_0\le r$.
-
-Let $Q=\C^{r_0}$, with orthonormal basis
-$\{q_i\}_{i=1}^{r_0}$, and define
-\[
-    \delta_e:=\sum_{i=1}^{r_0}e_i\otimes q_i,
-    \qquad
-    \rho_0:=\ketbra{\delta_e}{\delta_e},
-    \qquad
-    \Pi_e:=\frac1{r_0}\rho_0,
-    \qquad
-    \delta_d:=\sum_{i=1}^{r_0}d_i\otimes q_i.
-\]
-Write $\rho^0_{UQ}=\Tr_V\rho_0$ and
-$\rho^0_{VQ}=\Tr_U\rho_0$. Applying
-\cref{prop:operator_ineq} with $r=r_0$ gives
-$H_{r_0}^{(0)}\succeq0$. Therefore,
-\begin{align}
-    0
-    &\le
-    \ip{\delta_d}{H_{r_0}^{(0)}\delta_d}
-    \notag\\
-    &=
-    r_0\ip{\delta_d}{\delta_d}
-    +\frac1{r_0}\ip{\delta_d}{\rho_0\delta_d}
-    -\ip{\delta_d}{\iota_{UQ}(\rho^0_{UQ})\delta_d}
-    -\ip{\delta_d}{\iota_{VQ}(\rho^0_{VQ})\delta_d}.
-\label{eq:H-expectation}
-\end{align}
-By \cref{lem:partial-trace-contractions}, this is precisely
-\begin{equation}
-\label{eq:main-bound-r0}
-    \norm{\Tr_U C}_2^2+\norm{\Tr_V C}_2^2
-    \le
-    r_0\norm{C}_2^2
-    +\frac1{r_0}\abs{\Tr C}^2.
-\end{equation}
-
-It remains to pass from $r_0$ to $r$.  From
-\cref{eq:C-decomposition} and
-$\Tr C=\sum_i\ip{d_i}{e_i}$,
-\[
-\begin{aligned}
-    \abs{\Tr C}^2
-    &\le
-    \left(\sum_{i=1}^{r_0}\norm{d_i}\right)^2\\
-    &\le
-    r_0\sum_{i=1}^{r_0}\norm{d_i}^2
-    =r_0\norm{C}_2^2.
-\end{aligned}
-\]
-The passage from $r_0$ to $r$ is then a single identity: for all
-$r\ge r_0\ge1$,
-\begin{equation}
-\label{eq:rank-monotonicity}
-    r\norm{C}_2^2+\frac1r\abs{\Tr C}^2
-    -\left(
-      r_0\norm{C}_2^2+\frac1{r_0}\abs{\Tr C}^2
-    \right)
-    =
-    (r-r_0)
-    \left(
-      \norm{C}_2^2-\frac{\abs{\Tr C}^2}{rr_0}
-    \right).
-\end{equation}
-By the trace--rank bound the second factor is at least
-$\bigl(1-\frac1r\bigr)\norm{C}_2^2\ge0$, and the first is nonnegative, so the
-right-hand side is nonnegative.  Combining this with \cref{eq:main-bound-r0}
-proves \cref{eq:main-bound}.
-
-Both factors are moreover \emph{strictly} positive when $C\ne0$ and $r_0<r$:
-the first is at least $1$, and $r_0<r$ forces $r\ge2$, so
-$1-\frac1r\ge\frac12$ while $\norm{C}_2^2>0$.  Hence the inequality of
-\cref{eq:main-bound} is strict whenever $\rank C<r$ and $C\ne0$, which is the
-exact-rank assertion of \cref{rem:optimality}.
-\end{proof}
-
-\begin{remark}[What $\beta_2$ does and does not carry]
-\label[remark]{rem:constant-dependence}
-\Cref{thm:amplification} depends on $\Phi$ only through $\beta_2(\Phi)$.  The
-passage from it to a \emph{partial-trace} inequality does not: the marginals
-$\Tr_UC$ and $\Tr_VC$ appear only through \cref{eq:Phi-rhoT}, a contraction
-identity for the particular map $\Lambda_U\otimes\Lambda_V$, and no such
-identity is available for a general $\Phi$.  A second map with the same
-$\beta_2$ contracts against $\delta_d$ to a different quadratic form.
-
-That $\beta_2$ alone cannot suffice is visible at $\Phi=0$, which satisfies
-every hypothesis of \cref{thm:amplification} with $\beta_2=0$: the extremizer
-$C=P_r\otimes\ketbra vw$ of \cref{rem:optimality} with $v\perp w$ has
-$\norm{\Tr_UC}_2^2=r^2$, $\Tr_VC=0$, $\norm C_2^2=r$ and $\Tr C=0$, so no
-inequality with $\Phi$-independent coefficients degenerating at $\beta_2=0$ can
-hold.  What survives at general $\beta_2$ is the operator statement
-\cref{eq:amplification-A,eq:amplification-B} and, for
-$\Phi=\Lambda_U\otimes\Lambda_V$ with the constant left free, the family
-\begin{equation}
-\label{eq:main-bound-parametrized}
-    \norm{\Tr_U C}_2^2+\norm{\Tr_V C}_2^2
-    \le
-    \bigl[r+(\beta_2-1)(r-1)\bigr]\norm{C}_2^2
-    +\bigl[1-(\beta_2-1)(r-1)\bigr]\frac1r\abs{\Tr C}^2
-\end{equation}
-for nonzero $C$ with $r=\rank C$, obtained by carrying $\beta_2$ rather than $1$
-through \cref{eq:T-operator-bound}.  At $\beta_2=1$ this is
-\cref{eq:main-bound-exact-rank}.
-
-The coefficient $(r-1)\beta_2$ in \cref{thm:amplification} bounds the correction
-rather than computing it: the vertex step \cref{eq:T-Cauchy} discards the
-nonnegative variance terms of \cref{prop:sos-complete-graph}, so for a general
-$\Phi$ a smaller multiple of $\Delta-\frac1r\id$ may already suffice.  For
-$\Phi=\Lambda_U\otimes\Lambda_V$ the value $\beta_2=1$ cannot be improved: as
-noted after \cref{eq:T-operator-bound} it is already attained at
-$\dim U=\dim V=2$, where $\mathfrak{so}(2)\otimes\mathfrak{so}(2)$ is
-one-dimensional and every orthonormal pair saturates
-\cref{eq:double-skew-action}.  The extremizer of \cref{rem:optimality} forces
-$\beta_2\ge1$ there unconditionally, so \cref{eq:main-bound-parametrized} is
-never stronger than \cref{thm:rank_r} on that space.
-\end{remark}
-
-\begin{remark}[Instances]
-\label[remark]{rem:scope}
-An instance of \cref{thm:pair-amplification} is a completely positive $\Phi$
-admitting a transpose-symmetric Kraus representation, together with the value of
-$\beta_2(\Phi)$; a partial-trace consequence needs in addition a contraction
-identity of the kind \cref{eq:Phi-rhoT} supplies for
-$\Lambda_U\otimes\Lambda_V$.  The two directions one would look in next each
-stop at a definite point, and it is worth recording where.
-
-\emph{Schmidt rank $p$.}  \Cref{eq:kraus-cauchy-schwarz} generalizes at once: a
-rank-$p$ compression $P$ and the $S(p)$-norm of $J(\Phi)$ give
-$\sum_{i\le p}\norm{Kx_i}^2\le p\,\beta_p(\Phi)\norm c_2^2$ for any orthonormal
-$p$-tuple.  The reduction does not.  The pair structure of
-\cref{sec:proof} comes from the partial transpose and not from the Schmidt
-rank: $P_\pm$ are the $\pm1$ eigenspaces of the flip that
-$\rho_0^{T_{UV}}$ decomposes into, and $\eta_{ij}$, $\zeta_{ij}$, and the edge
-set of $K_r$ are pair-indexed downstream of that.  A $p$-fold analogue would
-have to decompose the symmetric group $S_p$, which is a different problem.  We
-record it as open.
-
-\emph{Higher copies.}  By \cref{rem:parity}, $\Phi=\Lambda_{U_1}\otimes\cdots
-\otimes\Lambda_{U_{2m}}$ has degree $0$ and so satisfies the hypothesis of
-\cref{thm:amplification} for every $m$; expanding $\Phi\circ\tau$ then gives,
-for $\rank C\le r$,
-\[
-    \sum_{S\subseteq[2m]}(-1)^{\abs S}\norm{\Tr_SC}_2^2
-    +(r-1)\beta_2(\Phi)\left(\norm C_2^2-\tfrac1r\abs{\Tr C}^2\right)
-    \ge0 .
-\]
-At $m=1$ this is \cref{eq:main-bound-exact-rank}.  What is missing is the
-constant: $\beta_2(\Lambda^{\otimes2m})$ for $m\ge2$ is a Ky-Fan-$2$
-concentration constant for the $2m$-fold antisymmetric projection, and we do not
-know its value.  So the family \emph{reduces} to one rank-two Choi $S(2)$-norm
-per $m$; it does not follow from \cref{lem:double-skew}.  By
-\cref{rem:covariance} it also cannot be recast as a map identity.
-\end{remark}
-
-\section{Applications and Corollaries}
-\label{sec:applications}
-
-This section collects consequences of the results proved above: the exact
-symmetric score curve, an asymmetric tensor-product score theorem, block
-positivity and positive maps, quantitative Schmidt-number separation, Ky
-Fan bounds for Kronecker sums, and the exact Schmidt number of a product
-of antisymmetric projector states.  All of them descend from
-\cref{thm:rank_r}, or from \cref{lem:double-skew}, rather than from
-\cref{thm:pair-amplification} directly.  The development checks the two score
-curves as pointwise lower bounds plus rank-exact attaining matrices, their
-rank-constrained nonnegativity thresholds, the adjacent-rank signed
-separation, the exact coordinate Choi matrices of the reduction maps and their
-regrouped tensor products, block-positivity thresholds at every positive rank
-in equal local dimensions, the equivalence with positivity of the actual
-finite-coordinate map ampliations, the resulting symmetric and asymmetric map
-classifications, and the rank-sensitive estimate \cref{eq:kronecker-main-use}.
-The trace-distance corollary is checked using a finite pure-state decomposition
-definition of mixed-state Schmidt number and the Hermitian trace norm, rendered
-as the sum of absolute eigenvalues.  For the Kronecker corollary, the
-development also checks the exact pairing, centered Cauchy--Schwarz step, both
-branches of the minimum, and the normalized rank-constrained Frobenius
-test-supremum bound.  The identification of that supremum with the sum of the
-first $k$ squared singular values is proved as
-\texttt{kyFanFrobeniusDuality}, using finite spectral majorization and an
-explicit optimal test matrix.  For the
-double-antisymmetric mixed-state application, the development proves an
-explicit rank-four decomposition, the rank-two and rank-three witnesses, the
-exact Schmidt-number lower bound, and both displayed witness expectations.
-
-The consequences at $r=2$ --- the two-copy distillability threshold and the
-statements at the endpoint $\alpha=-\frac12$ --- are also reached in
-\cite{SongChen2026,FraserHuberPozsgayVona2026,BhartiGajjalaHaug2026}.  Song and
-Chen include a two-parameter rank-two extension, and Bharti, Gajjala and Haug
-give finite-copy extensions beyond anything proved here.  Relative to those
-contemporaneous results, the additional content developed below is the exact
-score curve at every $r$, the all-$r$ asymmetric classification, and the
-Schmidt-number consequences that require $r>2$.
-
-They do not all rest on the same input.
-\Cref{prop:exact-q2-score,thm:exact-asymmetric-score,cor:kronecker} use
-\cref{thm:rank_r} at general $r$, and are the results for which the
-extension beyond normal matrices is what is needed;
-\cref{cor:two-copy-block-positive,cor:tensor-square,cor:asymmetric-block-positive}
-restate them through the Choi--Jamiołkowski correspondence.
-\Cref{cor:exact-schmidt-number,cor:explicit-witnesses}, by contrast, rest
-on \cref{lem:double-skew} alone and do not use \cref{thm:rank_r}.  \Cref{app:generic} collects
-two further consequences that use nothing about the witnesses constructed
-here beyond $r$-block positivity.
-
-\subsection{Two-copy block positivity}
-
-Fix $d\ge2$ and $\alpha\in\mathbb R$. Let
-\[
-    \rho_\alpha
-    :=
-    I+\alpha F
-\]
-be the unnormalized Werner operator on $\C^d\otimes\C^d$; for
-$\alpha\in[-1,1]$, it is proportional to the standard Werner state
-\cite{Werner1989}. Its partial transpose is
-\[
-    \rho_\alpha^\Gamma
-    =
-    I+\alpha\ketbra{\Omega}{\Omega},
-    \qquad
-    \Omega
-    :=
-    \sum_{i=1}^d e_i\otimes e_i.
-\]
-The case $\alpha\ge0$ is immediate because
-\[
-    I+\alpha\ketbra{\Omega}{\Omega}\succeq0.
-\]
-
-For $\alpha\le0$ and $C\in M_{d^2}(\C)$, define
-\begin{equation}
-\label{eq:q2}
-    q^{(2)}(\alpha,C)
-    :=
-    \norm{C}_2^2
-    +
-    \alpha\left(
-      \norm{\Tr_1C}_2^2+\norm{\Tr_2C}_2^2
-    \right)
-    +
-    \alpha^2\abs{\Tr C}^2.
-\end{equation}
-The first argument is the Werner parameter of $\rho_\alpha$; only
-$\alpha\le0$ is at issue, and it is convenient to write $\alpha=-t$ with
-$t\ge0$, so that
-\[
-    q^{(2)}(-t,C)
-    =
-    \norm{C}_2^2
-    -
-    t\left(
-      \norm{\Tr_1C}_2^2+\norm{\Tr_2C}_2^2
-    \right)
-    +
-    t^2\abs{\Tr C}^2.
-\]
-
-An operator is called $r$-block-positive if its expectation is
-nonnegative on every vector of Schmidt rank at most $r$. With the
-vectorization convention fixed in the introduction and the regrouping
-$(A_1A_2):(B_1B_2)$, one has
-\begin{equation}
-\label{eq:q2-vectorization}
-\begin{aligned}
-    &\left\langle
-      \operatorname{vec}(C),
-      \bigl(\rho_\alpha^\Gamma\bigr)^{\otimes2}
-      \operatorname{vec}(C)
-    \right\rangle\\
-    &\qquad =q^{(2)}(\alpha,C),
-\end{aligned}
-\end{equation}
-which is what the first argument of $q^{(2)}$ records.
-Moreover,
-\[
-    \SR\bigl(\operatorname{vec}(C)\bigr)=\rank C
-\]
-across the same output--input regrouping. Thus $r$-block positivity of
-$(\rho_{-t}^\Gamma)^{\otimes2}$ is equivalent to $q^{(2)}(-t,C)\ge0$ for
-every matrix $C$ of rank at most $r$.
-For every $C$ of rank at most $r$, \cref{eq:main-bound} implies
-\begin{align}
-    q^{(2)}(-t,C)
-    &\ge
-    (1-rt)\norm{C}_2^2
-    +
-    \left(
-      t^2-\frac tr
-    \right)\abs{\Tr C}^2.
-\label{eq:q2-first-bound}
-\end{align}
-If $0\le t\le1/r$, then
-$t^2-t/r\le0$. Using
-\[
-    \abs{\Tr C}^2
-    \le
-    r\norm{C}_2^2
-\]
-in the appropriate direction gives
-\begin{align}
-    q^{(2)}(-t,C)
-    &\ge
-    \left(
-      1-rt+rt^2-t
-    \right)\norm{C}_2^2
-    \notag\\
-    &=
-    (1-t)(1-rt)\norm{C}_2^2
-    \ge0.
-\label{eq:q2-final-bound}
-\end{align}
-
-\begin{proposition}[Exact rank-constrained two-copy score curve]
-\label[proposition]{prop:exact-q2-score}
-Let $d\ge2$ and $1\le r\le d$.  For $t\ge0$, define
-\[
-    \mu_r(t)
-    :=
-    \inf_{\substack{C\in M_{d^2}(\C)\setminus\{0\}\\
-                     \rank C\le r}}
-    \frac{q^{(2)}(-t,C)}{\norm{C}_2^2}.
-\]
-Then
-\begin{equation}
-\label{eq:exact-q2-score}
-    \mu_r(t)
-    =
-    \begin{cases}
-      (1-t)(1-rt),&0\le t\le 1/r,\\[1mm]
-      1-rt,&t\ge1/r.
-    \end{cases}
-\end{equation}
-Both branches are attained by rank-$r$ matrices.
-\end{proposition}
-
-\begin{proof}
-For $C\ne0$ of rank at most $r$, set
-\[
-    z:=\frac{\abs{\Tr C}^2}{\norm{C}_2^2}.
-\]
-The trace--rank estimate gives $0\le z\le r$.  Dividing
-\cref{eq:q2-first-bound} by $\norm{C}_2^2$ yields
-\begin{equation}
-\label{eq:q2-score-z}
-    \frac{q^{(2)}(-t,C)}{\norm{C}_2^2}
-    \ge
-    1-rt+\left(t^2-\frac tr\right)z.
-\end{equation}
-If $0\le t\le1/r$, the coefficient of $z$ is nonpositive, so
-\cref{eq:q2-score-z} and $z\le r$ give
-\[
-    \frac{q^{(2)}(-t,C)}{\norm{C}_2^2}
-    \ge
-    1-rt+r\left(t^2-\frac tr\right)
-    =(1-t)(1-rt).
-\]
-Choose a rank-$r$ projection $P_r\in M_d(\C)$ and a unit vector
-$v\in\C^d$.  For
-\[
-    C=P_r\otimes\ketbra{v}{v}
-\]
-one has
-\[
-\begin{aligned}
-    \norm{C}_2^2&=r,
-    &\abs{\Tr C}^2&=r^2,\\
-    \norm{\Tr_1C}_2^2&=r^2,
-    &\norm{\Tr_2C}_2^2&=r,
-\end{aligned}
-\]
-and hence equality holds.
-
-If $t\ge1/r$, the coefficient of $z$ in
-\cref{eq:q2-score-z} is nonnegative, so
-\[
-    \frac{q^{(2)}(-t,C)}{\norm{C}_2^2}
-    \ge1-rt.
-\]
-Choose orthogonal unit vectors $v,w\in\C^d$ and set
-\[
-    C=P_r\otimes\ketbra{v}{w}.
-\]
-Then
-\[
-    \Tr C=0,
-    \qquad
-    \norm{\Tr_1C}_2^2=r^2,
-    \qquad
-    \Tr_2C=0,
-\]
-so equality again holds.
-\end{proof}
-
-\begin{remark}[Why the range $r\le d$ is essential]
-The extremizers in \cref{prop:exact-q2-score} require a rank-$r$
-projection in one $d$-dimensional tensor factor.  The score formula does
-not in general extend to $r>d$ by replacing $r$ with
-$\min\{r,d\}$.  For example, when the rank bound is $r=d^2$, no rank
-constraint remains.  If $0\le t\le1/d$, the smallest eigenvalue of
-\[
-    \left(\rho_{-t}^\Gamma\right)^{\otimes2}
-\]
-is
-\[
-    (1-dt)^2.
-\]
-By \cref{eq:q2-vectorization}, the displayed infimum is the smallest
-eigenvalue, and therefore
-\[
-    \inf_{C\ne0}
-    \frac{q^{(2)}(-t,C)}{\norm{C}_2^2}
-    =(1-dt)^2.
-\]
-This generally differs from $(1-t)(1-dt)$, the expression obtained by
-formally substituting $d$ for $r$ in the first branch of
-\cref{eq:exact-q2-score}.
-\end{remark}
-
-\begin{corollary}[An explicit adjacent-Schmidt-rank violation]
-\label[corollary]{cor:adjacent-rank-gap}
-Let $1\le r<d$ and put
-\[
-    Z_{r,d}
-    :=
-    \left(
-      I-\frac1r\ketbra{\Omega}{\Omega}
-    \right)^{\otimes2}.
-\]
-Across the regrouped bipartition $(A_1A_2):(B_1B_2)$,
-\[
-    \ip{\psi}{Z_{r,d}\psi}\ge0
-    \qquad
-    \text{whenever }\norm{\psi}=1
-    \text{ and }\SR(\psi)\le r.
-\]
-On the other hand, there is a unit vector $\psi_{r+1}$ of Schmidt
-rank $r+1$ such that
-\begin{equation}
-\label{eq:adjacent-rank-negative-score}
-    \ip{\psi_{r+1}}{Z_{r,d}\psi_{r+1}}
-    =-\frac1r.
-\end{equation}
-\end{corollary}
-
-\begin{proof}
-The nonnegativity assertion is
-\cref{cor:two-copy-block-positive} at $t=1/r$.
-Choose a rank-$(r+1)$ projection $P_{r+1}$ and orthogonal unit vectors
-$v,w\in\C^d$, and define
-\[
-    C=P_{r+1}\otimes\ketbra{v}{w},
-    \qquad
-    \psi_{r+1}:=\frac{\operatorname{vec}(C)}{\sqrt{r+1}}.
-\]
-Then $\SR(\psi_{r+1})=\rank C=r+1$, while
-\[
-    \frac{q^{(2)}(-1/r,C)}{\norm{C}_2^2}
-    =1-\frac{r+1}{r}
-    =-\frac1r.
-\]
-Now use \cref{eq:q2-vectorization}.
-\end{proof}
-
-\begin{remark}[A strict signed separation]
-\label[remark]{rem:strict-rank-gap}
-Let $0<\varepsilon<1/(r+1)$ and set
-$t=(1-\varepsilon)/r$.  Then
-\cref{prop:exact-q2-score} gives
-\[
-    \frac{q^{(2)}(-t,C)}{\norm{C}_2^2}
-    \ge
-    \varepsilon\left(1-\frac{1-\varepsilon}{r}\right)>0
-    \qquad(\rank C\le r),
-\]
-whereas the rank-$(r+1)$ matrix used in
-\cref{cor:adjacent-rank-gap} has normalized score
-\[
-    1-(r+1)t
-    =\frac{(r+1)\varepsilon-1}{r}<0.
-\]
-Thus the filter has a uniform positive margin on all normalized
-matrices of rank at most $r$, while the displayed rank-$(r+1)$ matrix
-has negative score.
-\end{remark}
-
-This yields the exact $r$-block-positivity threshold for the
-two-copy family $(\rho_\alpha^\Gamma)^{\otimes2}$.
-
-\begin{corollary}[Two-copy block positivity]
-\label[corollary]{cor:two-copy-block-positive}
-Let $d\ge2$ and $\alpha\in\mathbb R$. For every $1\le r\le d^2$, the operator
-\[
-    (\rho_\alpha^\Gamma)^{\otimes2}
-\]
-is $r$-block-positive across the regrouped bipartition
-\[
-    (A_1A_2):(B_1B_2)
-\]
-if and only if
-\begin{equation}
-\label{eq:block-positive-threshold}
-    \alpha
-    \ge
-    -\frac1{\min\{r,d\}}.
-\end{equation}
-\end{corollary}
-
-\begin{proof}
-It remains only to consider $\alpha=-t<0$.
-
-Suppose first that $r\le d$. If $t\le1/r$, then
-\cref{eq:q2-final-bound} gives
-\[
-    q^{(2)}(-t,C)\ge0
-\]
-for every $C$ of rank at most $r$, proving $r$-block positivity.
-
-For necessity in all cases, set
-\[
-    s:=\min\{r,d\}.
-\]
-Choose a rank-$s$ projection $P_s$ and orthogonal unit vectors
-$v,w\in\C^d$, and let
-\[
-    C=P_s\otimes\ketbra{v}{w}.
-\]
-Then
-\[
-\begin{aligned}
-    \rank C&=s\le r,\\
-    \Tr C&=0,\\
-    \norm{C}_2^2&=s,\\
-    \norm{\Tr_1C}_2^2&=s^2,\\
-    \norm{\Tr_2C}_2^2&=0.
-\end{aligned}
-\]
-Hence
-\[
-    q^{(2)}(-t,C)
-    =
-    s(1-st),
-\]
-which is negative whenever $t>1/s$. Thus
-$r$-block positivity forces
-\[
-    t\le\frac1{\min\{r,d\}}.
-\]
-
-Finally, suppose $r>d$. If $t\le1/d$, then the Choi operator of
-\[
-    \mathcal R_{-t}(X)
-    :=
-    \Tr(X)I-tX
-\]
-is
-\[
-    J(\mathcal R_{-t})
-    =
-    I-t\ketbra{\Omega}{\Omega}
-    \succeq0,
-\]
-because $\norm{\Omega}^2=d$ and the only potentially nonpositive
-eigenvalue is $1-td$. Therefore $\mathcal R_{-t}$ is completely
-positive, so
-$\mathcal R_{-t}^{\otimes2}$ is completely positive and hence
-$r$-positive for every $r$. This proves sufficiency when $r>d$.
-\end{proof}
-
-\subsection{\texorpdfstring{$r$}{r}-positivity of the tensor square}
-
-The preceding block-positivity statement has an equivalent map
-formulation through the Choi--Jamiołkowski correspondence: a map is
-$r$-positive if and only if its Choi operator is $r$-block-positive
-\cite{Choi1975,TerhalHorodecki2000}. With the output factors grouped
-against the input factors, the Choi operator of
-$\mathcal R_\alpha^{\otimes2}$ is exactly
-$(\rho_\alpha^\Gamma)^{\otimes2}$ across the bipartition
-$(A_1A_2):(B_1B_2)$ used above.
-
-\begin{corollary}[Tensor-square stability]
-\label[corollary]{cor:tensor-square}
-Let $d\ge2$ and $\alpha\in\mathbb R$. Define
-\[
-    \mathcal R_\alpha(X)
-    :=
-    \Tr(X)I+\alpha X.
-\]
-For every $1\le r\le d^2$, the tensor-square map
-\[
-    \mathcal R_\alpha^{\otimes2}
-\]
-is $r$-positive if and only if
-\[
-    \alpha
-    \ge
-    -\frac1{\min\{r,d\}}.
-\]
-\end{corollary}
-
-The single factor is classical: $\mathcal R_\alpha$ on $M_d$ is $k$-positive
-exactly when $\alpha\ge-1/k$, which is
-\cite[Thm.~2(i)]{Tomiyama1985} after reparametrization, and
-$\mathcal R_{-1/k}$ is the boundary map he denotes $\tau_k$.  The tensor square
-does not follow from it, positivity being unstable under tensoring; the maps
-whose positivity survives all of their own tensor powers are studied in
-\cite{MullerHermesReebWolf2016}.  For $r\ge d$ the statement below is immediate,
-each factor being then completely positive, so the content is the range $r<d$.
-
-\subsection{Exact asymmetric tensor-product theorem}
-
-For $a,b\ge0$, define
-\begin{equation}
-\label{eq:q2-asymmetric}
-    q_{a,b}(C)
-    :=
-    \norm{C}_2^2
-    -a\norm{\Tr_1C}_2^2
-    -b\norm{\Tr_2C}_2^2
-    +ab\abs{\Tr C}^2.
-\end{equation}
-Under the same vectorization and regrouping as above,
-\[
-    q_{a,b}(C)
-    =
-    \left\langle
-      \operatorname{vec}(C),
-      \left(I-a\ketbra{\Omega}{\Omega}\right)
-      \otimes
-      \left(I-b\ketbra{\Omega}{\Omega}\right)
-      \operatorname{vec}(C)
-    \right\rangle.
-\]
-
-\begin{lemma}[One-sided rank bound]
-\label[lemma]{lem:one-sided-partial-trace}
-If $\rank C\le r$, then
-\begin{equation}
-\label{eq:one-sided-partial-trace}
-    \norm{\Tr_jC}_2^2
-    \le r\norm{C}_2^2,
-    \qquad j\in\{1,2\}.
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-Write $C=\sum_{i=1}^{r_0}\ketbra{e_i}{d_i}$ as in
-\cref{eq:C-decomposition}, with $e_1,\ldots,e_{r_0}$ orthonormal and
-$r_0=\rank C\le r$.  Identify a vector $x$ of the bipartite space with its
-coefficient matrix $X$ relative to the chosen product basis, so that
-$\norm{X}_2=\norm{x}$.  The two partial traces of a rank-one operator are then
-matrix products,
-\begin{equation}
-\label{eq:ptrace-rank-one-product}
-    \Tr_2\ketbra{x}{y}=XY^*,
-    \qquad
-    \Tr_1\ketbra{x}{y}=\overline{X^*Y},
-\end{equation}
-both immediate from the definitions.  The Hilbert--Schmidt norm is
-submultiplicative, so each summand obeys
-$\norm{\Tr_j\ketbra{e_i}{d_i}}_2\le\norm{e_i}\norm{d_i}=\norm{d_i}$.  By the
-triangle inequality and then Cauchy--Schwarz,
-\[
-    \norm{\Tr_jC}_2^2
-    \le\Bigl(\sum_{i=1}^{r_0}\norm{d_i}\Bigr)^2
-    \le r_0\sum_{i=1}^{r_0}\norm{d_i}^2
-    =r_0\norm{C}_2^2
-    \le r\norm{C}_2^2,
-\]
-the equality being \cref{eq:C-decomposition}.
-\end{proof}
-
-Recall that $\Tr_1$ means the trace \emph{over} the first local
-factor, leaving an operator on the second, while $\Tr_2$ traces over
-the second and leaves an operator on the first.  Thus the coefficient
-$a$ in \cref{eq:q2-asymmetric} multiplies the first-factor trace and
-$b$ multiplies the second-factor trace.
-
-\begin{theorem}[Exact asymmetric tensor-product score]
-\label[theorem]{thm:exact-asymmetric-score}
-Let $d\ge2$, $1\le r\le d$, and $a,b\ge0$.  Put
-\[
-    m:=\max\{a,b\},
-    \qquad
-    \ell:=\min\{a,b\}.
-\]
-Then
-\begin{equation}
-\label{eq:exact-asymmetric-score}
-    \inf_{\substack{C\in M_{d^2}(\C)\setminus\{0\}\\
-                     \rank C\le r}}
-    \frac{q_{a,b}(C)}{\norm{C}_2^2}
-    =
-    \begin{cases}
-      (1-\ell)(1-rm),&m\le1/r,\\[1mm]
-      1-rm,&m\ge1/r.
-    \end{cases}
+\label{eq:double-skew}
+  \norm{Kx}^2+\norm{Ky}^2
+  \le\frac12\norm K_2^2.
 \end{equation}
 \end{theorem}
 
-\begin{proof}
-By interchanging the two tensor factors, assume $a=m$ and $b=\ell$.
-For $C\ne0$ of rank at most $r$, write
+This is equivalent to the sharp Schmidt-rank-two projection estimate of
+Fu, Gao, and Park \cite{FuGaoPark2026}.  The proof in
+\cref{app:double-skew} adapts and reorganizes the argument of
+\cite[\S2]{FuGaoPark2026}, using Autonne--Takagi directly; the following
+roadmap isolates its delicate point.
+The abstract lifting theorem consumes only the resulting local constant and
+is independent of this concrete proof.
+Tensor products of two skew matrices are symmetric under full transposition, so
+Autonne--Takagi writes
 \[
-    x:=\frac{\norm{\Tr_1C}_2^2}{\norm{C}_2^2},
-    \qquad
-    y:=\frac{\norm{\Tr_2C}_2^2}{\norm{C}_2^2},
-    \qquad
-    z:=\frac{\abs{\Tr C}^2}{\norm{C}_2^2}.
+  K=\sum_i s_iw_iw_i^T.
 \]
-By \cref{thm:rank_r,lem:one-sided-partial-trace},
+Let $\Pi$ be the Hilbert--Schmidt projection onto the double-skew space.
+For every two-term Takagi truncation
+$N=s_aw_aw_a^T+s_bw_bw_b^T$, a partial-transpose calculation gives
 \[
-    x+y\le r+\frac zr,
-    \qquad
-    x\le r,
-    \qquad
-    0\le z\le r.
+  \ip N{N^{T_U}}_{\mathrm{HS}}\ge0,
+  \qquad
+  \ip N{\Pi N}_{\mathrm{HS}}\le\frac12\norm N_2^2.
 \]
-Consequently,
-\begin{align*}
-    ax+by
-    &=b(x+y)+(a-b)x\\
-    &\le b\left(r+\frac zr\right)+(a-b)r
-      =ar+\frac br z,
-\end{align*}
-and hence
-\begin{equation}
-\label{eq:asymmetric-z-bound}
-    \frac{q_{a,b}(C)}{\norm{C}_2^2}
-    \ge
-    1-ar+b\left(a-\frac1r\right)z.
-\end{equation}
-If $a\le1/r$, minimize the right-hand side over $0\le z\le r$
-by taking $z=r$; this gives
+Projecting the truncation back against $K$ then forces
 \[
-    1-ar+br\left(a-\frac1r\right)
-    =(1-b)(1-ar).
+  s_a^2+s_b^2\le\frac12\norm K_2^2
+  \quad\text{for every pair }a\ne b.
 \]
-Equality is attained by
-$C=P_r\otimes\ketbra{v}{v}$.
-If $a\ge1/r$, minimize by taking $z=0$; this gives $1-ar$, with
-equality attained by
-$C=P_r\otimes\ketbra{v}{w}$ for $v\perp w$.
-If $b>a$, interchange the two tensor factors in these constructions.
-\end{proof}
+A two-coordinate weight argument turns these pair inequalities into
+\cref{eq:double-skew}.  The nonnegativity after partial transpose is where
+the tensor product of the two skew spaces enters.
 
-\begin{corollary}[Asymmetric tensor-product $r$-positivity threshold]
-\label[corollary]{cor:asymmetric-block-positive}
-Let $d\ge2$, $1\le r\le d^2$, and $a,b\ge0$.  Then
+\begin{corollary}[Exact local constant]
+\label{cor:beta-one}
+For $\Phi=\Lambda_U\otimes\Lambda_V$,
 \[
-    \left(I-a\ketbra{\Omega}{\Omega}\right)
-    \otimes
-    \left(I-b\ketbra{\Omega}{\Omega}\right)
+  \beta_2(\Phi)\le1.
 \]
-is $r$-block-positive across the regrouped bipartition if and only if
-\begin{equation}
-\label{eq:asymmetric-threshold}
-    \max\{a,b\}
-    \le
-    \frac1{\min\{r,d\}}.
-\end{equation}
-Equivalently,
-\[
-    \mathcal R_{-a}\otimes\mathcal R_{-b}
-\]
-is $r$-positive if and only if \cref{eq:asymmetric-threshold} holds.
+Equality holds if $\dim U,\dim V\ge2$.  If either dimension is less than two,
+then $\Phi=0$ and $\beta_2(\Phi)=0$.
 \end{corollary}
 
 \begin{proof}
-The corner $a=b=1/r$ of the sufficiency half is
-\cref{rem:operator-ineq-as-map}, which derives it from
-\cref{prop:operator_ineq} directly; it does not depend on this section.  For the
-general case with $r\le d$, the assertion follows from
-\cref{thm:exact-asymmetric-score}.  (That route passes through
-\cref{thm:rank_r}, hence through \cref{prop:operator_ineq}; the remark shows the
-$a=b=1/r$ corner without the detour.  The other corners do need an argument
-rather than a citation: $\mathcal R_{-a}=\mathcal R_{-1/r}+(\frac1r-a)\id$, and
-the cross terms $\mathcal R_{-1/r}\otimes\id$ are not separately positive, so
-monotonicity in $a$ and $b$ is not immediate.)  If $r>d$ and
-$a,b\le1/d$, both factors
-$I-a\ketbra{\Omega}{\Omega}$ and
-$I-b\ketbra{\Omega}{\Omega}$ are positive semidefinite, so their
-tensor product is positive semidefinite.  Conversely, if, say,
-$a>1/d$, choose
+The Kraus products in \cref{eq:lambda-kraus} are pairwise
+Hilbert--Schmidt orthogonal and have squared norm $4$.  Thus, for
+$K_c=\sum c_{ab,cd}L_{ab}\otimes L_{cd}$,
 \[
-    C=I_d\otimes\ketbra{v}{w},
-    \qquad v\perp w.
+  \norm{K_c}_2^2=4\norm c_2^2.
 \]
-Then $\rank C=d\le r$ and
-$q_{a,b}(C)/\norm{C}_2^2=1-ad<0$.  The case $b>1/d$ follows by
-interchanging the tensor factors.  The map statement follows from the
-Choi--Jamiołkowski correspondence.
+\Cref{thm:double-skew} and \cref{eq:beta-action} give
+$2\beta_2\le2$.  If both factors contain two distinct basis vectors, a
+single Kraus product has four singular values equal to one; its two largest
+squared singular values sum to $2$, proving equality.  In a space of
+dimension below two there are no skew Kraus operators.
 \end{proof}
 
-\subsection{Quantitative trace-norm separation from bounded Schmidt number}
+\section{The partial-trace inequality}
+\label{sec:marginal}
 
-\begin{corollary}[Trace-norm separation certified by the two-copy witness]
-\label[corollary]{cor:two-copy-trace-distance}
-Let $1\le r<d$ and let $Z_{r,d}$ be as in
-\cref{cor:adjacent-rank-gap}.  Put
+The general theorem becomes a marginal inequality only because
+$\Lambda_U\otimes\Lambda_V$ satisfies a second, application-specific
+identity.  Put
 \[
-    \gamma:=\frac dr-1>0,
-    \qquad
-    \Delta_{r,d}:=\gamma+\max\{1,\gamma^2\}.
+  \mathcal R^E_{-a}=\Delta_E-a\id_E.
 \]
-Define the normalized Schmidt-number-$r$ state set
+Since $\Lambda_E\circ\tau_E=\Delta_E-\id_E$, a direct expansion in the
+two-dimensional algebra $\operatorname{span}\{\Delta,\id\}$ gives, for every
+integer $r\ge1$,
+\begin{equation}
+\label{eq:map-identity}
+  (\Lambda_U\otimes\Lambda_V)\circ\tau
+  +(r-1)\left(\Delta_{U\otimes V}-\frac1r\id\right)
+  =
+  r\,\mathcal R^U_{-1/r}\otimes\mathcal R^V_{-1/r}.
+\end{equation}
+By \cref{cor:beta-one}, $\beta_2(\Lambda_U\otimes\Lambda_V)\le1$ in every
+dimension.  Applying \cref{cor:beta-upper} with $\gamma=1$ shows that the
+left side of \cref{eq:map-identity}, and hence the map on the right, is
+$r$-positive.  This includes the degenerate cases in which the sharp local
+constant is zero.
+
+\begin{theorem}[Sharp rank-$r$ partial-trace inequality]
+\label{thm:marginal}
+Let $r\ge1$ be an integer, and let $U,V$ be finite-dimensional complex
+Hilbert spaces.  For every
+$C\in\cL(U\otimes V)$ with $\rank C\le r$,
+\begin{equation}
+\label{eq:marginal}
+  \norm{\Tr_U C}_2^2+\norm{\Tr_V C}_2^2
+  \le r\norm C_2^2+\frac1r\abs{\Tr C}^2.
+\end{equation}
+If $C\ne0$ and $s=\rank C$, the stronger exact-rank form
+\begin{equation}
+\label{eq:exact-rank}
+  \norm{\Tr_U C}_2^2+\norm{\Tr_V C}_2^2
+  \le s\norm C_2^2+\frac1s\abs{\Tr C}^2
+\end{equation}
+holds.  Consequently, equality in \cref{eq:marginal} for nonzero $C$
+requires $\rank C=r$.
+\end{theorem}
+
+\begin{proof}
+The Choi quadratic form of the right side of \cref{eq:map-identity}, tested
+on $\vecop C$, is
+\begin{equation}
+\label{eq:choi-contraction}
+  r\norm C_2^2+\frac1r\abs{\Tr C}^2
+  -\norm{\Tr_U C}_2^2-\norm{\Tr_V C}_2^2.
+\end{equation}
+This follows by expanding the tensor product: the four terms
+$\Delta\otimes\Delta$, $\Delta\otimes\id$, $\id\otimes\Delta$, and
+$\id\otimes\id$ contract respectively to
+$\norm C_2^2$, the two marginal Hilbert--Schmidt norms, and
+$\abs{\Tr C}^2$, with the coefficients in
+\cref{eq:map-identity}.  Since $r$-positivity is equivalent to
+nonnegativity of the Choi quadratic form on inverse vectorizations of rank at
+most $r$, \cref{eq:choi-contraction} is nonnegative.
+
+Apply the result first with $r=s=\rank C$ to obtain
+\cref{eq:exact-rank}.  For $s\le r$,
+\begin{align*}
+ &r\norm C_2^2+\frac1r\abs{\Tr C}^2
+ -\left(s\norm C_2^2+\frac1s\abs{\Tr C}^2\right)\\
+ &\hspace{28mm}=(r-s)
+   \left(\norm C_2^2-\frac{\abs{\Tr C}^2}{rs}\right)\ge0.
+\end{align*}
+The trace--rank inequality $\abs{\Tr C}^2\le s\norm C_2^2$ proves the
+last step.  If $C\ne0$ and $s<r$, both factors in the last display are
+strictly positive, so equality is impossible.
+\end{proof}
+
+\begin{proposition}[Optimal coefficients]
+\label{prop:optimal}
+Let $r\ge1$.  Suppose $\dim U\ge r$ and $\dim V\ge2$, or conversely.  In an inequality
 \[
-    \mathcal S_r
-    :=
-    \left\{
-      \sigma\succeq0:
-      \Tr\sigma=1,\ \SN(\sigma)\le r
-    \right\}.
+  \norm{\Tr_U C}_2^2+\norm{\Tr_V C}_2^2
+  \le a\norm C_2^2+b\abs{\Tr C}^2
+  \qquad(\rank C\le r),
 \]
-If $\rho$ is a state satisfying
+one must have $a\ge r$.  Once $a=r$ is fixed, one must have
+$b\ge1/r$.
+\end{proposition}
+
+\begin{proof}
+Let $P_r$ be a rank-$r$ projection on $U$ and let $v,w\in V$ be unit
+vectors.  For
 \[
-    \Tr(Z_{r,d}\rho)=-\varepsilon<0,
+  C=P_r\otimes\ketbra{v}{w}
+\]
+one has
+\[
+\begin{array}{c@{\qquad}c}
+  \norm{\Tr_U C}_2^2=r^2,
+  &\norm{\Tr_V C}_2^2=r\abs{\ip wv}^2,\\
+  \norm C_2^2=r,
+  &\abs{\Tr C}^2=r^2\abs{\ip wv}^2.
+\end{array}
+\]
+Taking $v\perp w$ forces $a\ge r$.  With $a=r$, taking $v=w$ forces
+$b\ge1/r$.  The same matrices attain equality in \cref{eq:marginal}.
+\end{proof}
+
+\subsection{A complementary balanced-factorization lift}
+\label{sec:balanced-route}
+
+Fraser, Huber, Pozsgay, and Vona prove \cref{eq:marginal} directly from a
+balanced rank decomposition \cite[Lem.~7.1 and \S8]{FraserHuberPozsgayVona2026}.
+Their proof exposes a second lifting principle.  The following formulation is
+the abstraction of the two properties used in their argument.
+
+\begin{proposition}[Balanced-polarization lift]
+\label{prop:balanced-lift}
+Let $\mathcal Y$ be a finite-dimensional complex Hilbert space and let
+$\mathcal L:\cL(H)\to\mathcal Y$ be linear.  Suppose that, for all
+$x,y,u,v,s,t\in H$,
+\begin{align}
+\label{eq:balanced-rank-one}
+  \norm{\mathcal L(xy^*)}^2
+  &\le \norm x^2\norm y^2+\abs{y^*x}^2,\\
+\label{eq:crossed-polarization}
+  \ip{\mathcal L(uv^*)}{\mathcal L(st^*)}
+  &=\ip{\mathcal L(tv^*)}{\mathcal L(su^*)}.
+\end{align}
+If $C\ne0$ and $q=\rank C$, then
+\begin{equation}
+\label{eq:balanced-lift}
+  \norm{\mathcal L(C)}^2
+  \le q\norm C_2^2+\frac1q\abs{\Tr C}^2.
+\end{equation}
+Consequently the right side may be replaced by
+$r\norm C_2^2+\abs{\Tr C}^2/r$ whenever $q\le r$.
+\end{proposition}
+
+\begin{proof}
+Choose a balanced factorization
+\[
+  C=\sum_{i=1}^q x_i y_i^*,\qquad
+  X^*X=Y^*Y=G=(g_{ij}),\qquad
+  y_i^*x_i=\tau:=\frac{\Tr C}{q}.
+\]
+It is obtained by splitting the singular values equally between $X$ and $Y$,
+then applying the same unitary to their columns so that the diagonal of
+$Y^*X$ is constant.  The latter step is the Parker--Fillmore
+constant-diagonal theorem \cite{Fillmore1969,Parker1948}.  Put
+$\delta_i=g_{ii}=\norm{x_i}^2=\norm{y_i}^2$.
+
+The diagonal terms in the expansion of
+$\norm{\sum_i\mathcal L(x_i y_i^*)}^2$ are at most
+$\delta_i^2+\abs\tau^2$ by \cref{eq:balanced-rank-one}.  For $i\ne j$,
+\cref{eq:crossed-polarization}, Cauchy--Schwarz, and another application of
+\cref{eq:balanced-rank-one} give
+\[
+  \abs{\ip{\mathcal L(x_i y_i^*)}{\mathcal L(x_j y_j^*)}}
+  \le \delta_i\delta_j+\abs{g_{ij}}^2.
+\]
+Therefore
+\[
+  \norm{\mathcal L(C)}^2
+  \le\left(\sum_i\delta_i\right)^2
+      +q\abs\tau^2+2\sum_{i<j}\abs{g_{ij}}^2.
+\]
+On the other hand,
+\[
+  \norm C_2^2=\Tr(G^2)
+  =\sum_i\delta_i^2+2\sum_{i<j}\abs{g_{ij}}^2.
+\]
+Subtracting the preceding upper bound from the right side of
+\cref{eq:balanced-lift} gives the explicit defect bound
+\begin{equation}
+\label{eq:balanced-defect}
+  q\norm C_2^2+\frac1q\abs{\Tr C}^2-\norm{\mathcal L(C)}^2
+  \ge \sum_{i<j}(\delta_i-\delta_j)^2
+      +2(q-1)\sum_{i<j}\abs{g_{ij}}^2
+  \ge0.
+\end{equation}
+The extension from $q$ to $r$ is the same trace--rank calculation used after
+\cref{eq:choi-contraction}.
+\end{proof}
+
+For the partial-trace application, take
+\[
+  \mathcal L(C)=(\Tr_U C,\Tr_V C)
+\]
+in the Hilbert direct sum.  Then \cref{eq:balanced-rank-one} is the rank-one
+partial-trace inequality; its defect is the expectation of
+$(I-F_U)\otimes(I-F_V)=4P_U^-\otimes P_V^-$.  \Cref{eq:crossed-polarization}
+is the four-state marginal identity.  Thus this
+route and the Choi lift use the same double-antisymmetric geometry but extract
+different information from it.
+
+The mechanisms are not reformulations of one another.  The balanced lift
+requires the rigid four-linear symmetry
+\cref{eq:crossed-polarization}, but neither complete positivity nor a Choi
+norm; it gives a direct norm inequality.  \Cref{thm:lift} requires a
+rank-two Choi bound and, for the protected term, even transpose parity, but no
+crossed identity; it returns an $r$-positive map.  Both arguments nevertheless
+contain the same complete graph.  In \cref{eq:balanced-defect} the first sum is
+the Dirichlet energy of $K_q$, while in \cref{eq:vertex-cs} its degree
+$q-1$ appears by grouping edge modes at vertices.  The constant diagonal
+isolates the trace direction in the balanced proof; range orthogonality to
+$\delta_e$ protects the corresponding direction in the Choi proof.
+
+There is also a common operator language.  Let
+$\Gamma=\mathcal L^*\mathcal L$ on the Hilbert--Schmidt space and
+$\Omega=\sum_i e_i\otimes\overline e_i$.  In matrix-unit coordinates,
+\cref{eq:crossed-polarization} is exactly the reshuffling symmetry
+\[
+  \Gamma_{ij,kl}=\Gamma_{lj,ki}.
+\]
+The rank-one hypothesis is block positivity of
+$I+\ketbra{\Omega}{\Omega}-\Gamma$ on product vectors; the conclusion is
+block positivity of
+$rI+\ketbra{\Omega}{\Omega}/r-\Gamma$ on vectors of Schmidt rank at most $r$.
+Thus the balanced argument is itself a low-rank positivity lift, based on a
+crossing-fixed positive Gram operator and a level-one input rather than a CP
+Choi operator and a level-two input.
+
+\begin{corollary}[Spectral stability]
+\label{cor:spectral-stability}
+Let $C\in\cL(U\otimes V)$ have rank $q\ge2$, let
+$\sigma_1,\dots,\sigma_q$ be its nonzero singular values, and put
+$\overline\sigma=q^{-1}\sum_i\sigma_i$.  If
+\[
+  D_q(C):=
+  q\norm C_2^2+\frac1q\abs{\Tr C}^2
+  -\norm{\Tr_U C}_2^2-\norm{\Tr_V C}_2^2,
 \]
 then
 \begin{equation}
-\label{eq:two-copy-trace-distance}
-    \inf_{\sigma\in\mathcal S_r}
-    \norm{\rho-\sigma}_1
-    \ge
-    \frac{2\varepsilon}{\Delta_{r,d}}.
+\label{eq:spectral-stability}
+  \sum_{i=1}^q(\sigma_i-\overline\sigma)^2
+  \le\frac{D_q(C)}{q-1}.
 \end{equation}
 \end{corollary}
 
 \begin{proof}
-Since $Z_{r,d}$ is $r$-block-positive,
+In the balanced construction, $G$ is unitarily similar to
+$\operatorname{diag}(\sigma_1,\dots,\sigma_q)$.  If
+$\overline\delta=q^{-1}\sum_i\delta_i=\overline\sigma$, then
 \[
-    \Tr(Z_{r,d}\sigma)\ge0
-    \qquad
-    \text{for every }\sigma\in\mathcal S_r.
+  \norm{G-\overline\delta I}_2^2
+  =\frac1q\sum_{i<j}(\delta_i-\delta_j)^2
+    +2\sum_{i<j}\abs{g_{ij}}^2.
 \]
-The operator
-$I-r^{-1}\ketbra{\Omega}{\Omega}$ has eigenvalues $1$ and
-$1-d/r=-\gamma$.  Hence $Z_{r,d}$ has eigenvalues
-\[
-    1,
-    \qquad
-    -\gamma,
-    \qquad
-    \gamma^2.
-\]
-Thus its spectral diameter is
-$\Delta_{r,d}$.
-
-Fix $\sigma\in\mathcal S_r$.  Then
-\[
-    \Tr\bigl[Z_{r,d}(\sigma-\rho)\bigr]\ge\varepsilon.
-\]
-Because $\Tr(\sigma-\rho)=0$, we may subtract from $Z_{r,d}$ the
-midpoint of its extreme eigenvalues.  The resulting centered operator
-has operator norm $\Delta_{r,d}/2$.  H\"older duality therefore gives
-\[
-    \varepsilon
-    \le
-    \frac{\Delta_{r,d}}2\norm{\sigma-\rho}_1.
-\]
-Taking the infimum over $\sigma\in\mathcal S_r$ proves the claim.
+Multiplying by $q-1$ and comparing with
+\cref{eq:balanced-defect} proves \cref{eq:spectral-stability}.
 \end{proof}
 
-\subsection{Kronecker-sum Ky Fan bounds}
+\section{A second instance: graph Kraus dictionaries}
+\label{sec:graphs}
 
-By dualizing the partial-trace inequality over rank-$k$ test
-operators, \cref{thm:rank_r} yields a singular-value hierarchy for
-Kronecker sums.
+The next family does two jobs.  It shows that the lifting theorem applies
+away from the partial-trace identity, and it proves that
+$(r-1)\beta_2$ is an attained universal coefficient rather than merely a
+proof artifact.
 
-\begin{corollary}
-\label[corollary]{cor:kronecker}
-Let $A,B\in M_d(\C)$ be traceless, not necessarily Hermitian,
-operators, and define
+Let $G=(V,E)$ be a nonempty simple graph on $V=\{1,\dots,m\}$.  For
+$e=\{i,j\}$, $i<j$, put
 \[
-    M
-    :=
-    A\otimes I_d+I_d\otimes B.
+  L_e=E_{ij}-E_{ji}\in M_m,\qquad
+  J=E_{01}-E_{10}\in M_2,\qquad
+  A_e=L_e\otimes J,
 \]
-For every $1\le k\le d^2$,
+and define
 \begin{equation}
-\label{eq:kronecker-bound}
-    \sum_{j=1}^k s_j(M)^2
-    \le
-    \min\left\{
-      d,
-      k+\max\left\{
-        0,1-\frac{2k}{d}
-      \right\}
-    \right\}
-    \left(
-      \norm{A}_2^2+\norm{B}_2^2
-    \right).
+\label{eq:graph-map}
+  \Phi_G(X)=\sum_{e\in E}A_eXA_e^*.
 \end{equation}
-In particular, if $d\le2k$, then
+Every $A_e$ is real symmetric.  For
+$K_c=\sum_ec_eA_e=L_c\otimes J$, the nonzero singular values of the
+skew matrix $L_c$ occur in equal pairs.  Since
+$\norm{L_c}_2^2=2\norm c_2^2$ and $J$ is unitary,
 \[
-    \sum_{j=1}^k s_j(M)^2
-    \le
-    k\left(
-      \norm{A}_2^2+\norm{B}_2^2
-    \right).
+  s_1(K_c)^2+s_2(K_c)^2
+  =2s_1(L_c)^2\le2\norm c_2^2.
 \]
-\end{corollary}
+A coefficient vector supported on one edge attains equality.  Hence
+\begin{equation}
+\label{eq:graph-beta}
+  \beta_2(\Phi_G)=1.
+\end{equation}
+
+For an integer $R\ge1$, set
+\[
+  \Theta^G_{R,\lambda}
+  =\Phi_G\circ\tau+
+    \lambda\left(\Delta-\frac1R\id\right),
+\]
+and set
+\[
+  \lambda_R^*(G)
+  :=\inf\{\lambda\ge0:\Theta^G_{R,\lambda}\text{ is $R$-positive}\}.
+\]
+
+\begin{theorem}[Induced-density obstruction and clique sharpness]
+\label{thm:graph}
+For every nonempty $S\subseteq V$ with $\abs S\le R$,
+\begin{equation}
+\label{eq:graph-lower}
+  \frac{2\abs{E(G[S])}}{\abs S}
+  \le\lambda_R^*(G)\le R-1.
+\end{equation}
+In particular, if $G$ contains an $R$-clique, then
+\[
+  \lambda_R^*(G)=R-1.
+\]
+\end{theorem}
 
 \begin{proof}
-The Frobenius-dual form of Ky Fan duality gives
+The upper bound is \cref{thm:lift} and
+\cref{eq:graph-beta}.  For the lower bound, take
+$C=P_S\otimes E_{01}$, where
+$P_S=\sum_{i\in S}E_{ii}$.  Then
+\[
+  \rank C=\abs S,\qquad \Tr C=0,\qquad\norm C_2^2=\abs S.
+\]
+Because the $A_e$ are symmetric, the Choi convention gives
 \begin{equation}
-\label{eq:ky-fan-duality}
-    \left(
-      \sum_{j=1}^k s_j(M)^2
-    \right)^{1/2}
-    =
-    \max_{\substack{\rank C\le k\\ \norm{C}_2=1}}
-    \abs{\langle C,M\rangle_{\mathrm{HS}}}.
+\label{eq:graph-choi-pairing}
+  \ip{\vecop C}{J(\Phi_G\circ\tau)\vecop C}
+  =
+  \sum_{e\in E}
+  \ip{A_eC}{(A_eC)^T}_{\mathrm{HS}}.
 \end{equation}
-Since $A$ and $B$ are traceless,
-\begin{align}
-    \langle C,M\rangle_{\mathrm{HS}}
-    ={}&
-    \left\langle
-      \Tr_2C-\frac{\Tr C}{d}I,
-      A
-    \right\rangle_{\mathrm{HS}}
-    \notag\\
-    &+
-    \left\langle
-      \Tr_1C-\frac{\Tr C}{d}I,
-      B
-    \right\rangle_{\mathrm{HS}}.
-\label{eq:kronecker-pairing}
-\end{align}
-By Cauchy--Schwarz,
-\begin{align}
-    \abs{\langle C,M\rangle_{\mathrm{HS}}}^2
-    \le{}&
-    \left(
-      \norm{A}_2^2+\norm{B}_2^2
-    \right)
-    \notag\\
-    &\times
-    \left(
-      \norm{\Tr_1C}_2^2
-      +
-      \norm{\Tr_2C}_2^2
-      -
-      \frac2d\abs{\Tr C}^2
-    \right).
-\label{eq:kronecker-CS}
-\end{align}
-For a rank-at-most-$k$ operator $C$ with $\norm{C}_2=1$,
-\cref{eq:main-bound} gives
-\begin{align}
-    &
-    \norm{\Tr_1C}_2^2
-    +
-    \norm{\Tr_2C}_2^2
-    -
-    \frac2d\abs{\Tr C}^2
-    \notag\\
-    &\qquad
-    \le
-    k
-    +
-    \left(
-      \frac1k-\frac2d
-    \right)\abs{\Tr C}^2.
-\label{eq:kronecker-main-use}
-\end{align}
-If $1/k-2/d\le0$, the final term may be discarded. If
-$1/k-2/d>0$, then
+If both endpoints of $e$ lie in $S$, then
 \[
-    \abs{\Tr C}^2
-    \le
-    k\norm{C}_2^2
-    =
-    k.
+  A_eC=-L_e\otimes E_{11},
+  \qquad
+  (A_eC)^T=-A_eC,
 \]
-Thus the right-hand side of
-\cref{eq:kronecker-main-use} is at most
-\[
-    k+\max\left\{
-      0,1-\frac{2k}{d}
-    \right\}.
-\]
-Combining this with
-\cref{eq:ky-fan-duality,eq:kronecker-CS} gives the second entry in the
-minimum in \cref{eq:kronecker-bound}. On the other hand, tracelessness
-implies
-\[
-    \norm{M}_2^2
-    =d\left(\norm{A}_2^2+\norm{B}_2^2\right),
-\]
-which gives the first entry. This proves \cref{eq:kronecker-bound}.
+so its contribution to \cref{eq:graph-choi-pairing} is
+$-\norm{L_e}_2^2=-2$.  If exactly one endpoint lies in $S$, then
+$L_eP_S$ is, up to sign, a single off-diagonal matrix unit; its
+Hilbert--Schmidt pairing with its transpose is zero.  If neither endpoint
+lies in $S$, then $A_eC=0$.  The correction contributes
+$\lambda\abs S$, and nonnegativity forces \cref{eq:graph-lower}.  If $S$
+is an $R$-clique, its induced average degree is $R-1$, matching the
+universal upper bound.
 \end{proof}
 
+There is a useful warning in the most natural compression of this graph
+family.  Let
+\[
+  \mathcal S_G=\operatorname{span}\{E_{ii}\}
+  +\operatorname{span}\{E_{ij}:\{i,j\}\in E\},
+\]
+and write $p=\ketbra00$, $q=\ketbra11$.  Compressing input
+$X\otimes q$ to the $p$ output corner recovers the graph reduction map,
+but it annihilates the input itself.  Under this compression,
+\[
+  \Delta_{2m}-\frac1R\id\quad\longmapsto\quad\Delta_m.
+\]
+Thus the one-layer compression preserves the unprotected theorem
+\cref{eq:unprotected} and discards precisely the $-\id/R$ term.  Keeping both
+diagonal qubit layers repairs the loss.  The lesson is broader than this
+example: a coefficient-space reduction must preserve the protected vector,
+not only the Kraus action.
 
-\subsection{Exact Schmidt number and witnesses}
+\section{Sharp boundaries of the method}
+\label{sec:limits}
 
-For $m\ge2$, let $\Pi_-^{(m)}$ denote the orthogonal projection onto the
-antisymmetric subspace of $\C^m\otimes\C^m$, and let
-\[
-    \omega_-^{(m)}
-    :=
-    \frac{\Pi_-^{(m)}}{\binom m2}
-\]
-denote the corresponding normalized state.
+\subsection{Odd transpose parity}
 
-The argument below invokes \cref{lem:double-skew} directly rather than
-\cref{thm:rank_r}: what it needs is the bound on the top two Schmidt
-coefficients of a double-skew operator, not the partial-trace inequality
-derived from it.  That $\SN(\omega_-^{(m)})=2$ is classical; the content
-here is the value for the tensor product.
+Transposition grades the ambient matrix space through
+$\C^d\otimes\C^d=\operatorname{Sym}^2\C^d\oplus\wedge^2\C^d$.
+A Kraus space need not itself be transpose-invariant.  The protected
+hypothesis selects the even summand: symmetric matrices have even degree,
+skew-symmetric matrices odd degree, and tensor-product degrees add modulo
+two.  The cancellation in the proof of
+\cref{eq:negative-protected} occurs exactly in even degree.
 
-\begin{corollary}[Exact Schmidt number]
-\label[corollary]{cor:exact-schmidt-number}
-With respect to the regrouped bipartition
+The even-parity hypothesis cannot be dropped from the universal protected
+conclusion.
+Let $H=\C^2$ and
 \[
-    (A_1A_2):(B_1B_2),
+  A=E_{01}-E_{10},\qquad \Phi(X)=AXA^*.
 \]
-one has, for every $m,n\ge2$,
-\begin{equation}
-\label{eq:SN-four}
-    \SN\left(
-      \omega_-^{(m)}\otimes\omega_-^{(n)}
-    \right)
-    =
-    4.
-\end{equation}
-\end{corollary}
-
-\begin{proof}
-Each standard antisymmetric basis vector has Schmidt rank $2$, so
-$\omega_-^{(m)}$ admits a decomposition into pure states of Schmidt
-rank $2$. Moreover, the antisymmetric subspace contains no nonzero
-product vector. Hence
+The one-dimensional Kraus space is skew.  At $s=2$, using the standard
+bases in \cref{eq:pminus},
 \[
-    \SN(\omega_-^{(m)})=2.
-\]
-Tensoring Schmidt-rank-$2$ decompositions therefore gives
-\[
-    \SN\left(
-      \omega_-^{(m)}\otimes\omega_-^{(n)}
-    \right)
-    \le4.
-\]
-
-For the reverse inequality, let
-\[
-    Q
-    :=
-    \Pi_-^{(m)}\otimes \Pi_-^{(n)},
-\]
-where the first projection acts on $A_1B_1$ and the second on $A_2B_2$.
-Under inverse vectorization across
-$(A_1A_2):(B_1B_2)$, every vector
-$\phi\in\ran Q$ has the form
-\[
-    \phi=\operatorname{vec}(K),
-    \qquad
-    K\in
-    \mathfrak{so}(\C^m)\otimes\mathfrak{so}(\C^n).
-\]
-Thus, for a unit vector $\phi\in\ran Q$, its Schmidt coefficients
-$s_1\ge s_2\ge s_3\ge\cdots$ across the regrouped bipartition are the
-singular values of a Hilbert--Schmidt unit operator $K$ in the
-above double-skew space. The case $m\ne n$ is included by the
-zero-extension argument of \cref{rem:fgp-equivalence}.
-By that lemma,
-\[
-    s_1^2+s_2^2\le\frac12.
-\]
-Since $s_3\le s_2\le s_1$,
-\[
-    2s_3^2
-    \le
-    s_1^2+s_2^2
-    \le
-    \frac12.
+  (A\otimes I)\eta_{12}=-\frac1{\sqrt2}\delta_e,
+  \qquad
+  (\Phi\otimes\id)(P_-)=\Pi_e.
 \]
 Consequently,
 \[
-    s_1^2+s_2^2+s_3^2
-    \le
-    \frac34.
+  (\Phi\otimes\id)(P_-)
+  \preceqop\lambda(I-\Pi_e)
 \]
-For any orthogonal projection $Q$ and any $k$, projection duality gives
-\begin{align*}
-    \sup_{\substack{\norm{z}=1\\ \SR(z)\le k}}
-    \ip{z}{Qz}
-    &=
-    \sup_{\substack{\phi\in\ran Q\\ \norm{\phi}=1}}
-    \sup_{\substack{\norm{z}=1\\ \SR(z)\le k}}
-    \abs{\ip{z}{\phi}}^2\\
-    &=
-    \sup_{\substack{\phi\in\ran Q\\ \norm{\phi}=1}}
-    \sum_{j=1}^k s_j(\phi)^2;
-\end{align*}
-see \cite{JohnstonKribs2010}. Applying this identity with $k=3$ gives
-\[
-    \sup_{\substack{\norm{z}=1\\ \SR(z)\le3}}
-    \ip{z}{Qz}
-    \le
-    \frac34.
-\]
+fails for every finite $\lambda$: the right side vanishes on
+$\delta_e$ and the left side does not.  The unprotected bound is sharp,
+since $\Pi_e\preceqop I$ and $\beta_2(\Phi)=1$.
 
-On the other hand,
-\[
-    \omega_-^{(m)}\otimes\omega_-^{(n)}
-    =\frac{Q}{\rank Q},
-\]
-and hence
-\[
-    \Tr\left[
-      Q\left(
-        \omega_-^{(m)}\otimes\omega_-^{(n)}
-      \right)
-    \right]
-    =1.
-\]
-If the state had Schmidt number at most $3$, it would admit a convex
-decomposition into pure states of Schmidt rank at most $3$
-\cite{TerhalHorodecki2000}; its expectation against $Q$ would then be at
-most $3/4$, a contradiction. Therefore its Schmidt number is at least
-$4$, proving \cref{eq:SN-four}.
-\end{proof}
+\subsection{A Choi constant is not a contraction identity}
 
-\begin{corollary}[Explicit Schmidt-number witnesses]
-\label[corollary]{cor:explicit-witnesses}
-Let
-\[
-    Q=\Pi_-^{(m)}\otimes \Pi_-^{(n)}.
-\]
-Then
-\[
-    W_2:=\frac12I-Q
-\]
-satisfies
-\[
-    \Tr(W_2\sigma)\ge0
-    \qquad
-    \text{whenever }\SN(\sigma)\le2,
-\]
-and
-\[
-    W_3:=\frac34I-Q
-\]
-satisfies
-\[
-    \Tr(W_3\sigma)\ge0
-    \qquad
-    \text{whenever }\SN(\sigma)\le3.
-\]
-Thus a negative expectation of $W_2$ certifies Schmidt number at
-least $3$, while a negative expectation of $W_3$ certifies Schmidt
-number at least $4$. For the state in
-\cref{cor:exact-schmidt-number},
-\[
-\begin{aligned}
-    \Tr\left[
-      W_2\left(
-        \omega_-^{(m)}\otimes\omega_-^{(n)}
-      \right)
-    \right]
-    &=-\frac12,\\
-    \Tr\left[
-      W_3\left(
-        \omega_-^{(m)}\otimes\omega_-^{(n)}
-      \right)
-    \right]
-    &=-\frac14.
-\end{aligned}
-\]
-\end{corollary}
+\Cref{thm:lift} returns an $r$-positive map.  It does not say which concrete
+quadratic form that map represents.  The partial traces in
+\cref{eq:marginal} enter through \cref{eq:map-identity} and
+\cref{eq:choi-contraction}, not through $\beta_2$.  The zero map makes the
+logical separation immediate: it satisfies the theorem with
+$\beta_2=0$, but carries no information about either marginal.  Any proposed
+new application therefore has two independent obligations:
+compute the local Choi constant and identify the downstream quadratic form.
 
+\subsection{The universal coefficient need not be the exact coefficient}
+
+The vertex Cauchy--Schwarz step \cref{eq:vertex-cs} discards nonnegative
+variance terms.  It follows that $(r-1)\beta_2(\Phi)$ is a universal
+sufficient coefficient, not a formula for the optimum of every map.  The
+clique case of \cref{thm:graph} shows that no smaller universal coefficient
+is possible.  For a particular Kraus dictionary without an appropriate
+witness, its exact correction threshold remains a separate extremal problem.
+
+\subsection{Higher tensor powers}
+
+An even tensor product of skew Kraus spaces still has even transpose parity,
+so \cref{thm:lift} applies whenever its $\beta_2$ is known.  This gives
+alternating marginal inequalities for higher even tensor powers.  Two
+features of the two-factor application do not automatically persist:
+
+\begin{enumerate}
+\item The constants
+$\beta_2(\Lambda_{U_1}\otimes\cdots\otimes\Lambda_{U_{2m}})$ are not
+determined by \cref{thm:double-skew} when $m\ge2$.
+\item The collapse in \cref{eq:map-identity} is special to two factors.  If
+$S=\Delta-\id$ and one tries to match
+$S^{\otimes n}+(r-1)\Delta^{\otimes n}-t\id$ with a scalar multiple of
+$(S+t\id)^{\otimes n}$, the terms containing $n-1$ copies of $S$ force
+$rt=r-1$, while those containing $n-2$ copies force
+$r-1=(r-1)^2/r$.  For $n\ge3$, these equations are compatible only at
+$r=1$.
+\end{enumerate}
+
+The lifting theorem therefore survives in higher even degree, while the
+particularly simple tensor-product reduction map does not.
+
+\section{Formal verification and scope}
+\label{sec:formal}
+
+The finite-coordinate development proves \cref{thm:double-skew}, the protected
+part of \cref{thm:lift}, both operator estimates underlying its unprotected
+part, \cref{thm:marginal,thm:graph}, the exact-rank extension, both optimality
+witnesses, and the parity counterexample.  The unprotected map-level statement
+and \cref{cor:beta-upper} are short assemblies of these checked estimates but
+are not separately named Lean declarations.  The accompanying repository
+\cite{RankRRepository} is cited at the immutable revision inspected for this
+manuscript.  It also proves the Autonne--Takagi factorization used in
+\cref{app:double-skew}.  The main declarations contain no \texttt{sorry};
+their reported axiom surface is \texttt{propext},
+\texttt{Classical.choice}, and \texttt{Quot.sound}.
+
+The formal statements use matrices over finite coordinate types.
+They prove the coordinate identities and rank bounds used in this paper,
+including $\SR(\vecop C)=\rank C$.  The transport from abstract
+finite-dimensional Hilbert spaces to chosen orthonormal coordinates is not a
+separate formal theorem.  Accordingly, the kernel checks the deduction once
+those coordinate definitions are accepted; the correspondence between those
+definitions and the basis-free prose remains an interface to inspect.
+
+The balanced-polarization route in \cref{sec:balanced-route} is not among the
+declarations at the cited revision.  Its rank factorization, marginal Gram
+expansions, and complete-graph variance identity have finite-coordinate
+counterparts.  The missing reusable bridge is the balanced factorization,
+whose principal new input is the Parker--Fillmore constant-diagonal theorem.
 
 \appendix
-\crefalias{section}{appendix}
-\crefalias{subsection}{appendix}
-\section{Formal verification}
-\label{app:formal}
 
-\begin{sloppypar}
-The proof of \cref{thm:rank_r}, and of every result it depends on, has been
-formalized in Lean~4.  The development is available at
-\url{https://github.com/elazarg/rank-r}.  It uses the toolchain
-\texttt{leanprover/lean4:v4.32.0}, and Mathlib is its only direct dependency,
-pinned in \texttt{lake-manifest.json} at revision
-\texttt{81a5d257c8e410db227a6665ed08f64fea08e997} (tag \texttt{v4.32.0});
-that manifest also pins every transitive dependency.  After \texttt{lake exe cache get}, the command
-\texttt{lake build RankR.Verification.Axioms} compiles the audited development.  The sources contain no \texttt{sorry},
-no \texttt{axiom} declaration, no \texttt{native\_decide} and no
-\texttt{set\_option}, and \texttt{\#print axioms} applied to the main theorem
-reports only \texttt{propext}, \texttt{Classical.choice} and
-\texttt{Quot.sound}; the file
-\texttt{RankR/Verification/Axioms/All.lean} wraps that check in
-\texttt{\#guard\_msgs} for each headline theorem, so it is verified by the
-build rather than asserted here.
-\end{sloppypar}
+\section{Proof of the double-skew action bound}
+\label{app:double-skew}
 
-The formal counterpart of \cref{thm:rank_r} is
-\texttt{rank\_r\_partial\_trace}, and it has \emph{no}
-hypotheses.  The Autonne--Takagi factorization is itself proved, as
-\texttt{Matrix.exists\_takagi};
-\texttt{RankR/Core/DoubleSkew/Takagi.lean} derives
-\cref{lem:double-skew} from it, and
-\texttt{RankR/Core/DoubleSkew/FGP.lean} supplies the
-universal upper bound $\beta_2(\Lambda_U\otimes\Lambda_V)\le1$.
-\texttt{Sharp.lean} proves equality when both factors contain two distinct
-basis labels; in the degenerate dimensions
-\path{skewKraus_family_eq_zero_of_card_lt_two} and
-\path{choiTwoBound_skewKraus_zero_of_card_lt_two} prove that the map
-vanishes and satisfies the zero bound, hence its norm-defined sharp constant
-is zero.  \texttt{Results.lean} composes the upper-bound chain, so the
-development is proved end to end.  The single quantitative input is that upper
-bound: the development's only route from
-\cref{sec:double-skew} to \cref{sec:proof} is \cref{def:beta2}.  Beyond
-\cref{eq:main-bound} itself the development covers the strict form of
-\cref{eq:rank-monotonicity}, hence the assertion that for nonzero $C$ equality
-in \cref{eq:main-bound} forces $\rank C=r$; all of \cref{rem:optimality} --- the
-extremizer, its rank, the equality it attains, and the optimality of both
-coefficients; and \cref{lem:one-sided-partial-trace}.
-
-Both directions of \cref{rem:fgp-equivalence} are formalized, so
-\cite[Thm.~2.4]{fu2026solution2copydistillabilitywerner} is machine-checked as
-well, as \texttt{fgpBound\_holds}.  Two things should still be stated
-precisely.  First, the mathematics of \cref{sec:double-skew} is theirs; the
-formal development follows their \S2 and replaces their Theorem~2.4 by
-Autonne--Takagi, which removes their appeals to a max--min exchange and to
-\cite{JohnstonKribs2010}, but it is not an independent derivation.  Second,
-what is proved is \texttt{FGPBound} as \cref{sec:double-skew} renders it, in
-the homogeneous form over $\ketbra{u_1}{v_1}+\ketbra{u_2}{v_2}$ rather than
-over unit vectors of Schmidt rank at most two; by \cref{eq:SR-vec-rank} these
-are the same statement, but that identification is a reading of the definitions
-rather than a theorem of the development.
-
-The theorems \texttt{rank\_r\_partial\_trace\_of\_FGP\_square} and its
-variants are retained in the development as a bridge to the published estimate:
-they carry the hypothesis \texttt{FGPBound (Fin d) (Fin d)} together with
-$\card U\le d$ and $\card V\le d$, and record that Fu--Gao--Park's statement,
-in the square form they publish, yields the same conclusion.  They are no
-longer on the critical path.  The correspondence with the results of the main
-text is as follows.
-
-\begin{longtable}{p{.30\textwidth}p{.64\textwidth}}
-\hline
-Manuscript & Lean\\
-\hline
-\endfirsthead
-\hline
-\multicolumn{2}{l}{\footnotesize\itshape continued from the previous page}\\
-\hline
-Manuscript & Lean\\
-\hline
-\endhead
-\hline
-\multicolumn{2}{r}{\footnotesize\itshape continued on the next page}\\
-\endfoot
-\hline
-\endlastfoot
-\cref{thm:rank_r} & \texttt{rank\_r\_partial\_trace}\\
-Autonne--Takagi, \cite[Cor.~4.4.4(c)]{HornJohnson} & \texttt{Matrix.exists\_takagi}\\
-\cref{lem:double-skew} & \texttt{doubleSkewBound\_of\_takagi}\\
-\cref{eq:flip-trace} & \texttt{hsInner\_symOuter\_flipU}\\
-\cref{eq:two-term-nonneg} & \texttt{hsInner\_flipU\_pairMat\_nonneg}\\
-\cref{eq:pi-symmetric} & \texttt{qform\_Qm\_vec\_pairMat\_le}\\
-\cref{eq:pair-bound} & \texttt{sq\_add\_sq\_le\_of\_takagi}\\
-weights in step 4 of \cref{lem:double-skew} & \texttt{exists\_pair\_sum\_weighted\_le}\\
-\cref{rem:fgp-equivalence}, forward & \texttt{doubleSkewBound\_of\_FGP}\\
-\cref{rem:fgp-equivalence}, converse & \texttt{FGPBound\_of\_doubleSkewBoundQm}\\
-\cite[Thm.~2.4]{fu2026solution2copydistillabilitywerner} & \texttt{fgpBound\_holds}\\
-zero extension in \cref{rem:fgp-equivalence} & \texttt{FGPBound\_of\_card\_le}\\
-\cref{def:beta2}, $J(\Phi)$ & \texttt{choiOf}\\
-\cref{def:beta2}, $\beta_2$ & \texttt{ChoiTwoBound}\\
-\cref{def:beta2}, attainment & \texttt{ChoiTwoAttained},\\
- & \texttt{le\_of\_choiTwoAttained}\\
-\cref{eq:beta2-double-skew} & \texttt{choiOf\_skewKraus},\\
- & \texttt{choiTwoBound\_skewKraus}\\
-\cref{eq:beta2-double-skew}, as an equality
-  & \texttt{choiTwoBound\_skewKraus\_iff}\\
-\cref{thm:pair-amplification} & \texttt{thetaPositive\_of\_choiTwoBound}\\
-\cref{eq:kraus-cauchy-schwarz}, \cref{eq:kraus-pair-bound}
-  & \texttt{norm\_sq\_pair\_le\_of\_choiTwoBound}\\
-\cref{eq:amplification-A} & \texttt{qform\_krausQ\_Pneg\_le}\\
-\cref{eq:amplification-B} & \texttt{qform\_krausQ\_ptransposeUV\_ge}\\
-\cref{eq:map-identity} & \texttt{Psi\_eq\_tensor\_square}\\
-$\Delta_{U\otimes V}=\Delta_U\otimes\Delta_V$ & \texttt{RU\_zero\_RV\_zero}\\
-\cref{eq:lambda-tau-monoidal} & \texttt{Lam4\_transpose}\\
-\cref{prop:operator_ineq} & \texttt{operatorIneq\_of\_choiTwoBound},\\
- & \texttt{operatorIneq\_of\_FGP}\\
-\cref{rem:operator-ineq-as-map}, $r$-block positivity
-  & \texttt{isBlockPositive\_psiChoi}\\
-\cref{eq:rho-partial-transpose} & \texttt{Ppos\_sub\_Pneg}\\
-\cref{eq:Phi-expansion} & \texttt{Phi4\_apply}\\
-\cref{eq:Phi-rhoT} & \texttt{Phi4\_ptransposeUV\_rankOne}\\
-\cref{eq:H-decomposition} & \texttt{HopScaled\_eq}\\
-\cref{eq:sos-main-gram}
-  & \texttt{rankFactor\_partialTraceGap\_eq\_sector\_gram}\\
-positivity in \cref{prop:sos-sector-gram}
-  & \texttt{qform\_negativeSectorDefectScaled\_nonneg\_holds}\\
-\cref{eq:sos-complete-graph}
-  & \texttt{completeGraph\_defect\_certificate\_coeff}\\
-\cref{eq:Kc-norm}
-  & \texttt{hsNormSq\_sum\_smul\_of\_hsInner\_four}\\
-nonnegativity in \cref{prop:sos-complete-graph}
-  & \texttt{completeGraph\_defect\_nonneg\_holds}\\
-\cref{eq:T-by-vertices} & \texttt{Tsyn\_eq\_delta\_vtx}\\
-\cref{eq:T-operator-bound} & \texttt{norm\_Tsyn\_sq\_le}\\
-\cref{eq:T-orthogonal} & \texttt{inner\_delta\_placeT\_kron\_zetaV}\\
-\cref{eq:T-orthogonal}, converse & \texttt{inner\_delta\_placeT\_zetaV\_iff}\\
-\cref{rem:parity}, odd degree
-  & \texttt{inner\_delta\_placeT\_zetaV\_of\_isSkew},\\
- & \texttt{not\_qform\_krausQ\_Pneg\_le\_skewFam}\\
-\cref{lem:partial-trace-contractions} & \texttt{contraction\_norm},
-  \texttt{contraction\_trace},\\
- & \texttt{hsNormSq\_ptraceU\_rankFactor},\\
- & \texttt{hsNormSq\_ptraceV\_rankFactor}\\
-\cref{eq:C-decomposition} & \texttt{exists\_rankFactor}\\
-\cref{eq:rank-monotonicity} & \texttt{rank\_mono}\\
-strict case of \cref{eq:rank-monotonicity} & \texttt{rank\_mono\_strict}\\
-\cref{eq:main-bound-exact-rank} & \texttt{rank\_r\_partial\_trace\_exact}\\
-\cref{eq:main-bound-parametrized}
-  & \texttt{rank\_r\_partial\_trace\_exact\_of\_betaTwo}\\
-strictness for $\rank C<r$ & \texttt{rank\_r\_partial\_trace\_strict}\\
-equality forces $\rank C=r$ & \texttt{rank\_eq\_of\_eq\_rank\_r}\\
- & \texttt{\_partial\_trace}\\
-trace--rank bound in \cref{sec:proof} & \texttt{normSq\_trace\_le}\\
-\cref{eq:sos-lagrange}
-  & \texttt{rankFactor\_traceRankResidual\_eq\_wedgeNormSq}\\
-\cref{eq:sos-lagrange-coordinates}
-  & \texttt{rankFactor\_traceRankResidual\_eq\_lagrangeSOS}\\
-\cref{lem:one-sided-partial-trace} & \texttt{hsNormSq\_ptraceU\_le},\\
- & \texttt{hsNormSq\_ptraceV\_le}\\
-\cref{eq:ptrace-rank-one-product} & \texttt{ptraceU\_rankOne},
-  \texttt{ptraceV\_rankOne}\\
-extremizer $P_r\otimes\ketbra{v}{w}$ & \texttt{projWit}\\
-its rank and its four norms & \texttt{rank\_projWit},
-  \texttt{hsNormSq\_projWit},\\
- & \texttt{trace\_projWit},\\
- & \texttt{hsNormSq\_ptraceU\_projWit},\\
- & \texttt{hsNormSq\_ptraceV\_projWit}\\
-equality at the extremizer & \texttt{projWit\_bound\_eq}\\
-$J(\Psi_r)$ attained at it & \texttt{re\_qform\_psiChoi\_projWit}\\
-optimality of $a=r$ & \texttt{le\_coeff\_hsNormSq\_of\_bound}\\
-optimality of $b=1/r$ & \texttt{inv\_le\_coeff\_trace\_of\_bound}\\
-\cref{prop:exact-q2-score}, lower branches
-  & \texttt{twoCopyScore\_lower\_of\_le\_inv},\\
-  & \texttt{twoCopyScore\_lower\_of\_inv\_le}\\
-\cref{prop:exact-q2-score}, attaining matrices
-  & \texttt{twoCopyScore\_projWit\_same},\\
-  & \texttt{twoCopyScore\_projWit\_orthogonal}\\
-\cref{cor:two-copy-block-positive}, score condition for $r\le d$
-  & \texttt{twoCopyNonnegative\_iff}\\
-\cref{cor:adjacent-rank-gap}, normalized witness and score
-  & \texttt{exists\_unit\_pureSchmidtRank\_adjacent\_endpoint}\\
-\cref{rem:strict-rank-gap}
-  & \texttt{re\_qform\_productReductionChoi\_strict\_lower\_of\_}\\
-  & \quad\texttt{pureSchmidtRank\_le},\\
-  & \texttt{exists\_unit\_pureSchmidtRank\_adjacent\_strict\_neg}\\
-\cref{cor:two-copy-trace-distance}
-  & \texttt{twoCopy\_traceDistance\_lower}\\
-spectral diameter in \cref{cor:two-copy-trace-distance}
-  & \texttt{abs\_re\_qform\_twoCopyWitness\_centered\_le}\\
-\cref{thm:exact-asymmetric-score}, four lower branches
-  & \texttt{asymmetricScore\_lower\_left\_of\_le\_inv},\\
-  & \texttt{asymmetricScore\_lower\_left\_of\_inv\_le},\\
-  & \texttt{asymmetricScore\_lower\_right\_of\_le\_inv},\\
-  & \texttt{asymmetricScore\_lower\_right\_of\_inv\_le}\\
-\cref{thm:exact-asymmetric-score}, attaining matrices
-  & \texttt{asymmetricScore\_projWit\_same},\\
-  & \texttt{asymmetricScore\_projWit\_orthogonal},\\
-  & \texttt{asymmetricScore\_swappedProjWit\_same},\\
-  & \texttt{asymmetricScore\_swappedProjWit\_orthogonal}\\
-\cref{cor:asymmetric-block-positive}, score condition for $r\le d$
-  & \texttt{asymmetricNonnegative\_iff}\\
-explicit score Choi quadratic forms
-  & \texttt{re\_qform\_twoCopyScoreOperator},\\
-  & \texttt{re\_qform\_asymmetricScoreOperator}\\
-score block positivity for $r\le d$
-  & \texttt{isBlockPositive\_\allowbreak twoCopyScoreOperator\_\allowbreak
-      iff\_\allowbreak le\_\allowbreak inv},\\
-  & \texttt{isBlockPositive\_\allowbreak asymmetricScoreOperator\_\allowbreak
-      iff\_\allowbreak max\_\allowbreak le\_\allowbreak inv}\\
-Choi matrix of the reduction pencil
-  & \texttt{mapChoi\_reductionMap}\\
-displayed regrouped product Choi matrix
-  & \texttt{productReductionChoi\_\allowbreak eq\_\allowbreak
-      regroup\_\allowbreak mapChoi},\\
-  & \texttt{productReductionChoi\_\allowbreak eq\_\allowbreak
-      asymmetricScoreOperator}\\
-positive-semidefinite Choi continuation
-  & \texttt{reductionChoi\_posSemidef},\\
-  & \texttt{productReductionChoi\_\allowbreak posSemidef}\\
-product-Choi block positivity for every positive $r$
-  & \texttt{isBlockPositive\_\allowbreak productReductionChoi\_\allowbreak
-      self\_\allowbreak iff\_\allowbreak le\_\allowbreak inv\_\allowbreak min},\\
-  & \texttt{isBlockPositive\_\allowbreak productReductionChoi\_\allowbreak
-      iff\_\allowbreak max\_\allowbreak le\_\allowbreak inv\_\allowbreak min}\\
-finite-coordinate map/Choi equivalence
-  & \texttt{isMapRPositive\_\allowbreak mapOfChoi\_\allowbreak
-      iff\_\allowbreak isBlockPositive}\\
-tensor product of the reduction maps
-  & \texttt{productReductionMapLinear\_\allowbreak apply}\\
-map $r$-positivity classifications
-  & \texttt{isMapRPositive\_\allowbreak productReductionMapLinear\_\allowbreak
-      self\_\allowbreak iff\_\allowbreak le\_\allowbreak inv\_\allowbreak min},\\
-  & \texttt{isMapRPositive\_\allowbreak productReductionMapLinear\_\allowbreak
-      iff\_\allowbreak max\_\allowbreak le\_\allowbreak inv\_\allowbreak min}\\
-\cref{eq:kronecker-main-use}
-  & \texttt{centeredPartialTrace\_le}\\
-\cref{eq:kronecker-pairing}
-  & \texttt{hsInner\_kroneckerSum\_centered}\\
-\cref{eq:kronecker-CS}
-  & \texttt{normSq\_hsInner\_kroneckerSum\_le}\\
-both entries of the minimum in \cref{eq:kronecker-bound}
-  & \texttt{normSq\_hsInner\_kroneckerSum\_le\_min}\\
-rank-constrained Frobenius dual form of \cref{cor:kronecker}
-  & \texttt{frobeniusRankTestSq\_kroneckerSum\_le}\\
-\cref{eq:ky-fan-duality}
-  & \texttt{kyFanFrobeniusDuality}\\
-\cref{cor:kronecker}
-  & \texttt{kyFanSq\_kroneckerSum\_le}\\
-\end{longtable}
-
-Three respects in which the formal statements are renderings rather than
-transcriptions should be recorded.  First, \texttt{FGPBound} --- used only for
-the bridge theorems above --- is stated in the homogeneous form
-\cref{eq:fgp-bound-homogeneous} rather than for unit vectors, and quantifies
-over expressions $\ketbra{u_1}{v_1}+\ketbra{u_2}{v_2}$ rather than over vectors
-of Schmidt rank at most two; by \cref{eq:SR-vec-rank} these are the same
-statement.  Second, the formal analogues of $H_r$, $\Phi$ and
-$P_\pm$ carry positive integer scalings, chosen so that no denominators occur;
-this does not affect positivity.  Third, what is certified is the deduction,
-not the faithfulness of the formal definitions to the informal ones; the
-conventions those definitions encode are exactly the ones fixed in the
-introduction.
-
-\paragraph{Constants pinned, not merely bounded.}
-\texttt{ChoiTwoBound} is an upper bound, and monotone in its constant: it holds
-at $10^6$ whenever it holds at all.  On its own, therefore, it names no number,
-and the theorems stated only with \texttt{ChoiTwoBound} certify
-\cref{eq:beta2-double-skew} only as an inequality.
-\texttt{Sharp.lean} supplies the other half.  It adds the
-dual predicate \texttt{ChoiTwoAttained} --- the bound met with equality at some
-nonzero operator of rank at most two --- together with the leastness principle
-the pair generates, \texttt{le\_of\_choiTwoAttained}, and then exhibits an
-extremizer: $M=NP$ with $N=J_U\otimes J_V$ an elementary tensor of rotation
-generators and $P$ a rank-two projection, so that $N$ being unitary makes the two
-singular values of $M$ coincide, which is the equality case of the Ky Fan
-estimate behind $\norm{Q_-}_{S(2)}=\frac12$.  When each factor has two distinct
-basis labels, the conclusion is
-\texttt{choiTwoBound\_skewKraus\_iff}: the constants valid for
-$\Lambda_U\otimes\Lambda_V$ are exactly the reals $\ge4$ in the $\Phi_4$ scaling,
-so \cref{eq:beta2-double-skew} is an equality.  If a factor has cardinality below
-two, \path{skewKraus_family_eq_zero_of_card_lt_two} and
-\path{choiTwoBound_skewKraus_zero_of_card_lt_two} prove that the family
-vanishes and satisfies the zero bound, hence its norm-defined sharp constant is
-zero.
-\texttt{re\_qform\_psiChoi\_projWit} does the same for the conclusion --- the
-$r$-block positivity of $J(\Psi_r)$ is attained at the extremizer of
-\cref{rem:optimality}, hence cannot be sharpened to a strict inequality.
-
-\paragraph{A second instance of the mechanism.}
-The edge-Kraus family $A_e=(E_{ij}-E_{ji})\otimes(E_{01}-E_{10})$ attached to the
-edges of a graph is formalized in
-\texttt{RankR/Companions/Graph/Family.lean}, with
-$\beta_2(\Phi_G)=1$ exactly (\texttt{choiTwoBound\_graphKraus\_iff}), and
-\texttt{RankR/Core/Amplification/Theta.lean} together with
-\texttt{RankR/Companions/Graph/PairBound.lean} pin its amplification
-threshold: for a graph containing an $R$-clique, $\Theta^{\Phi_G}_{R,\lambda}$ is
-$R$-positive precisely for $\lambda\ge R-1$
-(\texttt{thetaPositive\_graphKraus\_iff}).  The lower half is the witness
-$C=P_S\otimes E_{01}$, which is the extremizer \texttt{projWit} of
-\cref{rem:optimality} read at a two-element second factor; an edge contributes
-$-2$ to the Choi pairing exactly when both of its endpoints lie in $S$, and the
-general form of that count, \texttt{two\_mul\_card\_le\_of\_thetaPositive}, is an
-induced-average-degree obstruction.  These are the development's only statements
-about the \emph{optimal} amplification coefficient rather than about a valid one,
-and they show the bound $(r-1)\beta_2$ of \cref{thm:amplification} is attained.
-
-The formalization follows the arguments of \cref{sec:double-skew,sec:proof}
-except at two points, where it takes a shorter route:
-\cref{eq:Phi-Pminus-TTstar} is replaced by a Bessel-type duality that never
-forms $\mathcal T$ as a matrix, and the complete-graph identity of
-\cref{prop:sos-complete-graph} is not used, the vertex Cauchy--Schwarz estimate
-sufficing.  Accordingly, \cref{eq:Phi-Pminus-TTstar} is represented by the
-corresponding Kraus quadratic form rather than by a matrix-valued synthesis
-map, while \cref{eq:sos-main-gram} and positivity of its negative-sector defect
-are formalized as
-\texttt{rankFactor\_partialTraceGap\_eq\_sector\_gram} and
-\texttt{qform\_negativeSectorDefectScaled\_nonneg\_holds}.
-The proof does not depend on the finer decomposition of that defect, but
-\texttt{Defect.lean} separately formalizes its exact vertex variances and edge
-deficits as \texttt{completeGraph\_defect\_certificate\_coeff}, and proves
-their nonnegativity as \texttt{completeGraph\_defect\_nonneg\_holds}.
-\texttt{LagrangeSOS.lean} proves the complex Lagrange identity first as a
-choice-free half-sum over ordered coordinate pairs and then as the literal
-$\alpha<\beta$ polynomial sum in
-\cref{eq:sos-lagrange-coordinates}.  The theorem
-\texttt{rankFactor\_traceRankResidual\_eq\_wedgeNormSq} records
-\cref{eq:sos-lagrange} with the exterior squared norm defined by that
-orthonormal-coordinate sum, so no separate exterior-algebra API is assumed.
-
-Within \cref{sec:applications},
-\texttt{RankR/Applications/Reduction/Main.lean} covers the exact
-two-copy and asymmetric score curves in an infimum-free but equivalent form:
-each branch is a pointwise lower bound and a displayed rank-exact matrix attains
-it.  It also covers factor interchange, the score nonnegativity thresholds for
-$1\le r\le d$, the endpoint and strict adjacent-rank score separations, and the
-coordinate Choi quadratic identities.  It identifies the reduction maps'
-Choi matrices, performs the output/input register permutation in their tensor
-product, and proves its block-positivity threshold for every positive $r$ in
-equal local dimensions, using a positive-semidefinite Choi argument past the
-local dimension.
-\texttt{RankR/Applications/Reduction/PositiveMaps.lean} defines positivity of the actual
-$\operatorname{id}_{\mathbb C^r}\otimes\Phi$ matrix ampliation, proves the
-finite-coordinate Choi equivalence, identifies the product map with the tensor
-product of the two reduction pencils, and derives the symmetric and asymmetric
-map-$r$-positivity classifications.  The development also covers the complete
-rank-sensitive estimate
-\cref{eq:kronecker-main-use}.
-\texttt{RankR/Applications/Kronecker/Inequality.lean} proves the exact
-pairing \cref{eq:kronecker-pairing}, the centered Cauchy--Schwarz step
-\cref{eq:kronecker-CS}, the full Frobenius branch, both entries of the minimum,
-and the resulting normalized rank-constrained Frobenius test-supremum bound.
-\texttt{RankR/Library/Quantum/SchmidtNumber.lean} defines Schmidt number at
-most $r$ by a finite sum of rank-constrained pure-state projectors and proves
-that block positivity extends to this cone.
-\texttt{RankR/Library/Matrix/HermitianTraceNorm.lean} and
-\texttt{RankR/Library/Quantum/WitnessDistance.lean} derive Hermitian
-trace-norm duality from the spectral theorem and the centered-witness
-separation bound.
-\texttt{RankR/Applications/TraceDistance/Main.lean} proves the two-copy
-spectral diameter and the pointwise form of
-\cref{cor:two-copy-trace-distance}.  The pointwise statement for every
-admissible $\sigma$ is equivalent to the displayed infimum bound.
-\texttt{RankR/Applications/Kronecker/KyFan.lean} proves the reusable equality
-\texttt{kyFanFrobeniusDuality}, including an explicit optimal
-rank-constrained Frobenius test, and derives the unconditional theorem
-\texttt{kyFanSq\_kroneckerSum\_le}.  The file
-\texttt{SchmidtWitness.lean} gives the explicit rank-four decomposition
-used for the upper bound in \cref{cor:exact-schmidt-number}, proves the
-rank-two witness and its mixed-state inequality, derives the required
-rank-three projection bound from the level-three double-skew action theorem,
-and proves the rank-three witness, the exact lower bound, and both displayed
-witness expectations.
-\texttt{RankR/Applications/Aggregation/Main.lean} extends the
-pure-state decomposition definition to rectangular bipartitions and proves
-the positive-map semidefinite cut of \cref{cor:positive-map-cut}, including
-the symmetric and asymmetric reduction-product specializations for arbitrary
-finite ancillas.  The same file represents local channels by their finite
-Kraus families, proves rank monotonicity under each local Kraus pair, permits
-the output and Kraus index spaces to depend on the term, and proves
-\cref{prop:local-witness-aggregation,cor:local-hamiltonian-rank-certificate}
-in this coordinate form.  Trace preservation is not needed for either
-conclusion.  For the subsequent remark,
-\texttt{localKrausPullback\_one} proves unitality from Kraus completeness,
-\texttt{aggregateLocalWitnessDependent\_shift\_eq} proves the exact weighted
-shift identity, and
-\texttt{dependentReductionAggregate\_shift\_posSemidef} together with
-\texttt{trace\_mul\_dependentReductionAggregate\_shift\_lower} proves
-positive semidefiniteness and the displayed energy baseline.  The sector
-decomposition proves the lower bound $1-d_e/r$, and
-\texttt{productReductionChoi\_inv\_exactRayleighMinimum} combines it with an
-explicit nonzero attaining vector, including the one-dimensional case.  Thus
-the manuscript's minimum-eigenvalue statement is represented without choosing
-an enumeration of eigenvalues.
-
-\Cref{thm:amplification} is covered, in all four operator forms and for
-an arbitrary Kraus family: \texttt{Choi.lean} carries
-\cref{eq:kraus-cauchy-schwarz} with $(\Phi,\beta_2)$ abstract and
-\texttt{Lifting.lean} carries
-\cref{eq:amplification-A0,eq:amplification-A,eq:amplification-B0,eq:amplification-B}
-as \texttt{qform\_krausQ\_Pneg\_le\_of\_norm},
-\texttt{qform\_krausQ\_Pneg\_le},
-\texttt{qform\_krausQ\_ptransposeUV\_ge\_of\_norm} and
-\texttt{qform\_krausQ\_ptransposeUV\_ge}, the transpose-symmetry hypothesis
-appearing in exactly the second and fourth.  For the double-skew family, the
-constant remains free through the contraction layer:
-\texttt{qform\_HopScaled\_param} and
-\texttt{rank\_r\_partial\_trace\_exact\_of\_betaTwo} formalize
-\cref{eq:main-bound-parametrized}.  This partial-trace conclusion is not a
-statement for an arbitrary $\Phi$, because the contraction
-\cref{eq:Phi-rhoT} is specific to $\Lambda_U\otimes\Lambda_V$.  The lifting
-layer is abstract, and $\Phi=\Lambda_U\otimes\Lambda_V$ enters its application
-through \cref{eq:beta2-double-skew} and that contraction identity.
-\Cref{thm:pair-amplification} is covered at
-general $\beta_2$, as \texttt{thetaPositive\_of\_choiTwoBound}: writing
-$\Theta^\Phi_{R,\lambda}$ for $\Phi\circ\tau+\lambda(\Delta_d-\frac1R\id)$ and
-taking $R$-positivity in its Choi form, that map is $R$-positive at
-$\lambda=(R-1)\beta$ for every $\beta$ admissible in \cref{def:beta2} and every
-completely positive $\Phi$ with transpose-symmetric Kraus operators.  The
-conversion from \cref{thm:amplification} does not use \cref{eq:Phi-rhoT}, which
-is why it survives the loss of the double-skew family: it runs
-\cref{eq:amplification-B} at the \emph{conjugated} frame $\overline e$ of the
-range factorization \cref{eq:C-decomposition} and at the test vector
-$\delta_{\overline d}$, where the negative-sector term is exactly the Choi
-pairing of $\Phi\circ\tau$.  Both sides are double sums over the frame indices of
-the \emph{bilinear} pairing $B(x,y)=\sum_wx_wy_w$ --- the partial transpose is
-what replaces the inner product by a bilinear one --- and they match term by term
-through $B(A^*\overline x,\overline y)=\overline{B(Ay,x)}$.  Those files, and \texttt{Sectors}, \texttt{Synth},
-\texttt{Frame} and \texttt{Edge} beneath them, are stated over a single space
-rather than over $U\otimes V$; the bipartite structure enters at the $\Phi_4$
-kernel and not before.  \Cref{eq:map-identity} is covered as
-\texttt{Psi\_eq\_tensor\_square}, with the two structural inputs of
-\cref{rem:operator-ineq-as-map} --- monoidality of $\Delta$ and
-\cref{eq:lambda-tau-monoidal} --- as separate lemmas, and the
-$r$-block-positivity reading of \cref{rem:operator-ineq-as-map} as
-\texttt{isBlockPositive\_psiChoi}.  The $r$-positivity statement of
-\cref{thm:amplification} uses the coordinate condition $\rank C\le r$.
-\texttt{pureSchmidtRank} defines the corresponding vector notion,
-\texttt{pureSchmidtRank\_vec} proves \cref{eq:SR-vec-rank}, and
-\texttt{rank\_le\_iff\_exists\_sum\_rankOne} proves the general $k$-term
-decomposition.  In particular,
-\texttt{choiKBound\_iff\_pureSchmidtKBound} and its Fu--Gao--Park specialization
-identify the unrolled Choi bounds with their direct pure-Schmidt-rank
-statements.  \Cref{rem:parity} is formalized, in both directions and
-past the point the remark itself argues.  \texttt{inner\_delta\_placeT\_zetaV\_iff}
-upgrades \cref{eq:T-orthogonal} to an equivalence --- orthogonality of every
-$(N\otimes I_Q)\zeta_{ij}$ to $\delta_e$ \emph{is} the degree-$0$ hypothesis, so
-that hypothesis is exact and not merely sufficient --- and
-\texttt{inner\_delta\_placeT\_zetaV\_of\_isSkew} evaluates the same pairing in
-odd degree, where the two terms add instead of cancelling.  That the
-\emph{conclusion} and not only the proof is then lost is a separate statement,
-and is \texttt{not\_qform\_krausQ\_Pneg\_le\_skewFam}: for the one-element family
-$J=E_{01}-E_{10}$ on $\C^2$, at $r=2$ and $y=\delta_e$, the protected right-hand
-side of \cref{eq:amplification-A} vanishes identically --- for every value of
-$\beta_2$, so no constant rescues it --- while the left-hand side is $4$; and the
-same data meets the unprotected \cref{eq:amplification-A0} with equality
-(\texttt{qform\_krausQ\_Pneg\_skewFam\_saturates}), so the gap between the two
-displays is exactly the direction $\delta_e$.  \Cref{rem:covariance} remains an
-observation about the mechanism: the two-dimensionality of the commutant is not
-formalized.
-
-% This appendix is independent of the main line of argument: nothing in
-% Sections 2-5 depends on it.  It records the algebraic defect structure
-% underlying the proof of Proposition 2.2.
-
-\section{Gram structure and defect identities}
-\label{app:gram}
-
-This section records the algebraic defect structure of the rank-$r$
-proof. The main residual is represented by positive Gram operators
-once the range isometry is fixed; this is not claimed to be a uniform
-bounded-degree polynomial sum-of-squares identity in the raw Stiefel
-coordinates. The only literal polynomial SOS below is the elementary
-trace--rank residual.
-
-For an operator $C$ of rank at most $r$, define
-\begin{align}
-    \mathsf G_r(C)
-    &:=
-    r\norm C_2^2+\frac1r\abs{\Tr C}^2
-    -\norm{\Tr_U C}_2^2-\norm{\Tr_V C}_2^2,
-\label{eq:sos-main-gap}\\
-    \mathsf R_r(C)
-    &:=
-    r\norm C_2^2-\abs{\Tr C}^2.
-\label{eq:sos-trace-rank-gap}
-\end{align}
-
-\begin{proposition}[Polynomial SOS for the trace--rank residual]
-\label[proposition]{prop:sos-trace-rank}
-Assume $r\le\dim(U\otimes V)$ and write
+We prove \cref{thm:double-skew}, adapting the argument of
+\cite[\S2]{FuGaoPark2026} and reorganizing it around the Autonne--Takagi
+factorization.  Relative to the fixed product basis, let
+$T_U$ and $T_V$ denote the two partial transposes on
+$\cL(U\otimes V)$.  They are commuting self-adjoint involutions for the
+Hilbert--Schmidt inner product, and
 \[
-    C=\sum_{i=1}^r\ketbra{e_i}{d_i},
+  \Pi=\frac12(1-T_U)\frac12(1-T_V)
 \]
-where $e_1,\ldots,e_r$ are orthonormal and zero columns $d_i=0$ are
-allowed. In $(U\otimes V)\otimes\C^r$, put
-\[
-    \mathbf e:=\sum_i e_i\otimes q_i,
-    \qquad
-    \mathbf d:=\sum_i d_i\otimes q_i.
-\]
-Equip the exterior square with the convention that
-$u_\alpha\wedge u_\beta$ for $\alpha<\beta$ is orthonormal whenever
-$(u_\alpha)$ is an orthonormal basis. Then
+is the orthogonal projection onto
+$\mathfrak{so}(U)\otimes\mathfrak{so}(V)$.  Hence $\Pi K=K$.
+Moreover $K^T=K$, because each elementary tensor contains two skew factors.
+
+Autonne--Takagi factorization \cite[Cor.~4.4.4(c)]{HornJohnson} gives
 \begin{equation}
-\label{eq:sos-lagrange}
-    \mathsf R_r(C)
-    =\norm{\mathbf e\wedge\mathbf d}^2.
+\label{eq:takagi}
+  K=\sum_i s_iw_iw_i^T,
 \end{equation}
-Equivalently, in any orthonormal coordinate system,
+where the $w_i$ form an orthonormal basis, $s_i\ge0$, and zero values of
+$s_i$ are retained.  The matrices $w_iw_i^T$ are Hilbert--Schmidt
+orthonormal.
+
+We first establish the two-term estimate.  Write $M_u$ for the coefficient
+matrix of $u\in U\otimes V$.  Direct contraction of the two product indices
+gives
 \begin{equation}
-\label{eq:sos-lagrange-coordinates}
-    \mathsf R_r(C)
-    =
-    \sum_{\alpha<\beta}
-    \abs{
-      \mathbf e_\alpha\mathbf d_\beta
-      -\mathbf e_\beta\mathbf d_\alpha
-    }^2.
+\label{eq:flip-trace}
+  \ip{uu^T}{(vv^T)^{T_U}}_{\mathrm{HS}}
+  =\Tr\bigl((M_u^*M_v)^2\bigr).
 \end{equation}
-\end{proposition}
-
-\begin{proof}
-One has
+For orthonormal $w_1,w_2$, let
 \[
-    \norm{\mathbf e}^2=r,
-    \qquad
-    \norm{\mathbf d}^2=\norm C_2^2,
-    \qquad
-    \abs{\ip{\mathbf e}{\mathbf d}}=\abs{\Tr C}.
+  N=s_1w_1w_1^T+s_2w_2w_2^T,\qquad
+  c_i=\norm{M_i^*M_i}_2.
 \]
-The complex Lagrange identity gives both formulas.
-\end{proof}
-
-For the remainder of this section, fix an exact rank-$r$
-factorization
+Expanding \cref{eq:flip-trace},
 \[
-    C=\sum_{i=1}^r\ketbra{e_i}{d_i},
-    \qquad
-    \delta_e=\sum_i e_i\otimes q_i,
-    \qquad
-    \delta_d=\sum_i d_i\otimes q_i,
+  \ip N{N^{T_U}}_{\mathrm{HS}}
+  =s_1^2c_1^2+
+    2s_1s_2\operatorname{Re}\Tr((M_1^*M_2)^2)+s_2^2c_2^2.
 \]
-and retain $\rho_0$, $\Pi_e$, $P_\pm$, and $\Phi$ from the proof of
-\cref{prop:operator_ineq}. Let $\mathcal T_-:=\mathcal T$ be the
-negative-sector synthesis map in \cref{eq:T-definition}. Choose an
-orthonormal basis of $\ran P_+$ and let $\mathcal T_+$ be the
-synthesis map whose columns are all Kraus images under $\Phi$ of those
-positive-sector basis vectors. Then
+The Hilbert--Schmidt Cauchy--Schwarz inequalities
 \[
-    \Phi(P_\pm)=\mathcal T_\pm\mathcal T_\pm^*.
+  \abs{\Tr(X^2)}\le\norm X_2^2,
+  \qquad
+  \norm{A^*B}_2^2
+  =\ip{AA^*}{BB^*}_{\mathrm{HS}}
+  \le\norm{A^*A}_2\norm{B^*B}_2
 \]
-
-For a coefficient array $c=(c^{(ij)}_{\alpha\beta})$, define
-\[
-    K_{ij}:=\sum_{\alpha,\beta}
-    c^{(ij)}_{\alpha\beta}L_\alpha\otimes M_\beta.
-\]
-At a vertex $k$, associate to an incident edge the signed vectors
-\[
-    v_{k,ik}:=K_{ik}\overline e_i\quad(i<k),
-    \qquad
-    v_{k,kj}:=-K_{kj}\overline e_j\quad(k<j).
-\]
-
-\begin{proposition}[Complete-graph defect certificate]
-\label[proposition]{prop:sos-complete-graph}
-With the skew Kraus normalization used in \cref{eq:Kc-norm},
+bound the middle term from below by $-2s_1s_2c_1c_2$.  Therefore
 \begin{equation}
-\label{eq:sos-complete-graph}
-\boxed{
-\begin{aligned}
- &(r-1)\norm{c}_2^2-\norm{\mathcal T_-c}^2\\
- &\quad=
- \frac{r-1}{2}\sum_{i<j}
- \left[
-   \frac12\norm{K_{ij}}_2^2
-   -\norm{K_{ij}\overline e_i}^2
-   -\norm{K_{ij}\overline e_j}^2
- \right]\\
- &\qquad+
- \frac12\sum_{k=1}^r
- \sum_{\substack{e<f\\e,f\ni k}}
- \norm{v_{k,e}-v_{k,f}}^2.
-\end{aligned}}
+\label{eq:partial-transpose-positive}
+  \ip N{N^{T_U}}_{\mathrm{HS}}
+  \ge(s_1c_1-s_2c_2)^2\ge0.
 \end{equation}
-Consequently $\norm{\mathcal T_-}^2\le r-1$ and
-\[
-    (r-1)(I-\Pi_e)-\mathcal T_-\mathcal T_-^*\succeq0.
-\]
-\end{proposition}
+Since $N^T=N$, one has $N^{T_U}=N^{T_V}$, and expansion of $\Pi$ gives
+\begin{equation}
+\label{eq:projection-half}
+  \ip N{\Pi N}_{\mathrm{HS}}
+  =\frac12\left(\norm N_2^2-
+        \ip N{N^{T_U}}_{\mathrm{HS}}\right)
+  \le\frac12\norm N_2^2.
+\end{equation}
 
-\begin{proof}
-At every vertex use the exact variance identity
+Now fix $a\ne b$ and truncate \cref{eq:takagi} to
 \[
-    (r-1)\sum_{e\ni k}\norm{v_{k,e}}^2
-    -\norm{\sum_{e\ni k}v_{k,e}}^2
-    =
-    \sum_{\substack{e<f\\e,f\ni k}}
-    \norm{v_{k,e}-v_{k,f}}^2.
+  K_{ab}=s_aw_aw_a^T+s_bw_bw_b^T,\qquad
+  A=s_a^2+s_b^2.
 \]
-By \cref{eq:T-by-vertices,eq:Kc-norm},
+Orthogonality gives
+$\norm{K_{ab}}_2^2=\ip K{K_{ab}}_{\mathrm{HS}}=A$.  Since $\Pi$ is a
+self-adjoint projection and $\Pi K=K$,
+\[
+  A=\ip K{\Pi K_{ab}}_{\mathrm{HS}}
+  \le\norm K_2\norm{\Pi K_{ab}}_2.
+\]
+By \cref{eq:projection-half},
+$\norm{\Pi K_{ab}}_2^2
+=\ip{K_{ab}}{\Pi K_{ab}}_{\mathrm{HS}}\le A/2$.
+Thus $A^2\le A\norm K_2^2/2$, and cancellation when $A>0$ yields
+\begin{equation}
+\label{eq:all-pairs}
+  s_a^2+s_b^2\le\frac12\norm K_2^2
+  \qquad(a\ne b).
+\end{equation}
+
+Finally, \cref{eq:takagi} implies
+$K^*K=\sum_i s_i^2\ketbra{\overline w_i}{\overline w_i}$.
+For orthonormal $x,y$, set
+\[
+  \alpha_i=\abs{\ip{\overline w_i}{x}}^2+
+           \abs{\ip{\overline w_i}{y}}^2.
+\]
+Then $0\le\alpha_i\le1$ and $\sum_i\alpha_i=2$.  The polytope
+\[
+  \{\alpha:0\le\alpha_i\le1,\ \sum_i\alpha_i=2\}
+\]
+is the convex hull of the vectors having two coordinates equal to one and
+the rest zero.  Hence \cref{eq:all-pairs} gives
+\[
+  \norm{Kx}^2+\norm{Ky}^2
+  =\sum_i\alpha_is_i^2
+  \le\max_{a\ne b}(s_a^2+s_b^2)
+  \le\frac12\norm K_2^2.
+\]
+This proves \cref{thm:double-skew}.
+
+\section{Elementary Choi contractions}
+\label{app:choi}
+
+For completeness, we record the four contractions used in
+\cref{eq:choi-contraction}.  With the vectorization convention of
+\cref{sec:proof},
 \begin{align*}
- &(r-1)\norm{c}_2^2-\norm{\mathcal T_-c}^2\\
- &\quad=
- \frac{r-1}{4}\sum_{i<j}\norm{K_{ij}}_2^2
- -\frac12\sum_{k=1}^r
-   \norm{\sum_{e\ni k}v_{k,e}}^2\\
- &\quad=
- \frac{r-1}{4}\sum_{i<j}\norm{K_{ij}}_2^2
- -\frac{r-1}{2}\sum_{i<j}
-   \left(
-     \norm{K_{ij}\overline e_i}^2
-     +\norm{K_{ij}\overline e_j}^2
-   \right)\\
- &\qquad+
- \frac12\sum_{k=1}^r
- \sum_{\substack{e<f\\e,f\ni k}}
- \norm{v_{k,e}-v_{k,f}}^2.
+  \ip{\vecop C}{J(\Delta_U\otimes\Delta_V)\vecop C}
+    &=\norm C_2^2,\\
+  \ip{\vecop C}{J(\id_U\otimes\Delta_V)\vecop C}
+    &=\norm{\Tr_U C}_2^2,\\
+  \ip{\vecop C}{J(\Delta_U\otimes\id_V)\vecop C}
+    &=\norm{\Tr_V C}_2^2,\\
+  \ip{\vecop C}{J(\id_U\otimes\id_V)\vecop C}
+    &=\abs{\Tr C}^2.
 \end{align*}
-Factoring the first two sums gives exactly
-\cref{eq:sos-complete-graph}.  The vertex-variance terms are
-nonnegative, and each edge bracket is nonnegative by
-\cref{lem:double-skew}. Hence $\norm{\mathcal T_-}^2\le r-1$.
-Finally, \cref{eq:T-orthogonal} gives
-$\ran\mathcal T_-\subseteq\delta_e^\perp$, whose projection is
-$I-\Pi_e$, so the operator inequality follows.
-\end{proof}
-
-\begin{proposition}[Exact positive/negative-sector Gram identity]
-\label[proposition]{prop:sos-sector-gram}
-Put
-\begin{equation}
-\label{eq:sos-negative-defect}
-    B_E
-    :=(r-1)(I-\Pi_e)-\mathcal T_-\mathcal T_-^*.
-\end{equation}
-Then
-\begin{equation}
-\label{eq:sos-main-gram}
-    \boxed{
-    \mathsf G_r(C)
-    =
-    \norm{\mathcal T_+^*\delta_d}^2
-    +\ip{\delta_d}{B_E\delta_d}.}
-\end{equation}
-Moreover, $B_E\succeq0$.
-\end{proposition}
-
-\begin{proof}
-By \cref{lem:partial-trace-contractions},
-$\mathsf G_r(C)=\ip{\delta_d}{H_r^{(0)}\delta_d}$.  Substituting
-\cref{eq:H-decomposition} and the two synthesis factorizations gives
-\cref{eq:sos-main-gram}.  Positivity of $B_E$ is the operator
-conclusion of \cref{prop:sos-complete-graph}.
-\end{proof}
-
-\begin{remark}[Scope of the Gram certificate]
-The complete-graph identity separates the global synthesis-map defect
-into vertex variances and edgewise double-skew deficits. Edgewise
-nonnegativity is precisely the Fu--Gao--Park projection estimate used
-in \cref{lem:double-skew}. No uniform polynomial SOS certificate in
-the raw range-isometry variables is claimed.
-\end{remark}
-
-
-\section{Generic consequences of \texorpdfstring{$r$}{r}-block positivity}
-\label{app:generic}
-
-The two results collected here are separated from \cref{sec:applications}
-because neither uses any property of the witnesses constructed there
-beyond $r$-block positivity, and \cref{prop:local-witness-aggregation}
-does not use \cref{thm:rank_r} at all.  They are recorded because they are
-what makes those witnesses usable in practice.
-
-\subsection{Matrix-valued Schmidt-number criteria}
-
-\begin{corollary}[A positive-map semidefinite cut]
-\label[corollary]{cor:positive-map-cut}
-Let $1\le r\le d^2$, let $X$ be a finite-dimensional Hilbert space,
-and put
-\[
-    s:=\min\{r,d\},
-    \qquad
-    \Lambda_r
-    :=
-    \mathcal R_{-1/s}^{\otimes2}.
-\]
-If a positive semidefinite operator
-$\sigma\in\cL\bigl(X\otimes(\C^d)^{\otimes2}\bigr)$ has Schmidt
-number at most $r$ across
-$X:(\C^d)^{\otimes2}$, then
-\begin{equation}
-\label{eq:positive-map-cut}
-    (\id_X\otimes\Lambda_r)(\sigma)\succeq0.
-\end{equation}
-More generally, \cref{eq:positive-map-cut} holds with
-$\Lambda_r$ replaced by
-$\mathcal R_{-a}\otimes\mathcal R_{-b}$ whenever
-$a,b\ge0$ and
-\[
-    \max\{a,b\}\le\frac1{\min\{r,d\}}.
-\]
-\end{corollary}
-
-\begin{proof}
-By \cref{cor:asymmetric-block-positive}, the indicated map is
-$r$-positive.  Decompose $\sigma$ into positive multiples of pure
-states of Schmidt rank at most $r$.  For each such vector, its Schmidt
-support on $X$ has dimension at most $r$, so positivity follows from
-$r$-positivity after restricting the identity ancilla to that support.
-Conjugating back into $X$ and summing the resulting positive operators
-proves the assertion.
-\end{proof}
-
-\begin{remark}[Use as an SDP cut]
-Whenever a semidefinite relaxation contains an explicit candidate
-state block $\sigma$, \cref{eq:positive-map-cut} is a linear matrix
-inequality in the entries of that block.  If those entries are affine
-functions of a moment matrix, applying $\id\otimes\Lambda_r$ produces
-an affine matrix pencil and therefore a valid additional semidefinite
-constraint under a Schmidt-number-$r$ promise.  This is a necessary
-condition for that promise, not in general a complete semidefinite
-characterization of Schmidt number at most $r$.
-\end{remark}
-
-\subsection{Local aggregation of rank witnesses}
-
-\begin{proposition}[Local-channel aggregation]
-\label[proposition]{prop:local-witness-aggregation}
-Let $\mathcal H_A$ and $\mathcal H_B$ be finite-dimensional Hilbert
-spaces.  For each $e$ in a finite set $E$, let
-\[
-    \Phi_e^A:\cL(\mathcal H_A)\to\cL(\mathcal K_{A,e}),
-    \qquad
-    \Phi_e^B:\cL(\mathcal H_B)\to\cL(\mathcal K_{B,e})
-\]
-be quantum channels, let $W_e=W_e^*\in\cL(\mathcal K_{A,e}\otimes
-\mathcal K_{B,e})$ be $r$-block-positive, and let
-$\lambda_e\ge0$.  Then
-\begin{equation}
-\label{eq:aggregated-witness}
-    H
-    :=
-    \sum_{e\in E}
-    \lambda_e
-    (\Phi_e^A\otimes\Phi_e^B)^*(W_e)
-\end{equation}
-is $r$-block-positive across $\mathcal H_A:\mathcal H_B$.  In
-particular,
-\[
-    \Tr(H\rho)\ge0
-    \qquad
-    \text{whenever }\SN(\rho)\le r.
-\]
-\end{proposition}
-
-\begin{proof}
-Local quantum channels do not increase Schmidt number.  Indeed, write
-\[
-    \rho=\sum_k p_k\ketbra{\psi_k}{\psi_k},
-    \qquad
-    \SR(\psi_k)\le r,
-\]
-and choose Kraus operators $A_{e,i}$ and $B_{e,j}$ for
-$\Phi_e^A$ and $\Phi_e^B$.  Then
-\[
-    (\Phi_e^A\otimes\Phi_e^B)(\rho)
-    =
-    \sum_{k,i,j}p_k
-    \ketbra{(A_{e,i}\otimes B_{e,j})\psi_k}
-            {(A_{e,i}\otimes B_{e,j})\psi_k},
-\]
-and every vector in this decomposition has Schmidt rank at most $r$.
-Hence
-\[
-    \SN\bigl((\Phi_e^A\otimes\Phi_e^B)(\rho)\bigr)\le r
-\]
-for every $e$.  Therefore
-\[
-\begin{aligned}
-    \Tr(H\rho)
-    &=
-    \sum_{e\in E}\lambda_e
-    \Tr\left[
-      W_e(\Phi_e^A\otimes\Phi_e^B)(\rho)
-    \right]\\
-    &\ge0.
-\end{aligned}
-\]
-\end{proof}
-
-\begin{corollary}[A local-Hamiltonian Schmidt-number certificate]
-\label[corollary]{cor:local-hamiltonian-rank-certificate}
-In \cref{prop:local-witness-aggregation}, suppose each local output
-contains two matched $d_e$-dimensional pairs, with $r\le d_e$, and take
-\[
-    W_e
-    =
-    \left(
-      I-\frac1r\ketbra{\Omega_e}{\Omega_e}
-    \right)^{\otimes2}.
-\]
-Then the operator $H$ in \cref{eq:aggregated-witness} satisfies
-\[
-    \Tr(H\rho)<0
-    \quad\Longrightarrow\quad
-    \SN(\rho)\ge r+1.
-\]
-For literal subsystem tests, the channels $\Phi_e^A$ and $\Phi_e^B$
-may be taken to be the corresponding partial traces, so $H$ is a sum
-of local terms embedded into the global Hilbert space.  More generally,
-any geometric locality of $H$ is inherited from the subsystem supports
-of the chosen channels; arbitrary channels need not produce local
-Hamiltonian terms.
-\end{corollary}
-
-\begin{remark}[Positive-semidefinite pulled-back terms]
-Write
-\[
-    \Psi_e:=\Phi_e^A\otimes\Phi_e^B
-\]
-and shift the output-space witness to
-\[
-    h_e^{\mathrm{out}}
-    :=
-    W_e-\lambda_{\min}(W_e)I_e
-    \succeq0,
-\]
-where $I_e$ is the identity on
-$\mathcal K_{A,e}\otimes\mathcal K_{B,e}$.  Its global pullback
-\[
-    \widetilde h_e
-    :=
-    \Psi_e^*(h_e^{\mathrm{out}})
-    \succeq0
-\]
-is well defined even when the output spaces depend on $e$.  Since
-$\Psi_e$ is trace-preserving, $\Psi_e^*(I_e)=I$, and hence
-\[
-    \sum_e\lambda_e\widetilde h_e
-    =
-    H-
-    \left(
-      \sum_e\lambda_e\lambda_{\min}(W_e)
-    \right)I.
-\]
-Consequently, every normalized $\rho$ with $\SN(\rho)\le r$ satisfies
-\[
-    \Tr\left[
-      \sum_e\lambda_e\widetilde h_e\,\rho
-    \right]
-    \ge
-    -\sum_e\lambda_e\lambda_{\min}(W_e).
-\]
-For the witnesses in
-\cref{cor:local-hamiltonian-rank-certificate},
-\[
-    \lambda_{\min}(W_e)=1-\frac{d_e}{r},
-\]
-so the known energy baseline is
-\[
-    \sum_e\lambda_e\left(\frac{d_e}{r}-1\right).
-\]
-This construction certifies Schmidt number across the prescribed
-bipartition; by itself it is not an NLTS statement.
-\end{remark}
+They follow by expanding $C$ in matrix units and matching indices.  Their
+order depends only on the convention that $\Tr_U$ traces out $U$; interchanging
+$U,V$ interchanges the middle two lines and leaves every result unchanged.
 
 \begin{thebibliography}{10}
+
+\bibitem{BhartiGajjalaHaug2026}
+Kishor Bharti, Rishikesh Gajjala, and Tobias Haug.
+``Two-copy nondistillability of Werner states: sharp partial-trace
+inequalities and finite-copy extensions.''
+\newblock arXiv:2607.24479, 2026.
+\newblock \url{https://arxiv.org/abs/2607.24479}
 
 \bibitem{Choi1975}
 Man-Duen Choi.
@@ -3447,32 +1234,14 @@ Pablo Costa Rico.
 \bibitem{CostaRicoWolf}
 Pablo Costa Rico and Michael M. Wolf.
 ``Partial trace relations beyond normal matrices.''
-\newblock arXiv:2507.18278v1, July 24, 2025.
-\newblock \url{https://arxiv.org/abs/2507.18278v1}
+\newblock arXiv:2507.18278, 2025.
+\newblock \url{https://arxiv.org/abs/2507.18278}
 
-\bibitem{fu2026solution2copydistillabilitywerner}
-Jinshi Fu, Li Gao, and Sang-Jun Park.
-``A solution to 2-copy distillability of Werner states.''
-\newblock arXiv:2607.21367v2, revised July 27, 2026.
-\newblock \url{https://arxiv.org/abs/2607.21367v2}
-
-\bibitem{HornJohnson}
-Roger A. Horn and Charles R. Johnson.
-\newblock \emph{Matrix Analysis}, 2nd edition.
-\newblock Cambridge University Press, 2012.
-
-\bibitem{Horodecki1998}
-Micha\l{} Horodecki, Pawe\l{} Horodecki, and Ryszard Horodecki.
-``Mixed-state entanglement and distillation: Is there a `bound'
-entanglement in nature?''
-\newblock Physical Review Letters, 80:5239--5242, 1998.
-\newblock \url{https://doi.org/10.1103/PhysRevLett.80.5239}
-
-\bibitem{JohnstonKribs2010}
-Nathaniel Johnston and David W. Kribs.
-``A family of norms with applications in quantum information theory.''
-\newblock Journal of Mathematical Physics, 51:082202, 2010.
-\newblock \url{https://doi.org/10.1063/1.3459068}
+\bibitem{Fillmore1969}
+Peter A. Fillmore.
+``On similarity and the diagonal of a matrix.''
+\newblock American Mathematical Monthly, 76(2):167--169, 1969.
+\newblock \url{https://doi.org/10.1080/00029890.1969.12000162}
 
 \bibitem{FraserHuberPozsgayVona2026}
 Thomas C. Fraser, Felix Huber, Bal\'azs Pozsgay, and Istv\'an Vona.
@@ -3481,52 +1250,41 @@ inequality.''
 \newblock arXiv:2607.24309, 2026.
 \newblock \url{https://arxiv.org/abs/2607.24309}
 
+\bibitem{FuGaoPark2026}
+Jinshi Fu, Li Gao, and Sang-Jun Park.
+``A solution to 2-copy distillability of Werner states.''
+\newblock arXiv:2607.21367v2, 2026.
+\newblock \url{https://arxiv.org/abs/2607.21367v2}
+
+\bibitem{HornJohnson}
+Roger A. Horn and Charles R. Johnson.
+\newblock \emph{Matrix Analysis}, 2nd edition.
+\newblock Cambridge University Press, 2012.
+
+\bibitem{JohnstonKribs2010}
+Nathaniel Johnston and David W. Kribs.
+``A family of norms with applications in quantum information theory.''
+\newblock Journal of Mathematical Physics, 51:082202, 2010.
+\newblock \url{https://doi.org/10.1063/1.3459068}
+
+\bibitem{Parker1948}
+W. V. Parker.
+``Sets of complex numbers associated with a matrix.''
+\newblock Duke Mathematical Journal, 15(3):711--715, 1948.
+\newblock \url{https://doi.org/10.1215/S0012-7094-48-01560-9}
+
+\bibitem{RankRRepository}
+Elazar Gershuni.
+\newblock \emph{Rank-$r$ partial-trace formalization}.
+\newblock Lean~4 source, commit \texttt{e57bce7}, July 29, 2026.
+\newblock
+\url{https://github.com/elazarg/rank-r/tree/e57bce7e32748e2ff16cc7f5f39e46ffa7a7b9dd}
+
 \bibitem{SongChen2026}
 Zhiwei Song and Lin Chen.
 ``A partial-trace matrix inequality and Werner-state distillability.''
 \newblock arXiv:2607.23416, 2026.
 \newblock \url{https://arxiv.org/abs/2607.23416}
-
-\bibitem{BhartiGajjalaHaug2026}
-Kishor Bharti, Rishikesh Gajjala, and Tobias Haug.
-``Two-copy nondistillability of Werner states: sharp partial-trace inequalities
-and finite-copy extensions.''
-\newblock arXiv:2607.24479, 2026.
-\newblock \url{https://arxiv.org/abs/2607.24479}
-
-\bibitem{TakasakiTomiyama1983}
-Toshiyuki Takasaki and Jun Tomiyama.
-``On the geometry of positive maps in matrix algebras.''
-\newblock Mathematische Zeitschrift, 184:101--108, 1983.
-
-\bibitem{Tomiyama1985}
-Jun Tomiyama.
-``On the geometry of positive maps in matrix algebras.~II.''
-\newblock Linear Algebra and its Applications, 69:169--177, 1985.
-
-\bibitem{MlynikOsakaMarciniak2025}
-Tomasz M{\l}ynik, Hiroyuki Osaka, and Marcin Marciniak.
-``Characterization of $k$-positive maps.''
-\newblock Communications in Mathematical Physics, 406(3):62, 2025.
-\newblock \url{https://doi.org/10.1007/s00220-025-05250-4}
-
-\bibitem{MullerHermesReebWolf2016}
-Alexander M\"uller-Hermes, David Reeb, and Michael M. Wolf.
-``Positivity of linear maps under tensor powers.''
-\newblock Journal of Mathematical Physics, 57:015202, 2016.
-
-\bibitem{TerhalHorodecki2000}
-Barbara M. Terhal and Pawe\l{} Horodecki.
-``Schmidt number for density matrices.''
-\newblock Physical Review A, 61:040301, 2000.
-\newblock \url{https://doi.org/10.1103/PhysRevA.61.040301}
-
-\bibitem{Werner1989}
-Reinhard F. Werner.
-``Quantum states with Einstein--Podolsky--Rosen correlations admitting a
-hidden-variable model.''
-\newblock Physical Review A, 40:4277--4281, 1989.
-\newblock \url{https://doi.org/10.1103/PhysRevA.40.4277}
 
 \end{thebibliography}
 

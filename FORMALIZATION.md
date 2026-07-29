@@ -29,14 +29,60 @@ graph. The corresponding Lean layers are:
 
 - `RankR.Library` for reusable finite-coordinate infrastructure;
 - `RankR.Core.Amplification` for the generic pair construction;
-- `RankR` for the headline theorem;
+- `RankR` for the flagship partial-trace theorem;
 - `RankR.Applications` and `RankR.Companions` for the two optional suites;
 - `RankR.All` for the complete mathematical development; and
 - `RankR.Verification.Axioms` for the executable axiom audit.
 
 ## Main manuscript
 
-### Mechanism and main theorem
+The focused manuscript is `paper/rank-r.tex`.  Its central chain is the generic
+rank-two Choi lift, the double-skew local estimate, the partial-trace
+application, and the graph sharpness family.  The balanced-factorization
+comparison is mathematically proved in the paper but is not yet represented by
+Lean declarations.
+
+| Manuscript item | Status | Lean certificate or remaining gap |
+| --- | --- | --- |
+| Kraus-space definition and independence of Kraus representation | **Standard interface; not separately packaged** | `choiOf` is representation-independent in use, but the equality between the span of a Kraus family and the inverse-vectorized range of its Choi operator is not a named theorem |
+| Equation (3), the action formula for `β₂` | **Checked rendering** | `ChoiTwoBound` and the synthesis/action lemmas encode the equivalent rank-two quadratic-form bound; no independently defined supremum-valued `S(2)` norm is connected to it by a named equality |
+| Theorem 1.1, protected rank-two lift for every `r` | **Checked in Choi form** | `thetaPositive_of_choiTwoBound`; exact-rank assembly is `thetaPositive_at_rank`, and the rank-parameter step is checked inside the former theorem |
+| Theorem 1.1, unprotected lift | **Checked core; packaging gap** | `qform_krausQ_Pneg_le_of_norm` and `qform_krausQ_ptransposeUV_ge_of_norm` are the unprotected operator forms; the all-`r` map statement is not one public declaration |
+| Corollary 1.2, replacing `β₂` by an upper bound | **Checked ingredients** | `reductionChoi_inv_isBlockPositive`, `normSq_trace_le_rank`, and closure under nonnegative linear combinations prove the content; the exact corollary is not separately named |
+| Proposition 3.1, both negative-sector estimates | **Checked** | `qform_krausQ_Pneg_le_of_norm`, `qform_krausQ_Pneg_le`; the Lean normalization uses unnormalized edge vectors and carries an overall factor two relative to the paper's spectral projections |
+| Complete-graph vertex regrouping and rank-two edge action | **Checked** | `norm_sum_smul_wvec_le`, `norm_sq_pair_le_of_choiTwoBound`, and their dependencies in `RankR/Core/Amplification/OperatorForms.lean` |
+| Exact-rank-to-`r` step, including `r > dim H` | **Checked** | `thetaPositive_of_choiTwoBound` quantifies over matrices of rank at most `r`; no `r`-frame is assumed |
+| Theorem 4.1, double-skew action bound | **Checked** | `doubleSkewBound_of_takagi`, `doubleSkewBound_holds`; the formal chain includes Autonne–Takagi |
+| Equivalence with the Fu–Gao–Park projection estimate | **Checked in finite coordinates** | `FGPBound_of_doubleSkewBoundQm`, `doubleSkewBound_of_FGP`, and `fgpBound_iff_pureSchmidtKBound_two` |
+| Corollary 4.2, exact local constant in nondegenerate and degenerate dimensions | **Checked in the Choi-bound rendering** | `choiTwoBound_skewKraus_iff`, `skewKraus_family_eq_zero_of_card_lt_two`, `choiOf_skewKraus_eq_zero_of_card_lt_two`, `choiTwoBound_skewKraus_zero_of_card_lt_two` |
+| Equation (19), the two-factor map identity | **Checked** | `Psi_eq_tensor_square` |
+| Equation (22), the four Choi contractions | **Checked** | `contraction_norm`, `contraction_trace`, `hsNormSq_ptraceU_rankFactor`, and `hsNormSq_ptraceV_rankFactor`, together with the map/Choi bridge |
+| Theorem 5.1, exact-rank and rank-at-most partial-trace inequalities | **Checked** | `rank_r_partial_trace_exact`, `rank_r_partial_trace` |
+| Equality in Theorem 5.1 forces exact rank | **Checked** | `rank_r_partial_trace_strict`, `rank_eq_of_eq_rank_r_partial_trace` |
+| Proposition 5.2, optimal coefficients and witnesses | **Checked for coordinate-basis witnesses** | `projWit_bound_eq`, `le_coeff_hsNormSq_of_bound`, `inv_le_coeff_trace_of_bound`; arbitrary unit-vector formulas are not separately packaged because basis choices already force both constants |
+| Proposition 5.3, abstract balanced-polarization lift | **Open formalization** | The generic lift is extracted from Fraser–Huber–Pozsgay–Vona; the final algebra can reuse existing marginal and variance lemmas, but no Lean declaration packages it |
+| Gram-operator rendering of Proposition 5.3 | **Open formalization** | No crossing-reshuffle operator or equivalence for `Γ = L* L` is defined |
+| Balanced rank factorization used in Proposition 5.3 | **Open library theorem** | `exists_rankFactor_rank` gives exact rank, but equal left/right Gram matrices and the Parker–Fillmore constant-diagonal theorem are missing |
+| Equation (26), balanced complete-graph defect | **Checked algebraic ingredient; assembly open** | `completeGraph_variance` proves the variance identity; the balanced-factorization specialization and off-diagonal Gram assembly are not formalized |
+| Corollary 5.4, spectral stability | **Open formalization; checked paper deduction** | Once the balanced factorization and defect are available, the estimate is complete-graph variance plus unitary invariance of the Hilbert–Schmidt norm |
+| Graph family, symmetric Kraus operators and exact `β₂ = 1` | **Checked** | `graphKraus_transpose`, `choiTwoBound_graphKraus_iff` |
+| Theorem 6.1, induced-density obstruction and clique threshold | **Checked** | `hsInner_edgeKraus_mul_projWit`, `thetaPair_graphKraus_projWit`, `two_mul_card_le_of_thetaPositive`, `sub_one_le_lam_of_clique`, `thetaPositive_graphKraus_iff` |
+| One-layer loss and two-layer retention | **Checked in coordinates** | `graphPhiTranspose_layers`, `graphTheta_layers`, `graphTheta_mem_graphTwoLayerSpace`; the paper states only the elementary corner consequence |
+| Odd-parity counterexample | **Checked** | `inner_delta_placeT_zetaV_iff`, `qform_krausQ_Pneg_skewFam_saturates`, `not_qform_krausQ_Pneg_le_skewFam` |
+| `β₂` alone does not imply the marginal identity | **Elementary logical boundary** | The zero-map observation is not a named Lean theorem; a literal every-claim policy would package it |
+| Universal coefficient may be nonoptimal for a fixed map | **Explanatory statement** | The upper bound and clique attainment are checked; no strictly smaller map-specific example is claimed |
+| Even higher tensor powers retain parity | **Conditional / checked ingredients** | Even parity and the generic lift are checked; `β₂(Λ^{⊗2m})` remains unknown for `m ≥ 2` |
+| Failure of the two-factor binomial collapse for `n ≥ 3` | **Open formalization** | The coefficient comparison appears as documentation in `MapIdentity.lean`, not as a theorem |
+| Formal axiom and `sorry` claims | **Checked executable audit** | `RankR/Verification/Axioms/All.lean` guards the reported axiom surface; the repository-wide hygiene scan is part of the verification layer |
+| Basis-free finite-dimensional statements | **Open interface** | The development uses finite coordinate types; transport through a chosen orthonormal basis is not packaged as a theorem |
+
+## Broader development and archived long-form claims
+
+The tables below cover companion manuscripts and claims from the earlier
+long-form version of `rank-r.tex`, retained in repository history.  They are
+not assertions about the contents of the focused 13-page paper.
+
+### Former long-form mechanism and main theorem
 
 | Manuscript claim | Status | Lean certificate or precise gap |
 | --- | --- | --- |

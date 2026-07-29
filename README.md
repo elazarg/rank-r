@@ -1,13 +1,14 @@
-# A machine-checked rank-$r$ partial-trace inequality
+# Machine-checked rank-two lifting and partial-trace bounds
 
-A Lean 4 formalization of the main theorem of `paper/rank-r.tex`,
+A Lean 4 formalization of the central Choi-lifting chain in
+`paper/rank-r.tex`, including its flagship application:
 
-> **Theorem 1.1.** Let $U, V$ be finite-dimensional complex Hilbert spaces and
+> **Theorem 5.1.** Let $U, V$ be finite-dimensional complex Hilbert spaces and
 > let $C \in \mathcal L(U \otimes V)$ have ${rank} C \le r$. Then
 > $$\|\mathrm{Tr}_U C\|_2^2 + \|\mathrm{Tr}_V C\|_2^2 \;\le\; r\|C\|_2^2 + \tfrac1r|\mathrm{Tr}\,C|^2 .$$
 
-The manuscript's abstract records that these proofs are machine-checked. That
-claim is deliberately narrow, and what follows spells out its limits.
+The manuscript's abstract records precisely which results are machine-checked.
+That claim is deliberately narrow, and what follows spells out its limits.
 
 ## What is proved, and what it rests on
 
@@ -18,10 +19,14 @@ theorem RankR.rank_r_partial_trace
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace
 ```
 
-**There are no hypotheses.** The Fu–Gao–Park estimate is proved within the
-development. The chain is
+**There are no hypotheses.** The generic lifting theorem and the
+Fu–Gao–Park double-skew estimate are both proved within the development.  The
+application chain is
 
-    Autonne–Takagi  →  Lemma 2.1  →  Proposition 2.2  →  Theorem 1.1
+    complete-graph Choi lift (Theorem 1.1)
+      + Autonne–Takagi / double-skew bound (Theorem 4.1)
+      + map identity
+      → partial-trace inequality (Theorem 5.1)
 
 with `Matrix.exists_takagi` in
 `RankR/Library/Analysis/Autonne.lean` supplying the first step.
@@ -40,7 +45,8 @@ symmetric matrix is $UDU^T$ with $U$ unitary and $D$ diagonal nonnegative
 (Horn–Johnson, *Matrix Analysis*, 2nd ed., Cor. 4.4.4(c)). It is absent from
 Mathlib, and is stated coordinate-free
 (`LinearMap.IsConjSymmetric.exists_orthonormalBasis`) with the matrix form as a
-specialization. `RankR/Core/DoubleSkew/Takagi.lean` then derives Lemma 2.1 from it.
+specialization. `RankR/Core/DoubleSkew/Takagi.lean` then derives the
+double-skew action bound from it.
 
 **The mathematics is Fu–Gao–Park's.** This is not an independent route: it is
 their §2 argument — their Prop. 2.1, Lemma 2.2, Lemma 2.3 — restructured so that
@@ -84,17 +90,16 @@ explicit two-term form `M = |u₁⟩⟨v₁| + |u₂⟩⟨v₂|`.  The equivalen
 transport between an abstract bipartite Hilbert space and the fixed coordinate
 basis remains an informal interface.
 
-The sharpness claims around Theorem 1.1 are covered too.
+The sharpness claims around Theorem 5.1 are covered too.
 `rank_r_partial_trace_exact` is the exact-rank form (`r = rank C`),
 `rank_r_partial_trace_strict` says the bound is *strict* for
 nonzero `C` with `rank C < r`, and `rank_eq_of_eq_rank_r_partial_trace`
 is the stated consequence: equality for nonzero `C` forces `rank C = r`.
 
-`RankR/Core/PartialTrace/OneSided.lean` adds the one-sided bound
+`RankR/Core/PartialTrace/OneSided.lean` also proves the one-sided bound
 `‖Tr_j C‖₂² ≤ r‖C‖₂²`
-(`lem:one-sided-partial-trace`), also unconditional. The manuscript proved it by
-trace-norm duality; here a partial trace of a rank-one operator is a matrix
-product, so Hilbert–Schmidt submultiplicativity and Cauchy–Schwarz over the range
+unconditionally. A partial trace of a rank-one operator is a matrix product,
+so Hilbert–Schmidt submultiplicativity and Cauchy–Schwarz over the range
 factorization suffice, and the Schatten-1 norm appears nowhere.
 
 `RankR/Core/PartialTrace/Optimality.lean` closes the other half. It builds the
@@ -115,8 +120,8 @@ and the exact rank-two quantifier.  The mixed-state decomposition predicate
 `SchmidtNumberLE` supports the trace-distance application.  The estimate
 itself is proved (`fgpBound_holds`).
 
-`RankR/Applications.lean` is the umbrella import for the algebraic cores of the main-paper
-applications: both branches and attaining matrices of the symmetric and
+`RankR/Applications.lean` is the umbrella import for the broader application
+suite developed alongside the focused paper: both branches and attaining matrices of the symmetric and
 asymmetric score curves; their exact score-nonnegativity thresholds for
 `1 ≤ r ≤ d`; the endpoint and strict adjacent-rank separations directly for
 unit vectors with the asserted pure Schmidt ranks; factor
@@ -172,9 +177,9 @@ strengthening, and that characterization is itself checked, in both directions:
 `transpose_eq_of_forall_isFrameSymmetric` gives the other — quantifying over
 frames recovers `Nᵀ = N`, and two-element frames already suffice. The double-skew
 family supplies the hypothesis through the first of those, applied at
-`skewKraus_transpose`. Theorem 1.1 is unaffected: `skewKraus` is transpose-symmetric
-anyway. What changes is the class the liftings apply to, and the honesty of the
-statement about which property does the work.
+`skewKraus_transpose`. The paper's transpose-symmetric Theorem 1.1 follows
+immediately; the formal operator layer applies to the larger frame-symmetric
+class.
 
 **Exterior amplification holds in a weighted form.**
 `RankR/Companions/HigherArity/Amplification.lean` states
@@ -198,17 +203,11 @@ so that `Π` has rank the number of actual hinges rather than `binom(r, k-2)`, a
 `I` is replaced by the projection onto actual facets. The same Koszul cancellation
 applies, but the modes change and their orthonormality has to be redone.
 
-Two labelled equations of the manuscript, `eq:Phi-Pminus-TTstar` and
-`eq:sos-complete-graph`, are **bypassed rather than proved**: the Bessel-duality
-route in `RankR/Library/Analysis/Bessel.lean` never forms the synthesis map as a matrix, which removes
-the need for both. They remain unverified as claims about the paper.
-
 ### Constants pinned from below
 
 `ChoiTwoBound J β` is an upper bound and monotone in `β` (`choiTwoBound_mono`):
 it holds at `10⁶` whenever it holds at all, so on its own it names no number.
-Every constant in the development above is consumed in that form, which leaves
-the manuscript's `β₂(Λ_U ⊗ Λ_V) = 1` uncertified as an *equality*.
+The sharpness layer therefore separately proves leastness and attainment.
 
 When both index types contain two distinct labels,
 `RankR/Core/DoubleSkew/Sharp.lean` adds the dual
@@ -222,7 +221,7 @@ If either index type has cardinality below two,
 `choiOf_skewKraus_eq_zero_of_card_lt_two` prove that the Kraus family and Choi
 operator vanish, while `choiTwoBound_skewKraus_zero_of_card_lt_two` checks the
 zero bound. Thus the norm-defined sharp constant is zero; the dimension-free
-upper bound used by the main theorem remains valid.
+upper bound used by the partial-trace application remains valid.
 `re_qform_psiChoi_projWit` records the same for the conclusion: the `r`-block
 positivity of `J(Ψ_r)` is attained, so it cannot be sharpened to a strict
 inequality.
@@ -242,7 +241,8 @@ gap between the two forms is the direction `δ_e`.
 
 ### The amplification coefficient, both sides
 
-`paper/derivation-graph-inclusion.tex` attaches to each edge of a graph the
+`paper/rank-r.tex` and the companion
+`paper/derivation-graph-inclusion.tex` attach to each edge of a graph the
 operator `A_e = (E_ij − E_ji) ⊗ (E_01 − E_10)`.
 `RankR/Companions/Graph/Family.lean` proves its
 `lem:beta` in two-sided form (`choiTwoBound_graphKraus_iff`, valid constants
@@ -285,7 +285,7 @@ dependency.
 
 ```bash
 lake exe cache get     # Mathlib oleans — do not skip, a source build takes hours
-lake build RankR                         # headline theorem
+lake build RankR                         # partial-trace theorem and core chain
 lake build RankR.All                     # complete mathematical development
 lake build RankR.Verification.Axioms     # executable axiom audit
 ```
@@ -309,7 +309,7 @@ revision.
 | `RankR.Core.Amplification` | pair amplification for an arbitrary Kraus family |
 | `RankR` | the headline partial-trace theorem |
 | `RankR.Core` | the complete core proof, including sharpness and equivalent forms |
-| `RankR.Applications` | main-paper applications and certificates |
+| `RankR.Applications` | broader optional applications and certificates |
 | `RankR.Companions` | graph, higher-arity, higher-Choi, staircase, and rigidity developments |
 | `RankR.All` | the complete mathematical development |
 | `RankR.Verification.Axioms` | executable axiom-surface guards |
@@ -321,29 +321,29 @@ The source tree follows the same top-level distinction:
 | `RankR/Library/` | reusable declarations independent of the paper's double-skew family and applications |
 | `RankR/Core/Amplification/` | the reusable construction, including `ThetaPositive` and `thetaPositive_of_choiTwoBound` |
 | `RankR/Core/DoubleSkew/` | the principal double-skew seed and its exact Choi constants |
-| `RankR/Core/PartialTrace/` | the contraction of that seed to Theorem 1.1 |
+| `RankR/Core/PartialTrace/` | the contraction of that seed to Theorem 5.1 |
 | `RankR/Applications/` | reduction, trace-distance, Kronecker, Schmidt-witness, aggregation, and certificate clients |
 | `RankR/Companions/` | graph, higher-arity, higher-Choi, staircase, and rigidity projects |
 | `RankR/Verification/` | executable audits, separate from mathematical entry points |
 
 Imports are one-way through the mathematical layers: Library does not import
 Core, Applications, or Companions, and Core does not import Applications or
-Companions. Companion developments may import a main-paper application they
-extend. The generic pair theorem is in `RankR/Core/Amplification/Pair.lean`;
+Companions. Companion developments may import an application they extend. The
+generic pair theorem is in `RankR/Core/Amplification/Pair.lean`;
 the graph threshold is its client in `RankR/Companions/Graph/PairBound.lean`.
 
 The seam is the predicate `ChoiTwoBound (choiOf A) β`. The amplification layer
 uses only that rank-two constant and frame symmetry. The double-skew layer
 supplies a concrete family and exact constant, while
 `RankR/Core/PartialTrace/DoubleSkew.lean` supplies the contraction identity
-needed by the headline theorem.
+needed by the flagship partial-trace application.
 
 ## A note on provenance
 
-`paper/rank-r.tex` states that its arguments were generated by GPT-5.6, that the
-author did not independently derive them, and that no expert has reviewed them.
-Fu–Gao–Park was posted three days before the manuscript and is itself unreviewed.
-This formalization is therefore a *measuring instrument*, not a victory lap.
+`paper/rank-r.tex` gives an explicit AI-generation and verification disclosure:
+the author directed the work and checked the formal–informal interfaces, but did
+not independently derive every proof. The formalization is therefore a
+*measuring instrument*, not a substitute for mathematical review.
 
 Discharging the standing hypothesis narrows what is being measured but does not
 change that. Lean checks deductions; it does not check that
