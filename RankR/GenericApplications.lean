@@ -90,6 +90,7 @@ section PositiveMapCut
 variable {A W : Type*} [Fintype A] [Fintype W]
   [DecidableEq A] [DecidableEq W]
 
+omit [DecidableEq A] in
 /-- Contracting a vectorized rank-at-most-`r` coefficient matrix against an
 arbitrary output vector still produces a Choi test matrix of rank at most
 `r`.  The proof factors the coefficient matrix through `Fin r`; this avoids
@@ -119,6 +120,7 @@ theorem rank_choiContraction_vec_le {r : ℕ} (C : Matrix A W ℂ)
   simpa using Matrix.rank_le_card_width
     (Z * X.map (starRingEnd ℂ))
 
+omit [DecidableEq A] in
 /-- An `r`-block-positive Choi operator sends a pure input of Schmidt rank at
 most `r` to a positive semidefinite output, for an ancilla of arbitrary finite
 dimension. -/
@@ -154,6 +156,7 @@ theorem mapAmplification_mapOfChoi_rankOne_vec_posSemidef
         simp [qform, dotProduct, Matrix.mulVec, Finset.mul_sum, mul_assoc]] at him
     exact him.symm
 
+omit [DecidableEq A] in
 /-- A block-positive Choi operator gives the positive-map semidefinite cut on
 every positive operator of Schmidt number at most `r`, with no bound on the
 ambient ancilla dimension. -/
@@ -181,6 +184,7 @@ section ReductionCut
 variable {A T : Type*} [Fintype A] [Fintype T]
   [DecidableEq A] [DecidableEq T]
 
+omit [DecidableEq A] in
 /-- The asymmetric positive-map cut from `cor:positive-map-cut`, in finite
 coordinates and for an arbitrary finite ancilla. -/
 theorem productReduction_schmidtNumberLE_cut
@@ -202,6 +206,7 @@ theorem productReduction_schmidtNumberLE_cut
   exact mapAmplification_posSemidef_of_schmidtNumberLEBetween
     (productReductionChoi_isHermitian a b) hblock hρ
 
+omit [DecidableEq A] in
 /-- The symmetric specialization
 `Λ_r = R_{-1/min(r,d)} ⊗ R_{-1/min(r,d)}`. -/
 theorem productReduction_self_schmidtNumberLE_cut

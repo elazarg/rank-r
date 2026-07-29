@@ -23,6 +23,7 @@ noncomputable def mapOfChoi
     (M : Matrix (O × I) (O × I) ℂ) (X : Matrix I I ℂ) : Matrix O O ℂ :=
   Matrix.of fun o p => ∑ i, ∑ j, X i j * M (o, i) (p, j)
 
+omit [Fintype O] [DecidableEq O] in
 theorem mapChoi_mapOfChoi (M : Matrix (O × I) (O × I) ℂ) :
     mapChoi (mapOfChoi M) = M := by
   ext ⟨o, i⟩ ⟨p, j⟩
@@ -39,6 +40,7 @@ theorem mapChoi_mapOfChoi (M : Matrix (O × I) (O × I) ℂ) :
     simp [hik]
   · simp
 
+omit [Fintype O] [DecidableEq I] [DecidableEq O] in
 theorem mapOfChoi_add (M : Matrix (O × I) (O × I) ℂ)
     (X Y : Matrix I I ℂ) :
     mapOfChoi M (X + Y) = mapOfChoi M X + mapOfChoi M Y := by
@@ -46,6 +48,7 @@ theorem mapOfChoi_add (M : Matrix (O × I) (O × I) ℂ)
   simp only [mapOfChoi, Matrix.of_apply, Matrix.add_apply, add_mul,
     Finset.sum_add_distrib]
 
+omit [Fintype O] [DecidableEq I] [DecidableEq O] in
 theorem mapOfChoi_smul (M : Matrix (O × I) (O × I) ℂ)
     (c : ℂ) (X : Matrix I I ℂ) :
     mapOfChoi M (c • X) = c • mapOfChoi M X := by
@@ -63,6 +66,7 @@ noncomputable def mapOfChoiLinear
   map_add' := mapOfChoi_add M
   map_smul' := mapOfChoi_smul M
 
+omit [Fintype O] [DecidableEq I] [DecidableEq O] in
 theorem mapOfChoi_conjTranspose
     {M : Matrix (O × I) (O × I) ℂ} (hM : M.IsHermitian)
     (X : Matrix I I ℂ) :
@@ -119,6 +123,7 @@ def IsMapRPositive (r : ℕ)
   ∀ X : Matrix (Fin r × I) (Fin r × I) ℂ, X.PosSemidef →
     (mapAmplification (A := Fin r) Φ X).PosSemidef
 
+omit [Fintype O] [Fintype A] [DecidableEq I] [DecidableEq O] [DecidableEq A] in
 theorem mapAmplification_mapOfChoi_isHermitian
     {M : Matrix (O × I) (O × I) ℂ} (hM : M.IsHermitian)
     {X : Matrix (A × I) (A × I) ℂ} (hX : X.IsHermitian) :
@@ -141,6 +146,7 @@ noncomputable def choiContraction
     (x : A × I → ℂ) (y : A × O → ℂ) : Matrix O I ℂ :=
   Matrix.of fun o i => ∑ a, y (a, o) * conj (x (a, i))
 
+omit [Fintype O] [DecidableEq I] [DecidableEq O] [DecidableEq A] in
 theorem rank_choiContraction_le_card
     (x : A × I → ℂ) (y : A × O → ℂ) :
     (choiContraction x y).rank ≤ Fintype.card A := by
@@ -176,6 +182,7 @@ private theorem sum6_choi_perm
       left_inv := fun _ => rfl
       right_inv := fun _ => rfl } _ _ (fun _ => rfl)
 
+omit [DecidableEq I] [DecidableEq O] [DecidableEq A] in
 /-- A rank-one ampliation test is exactly the Choi quadratic form of the
 contracted matrix. -/
 theorem qform_mapAmplification_mapOfChoi_rankOne
@@ -197,6 +204,7 @@ theorem qform_mapAmplification_mapOfChoi_rankOne
             Finset.sum_congr rfl fun a _ => ?_
   ring
 
+omit [DecidableEq I] [DecidableEq A] in
 /-- A positive-semidefinite square is a sum of rank-one matrices formed from
 the conjugates of its rows. -/
 theorem sum_rankOne_conjRow_eq_conjTranspose_mul
@@ -215,6 +223,7 @@ private theorem dotProduct_mulVec_eq_qform
     star x ⬝ᵥ (M *ᵥ x) = qform M (WithLp.toLp 2 x) := by
   simp [qform, dotProduct, Matrix.mulVec, Finset.mul_sum, mul_assoc]
 
+omit [DecidableEq A] in
 /-- Block positivity makes every rank-one positive input remain positive under
 the corresponding ampliation. -/
 theorem mapAmplification_mapOfChoi_rankOne_posSemidef

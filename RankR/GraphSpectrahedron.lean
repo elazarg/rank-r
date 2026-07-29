@@ -40,6 +40,7 @@ theorem mapOfChoi_mapChoi
   ext o p
   simp [mapOfChoi, mapChoi, Matrix.sum_apply, Matrix.smul_apply]
 
+omit [Fintype O] [DecidableEq O] in
 /-- The bundled version of `mapOfChoi_mapChoi`. -/
 theorem mapOfChoiLinear_mapChoi
     (Φ : Matrix I I ℂ →ₗ[ℂ] Matrix O O ℂ) :

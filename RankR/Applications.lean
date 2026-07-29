@@ -42,15 +42,18 @@ def asymmetricScore (a b : ℝ) (C : Matrix (U × V) (U × V) ℂ) : ℝ :=
 def swapFactors (C : Matrix (V × U) (V × U) ℂ) : Matrix (U × V) (U × V) ℂ :=
   Matrix.reindex (Equiv.prodComm V U) (Equiv.prodComm V U) C
 
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
 @[simp]
 theorem swapFactors_apply (C : Matrix (V × U) (V × U) ℂ)
     (p q : U × V) : swapFactors C p q = C (p.2, p.1) (q.2, q.1) := rfl
 
+omit [DecidableEq U] [DecidableEq V] in
 @[simp]
 theorem rank_swapFactors (C : Matrix (V × U) (V × U) ℂ) :
     (swapFactors C).rank = C.rank :=
   Matrix.rank_reindex (Equiv.prodComm V U) (Equiv.prodComm V U) C
 
+omit [DecidableEq U] [DecidableEq V] in
 @[simp]
 theorem hsNormSq_swapFactors (C : Matrix (V × U) (V × U) ℂ) :
     hsNormSq (swapFactors C) = hsNormSq C := by
@@ -59,24 +62,28 @@ theorem hsNormSq_swapFactors (C : Matrix (V × U) (V × U) ℂ) :
   exact Finset.sum_congr rfl fun _ _ =>
     Finset.sum_congr rfl fun _ _ => Finset.sum_comm
 
+omit [DecidableEq U] [DecidableEq V] in
 @[simp]
 theorem trace_swapFactors (C : Matrix (V × U) (V × U) ℂ) :
     (swapFactors C).trace = C.trace := by
   simp only [Matrix.trace, Matrix.diag_apply, Fintype.sum_prod_type, swapFactors_apply]
   rw [Finset.sum_comm]
 
+omit [Fintype V] [DecidableEq U] [DecidableEq V] in
 @[simp]
 theorem ptraceU_swapFactors (C : Matrix (V × U) (V × U) ℂ) :
     ptraceU (swapFactors C) = ptraceV C := by
   ext v v'
   rfl
 
+omit [Fintype U] [DecidableEq U] [DecidableEq V] in
 @[simp]
 theorem ptraceV_swapFactors (C : Matrix (V × U) (V × U) ℂ) :
     ptraceV (swapFactors C) = ptraceU C := by
   ext u u'
   rfl
 
+omit [DecidableEq U] [DecidableEq V] in
 @[simp]
 theorem asymmetricScore_swapFactors (a b : ℝ)
     (C : Matrix (V × U) (V × U) ℂ) :
@@ -105,7 +112,8 @@ theorem twoCopyScore_lower_of_le_inv {r : ℕ} (hr : 0 < r)
     (1 - t) * (1 - r * t) * hsNormSq C
         = (1 - r * t) * hsNormSq C
           + (t ^ 2 - t * (1 / (r : ℝ))) * ((r : ℝ) * hsNormSq C) := by
-            field_simp [ne_of_gt hrR] <;> ring
+            field_simp [ne_of_gt hrR]
+            ring
     _ ≤ (1 - r * t) * hsNormSq C
           + (t ^ 2 - t * (1 / (r : ℝ))) * Complex.normSq C.trace := by
             linarith
@@ -149,7 +157,6 @@ theorem twoCopyScore_projWit_same {S : Finset U} {x : V} {r : ℕ}
   rw [twoCopyScore, hsNormSq_projWit, hsNormSq_ptraceU_projWit,
     hsNormSq_ptraceV_projWit, trace_projWit, if_pos rfl, if_pos rfl, hS,
     Complex.normSq_natCast]
-  push_cast
   ring
 
 /-- The traceless extremizer attains the second score branch. -/
@@ -160,7 +167,6 @@ theorem twoCopyScore_projWit_orthogonal {S : Finset U} {x₀ x₁ : V} (hx : x�
   rw [twoCopyScore, hsNormSq_projWit, hsNormSq_ptraceU_projWit,
     hsNormSq_ptraceV_projWit, trace_projWit, if_neg hx, if_neg hx, hS]
   simp
-  push_cast
   ring
 
 /-- The unrolled block-positivity condition for the symmetric two-copy score. -/
@@ -231,7 +237,10 @@ theorem twoCopyScore_strict_separation_lower {r : ℕ} (hr : 0 < r)
   have ht : (1 - ε) / (r : ℝ) ≤ 1 / (r : ℝ) := by
     exact (div_le_div_iff_of_pos_right hrR).mpr (by linarith)
   have hlower := twoCopyScore_lower_of_le_inv hr ht0 ht C hrank
-  convert hlower using 1 <;> field_simp [ne_of_gt hrR] <;> ring
+  convert hlower using 1
+  all_goals
+    field_simp [ne_of_gt hrR]
+    ring
 
 /-- The positive side of the strict signed separation for every nonzero
 rank-at-most-`r` matrix. -/
@@ -254,7 +263,7 @@ theorem twoCopyScore_strict_separation_pos {r : ℕ} (hr : 0 < r)
 `rem:strict-rank-gap`, again before vector normalization. -/
 theorem twoCopyScore_adjacent_strict_neg {S : Finset U} {x₀ x₁ : V}
     (hx : x₀ ≠ x₁) {r : ℕ} (hr : 0 < r) (hS : S.card = r + 1)
-    {ε : ℝ} (hε0 : 0 < ε) (hε : ε < 1 / ((r + 1 : ℕ) : ℝ)) :
+    {ε : ℝ} (_hε0 : 0 < ε) (hε : ε < 1 / ((r + 1 : ℕ) : ℝ)) :
     twoCopyScore ((1 - ε) / (r : ℝ)) (projWit S x₀ x₁) < 0 := by
   rw [twoCopyScore_projWit_orthogonal hx hS, hsNormSq_projWit, hS]
   have hrR : (0 : ℝ) < r := by exact_mod_cast hr
@@ -286,7 +295,6 @@ theorem asymmetricScore_lower_left_of_le_inv {r : ℕ} (hr : 0 < r)
       ≤ a * r * hsNormSq C + b * (1 / (r : ℝ)) * Complex.normSq C.trace := by
     have h1 := mul_le_mul_of_nonneg_left hmain hb0
     have h2 := mul_le_mul_of_nonneg_left hU (sub_nonneg.mpr hba)
-    push_cast at h1 h2
     nlinarith
   have hcoef : b * (a - 1 / (r : ℝ)) ≤ 0 :=
     mul_nonpos_of_nonneg_of_nonpos hb0 (sub_nonpos.mpr ha)
@@ -296,7 +304,8 @@ theorem asymmetricScore_lower_left_of_le_inv {r : ℕ} (hr : 0 < r)
     (1 - b) * (1 - r * a) * hsNormSq C
         = (1 - r * a) * hsNormSq C
           + (b * (a - 1 / (r : ℝ))) * ((r : ℝ) * hsNormSq C) := by
-            field_simp [ne_of_gt hrR] <;> ring
+            field_simp [ne_of_gt hrR]
+            ring
     _ ≤ (1 - r * a) * hsNormSq C
           + b * (a - 1 / (r : ℝ)) * Complex.normSq C.trace := by
             linarith
@@ -316,7 +325,7 @@ theorem asymmetricScore_lower_left_of_le_inv {r : ℕ} (hr : 0 < r)
       linarith
 
 /-- The `a ≥ b` second branch of `thm:exact-asymmetric-score`. -/
-theorem asymmetricScore_lower_left_of_inv_le {r : ℕ} (hr : 0 < r)
+theorem asymmetricScore_lower_left_of_inv_le {r : ℕ} (_hr : 0 < r)
     {a b : ℝ} (hb0 : 0 ≤ b) (hba : b ≤ a) (ha : 1 / (r : ℝ) ≤ a)
     (C : Matrix (U × V) (U × V) ℂ) (hrank : C.rank ≤ r) :
     (1 - r * a) * hsNormSq C ≤ asymmetricScore a b C := by
@@ -327,7 +336,6 @@ theorem asymmetricScore_lower_left_of_inv_le {r : ℕ} (hr : 0 < r)
       ≤ a * r * hsNormSq C + b * (1 / (r : ℝ)) * Complex.normSq C.trace := by
     have h1 := mul_le_mul_of_nonneg_left hmain hb0
     have h2 := mul_le_mul_of_nonneg_left hU (sub_nonneg.mpr hba)
-    push_cast at h1 h2
     nlinarith
   have hcoef : 0 ≤ b * (a - 1 / (r : ℝ)) :=
     mul_nonneg hb0 (sub_nonneg.mpr ha)
@@ -366,7 +374,6 @@ theorem asymmetricScore_lower_right_of_le_inv {r : ℕ} (hr : 0 < r)
       ≤ b * r * hsNormSq C + a * (1 / (r : ℝ)) * Complex.normSq C.trace := by
     have h1 := mul_le_mul_of_nonneg_left hmain ha0
     have h2 := mul_le_mul_of_nonneg_left hV (sub_nonneg.mpr hab)
-    push_cast at h1 h2
     nlinarith
   have hcoef : a * (b - 1 / (r : ℝ)) ≤ 0 :=
     mul_nonpos_of_nonneg_of_nonpos ha0 (sub_nonpos.mpr hb)
@@ -376,7 +383,8 @@ theorem asymmetricScore_lower_right_of_le_inv {r : ℕ} (hr : 0 < r)
     (1 - a) * (1 - r * b) * hsNormSq C
         = (1 - r * b) * hsNormSq C
           + (a * (b - 1 / (r : ℝ))) * ((r : ℝ) * hsNormSq C) := by
-            field_simp [ne_of_gt hrR] <;> ring
+            field_simp [ne_of_gt hrR]
+            ring
     _ ≤ (1 - r * b) * hsNormSq C
           + a * (b - 1 / (r : ℝ)) * Complex.normSq C.trace := by
             linarith
@@ -396,7 +404,7 @@ theorem asymmetricScore_lower_right_of_le_inv {r : ℕ} (hr : 0 < r)
       linarith
 
 /-- The symmetric `b ≥ a` second branch. -/
-theorem asymmetricScore_lower_right_of_inv_le {r : ℕ} (hr : 0 < r)
+theorem asymmetricScore_lower_right_of_inv_le {r : ℕ} (_hr : 0 < r)
     {a b : ℝ} (ha0 : 0 ≤ a) (hab : a ≤ b) (hb : 1 / (r : ℝ) ≤ b)
     (C : Matrix (U × V) (U × V) ℂ) (hrank : C.rank ≤ r) :
     (1 - r * b) * hsNormSq C ≤ asymmetricScore a b C := by
@@ -407,7 +415,6 @@ theorem asymmetricScore_lower_right_of_inv_le {r : ℕ} (hr : 0 < r)
       ≤ b * r * hsNormSq C + a * (1 / (r : ℝ)) * Complex.normSq C.trace := by
     have h1 := mul_le_mul_of_nonneg_left hmain ha0
     have h2 := mul_le_mul_of_nonneg_left hV (sub_nonneg.mpr hab)
-    push_cast at h1 h2
     nlinarith
   have hcoef : 0 ≤ a * (b - 1 / (r : ℝ)) :=
     mul_nonneg ha0 (sub_nonneg.mpr hb)
@@ -438,7 +445,6 @@ theorem asymmetricScore_projWit_same {S : Finset U} {x : V} {r : ℕ}
   rw [asymmetricScore, hsNormSq_projWit, hsNormSq_ptraceU_projWit,
     hsNormSq_ptraceV_projWit, trace_projWit, if_pos rfl, if_pos rfl, hS,
     Complex.normSq_natCast]
-  push_cast
   ring
 
 /-- The traceless `a ≥ b` extremizer for the asymmetric score. -/
@@ -449,7 +455,6 @@ theorem asymmetricScore_projWit_orthogonal {S : Finset U} {x₀ x₁ : V}
   rw [asymmetricScore, hsNormSq_projWit, hsNormSq_ptraceU_projWit,
     hsNormSq_ptraceV_projWit, trace_projWit, if_neg hx, if_neg hx, hS]
   simp
-  push_cast
   ring
 
 /-- The traceful `b ≥ a` extremizer, obtained by exchanging the factors. -/
@@ -567,6 +572,7 @@ def regroupChoi (A : Matrix (U × U) (U × U) ℂ)
   Matrix.reindex (choiRegroupEquiv (U := U) (V := V))
     (choiRegroupEquiv (U := U) (V := V)) (A ⊗ₖ B)
 
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
 theorem regroupChoi_sub_left (A A' : Matrix (U × U) (U × U) ℂ)
     (B : Matrix (V × V) (V × V) ℂ) :
     regroupChoi (A - A') B = regroupChoi A B - regroupChoi A' B := by
@@ -574,6 +580,7 @@ theorem regroupChoi_sub_left (A A' : Matrix (U × U) (U × U) ℂ)
   simp [regroupChoi, Matrix.sub_apply]
   ring
 
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
 theorem regroupChoi_sub_right (A : Matrix (U × U) (U × U) ℂ)
     (B B' : Matrix (V × V) (V × V) ℂ) :
     regroupChoi A (B - B') = regroupChoi A B - regroupChoi A B' := by
@@ -581,6 +588,7 @@ theorem regroupChoi_sub_right (A : Matrix (U × U) (U × U) ℂ)
   simp [regroupChoi, Matrix.sub_apply]
   ring
 
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
 theorem regroupChoi_smul_left (c : ℂ) (A : Matrix (U × U) (U × U) ℂ)
     (B : Matrix (V × V) (V × V) ℂ) :
     regroupChoi (c • A) B = c • regroupChoi A B := by
@@ -588,6 +596,7 @@ theorem regroupChoi_smul_left (c : ℂ) (A : Matrix (U × U) (U × U) ℂ)
   simp [regroupChoi]
   ring
 
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
 theorem regroupChoi_smul_right (c : ℂ) (A : Matrix (U × U) (U × U) ℂ)
     (B : Matrix (V × V) (V × V) ℂ) :
     regroupChoi A (c • B) = c • regroupChoi A B := by
@@ -764,6 +773,7 @@ theorem productReductionChoi_posSemidef
   exact (reductionChoi_posSemidef ha0 hU ha).kronecker
     (reductionChoi_posSemidef hb0 hV hb) |>.submatrix _
 
+omit [Fintype U] [Fintype V] in
 theorem productReductionChoi_isHermitian (a b : ℝ) :
     (productReductionChoi (U := U) (V := V) a b).IsHermitian := by
   have hkr :
@@ -803,6 +813,7 @@ private theorem sum_pair_indicator {T : Type*} [Fintype T] [DecidableEq T]
     simp [hne])]
   simp [eq_comm]
 
+omit [Fintype U] in
 private theorem marginalChoiU_apply (u u' w w' : U) (v v' x x' : V) :
     marginalChoiU (U := U) (V := V) ((u, v), (u', v')) ((w, x), (w', x'))
       = if u = u' ∧ w = w' ∧ v = x ∧ v' = x' then 1 else 0 := by
@@ -815,6 +826,7 @@ private theorem marginalChoiU_apply (u u' w w' : U) (v v' x x' : V) :
   · simp [hu, hw]
   · simp [hu, hw]
 
+omit [Fintype V] in
 private theorem marginalChoiV_apply (u u' w w' : U) (v v' x x' : V) :
     marginalChoiV (U := U) (V := V) ((u, v), (u', v')) ((w, x), (w', x'))
       = if v = v' ∧ x = x' ∧ u = w ∧ u' = w' then 1 else 0 := by
@@ -827,6 +839,7 @@ private theorem marginalChoiV_apply (u u' w w' : U) (v v' x x' : V) :
   · simp [hv, hx]
   · simp [hv, hx]
 
+omit [Fintype U] in
 theorem regroupChoi_singleOmega_one :
     regroupChoi (singleOmegaChoi (T := U))
         (1 : Matrix (V × V) (V × V) ℂ)
@@ -838,6 +851,7 @@ theorem regroupChoi_singleOmega_one :
     rankOne, Matrix.one_apply, Prod.ext_iff]
   aesop
 
+omit [Fintype V] in
 theorem regroupChoi_one_singleOmega :
     regroupChoi (1 : Matrix (U × U) (U × U) ℂ)
         (singleOmegaChoi (T := V))
@@ -849,6 +863,7 @@ theorem regroupChoi_one_singleOmega :
     rankOne, Matrix.one_apply, Prod.ext_iff]
   aesop
 
+omit [Fintype U] [Fintype V] in
 theorem regroupChoi_singleOmega_singleOmega :
     regroupChoi (singleOmegaChoi (T := U)) (singleOmegaChoi (T := V))
       = traceChoi (U := U) (V := V) := by
@@ -856,8 +871,10 @@ theorem regroupChoi_singleOmega_singleOmega :
   obtain ⟨⟨u, v⟩, u', v'⟩ := X
   obtain ⟨⟨w, x⟩, w', x'⟩ := Y
   simp [regroupChoi, choiRegroupEquiv, singleOmegaChoi, traceChoi,
-    rankOne, omegaVec] <;> split_ifs <;> simp_all
+    rankOne, omegaVec]
+  split_ifs <;> simp_all
 
+omit [Fintype U] [Fintype V] in
 theorem regroupChoi_one_one :
     regroupChoi (1 : Matrix (U × U) (U × U) ℂ)
         (1 : Matrix (V × V) (V × V) ℂ)
@@ -865,8 +882,8 @@ theorem regroupChoi_one_one :
   ext X Y
   obtain ⟨⟨u, v⟩, u', v'⟩ := X
   obtain ⟨⟨w, x⟩, w', x'⟩ := Y
-  simp [regroupChoi, choiRegroupEquiv, Matrix.one_apply, Prod.ext_iff] <;>
-    split_ifs <;> simp_all
+  simp [regroupChoi, choiRegroupEquiv, Matrix.one_apply, Prod.ext_iff]
+  split_ifs <;> simp_all
 
 theorem re_qform_marginalChoiU (C : Matrix (U × V) (U × V) ℂ) :
     (qform (marginalChoiU (U := U) (V := V)) (vec C)).re
@@ -941,6 +958,7 @@ theorem productReductionChoi_self_eq_twoCopyScoreOperator (t : ℝ) :
   rw [productReductionChoi_eq_asymmetricScoreOperator]
   rfl
 
+omit [DecidableEq U] [DecidableEq V] in
 theorem asymmetricScore_self (t : ℝ) (C : Matrix (U × V) (U × V) ℂ) :
     asymmetricScore t t C = twoCopyScore t C := by
   unfold asymmetricScore twoCopyScore
@@ -1260,7 +1278,7 @@ theorem centeredPartialTrace_le {k d : ℕ} (hk : 0 < k) (hd : 0 < d)
         0 < (k : ℝ) * (1 / (k : ℝ) - 2 / (d : ℝ)) :=
           mul_pos hkR hcpos
         _ = 1 - 2 * (k : ℝ) / d := by
-          field_simp [ne_of_gt hkR, ne_of_gt hdR] <;> ring
+          field_simp [ne_of_gt hkR, ne_of_gt hdR]
     rw [max_eq_right hrel.le]
     have hki : (k : ℝ) * (1 / (k : ℝ)) = 1 := by field_simp
     calc
@@ -1272,7 +1290,7 @@ theorem centeredPartialTrace_le {k d : ℕ} (hk : 0 < k) (hd : 0 < d)
           + (1 / (k : ℝ) - 2 / (d : ℝ)) * ((k : ℝ) * hsNormSq C) := by
             linarith
       _ = ((k : ℝ) + (1 - 2 * (k : ℝ) / d)) * hsNormSq C := by
-            field_simp [ne_of_gt hkR, ne_of_gt hdR] <;> ring
+            field_simp [ne_of_gt hkR, ne_of_gt hdR]
 
 end KroneckerCore
 
