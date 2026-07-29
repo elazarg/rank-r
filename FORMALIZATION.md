@@ -70,10 +70,10 @@ exact-rank factorizations.
 | Theorem 6.1, induced-density obstruction and clique threshold | **Checked** | `hsInner_edgeKraus_mul_projWit`, `thetaPair_graphKraus_projWit`, `two_mul_card_le_of_thetaPositive`, `sub_one_le_lam_of_clique`, `thetaPositive_graphKraus_iff` |
 | One-layer loss and two-layer retention | **Checked in coordinates** | `graphPhiTranspose_layers`, `graphTheta_layers`, `graphTheta_mem_graphTwoLayerSpace`; the paper states only the elementary corner consequence |
 | Odd-parity counterexample | **Checked** | `inner_delta_placeT_zetaV_iff`, `qform_krausQ_Pneg_skewFam_saturates`, `not_qform_krausQ_Pneg_le_skewFam` |
-| `β₂` alone does not imply the marginal identity | **Elementary logical boundary** | The zero-map observation is not a named Lean theorem; a literal every-claim policy would package it |
+| `β₂` alone does not imply the marginal identity | **Checked elementary boundary** | `choiOf_zero` and `choiTwoBound_choiOf_zero` give the identically zero Kraus family a zero Choi bound; `thetaPositive_zero` identifies the resulting corrected form at zero coefficient with the tautological zero form. The absence of a marginal dictionary is the logical point of the example, not an additional inequality |
 | Universal coefficient may be nonoptimal for a fixed map | **Explanatory statement** | The upper bound and clique attainment are checked; no strictly smaller map-specific example is claimed |
 | Even higher tensor powers retain parity | **Conditional / checked ingredients** | Even parity and the generic lift are checked; `β₂(Λ^{⊗2m})` remains unknown for `m ≥ 2` |
-| Failure of the two-factor binomial collapse for `n ≥ 3` | **Open formalization** | The coefficient comparison appears as documentation in `MapIdentity.lean`, not as a theorem |
+| Failure of the two-factor binomial collapse for `n ≥ 3` | **Checked coefficient obstruction** | `higherTensor_coefficient_compatibility` proves that the adjacent-layer equations `rt = r-1` and `rt² = r-1`, both required once `n ≥ 3`, admit a common real `t` for positive natural `r` iff `r = 1` |
 | Formal axiom and `sorry` claims | **Checked executable audit** | `RankR/Verification/Axioms/All.lean` guards the reported axiom surface; the repository-wide hygiene scan is part of the verification layer |
 | Basis-free finite-dimensional statements | **Open interface** | The development uses finite coordinate types; transport through a chosen orthonormal basis is not packaged as a theorem |
 
