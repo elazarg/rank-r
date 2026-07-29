@@ -1,5 +1,7 @@
 # Rank-two Choi lifting, formalized in Lean
 
+[![CI](https://github.com/elazarg/rank-r/actions/workflows/ci.yml/badge.svg)](https://github.com/elazarg/rank-r/actions/workflows/ci.yml)
+
 This repository studies a reusable way to turn a rank-two bound for the Choi
 operator of a completely positive map into an $r$-positivity theorem at every
 finite level $r$. The lift is the main construction; a sharp inequality for
@@ -164,14 +166,34 @@ lake build RankR.All
 lake build RankR.Verification.Axioms
 ```
 
-## Attribution and provenance
+## Related work
 
-The appendix presents the double-skew proof as an adaptation of
-Fu--Gao--Park, reorganized around an explicit Autonne--Takagi factorization.
-The partial-trace inequality was also obtained independently in concurrent
-work by Fraser--Huber--Pozsgay--Vona, whose balanced-decomposition route is
-compared with the Choi lift in the paper. The paper gives the full attribution
-and literature context without making a priority claim.
+The closest related papers are:
+
+- Fu, Gao, and Park,
+  [*A solution to 2-copy distillability of Werner states*](https://arxiv.org/abs/2607.21367),
+  prove the sharp rank-two double-skew estimate used as the local input here.
+- Fraser, Huber, Pozsgay, and Vona,
+  [*On the two-copy distillability of Werner states and a new partial trace inequality*](https://arxiv.org/abs/2607.24309),
+  prove the arbitrary-$r$ partial-trace inequality by a balanced-factorization
+  route compared with the Choi lift in the paper.
+- Song and Chen,
+  [*A partial-trace matrix inequality and Werner-state distillability*](https://arxiv.org/abs/2607.23416),
+  and Bharti, Gajjala, and Haug,
+  [*Two-copy nondistillability of Werner states: sharp partial-trace inequalities and finite-copy extensions*](https://arxiv.org/abs/2607.24479),
+  give independent rank-two proofs and further consequences.
+
+Earlier motivation and partial results appear in Costa Rico,
+[*New partial trace inequalities and distillability of Werner states*](https://doi.org/10.1007/s11005-025-01935-y),
+and Costa Rico and Wolf,
+[*Partial trace relations beyond normal matrices*](https://arxiv.org/abs/2507.18278).
+The paper gives the full attribution and mathematical comparison without
+making a priority claim.
+
+## Provenance
+
+The appendix presents the double-skew proof as an adaptation of Fu, Gao, and
+Park, reorganized around an explicit Autonne--Takagi factorization.
 
 The manuscript and formalization were developed with extensive AI assistance,
 including mathematical exploration, exposition, and Lean proof generation.
