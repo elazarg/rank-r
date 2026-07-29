@@ -428,6 +428,114 @@ theorem matrixLevelPositiveCone_subset_mapped_iff
 
 end PositiveConeDictionary
 
+/-! ## Padding and compression between matrix levels -/
+
+section LevelPadding
+
+variable {K L W : Type*} [Fintype K] [Fintype L] [Fintype W]
+  [DecidableEq K] [DecidableEq L] [DecidableEq W]
+
+private theorem sum_pair_indicator
+    {A B : Type*} [Fintype A] [Fintype B]
+    [DecidableEq A] [DecidableEq B]
+    {M : Type*} [AddCommMonoid M]
+    (a : A) (b : B) (f : A → B → M) :
+    (∑ x, ∑ y, if a = x ∧ b = y then f x y else 0) = f a b := by
+  rw [Finset.sum_eq_single a]
+  · rw [Finset.sum_eq_single b]
+    · simp
+    · intro y _ hy
+      simp [Ne.symm hy]
+    · simp
+  · intro x _ hx
+    simp [Ne.symm hx]
+  · simp
+
+/-- The coordinate isometry induced by an embedding of matrix-level indices. -/
+def levelEmbedding (e : K ↪ L) :
+    Matrix (L × W) (K × W) ℂ :=
+  Matrix.of fun p q =>
+    if p.1 = e q.1 ∧ p.2 = q.2 then 1 else 0
+
+/-- Pad a matrix at level `K` by zeros into a larger level `L`. -/
+noncomputable def padMatrixLevel
+    (e : K ↪ L) (Z : Matrix (K × W) (K × W) ℂ) :
+    Matrix (L × W) (L × W) ℂ :=
+  levelEmbedding e * Z * (levelEmbedding e)ᴴ
+
+omit [Fintype L] in
+/-- A padded matrix recovers its original coefficient blocks on the embedded
+level indices. -/
+theorem matrixLevelBlock_padMatrixLevel_at
+    (e : K ↪ L) (Z : Matrix (K × W) (K × W) ℂ)
+    (a b : K) :
+    matrixLevelBlock (padMatrixLevel e Z) (e a) (e b)
+      = matrixLevelBlock Z a b := by
+  ext x y
+  simp [matrixLevelBlock, padMatrixLevel, levelEmbedding,
+    Matrix.mul_apply, Matrix.conjTranspose_apply,
+    Fintype.sum_prod_type, e.injective.eq_iff,
+    RCLike.star_def]
+  rw [sum_pair_indicator b y, sum_pair_indicator a x]
+
+omit [Fintype L] in
+/-- Every coefficient block of a padded matrix is a finite linear combination
+of the original coefficient blocks. -/
+theorem matrixLevelBlock_padMatrixLevel
+    (e : K ↪ L) (Z : Matrix (K × W) (K × W) ℂ)
+    (a b : L) :
+    matrixLevelBlock (padMatrixLevel e Z) a b
+      =
+    ∑ k : K, ∑ l : K,
+      (if a = e k ∧ b = e l then (1 : ℂ) else 0)
+        • matrixLevelBlock Z k l := by
+  by_cases ha : ∃ k, a = e k
+  · rcases ha with ⟨k, rfl⟩
+    by_cases hb : ∃ l, b = e l
+    · rcases hb with ⟨l, rfl⟩
+      rw [matrixLevelBlock_padMatrixLevel_at]
+      simp only [e.injective.eq_iff, ite_smul, one_smul, zero_smul]
+      symm
+      exact sum_pair_indicator k l fun x y =>
+        matrixLevelBlock Z x y
+    · push Not at hb
+      ext x y
+      simp [matrixLevelBlock, padMatrixLevel, levelEmbedding,
+        Matrix.mul_apply, Matrix.conjTranspose_apply,
+        Matrix.sum_apply, Fintype.sum_prod_type,
+        e.injective.eq_iff, hb]
+  · push Not at ha
+    ext x y
+    simp [matrixLevelBlock, padMatrixLevel, levelEmbedding,
+      Matrix.mul_apply, Matrix.conjTranspose_apply,
+      Matrix.sum_apply,
+      ha, RCLike.star_def]
+
+omit [Fintype L] in
+/-- Padding preserves membership in a matrix-level subspace. -/
+theorem padMatrixLevel_mem
+    (e : K ↪ L) {S : Submodule ℂ (Matrix W W ℂ)}
+    {Z : Matrix (K × W) (K × W) ℂ}
+    (hZ : Z ∈ matrixLevelSpace S) :
+    padMatrixLevel e Z ∈ matrixLevelSpace S := by
+  intro a b
+  rw [matrixLevelBlock_padMatrixLevel]
+  apply Submodule.sum_mem
+  intro k _
+  apply Submodule.sum_mem
+  intro l _
+  exact Submodule.smul_mem _ _ (hZ k l)
+
+omit [DecidableEq K] in
+/-- Padding preserves positive semidefiniteness. -/
+theorem padMatrixLevel_posSemidef
+    (e : K ↪ L) {Z : Matrix (K × W) (K × W) ℂ}
+    (hZ : Z.PosSemidef) :
+    (padMatrixLevel e Z).PosSemidef :=
+  hZ.mul_mul_conjTranspose_same (levelEmbedding e)
+
+end LevelPadding
+
 section GraphInclusion
 
 variable {U L : Type*} [Fintype U] [Fintype L]
@@ -442,6 +550,43 @@ def GraphLevelInclusion
       mappedMatrixLevelPositiveCone
         (graphTwoLayerSpace E)
         (graphThetaLinear E R (lam : ℂ)) Z
+
+omit [LinearOrder U] in
+/-- Matrix-level inclusion is downward closed under embeddings of the level
+index type. -/
+theorem graphLevelInclusion_of_embedding
+    {K : Type*} [Fintype K] [DecidableEq K]
+    (e : K ↪ L) {E : Finset (U × U)} {R : ℕ} {lam : ℝ}
+    (hinc : GraphLevelInclusion (U := U) (L := L) E R lam) :
+    GraphLevelInclusion (U := U) (L := K) E R lam := by
+  intro Z hZ
+  let Zpad := padMatrixLevel (W := U × Fin 2) e Z
+  have hZpadSpace :
+      Zpad ∈ matrixLevelSpace (graphTwoLayerSpace E) :=
+    padMatrixLevel_mem e hZ.1
+  have hZpadPos : Zpad.PosSemidef :=
+    padMatrixLevel_posSemidef e hZ.2
+  have hout :=
+    (hinc Zpad ⟨hZpadSpace, hZpadPos⟩).2
+  have hsub :
+      (mapAmplification (A := L)
+          (graphThetaLinear E R (lam : ℂ)) Zpad).submatrix
+        (fun p : K × (U × Fin 2) => (e p.1, p.2))
+        (fun p : K × (U × Fin 2) => (e p.1, p.2))
+        =
+      mapAmplification (A := K)
+        (graphThetaLinear E R (lam : ℂ)) Z := by
+    ext ⟨a, x⟩ ⟨b, y⟩
+    change
+      graphThetaLinear E R (lam : ℂ)
+          (matrixLevelBlock Zpad (e a) (e b)) x y
+        =
+      graphThetaLinear E R (lam : ℂ)
+          (matrixLevelBlock Z a b) x y
+    rw [matrixLevelBlock_padMatrixLevel_at]
+  refine ⟨hZ, ?_⟩
+  rw [← hsub]
+  exact hout.submatrix _
 
 omit [DecidableEq L] [LinearOrder U] in
 /-- Global positivity of an ampliation implies the restricted
@@ -563,6 +708,37 @@ theorem not_graphCliqueNextLevelInclusion
   · exact hcl
   · rw [hSR]
     norm_num
+
+/-- **Exact protected level separation** (`eq:levels`).
+
+If the graph contains an `(R+1)`-clique, the corrected map at `λ=R-1`
+induces the positive-cone inclusion at canonical level `Fin n` exactly when
+`n ≤ R`. -/
+theorem graphProtectedLevelInclusion_iff
+    {E : Finset (U × U)} (hE : ∀ p ∈ E, p.1 < p.2)
+    {R : ℕ} (hR : 0 < R)
+    {S : Finset U} (hSR : S.card = R + 1)
+    (hcl : ∀ i ∈ S, ∀ j ∈ S, i < j → (i, j) ∈ E)
+    (n : ℕ) :
+    GraphLevelInclusion (U := U) (L := Fin n)
+        E R ((R : ℝ) - 1)
+      ↔ n ≤ R := by
+  constructor
+  · intro hinc
+    by_contra hn
+    have hcard :
+        Fintype.card {i : U // i ∈ S}
+          ≤ Fintype.card (Fin n) := by
+      simp only [Fintype.card_coe, Fintype.card_fin, hSR]
+      omega
+    obtain ⟨e⟩ :=
+      Function.Embedding.nonempty_of_card_le hcard
+    have hsmall :=
+      graphLevelInclusion_of_embedding e hinc
+    exact (not_graphCliqueNextLevelInclusion hE hSR hcl) hsmall
+  · intro hn
+    exact graphLevelInclusion_at_threshold_of_card_le
+      hE hR (by simpa using hn)
 
 end GraphInclusion
 

@@ -454,6 +454,8 @@ $\lambda^*_R(\Phi)\le(R-1)\beta_2(\Phi)$ of \cref{eq:lamstar}
 inclusion through level $R$ and failure at $R+1$
   & \texttt{graphLevelInclusion\_at\_threshold\_of\_card\_le},
     \texttt{not\_graphCliqueNextLevelInclusion}\\
+\cref{eq:levels}
+  & \texttt{graphProtectedLevelInclusion\_iff}\\
 \hline
 \end{tabular}
 \end{center}
@@ -478,12 +480,14 @@ The inclusion dictionary and \cref{eq:exact} are formalized in a basis-free
 positive-cone rendering, rather than by choosing a real basis and reconstructing
 the displayed monic pencils.  Inclusion is checked at every finite level of
 cardinality at most $R$, and the compressed witness checks failure at the
-$(R+1)$-clique level.  Padding that witness to every larger canonical level
-$\mathbb C^n$ --- the final monotonicity step in the literal biconditional
-\cref{eq:levels} --- is not formalized.  The concrete spaces $\cS_G$ and
+$(R+1)$-clique level.  A checked padding-and-compression argument propagates
+that obstruction to every larger canonical level $\mathbb C^n$, proving the
+literal biconditional \cref{eq:levels}.  The concrete spaces $\cS_G$ and
 $\cU_G$, their unital and adjoint structure, the graph-reduction range, the
 displayed layer formula, invariance of the corrected map, and the positive
-compressed clique input with its exact expectation are formalized.
+compressed clique input with its exact expectation are formalized.  Choosing
+the displayed real traceless basis and reconstructing the monic pencils is the
+remaining presentation interface.
 
 \section*{Numerical corroboration}
 

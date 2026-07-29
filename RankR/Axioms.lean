@@ -746,6 +746,10 @@ threshold. -/
 #guard_msgs in
 #print axioms not_graphCliqueNextLevelInclusion
 
+/-- info: 'RankR.graphProtectedLevelInclusion_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms graphProtectedLevelInclusion_iff
+
 /-! ## Exterior indexing
 
 The two families of modes attached to the faces of `Fin r`. -/
