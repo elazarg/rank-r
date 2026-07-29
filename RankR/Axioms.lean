@@ -549,6 +549,22 @@ trace formula and the exact boundary operator identity. -/
 #guard_msgs in
 #print axioms trace_mul_staircaseWitness_staircaseState_neg_iff
 
+/-- info: 'RankR.staircaseWitnessAcrossCut_isBlockPositive' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms staircaseWitnessAcrossCut_isBlockPositive
+
+/-- info: 'RankR.trace_mul_staircaseWitnessAcrossCut_staircaseStateAcrossCut_neg_iff' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms trace_mul_staircaseWitnessAcrossCut_staircaseStateAcrossCut_neg_iff
+
+/-- info: 'RankR.not_schmidtNumberLE_staircaseStateAcrossCut_of_threshold_lt' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms not_schmidtNumberLE_staircaseStateAcrossCut_of_threshold_lt
+
 /--
 info: 'RankR.trace_mul_staircaseUnprotectedWitness_staircaseState_neg_iff' depends on axioms: [propext,
  Classical.choice,
@@ -568,6 +584,10 @@ info: 'RankR.trace_mul_staircaseUnprotectedWitness_staircaseState_neg_iff' depen
 /-- info: 'RankR.staircaseState_at_threshold_normalized_posSemidef' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms staircaseState_at_threshold_normalized_posSemidef
+
+/-- info: 'RankR.staircaseStateAcrossCut_isDensityMatrix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms staircaseStateAcrossCut_isDensityMatrix
 
 /--
 info: 'RankR.staircaseBoundaryState_at_threshold_normalized_posSemidef' depends on axioms: [propext,

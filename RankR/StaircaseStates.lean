@@ -5,9 +5,10 @@ Finite operator algebra for the state family and boundary decomposition in
 The matrices are kept in the paper's `A₁B₁A₂B₂` register order.  This file
 proves the normalized isotropic white-noise identity, protected and unprotected
 witness expectations, the isotropic marginal formula and its one-sided
-Schmidt-number obstruction, and the exact boundary operator equality.  It does
-not assert that the algebraic product-isotropic space is the range of a Haar
-twirl, or that the twirl preserves Schmidt number.
+Schmidt-number obstruction, the global witness obstruction across the stated
+Schmidt cut, and the exact boundary operator equality.  It does not assert that
+the algebraic product-isotropic space is the range of a Haar twirl, or that the
+twirl preserves Schmidt number.
 -/
 import RankR.Isotropic
 import RankR.Staircase
@@ -21,6 +22,69 @@ section
 
 variable {U V : Type*} [Fintype U] [Fintype V]
   [DecidableEq U] [DecidableEq V]
+
+/-- Regroup an operator from register order `A₁B₁A₂B₂` to the bipartite
+Schmidt-cut order `(A₁A₂):(B₁B₂)`. -/
+noncomputable def regroupProductOperator
+    (M : Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ) :
+    Matrix ((U × V) × (U × V)) ((U × V) × (U × V)) ℂ :=
+  Matrix.reindex (choiRegroupEquiv (U := U) (V := V))
+    (choiRegroupEquiv (U := U) (V := V)) M
+
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
+theorem regroupProductOperator_smul
+    (c : ℂ)
+    (M : Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ) :
+    regroupProductOperator (c • M) = c • regroupProductOperator M := by
+  rfl
+
+theorem regroupProductOperator_mul
+    (M N : Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ) :
+    regroupProductOperator (M * N) =
+      regroupProductOperator M * regroupProductOperator N := by
+  change
+    (Matrix.reindexAlgEquiv ℂ ℂ
+      (choiRegroupEquiv (U := U) (V := V))) (M * N) =
+      (Matrix.reindexAlgEquiv ℂ ℂ
+        (choiRegroupEquiv (U := U) (V := V))) M *
+      (Matrix.reindexAlgEquiv ℂ ℂ
+        (choiRegroupEquiv (U := U) (V := V))) N
+  exact map_mul _ M N
+
+omit [DecidableEq U] [DecidableEq V] in
+theorem trace_regroupProductOperator
+    (M : Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ) :
+    (regroupProductOperator M).trace = M.trace := by
+  simp only [regroupProductOperator, Matrix.trace, Matrix.diag_apply,
+    Matrix.reindex_apply]
+  simpa using
+    (Equiv.sum_comp
+      (choiRegroupEquiv (U := U) (V := V))
+      (fun q => M
+        ((choiRegroupEquiv (U := U) (V := V)).symm q)
+        ((choiRegroupEquiv (U := U) (V := V)).symm q))).symm
+
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
+theorem regroupProductOperator_isHermitian
+    {M : Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ}
+    (hM : M.IsHermitian) :
+    (regroupProductOperator M).IsHermitian := by
+  rw [Matrix.IsHermitian, regroupProductOperator,
+    Matrix.conjTranspose_reindex, hM.eq]
+
+omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
+theorem regroupProductOperator_posSemidef
+    {M : Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ}
+    (hM : M.PosSemidef) :
+    (regroupProductOperator M).PosSemidef := by
+  rw [regroupProductOperator, Matrix.reindex_apply]
+  exact hM.submatrix _
+
+theorem trace_mul_regroupProductOperator
+    (M N : Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ) :
+    (regroupProductOperator M * regroupProductOperator N).trace =
+      (M * N).trace := by
+  rw [← regroupProductOperator_mul, trace_regroupProductOperator]
 
 /-- The product-isotropic seed
 `Iso_m(s/m) ⊗ Iso_n(0)`. -/
@@ -41,6 +105,11 @@ noncomputable def staircaseState (s p : ℝ) :
     Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ :=
   (p : ℂ) • staircaseSeedState s
     + ((1 - p : ℝ) : ℂ) • staircaseWhiteNoiseState
+
+/-- The noisy staircase state in the register order of its Schmidt cut. -/
+noncomputable def staircaseStateAcrossCut (s p : ℝ) :
+    Matrix ((U × V) × (U × V)) ((U × V) × (U × V)) ℂ :=
+  regroupProductOperator (staircaseState s p)
 
 /-- The two-term candidate in the boundary decomposition. -/
 noncomputable def staircaseBoundaryState (k α : ℝ) :
@@ -66,6 +135,11 @@ noncomputable def staircaseWitness (k : ℝ) :
   (k : ℂ) •
     (staircaseWitnessFactor U k ⊗ₖ staircaseWitnessFactor V k)
 
+/-- The lifted witness in the register order of the Schmidt cut. -/
+noncomputable def staircaseWitnessAcrossCut (k : ℝ) :
+    Matrix ((U × V) × (U × V)) ((U × V) × (U × V)) ℂ :=
+  regroupProductOperator (staircaseWitness k)
+
 /-- The maximally entangled rank-one term on the two product factors, in the
 paper's `A₁B₁A₂B₂` register order. -/
 noncomputable def staircaseOmegaProduct :
@@ -86,6 +160,20 @@ theorem staircaseWitnessFactor_isHermitian
     Matrix.conjTranspose_sub, Matrix.conjTranspose_smul,
     rankOne_conjTranspose]
 
+/-- In positive dimension, the normalized witness factor is the ordinary
+reduction Choi matrix at parameter `1/k`. -/
+theorem staircaseWitnessFactor_eq_reductionChoi
+    {T : Type*} [Fintype T] [DecidableEq T]
+    (hT : 0 < Fintype.card T) (k : ℝ) :
+    staircaseWitnessFactor T k =
+      reductionChoi (T := T) (1 / k) := by
+  rw [staircaseWitnessFactor, reductionChoi, omegaProjection, smul_smul]
+  congr 1
+  norm_cast
+  have hd : (Fintype.card T : ℝ) ≠ 0 := by
+    exact_mod_cast (Nat.ne_of_gt hT)
+  field_simp
+
 theorem staircaseWitness_isHermitian (k : ℝ) :
     (staircaseWitness (U := U) (V := V) k).IsHermitian := by
   have hkr :
@@ -97,6 +185,54 @@ theorem staircaseWitness_isHermitian (k : ℝ) :
   apply hkr.smul
   change conj (k : ℂ) = (k : ℂ)
   exact Complex.conj_ofReal k
+
+theorem staircaseWitnessAcrossCut_isHermitian (k : ℝ) :
+    (staircaseWitnessAcrossCut (U := U) (V := V) k).IsHermitian :=
+  regroupProductOperator_isHermitian (staircaseWitness_isHermitian k)
+
+/-- After regrouping to the Schmidt cut, the staircase witness is `k` times
+the product of two reduction Choi matrices. -/
+theorem staircaseWitnessAcrossCut_eq_productReductionChoi
+    (hU : 0 < Fintype.card U) (hV : 0 < Fintype.card V) (k : ℝ) :
+    staircaseWitnessAcrossCut (U := U) (V := V) k =
+      (k : ℂ) •
+        productReductionChoi (U := U) (V := V) (1 / k) (1 / k) := by
+  rw [staircaseWitnessAcrossCut, staircaseWitness,
+    regroupProductOperator_smul, productReductionChoi]
+  change
+    (k : ℂ) •
+        regroupProductOperator
+          (staircaseWitnessFactor U k ⊗ₖ
+            staircaseWitnessFactor V k) =
+      (k : ℂ) •
+        regroupProductOperator
+          (reductionChoi (T := U) (1 / k) ⊗ₖ
+            reductionChoi (T := V) (1 / k))
+  rw [staircaseWitnessFactor_eq_reductionChoi hU,
+    staircaseWitnessFactor_eq_reductionChoi hV]
+
+/-- The lifted witness is block-positive at its integer level across the
+paper's Schmidt cut. -/
+theorem staircaseWitnessAcrossCut_isBlockPositive
+    {k : ℕ} (hk : 0 < k)
+    (hU : k ≤ Fintype.card U) (hV : k ≤ Fintype.card V)
+    (hUtwo : 2 ≤ Fintype.card U) (hVtwo : 2 ≤ Fintype.card V) :
+    IsBlockPositive k
+      (staircaseWitnessAcrossCut (U := U) (V := V) (k : ℝ)) := by
+  rw [staircaseWitnessAcrossCut_eq_productReductionChoi
+    (by omega) (by omega)]
+  have hproduct :
+      IsBlockPositive k
+        (productReductionChoi (U := U) (V := V)
+          (1 / (k : ℝ)) (1 / (k : ℝ))) := by
+    apply
+      (isBlockPositive_productReductionChoi_iff_max_le_inv
+        hk hU hV hUtwo hVtwo (by positivity) (by positivity)).mpr
+    simp
+  intro C hCrank
+  rw [qform_smul, Complex.mul_re, Complex.ofReal_re,
+    Complex.ofReal_im, zero_mul, sub_zero]
+  exact mul_nonneg (by positivity) (hproduct C hCrank)
 
 omit [Fintype U] [Fintype V] in
 theorem staircaseOmegaProduct_isHermitian :
@@ -259,6 +395,47 @@ theorem trace_mul_staircaseWitness_staircaseState_neg_iff
       (p := p)
       (staircaseGamma_pos hm hn hk hks) (sub_pos.mpr hks))
 
+/-- The exact negative-expectation threshold is unchanged after regrouping
+the witness and state to the paper's Schmidt cut. -/
+theorem trace_mul_staircaseWitnessAcrossCut_staircaseStateAcrossCut_neg_iff
+    (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
+    {s k p : ℝ} (hk : 1 ≤ k) (hks : k < s) :
+    ((staircaseWitnessAcrossCut (U := U) (V := V) k *
+        staircaseStateAcrossCut s p).trace).re < 0 ↔
+      staircaseP (Fintype.card U) (Fintype.card V) s k < p := by
+  rw [staircaseWitnessAcrossCut, staircaseStateAcrossCut,
+    trace_mul_regroupProductOperator]
+  exact trace_mul_staircaseWitness_staircaseState_neg_iff
+    hU hV hk hks
+
+/-- Above `p_k`, the noisy staircase state has Schmidt number greater than
+`k` across `(A₁A₂):(B₁B₂)`.
+
+This is the fully mixed-state lower-bound direction of the staircase theorem;
+it uses no twirling or seed-decomposition claim. -/
+theorem not_schmidtNumberLE_staircaseStateAcrossCut_of_threshold_lt
+    (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
+    {k : ℕ} (hk : 0 < k)
+    (hkU : k ≤ Fintype.card U) (hkV : k ≤ Fintype.card V)
+    {s p : ℝ} (hks : (k : ℝ) < s)
+    (hp :
+      staircaseP (Fintype.card U) (Fintype.card V) s k < p) :
+    ¬ SchmidtNumberLE k
+      (staircaseStateAcrossCut (U := U) (V := V) s p) := by
+  have hkR : (1 : ℝ) ≤ k := by exact_mod_cast hk
+  have hneg :
+      ((staircaseWitnessAcrossCut (U := U) (V := V) (k : ℝ) *
+          staircaseStateAcrossCut s p).trace).re < 0 :=
+    (trace_mul_staircaseWitnessAcrossCut_staircaseStateAcrossCut_neg_iff
+      hU hV hkR hks).mpr hp
+  intro hSN
+  have hnonneg :=
+    trace_mul_nonneg_of_schmidtNumberLE
+      (staircaseWitnessAcrossCut_isHermitian (U := U) (V := V) (k : ℝ))
+      (staircaseWitnessAcrossCut_isBlockPositive hk hkU hkV hU hV)
+      hSN
+  exact (not_lt_of_ge hnonneg) hneg
+
 theorem trace_mul_staircaseUnprotectedWitness_seed
     (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
     {k : ℝ} (hk : 1 ≤ k) (s : ℝ) :
@@ -400,6 +577,20 @@ theorem staircaseState_normalized_posSemidef
       Matrix.trace_smul, staircaseSeedState, staircaseWhiteNoiseState,
       trace_biIsotropicState hU hV, trace_biIsotropicState hU hV]
     norm_num
+
+/-- In the register order of the Schmidt cut, the admissible noisy family is
+still a density matrix. -/
+theorem staircaseStateAcrossCut_isDensityMatrix
+    (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
+    {s p : ℝ} (hs0 : 0 ≤ s) (hsU : s ≤ Fintype.card U)
+    (hp0 : 0 ≤ p) (hp1 : p ≤ 1) :
+    IsDensityMatrix
+      (staircaseStateAcrossCut (U := U) (V := V) s p) := by
+  obtain ⟨hpos, htrace⟩ :=
+    staircaseState_normalized_posSemidef hU hV hs0 hsU hp0 hp1
+  constructor
+  · exact regroupProductOperator_posSemidef hpos
+  · rw [staircaseStateAcrossCut, trace_regroupProductOperator, htrace]
 
 /-- Tracing out the second product factor leaves the isotropic marginal used
 in the marginal-threshold comparison. -/
