@@ -5,7 +5,7 @@ This is independent of the Choi pair construction.  Its inputs are a sharp
 rank-one estimate, a four-linear crossed-polarization identity, and a balanced
 rank factorization with equal left and right Gram matrices.
 -/
-import RankR.Library.Matrix.Rank
+import RankR.Library.Matrix.BalancedFactorization
 
 namespace RankR
 
@@ -27,13 +27,6 @@ def HasCrossedPolarization (L : Matrix W W ℂ →ₗ[ℂ] E) : Prop :=
   ∀ u v s t : EuclideanSpace ℂ W,
     inner ℂ (L (rankOne u v)) (L (rankOne s t))
       = inner ℂ (L (rankOne t v)) (L (rankOne s u))
-
-/-- A rank factorization whose left and right families have the same Gram
-matrix and whose trace contributions have been balanced to one scalar. -/
-def IsBalancedRankFactor {q : ℕ}
-    (e d : Fin q → EuclideanSpace ℂ W) (τ : ℂ) : Prop :=
-  (∀ i j, inner ℂ (e i) (e j) = inner ℂ (d i) (d j))
-    ∧ ∀ i, inner ℂ (d i) (e i) = τ
 
 end Definitions
 
@@ -144,18 +137,17 @@ section Summation
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
   {q : ℕ}
 
-/-- The real finite-sum core of the balanced lift.  The diagonal terms pay the
-single scalar cost `t`, while crossed polarization supplies the off-diagonal
-Gram costs `b`. -/
-theorem norm_sum_sq_le_of_balanced_pairs
-    (hq : 0 < q) (z : Fin q → E) (δ : Fin q → ℝ)
+/-- The sharp expansion bound before the complete-graph variance and
+off-diagonal terms are absorbed into `q` times the full Gram sum. -/
+theorem norm_sum_sq_le_balanced_expansion
+    (z : Fin q → E) (δ : Fin q → ℝ)
     (b : Fin q → Fin q → ℝ) (t : ℝ)
-    (hb : ∀ i j, 0 ≤ b i j)
-    (hbdiag : ∀ i, b i i = δ i ^ 2)
     (hdiag : ∀ i, ‖z i‖ ^ 2 ≤ δ i ^ 2 + t)
     (hoff : ∀ i j, i ≠ j →
       (inner ℂ (z i) (z j)).re ≤ δ i * δ j + b i j) :
-    ‖∑ i, z i‖ ^ 2 ≤ (q : ℝ) * (∑ i, ∑ j, b i j) + (q : ℝ) * t := by
+    ‖∑ i, z i‖ ^ 2
+      ≤ (∑ i, δ i) ^ 2 + (q : ℝ) * t
+        + ∑ i, ∑ j, (if i ≠ j then b i j else 0) := by
   have hpair : ∀ i j,
       (inner ℂ (z i) (z j)).re
         ≤ δ i * δ j + if i = j then t else b i j := by
@@ -191,26 +183,40 @@ theorem norm_sum_sq_le_of_balanced_pairs
               simp
           _ = (q : ℝ) * t := by
             simp [Finset.sum_const, nsmul_eq_mul]
+  rw [norm_sum_sq_eq_sum_re_inner]
+  calc
+    _ ≤ ∑ i, ∑ j,
+        (δ i * δ j + if i = j then t else b i j) :=
+      Finset.sum_le_sum fun i _ =>
+        Finset.sum_le_sum fun j _ => hpair i j
+    _ = (∑ i, δ i) ^ 2 + (∑ i, ∑ j, if i = j then t else b i j) := by
+      rw [show (∑ i, ∑ j, (δ i * δ j
+          + if i = j then t else b i j))
+            = (∑ i, ∑ j, δ i * δ j)
+              + ∑ i, ∑ j, (if i = j then t else b i j) by
+            simp only [Finset.sum_add_distrib]]
+      congr 1
+      rw [← Finset.sum_mul_sum]
+      ring
+    _ = _ := by rw [hite]; ring
+
+/-- The real finite-sum core of the balanced lift.  The diagonal terms pay the
+single scalar cost `t`, while crossed polarization supplies the off-diagonal
+Gram costs `b`. -/
+theorem norm_sum_sq_le_of_balanced_pairs
+    (hq : 0 < q) (z : Fin q → E) (δ : Fin q → ℝ)
+    (b : Fin q → Fin q → ℝ) (t : ℝ)
+    (hb : ∀ i j, 0 ≤ b i j)
+    (hbdiag : ∀ i, b i i = δ i ^ 2)
+    (hdiag : ∀ i, ‖z i‖ ^ 2 ≤ δ i ^ 2 + t)
+    (hoff : ∀ i j, i ≠ j →
+      (inner ℂ (z i) (z j)).re ≤ δ i * δ j + b i j) :
+    ‖∑ i, z i‖ ^ 2 ≤ (q : ℝ) * (∑ i, ∑ j, b i j) + (q : ℝ) * t := by
   have hupper :
       ‖∑ i, z i‖ ^ 2
         ≤ (∑ i, δ i) ^ 2 + (q : ℝ) * t
-          + ∑ i, ∑ j, (if i ≠ j then b i j else 0) := by
-    rw [norm_sum_sq_eq_sum_re_inner]
-    calc
-      _ ≤ ∑ i, ∑ j,
-          (δ i * δ j + if i = j then t else b i j) :=
-        Finset.sum_le_sum fun i _ =>
-          Finset.sum_le_sum fun j _ => hpair i j
-      _ = (∑ i, δ i) ^ 2 + (∑ i, ∑ j, if i = j then t else b i j) := by
-        rw [show (∑ i, ∑ j, (δ i * δ j
-            + if i = j then t else b i j))
-              = (∑ i, ∑ j, δ i * δ j)
-                + ∑ i, ∑ j, (if i = j then t else b i j) by
-              simp only [Finset.sum_add_distrib]]
-        congr 1
-        rw [← Finset.sum_mul_sum]
-        ring
-      _ = _ := by rw [hite]; ring
+          + ∑ i, ∑ j, (if i ≠ j then b i j else 0) :=
+    norm_sum_sq_le_balanced_expansion z δ b t hdiag hoff
   have hdiagSum :
       ∑ i, b i i = ∑ i, δ i ^ 2 :=
     Finset.sum_congr rfl fun i _ => hbdiag i
@@ -273,6 +279,58 @@ theorem balancedPolarization_rankFactor_le
       nlinarith)
   rw [← hsNormSq_rankFactor_of_gram_eq hbal.1] at hsum
   simpa only [← map_sum, ← rankFactor_eq_sum] using hsum
+
+/-- The complete-graph defect retained by the balanced-polarization proof.
+The first term is the variance of the diagonal Gram entries; the second is
+`q - 1` times the ordered off-diagonal Gram mass. -/
+theorem balancedPolarization_rankFactor_defect_le
+    (hOne : HasRankOneTraceBound L)
+    (hCross : HasCrossedPolarization L)
+    (hbal : IsBalancedRankFactor e d τ) :
+    (q : ℝ) * (∑ i, ‖e i‖ ^ 4) - (∑ i, ‖e i‖ ^ 2) ^ 2
+        + ((q : ℝ) - 1) * ∑ i, ∑ j,
+          (if i ≠ j then Complex.normSq (inner ℂ (e i) (e j)) else 0)
+      ≤ (q : ℝ) * hsNormSq (rankFactor e d)
+        + (q : ℝ) * Complex.normSq τ
+        - ‖L (rankFactor e d)‖ ^ 2 := by
+  let b : Fin q → Fin q → ℝ :=
+    fun i j => Complex.normSq (inner ℂ (e i) (e j))
+  let off : ℝ := ∑ i, ∑ j, (if i ≠ j then b i j else 0)
+  have hsum := norm_sum_sq_le_balanced_expansion
+    (fun i => L (rankOne (e i) (d i)))
+    (fun i => ‖e i‖ ^ 2) b (Complex.normSq τ)
+    (fun i => by
+      have h := balanced_diagonal_bound hOne hbal i
+      nlinarith)
+    (fun i j _ => by
+      have h := balanced_crossed_re_le hOne hCross hbal i j
+      dsimp [b]
+      nlinarith)
+  have hsum' :
+      ‖L (rankFactor e d)‖ ^ 2
+        ≤ (∑ i, ‖e i‖ ^ 2) ^ 2
+          + (q : ℝ) * Complex.normSq τ + off := by
+    simpa only [← map_sum, ← rankFactor_eq_sum, off, b] using hsum
+  have hdiag :
+      ∑ i, b i i = ∑ i, ‖e i‖ ^ 4 := by
+    refine Finset.sum_congr rfl fun i _ => ?_
+    dsimp [b]
+    rw [inner_self_eq_norm_sq_to_K]
+    simp [Complex.normSq_eq_norm_sq, norm_pow]
+    ring
+  have hoff :
+      off = (∑ i, ∑ j, b i j) - ∑ i, b i i :=
+    sum_sum_ite_ne_balanced b
+  have hgram :
+      hsNormSq (rankFactor e d) = ∑ i, ∑ j, b i j := by
+    simpa only [b] using hsNormSq_rankFactor_of_gram_eq hbal.1
+  change (q : ℝ) * (∑ i, ‖e i‖ ^ 4) - (∑ i, ‖e i‖ ^ 2) ^ 2
+      + ((q : ℝ) - 1) * off
+    ≤ (q : ℝ) * hsNormSq (rankFactor e d)
+      + (q : ℝ) * Complex.normSq τ - ‖L (rankFactor e d)‖ ^ 2
+  rw [hoff, hdiag] at hsum' ⊢
+  rw [hgram]
+  linarith
 
 /-- The manuscript form of the balanced lift: a constant diagonal turns the
 scalar cost into `|Tr C|² / q`. -/

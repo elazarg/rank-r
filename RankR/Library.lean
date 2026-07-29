@@ -7,6 +7,7 @@ import RankR.Library.Analysis.Bessel
 import RankR.Library.Analysis.RestrictedFrame
 import RankR.Library.Analysis.Weights
 import RankR.Library.Matrix.Action
+import RankR.Library.Matrix.BalancedFactorization
 import RankR.Library.Matrix.Conjugate
 import RankR.Library.Matrix.Contraction
 import RankR.Library.Matrix.Elementary

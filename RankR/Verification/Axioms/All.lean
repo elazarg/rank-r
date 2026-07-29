@@ -28,6 +28,7 @@ import RankR.Core.DoubleSkew.MapIdentity
 import RankR.Core.PartialTrace.Optimality
 import RankR.Core.PartialTrace.OneSided
 import RankR.Core.PartialTrace.Main
+import RankR.Core.PartialTrace.Balanced
 import RankR.Core.DoubleSkew.SeedBound
 import RankR.Core.DoubleSkew.Action
 import RankR.Companions.HigherArity.Exterior
@@ -97,6 +98,45 @@ a hypothesis of the main theorem. -/
 /-- info: 'RankR.rank_eq_of_eq_rank_r_partial_trace' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms rank_eq_of_eq_rank_r_partial_trace
+
+/-! ## The balanced-polarization route
+
+These declarations check the generic crossed-polarization lift, its
+complete-graph defect, the two concrete marginal hypotheses, and the
+conditional reconstruction of the partial-trace theorem.  Balanced
+factorization existence remains a proposition-valued input. -/
+
+/-- info: 'RankR.balancedPolarization_rankFactor_trace_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms balancedPolarization_rankFactor_trace_le
+
+/-- info: 'RankR.balancedPolarization_rankFactor_defect_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms balancedPolarization_rankFactor_defect_le
+
+/-- info: 'RankR.partialTracePair_hasRankOneTraceBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms partialTracePair_hasRankOneTraceBound
+
+/-- info: 'RankR.partialTracePair_hasCrossedPolarization' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms partialTracePair_hasCrossedPolarization
+
+/-- info: 'RankR.balanced_partialTrace_rankFactor_defect_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms balanced_partialTrace_rankFactor_defect_le
+
+/-- info: 'RankR.partialTrace_of_hasBalancedRankFactorization' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms partialTrace_of_hasBalancedRankFactorization
+
+/--
+info: 'RankR.hasBalancedRankFactorization_of_equalGram_of_constantDiagonals' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms hasBalancedRankFactorization_of_equalGram_of_constantDiagonals
 
 /-! ## Applications
 

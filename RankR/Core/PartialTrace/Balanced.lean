@@ -38,4 +38,62 @@ theorem balanced_partialTrace_rankFactor_trace_le
     partialTracePair_hasCrossedPolarization hbal
   rwa [norm_partialTracePair_sq] at h
 
+/-- The complete-graph defect bound for the paired partial traces, in ordered
+off-diagonal form. -/
+theorem balanced_partialTrace_rankFactor_defect_le
+    (hbal : IsBalancedRankFactor e d τ) :
+    (q : ℝ) * (∑ i, ‖e i‖ ^ 4) - (∑ i, ‖e i‖ ^ 2) ^ 2
+        + ((q : ℝ) - 1) * ∑ i, ∑ j,
+          (if i ≠ j then Complex.normSq (inner ℂ (e i) (e j)) else 0)
+      ≤ (q : ℝ) * hsNormSq (rankFactor e d)
+        + (q : ℝ) * Complex.normSq τ
+        - hsNormSq (ptraceU (rankFactor e d))
+        - hsNormSq (ptraceV (rankFactor e d)) := by
+  have h := balancedPolarization_rankFactor_defect_le
+    partialTracePair_hasRankOneTraceBound
+    partialTracePair_hasCrossedPolarization hbal
+  rw [norm_partialTracePair_sq] at h
+  linarith
+
+section ExactRank
+
+variable (C : Matrix (U × V) (U × V) ℂ)
+
+/-- A balanced factorization at the exact rank gives the exact-rank
+partial-trace inequality. -/
+theorem partialTrace_exact_of_hasBalancedRankFactorization
+    (hbal : HasBalancedRankFactorization C) :
+    hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
+      ≤ (C.rank : ℝ) * hsNormSq C
+        + (1 / (C.rank : ℝ)) * Complex.normSq C.trace := by
+  rcases eq_or_ne C 0 with rfl | hC
+  · simp [hsNormSq]
+  · obtain ⟨e, d, τ, hfac, heq⟩ := hbal
+    have h := balanced_partialTrace_rankFactor_trace_le
+      (rank_pos_of_ne_zero hC) heq
+    rwa [← hfac] at h
+
+/-- The balanced-factorization route at an arbitrary rank bound. -/
+theorem partialTrace_of_hasBalancedRankFactorization
+    (hbal : HasBalancedRankFactorization C)
+    (r : ℕ) (hrank : C.rank ≤ r) :
+    hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
+      ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace := by
+  rcases eq_or_ne C 0 with rfl | hC
+  · simp [hsNormSq]
+  · exact (partialTrace_exact_of_hasBalancedRankFactorization C hbal).trans
+      (rank_mono (Complex.normSq_nonneg _) (rank_pos_of_ne_zero hC)
+        hrank (normSq_trace_le_rank C))
+
+/-- If every matrix on the bipartite space has a balanced exact-rank
+factorization, the rank-r partial-trace inequality follows for every matrix. -/
+theorem partialTrace_of_balancedRankFactorizations
+    (hbal : HasBalancedRankFactorizations (U × V))
+    (r : ℕ) (hrank : C.rank ≤ r) :
+    hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
+      ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
+  partialTrace_of_hasBalancedRankFactorization C (hbal C) r hrank
+
+end ExactRank
+
 end RankR
