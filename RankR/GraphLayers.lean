@@ -16,11 +16,13 @@ This file proves that coordinate identity.  The operator-system and
 free-spectrahedral vocabulary built on top of it is kept separate.
 -/
 import RankR.ThetaBound
+import RankR.MapPos
+import Mathlib.Analysis.Matrix.Order
 
 namespace RankR
 
 open Matrix Finset ComplexConjugate
-open scoped Kronecker
+open scoped ComplexOrder Kronecker MatrixOrder
 
 section QubitLayers
 
@@ -381,5 +383,403 @@ theorem graphTheta_mem_graphTwoLayerSpace
         (Submodule.smul_mem _ (R : ℂ)⁻¹ hZ)))
 
 end OperatorSpaces
+
+/-! ## Matrix levels and the compressed clique input -/
+
+section MatrixLevels
+
+variable {L W : Type*}
+
+/-- The `(a,b)` coefficient block of a matrix at level `L`. -/
+def matrixLevelBlock
+    (Z : Matrix (L × W) (L × W) ℂ) (a b : L) :
+    Matrix W W ℂ :=
+  Matrix.of fun x y => Z (a, x) (b, y)
+
+/-- Matrices all of whose coefficient blocks lie in a fixed matrix subspace. -/
+def matrixLevelSpace
+    (S : Submodule ℂ (Matrix W W ℂ)) :
+    Submodule ℂ (Matrix (L × W) (L × W) ℂ) where
+  carrier := {Z | ∀ a b, matrixLevelBlock Z a b ∈ S}
+  zero_mem' := by
+    intro a b
+    exact Submodule.zero_mem _
+  add_mem' := by
+    intro X Y hX hY a b
+    exact Submodule.add_mem _ (hX a b) (hY a b)
+  smul_mem' := by
+    intro c X hX a b
+    exact Submodule.smul_mem _ c (hX a b)
+
+theorem mem_matrixLevelSpace_iff
+    {S : Submodule ℂ (Matrix W W ℂ)}
+    {Z : Matrix (L × W) (L × W) ℂ} :
+    Z ∈ matrixLevelSpace S ↔ ∀ a b, matrixLevelBlock Z a b ∈ S :=
+  Iff.rfl
+
+end MatrixLevels
+
+section CliqueWitness
+
+variable {U : Type*} [Fintype U] [DecidableEq U] [LinearOrder U]
+
+omit [Fintype U] [LinearOrder U] in
+/-- A matrix unit belongs to the graph coefficient space whenever its index
+pair is diagonal or is one of the two orientations of an edge. -/
+theorem single_mem_graphOperatorSpace
+    {E : Finset (U × U)} {i j : U}
+    (hij : i = j ∨ (i, j) ∈ E ∨ (j, i) ∈ E) :
+    Matrix.single i j (1 : ℂ) ∈ graphOperatorSpace E := by
+  intro a b hab
+  by_cases h : i = a ∧ j = b
+  · rcases h with ⟨rfl, rfl⟩
+    exact (hab hij).elim
+  · simp [h]
+
+/-- The vector `ξ_S` in the input `q`-layer.  Its level index is a vertex of
+`S`, and that level is paired with the same ambient vertex. -/
+def cliqueInputVec (S : Finset U) :
+    EuclideanSpace ℂ ({i : U // i ∈ S} × (U × Fin 2)) :=
+  WithLp.toLp 2 fun z =>
+    if z.2.1 = z.1.val ∧ z.2.2 = 1 then 1 else 0
+
+/-- The vector `η_S` in the output `p`-layer. -/
+def cliqueOutputVec (S : Finset U) :
+    EuclideanSpace ℂ ({i : U // i ∈ S} × (U × Fin 2)) :=
+  WithLp.toLp 2 fun z =>
+    if z.2.1 = z.1.val ∧ z.2.2 = 0 then 1 else 0
+
+/-- The positive rank-one compressed clique input `Y_S = |ξ_S⟩⟨ξ_S|`. -/
+noncomputable def cliqueLayerWitness (S : Finset U) :
+    Matrix ({i : U // i ∈ S} × (U × Fin 2))
+      ({i : U // i ∈ S} × (U × Fin 2)) ℂ :=
+  rankOne (cliqueInputVec S) (cliqueInputVec S)
+
+omit [Fintype U] [LinearOrder U] in
+/-- Each coefficient block of `Y_S` is `E_{ab} ⊗ q`. -/
+theorem matrixLevelBlock_cliqueLayerWitness
+    (S : Finset U) (a b : {i : U // i ∈ S}) :
+    matrixLevelBlock (cliqueLayerWitness S) a b
+      = Matrix.single a.val b.val (1 : ℂ) ⊗ₖ qubitQ := by
+  ext x y
+  obtain ⟨i, c⟩ := x
+  obtain ⟨j, d⟩ := y
+  fin_cases c <;> fin_cases d
+  all_goals
+    simp [matrixLevelBlock, cliqueLayerWitness, rankOne,
+      cliqueInputVec, Matrix.kroneckerMap_apply, qubitQ,
+      Matrix.single_apply]
+  all_goals aesop
+
+omit [LinearOrder U] in
+/-- The compressed clique input is positive semidefinite. -/
+theorem cliqueLayerWitness_posSemidef (S : Finset U) :
+    Matrix.PosSemidef (cliqueLayerWitness S) := by
+  have h :
+      cliqueLayerWitness S =
+        Matrix.vecMulVec
+          (cliqueInputVec S :
+            ({i : U // i ∈ S} × (U × Fin 2)) → ℂ)
+          (star (cliqueInputVec S :
+            ({i : U // i ∈ S} × (U × Fin 2)) → ℂ)) := by
+    ext p q
+    simp [cliqueLayerWitness, rankOne, Matrix.vecMulVec_apply,
+      Pi.star_apply, RCLike.star_def]
+  rw [h]
+  exact Matrix.posSemidef_vecMulVec_self_star _
+
+omit [Fintype U] in
+/-- A clique makes every coefficient block of `Y_S` belong to `U_G`. -/
+theorem cliqueLayerWitness_mem_matrixLevelSpace
+    {E : Finset (U × U)} {S : Finset U}
+    (hcl : ∀ i ∈ S, ∀ j ∈ S, i < j → (i, j) ∈ E) :
+    cliqueLayerWitness S
+      ∈ matrixLevelSpace (L := {i : U // i ∈ S})
+          (graphTwoLayerSpace E) := by
+  intro a b
+  rw [matrixLevelBlock_cliqueLayerWitness]
+  have hab :
+      a.val = b.val ∨ (a.val, b.val) ∈ E ∨ (b.val, a.val) ∈ E := by
+    rcases lt_trichotomy a.val b.val with hlt | heq | hgt
+    · exact Or.inr (Or.inl (hcl a.val a.property b.val b.property hlt))
+    · exact Or.inl heq
+    · exact Or.inr (Or.inr (hcl b.val b.property a.val a.property hgt))
+  exact ⟨0, Submodule.zero_mem _,
+    Matrix.single a.val b.val 1,
+    single_mem_graphOperatorSpace hab, by simp⟩
+
+end CliqueWitness
+
+/-! ## The clique expectation -/
+
+section CliqueExpectation
+
+variable {U : Type*} [Fintype U] [DecidableEq U] [LinearOrder U]
+
+omit [LinearOrder U] in
+/-- Multiplication by a matrix unit selects one column and one row. -/
+theorem mul_single_one_mul_apply
+    (A B : Matrix U U ℂ) (r s i j : U) :
+    (A * Matrix.single r s (1 : ℂ) * B) i j = A i r * B s j := by
+  rw [Matrix.mul_apply]
+  have hleft : ∀ x : U,
+      (A * Matrix.single r s (1 : ℂ)) i x
+        = if x = s then A i r else 0 := by
+    intro x
+    by_cases hxs : x = s
+    · subst x
+      rw [Matrix.mul_apply,
+        Finset.sum_eq_single r]
+      · simp
+      · intro y _ hyr
+        simp [Ne.symm hyr]
+      · intro h
+        exact (h (Finset.mem_univ _)).elim
+    · rw [if_neg hxs, Matrix.mul_apply]
+      apply Finset.sum_eq_zero
+      intro y _
+      simp [Ne.symm hxs]
+  rw [Finset.sum_congr rfl fun x _ => by rw [hleft x]]
+  simp
+
+omit [LinearOrder U] in
+/-- A diagonal matrix unit contributes zero at its own diagonal coordinate
+under one graph-reduction summand. -/
+theorem skewUnit_conj_single_diag_apply_self
+    (a b i : U) :
+    (skewUnit a b * (Matrix.single i i (1 : ℂ))ᵀ
+        * (skewUnit a b)ᴴ) i i = 0 := by
+  rw [Matrix.transpose_single, mul_single_one_mul_apply]
+  have hdiag : skewUnit a b i i = 0 := by
+    by_cases hai : a = i <;> by_cases hbi : b = i <;>
+      simp [skewUnit_apply, hai, hbi]
+  rw [hdiag, zero_mul]
+
+omit [LinearOrder U] in
+/-- A diagonal coefficient block contributes zero to the clique expectation. -/
+theorem graphReduction_single_diag_apply_self
+    (E : Finset (U × U)) (i : U) :
+    graphReduction E (Matrix.single i i (1 : ℂ)) i i = 0 := by
+  rw [graphReduction, Matrix.sum_apply]
+  exact Finset.sum_eq_zero fun e _ =>
+    skewUnit_conj_single_diag_apply_self e.val.1 e.val.2 i
+
+/-- For an increasingly oriented edge `(i,j)`, its coefficient matrix
+contributes `-1` to the corresponding off-diagonal clique expectation. -/
+theorem graphReduction_single_apply_of_lt
+    {E : Finset (U × U)} (hE : ∀ p ∈ E, p.1 < p.2)
+    {i j : U} (hij : i < j) (hmem : (i, j) ∈ E) :
+    graphReduction E (Matrix.single i j (1 : ℂ)) i j = -1 := by
+  rw [graphReduction, Matrix.sum_apply,
+    Finset.sum_eq_single
+      (⟨(i, j), hmem⟩ : {p : U × U // p ∈ E})]
+  · rw [Matrix.transpose_single, mul_single_one_mul_apply]
+    simp [skewUnit_apply, Matrix.conjTranspose_apply,
+      ne_of_lt hij, Ne.symm (ne_of_lt hij)]
+  · intro e _ hne
+    apply skewUnit_conj_entry_eq_zero
+      (Matrix.single i j (1 : ℂ)) (ne_of_lt hij)
+    · intro h
+      exact hne (Subtype.ext h.symm)
+    · intro h
+      have he : e.val.1 < e.val.2 := hE e.val e.property
+      have hfst : j = e.val.1 := congrArg Prod.fst h
+      have hsnd : i = e.val.2 := congrArg Prod.snd h
+      rw [← hfst, ← hsnd] at he
+      exact (asymm hij he).elim
+  · intro h
+    exact (h (Finset.mem_univ _)).elim
+
+/-- The same contribution when the displayed coefficient is in decreasing
+order and the graph stores the reverse increasing edge. -/
+theorem graphReduction_single_apply_of_gt
+    {E : Finset (U × U)} (hE : ∀ p ∈ E, p.1 < p.2)
+    {i j : U} (hji : j < i) (hmem : (j, i) ∈ E) :
+    graphReduction E (Matrix.single i j (1 : ℂ)) i j = -1 := by
+  rw [graphReduction, Matrix.sum_apply,
+    Finset.sum_eq_single
+      (⟨(j, i), hmem⟩ : {p : U × U // p ∈ E})]
+  · rw [Matrix.transpose_single, mul_single_one_mul_apply]
+    simp [skewUnit_apply, Matrix.conjTranspose_apply,
+      ne_of_lt hji, Ne.symm (ne_of_lt hji)]
+  · intro e _ hne
+    apply skewUnit_conj_entry_eq_zero
+      (Matrix.single i j (1 : ℂ)) (Ne.symm (ne_of_lt hji))
+    · intro h
+      have he : e.val.1 < e.val.2 := hE e.val e.property
+      have hfst : i = e.val.1 := congrArg Prod.fst h
+      have hsnd : j = e.val.2 := congrArg Prod.snd h
+      rw [← hfst, ← hsnd] at he
+      exact (asymm hji he).elim
+    · intro h
+      exact hne (Subtype.ext h.symm)
+  · intro h
+    exact (h (Finset.mem_univ _)).elim
+
+/-- Inside a clique, every off-diagonal coefficient contributes `-1` and every
+diagonal coefficient contributes zero. -/
+theorem graphReduction_single_clique_apply
+    {E : Finset (U × U)} (hE : ∀ p ∈ E, p.1 < p.2)
+    {S : Finset U}
+    (hcl : ∀ i ∈ S, ∀ j ∈ S, i < j → (i, j) ∈ E)
+    (a b : {i : U // i ∈ S}) :
+    graphReduction E (Matrix.single a.val b.val (1 : ℂ)) a.val b.val
+      = if a = b then 0 else -1 := by
+  rcases lt_trichotomy a.val b.val with hlt | heq | hgt
+  · rw [if_neg (fun hab => ne_of_lt hlt (congrArg Subtype.val hab))]
+    exact graphReduction_single_apply_of_lt hE hlt
+      (hcl a.val a.property b.val b.property hlt)
+  · have hab : a = b := Subtype.ext heq
+    subst b
+    rw [if_pos rfl]
+    exact graphReduction_single_diag_apply_self E a.val
+  · rw [if_neg (fun hab => ne_of_gt hgt (congrArg Subtype.val hab))]
+    exact graphReduction_single_apply_of_gt hE hgt
+      (hcl b.val b.property a.val a.property hgt)
+
+/-- The actual matrix-level image of the compressed clique input. -/
+noncomputable def graphThetaCliqueOutput
+    (E : Finset (U × U)) (R : ℕ) (lam : ℂ) (S : Finset U) :
+    Matrix ({i : U // i ∈ S} × (U × Fin 2))
+      ({i : U // i ∈ S} × (U × Fin 2)) ℂ :=
+  mapAmplification (A := {i : U // i ∈ S})
+    (graphTheta E R lam) (cliqueLayerWitness S)
+
+omit [LinearOrder U] in
+/-- The `(a,b)` output block is the corrected graph map applied to
+`E_{ab} ⊗ q`. -/
+theorem matrixLevelBlock_graphThetaCliqueOutput
+    (E : Finset (U × U)) (R : ℕ) (lam : ℂ) (S : Finset U)
+    (a b : {i : U // i ∈ S}) :
+    matrixLevelBlock (graphThetaCliqueOutput E R lam S) a b
+      =
+    graphTheta E R lam
+      (Matrix.single a.val b.val (1 : ℂ) ⊗ₖ qubitQ) := by
+  change
+    graphTheta E R lam
+        (matrixLevelBlock (cliqueLayerWitness S) a b)
+      =
+    graphTheta E R lam
+      (Matrix.single a.val b.val (1 : ℂ) ⊗ₖ qubitQ)
+  rw [matrixLevelBlock_cliqueLayerWitness]
+
+omit [LinearOrder U] in
+/-- On the tested `p`-layer, the protected `-id/R` term vanishes and the
+discard term contributes only on diagonal coefficient blocks. -/
+theorem graphTheta_singleQ_apply_p
+    (E : Finset (U × U)) (R : ℕ) (lam : ℂ) (i j : U) :
+    graphTheta E R lam
+        (Matrix.single i j (1 : ℂ) ⊗ₖ qubitQ)
+        (i, 0) (j, 0)
+      =
+    graphReduction E (Matrix.single i j (1 : ℂ)) i j
+      + lam * (if i = j then 1 else 0) := by
+  have hinput :
+      Matrix.single i j (1 : ℂ) ⊗ₖ qubitQ
+        =
+      (0 : Matrix U U ℂ) ⊗ₖ qubitP
+        + Matrix.single i j (1 : ℂ) ⊗ₖ qubitQ := by simp
+  have htrace :
+      (Matrix.single i j (1 : ℂ)).trace
+        = if i = j then 1 else 0 := by
+    by_cases hij : i = j
+    · subst j
+      rw [if_pos rfl]
+      exact Matrix.trace_single_eq_same i (1 : ℂ)
+    · rw [if_neg hij]
+      exact Matrix.trace_single_eq_of_ne i j (1 : ℂ) hij
+  rw [hinput, graphTheta_layers]
+  simp [Matrix.kroneckerMap_apply, Matrix.add_apply,
+    Matrix.sub_apply, Matrix.smul_apply,
+    qubitP, qubitQ, htrace]
+  by_cases hij : i = j <;> simp [hij]
+
+omit [LinearOrder U] in
+/-- Testing a matrix against `η_S` selects the diagonal ambient coordinate in
+the `p`-layer of every coefficient block. -/
+theorem qform_cliqueOutputVec
+    (S : Finset U)
+    (Z : Matrix ({i : U // i ∈ S} × (U × Fin 2))
+      ({i : U // i ∈ S} × (U × Fin 2)) ℂ) :
+    qform Z (cliqueOutputVec S)
+      =
+    ∑ a : {i : U // i ∈ S}, ∑ b : {i : U // i ∈ S},
+      Z (a, (a.val, 0)) (b, (b.val, 0)) := by
+  simp only [qform, Fintype.sum_prod_type, cliqueOutputVec,
+    apply_ite (starRingEnd ℂ), map_one, map_zero,
+    ite_mul, one_mul, zero_mul, mul_ite, mul_one, mul_zero]
+  simp
+
+/-- Each diagonal level pair contributes `λ`; each ordered off-diagonal clique
+pair contributes `-1`. -/
+theorem graphThetaCliqueOutput_entry
+    {E : Finset (U × U)} (hE : ∀ p ∈ E, p.1 < p.2)
+    {S : Finset U}
+    (hcl : ∀ i ∈ S, ∀ j ∈ S, i < j → (i, j) ∈ E)
+    (R : ℕ) (lam : ℂ) (a b : {i : U // i ∈ S}) :
+    graphThetaCliqueOutput E R lam S
+        (a, (a.val, 0)) (b, (b.val, 0))
+      = if a = b then lam else -1 := by
+  change
+    matrixLevelBlock (graphThetaCliqueOutput E R lam S) a b
+        (a.val, 0) (b.val, 0)
+      = if a = b then lam else -1
+  rw [matrixLevelBlock_graphThetaCliqueOutput,
+    graphTheta_singleQ_apply_p,
+    graphReduction_single_clique_apply hE hcl]
+  by_cases hab : a = b
+  · subst b
+    simp
+  · have habv : a.val ≠ b.val := fun h => hab (Subtype.ext h)
+    simp [hab, habv]
+
+omit [Fintype U] [DecidableEq U] [LinearOrder U] in
+/-- Count the diagonal and ordered off-diagonal pairs of a finite type. -/
+theorem sum_if_eq_else_neg_one
+    {A : Type*} [Fintype A] [DecidableEq A] (lam : ℂ) :
+    (∑ a : A, ∑ b : A, if a = b then lam else -1)
+      =
+    (Fintype.card A : ℂ)
+      * (lam - ((Fintype.card A : ℂ) - 1)) := by
+  calc
+    (∑ a : A, ∑ b : A, if a = b then lam else -1)
+        =
+      ∑ a : A, ∑ b : A,
+        (-1 + if a = b then lam + 1 else 0) := by
+          apply Finset.sum_congr rfl
+          intro a _
+          apply Finset.sum_congr rfl
+          intro b _
+          by_cases hab : a = b <;> simp [hab]
+    _ = ∑ _a : A,
+          ((Fintype.card A : ℂ) * (-1) + (lam + 1)) := by
+      apply Finset.sum_congr rfl
+      intro a _
+      rw [Finset.sum_add_distrib]
+      simp
+    _ = (Fintype.card A : ℂ)
+          * (lam - ((Fintype.card A : ℂ) - 1)) := by
+      simp
+      ring
+
+/-- **Compressed clique expectation** (`eq:witness-val`).
+
+The value is independent of the protected rank parameter `R`: the input lies
+in the `q`-layer and the test vector in the `p`-layer, so the `-id/R` term is
+orthogonal to the test. -/
+theorem qform_graphThetaCliqueOutput
+    {E : Finset (U × U)} (hE : ∀ p ∈ E, p.1 < p.2)
+    {S : Finset U}
+    (hcl : ∀ i ∈ S, ∀ j ∈ S, i < j → (i, j) ∈ E)
+    (R : ℕ) (lam : ℂ) :
+    qform (graphThetaCliqueOutput E R lam S) (cliqueOutputVec S)
+      =
+    (S.card : ℂ) * (lam - ((S.card : ℂ) - 1)) := by
+  rw [qform_cliqueOutputVec]
+  simp_rw [graphThetaCliqueOutput_entry hE hcl]
+  rw [sum_if_eq_else_neg_one]
+  simp
+
+end CliqueExpectation
 
 end RankR

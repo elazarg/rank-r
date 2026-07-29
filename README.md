@@ -322,7 +322,7 @@ revision.
 | `GraphFamily` | the edge-Kraus family of a graph, and `lem:beta` two-sidedly |
 | `Theta` | `Θ^Φ_{R,λ}`, its Choi form, and the induced-average-degree obstruction |
 | `ThetaBound` | pair amplification in Choi form, and `thm:clique` |
-| `GraphLayers` | the graph and two-layer coefficient spaces, their exact layer action, and invariance |
+| `GraphLayers` | the graph and two-layer coefficient spaces, their exact layer action and invariance, and the compressed clique witness |
 | `Applications` | exact score bounds, extremizers and thresholds; reduction-product Choi matrices; adjacent separation; Kronecker rank core |
 | `MapPos` | actual finite-coordinate map ampliations, the map/Choi `r`-positivity equivalence, and the symmetric and asymmetric map classifications |
 | `Staircase` | exact threshold algebra, convex boundary coefficient, moment identities, strict threshold ordering, and protected/unprotected and marginal threshold comparisons |

@@ -402,13 +402,13 @@ conflated: the smaller count certifies the unprotected corner.
 
 \section*{What is and is not established}
 
-Established, and for the first three machine-checked (see below): the exact
-constant $\beta_2(\Phi_G)=1$; attainment of the
+Established: the exact constant $\beta_2(\Phi_G)=1$; attainment of the
 amplified coefficient $R-1$ for graphs with an $R$-clique, and the induced
 average-degree lower bound \cref{eq:avgdeg}; invariance of
 $\cU_G=\cS_G\otimes\cD_2$ with the layer action \cref{eq:layer}; a positive
 element of $M_R(\cU_G)$ witnessing sharpness after compression; and exact
-inclusion through level $R$ with failure at $R+1$.
+inclusion through level $R$ with failure at $R+1$.  The formal-verification
+boundary is recorded below.
 
 Not established.  Minimality of $\cU_G$ among operator systems retaining the
 witness is not claimed.  Neither is an exact graph invariant replacing clique
@@ -422,10 +422,10 @@ searches did not surface it, which is not the same thing.
 \section*{Formal verification}
 
 \Cref{lem:beta}, both halves of \cref{thm:clique}, and the finite-coordinate
-content of \cref{prop:layers} are machine-checked in the Lean~4 development
-accompanying \texttt{rank-r.tex},
+content of \cref{prop:layers} and \cref{lem:witness} are machine-checked in the
+Lean~4 development accompanying \texttt{rank-r.tex},
 \url{https://github.com/elazarg/rank-r}, in the files \texttt{GraphFamily.lean},
-\texttt{Theta.lean} and \texttt{ThetaBound.lean}.
+\texttt{Theta.lean}, \texttt{ThetaBound.lean} and \texttt{GraphLayers.lean}.
 
 \begin{center}
 \begin{tabular}{ll}
@@ -441,6 +441,9 @@ $\lambda^*_R(\Phi)\le(R-1)\beta_2(\Phi)$ of \cref{eq:lamstar}
 \cref{thm:clique}, clique case & \texttt{thetaPositive\_graphKraus\_iff}\\
 \cref{prop:layers} & \texttt{graphTheta\_layers},
   \texttt{graphTheta\_mem\_graphTwoLayerSpace}\\
+\cref{lem:witness} & \texttt{cliqueLayerWitness\_posSemidef},
+  \texttt{cliqueLayerWitness\_mem\_matrixLevelSpace},
+  \texttt{qform\_graphThetaCliqueOutput}\\
 \hline
 \end{tabular}
 \end{center}
@@ -461,13 +464,13 @@ $\norm{Q_-}_{S(2)}=\frac12$, which \texttt{rank-r.tex} already carries.  The
 lower bound runs on the witness $C=P_S\otimes E_{01}$, which in the development
 is the extremizer already built for the sharpness half of Theorem~1.1 there.
 
-Not formalized: \cref{lem:dict}, \cref{lem:witness} and
-\cref{thm:inclusion}, together with the free-spectrahedral dictionary they rest
-on.  The concrete spaces $\cS_G$ and $\cU_G$, their unital and adjoint
-structure, the graph-reduction range, the displayed layer formula, and
-invariance of the corrected map are formalized.  The remaining statements
-restate \cref{thm:clique} in matrix-convexity language and introduce no new
-constant.
+Not formalized: \cref{lem:dict} and \cref{thm:inclusion}, together with the
+general free-spectrahedral dictionary they rest on.  The concrete spaces
+$\cS_G$ and $\cU_G$, their unital and adjoint structure, the graph-reduction
+range, the displayed layer formula, invariance of the corrected map, and the
+positive compressed clique input with its exact expectation are formalized.
+The remaining statements restate \cref{thm:clique} in matrix-convexity language
+and introduce no new constant.
 
 \section*{Numerical corroboration}
 

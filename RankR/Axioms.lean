@@ -709,6 +709,18 @@ dictionary is a separate interface and is not asserted here. -/
 #guard_msgs in
 #print axioms graphTheta_mem_graphTwoLayerSpace
 
+/-- info: 'RankR.cliqueLayerWitness_posSemidef' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms cliqueLayerWitness_posSemidef
+
+/-- info: 'RankR.cliqueLayerWitness_mem_matrixLevelSpace' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms cliqueLayerWitness_mem_matrixLevelSpace
+
+/-- info: 'RankR.qform_graphThetaCliqueOutput' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_graphThetaCliqueOutput
+
 /-! ## Exterior indexing
 
 The two families of modes attached to the faces of `Fin r`. -/

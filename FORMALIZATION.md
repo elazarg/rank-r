@@ -126,8 +126,8 @@ extended-real-infimum layer.
 | clique sharpness and exact threshold `lambda = R-1` | **Checked** | `thetaPositive_graphKraus_iff` |
 | invariant operator system and layer action | **Checked** in finite coordinates | `graphOperatorSpace` and `graphTwoLayerSpace` define `S_G` and `U_G`; their `one_mem` and `conjTranspose_mem` theorems prove the unital self-adjoint structure; `graphPhiTranspose_layers` and `graphTheta_layers` prove the displayed action; `graphReduction_mem_graphOperatorSpace` and `graphTheta_mem_graphTwoLayerSpace` prove invariance |
 | inclusion dictionary | **Open formalization** | no operator-system/free-spectrahedral vocabulary |
-| compressed clique expectation | **Open formalization** | the underlying uncompressed witness count is checked |
-| exact protected inclusion through level `R`, failure at `R+1` | **Open formalization** | depends on the preceding dictionary and compression |
+| compressed clique expectation | **Checked** in finite coordinates | `cliqueLayerWitness_posSemidef` proves that `Y_S` is positive; `cliqueLayerWitness_mem_matrixLevelSpace` places all of its blocks in `U_G`; `qform_graphThetaCliqueOutput` proves the exact value `|S|(λ-(|S|-1))`, independently of `R` |
+| exact protected inclusion through level `R`, failure at `R+1` | **Open formalization** | the concrete lower witness and the global positivity theorem are checked; composing them into free-spectrahedral language depends on the preceding dictionary |
 | rook-graph corollary | **Open formalization** | depends on exact inclusion |
 | exact invariant for clique-free graphs | **Not claimed** | the note states only upper and lower bounds |
 
