@@ -708,9 +708,9 @@ info: 'RankR.sum_norm_sq_le_min_of_doubleSkewQm' depends on axioms: [propext, Cl
 
 /-! ## The level-one correlated-skew witness
 
-The closed form, distinguished eigenvector, Hilbert--Schmidt norm, and attained
-ratio behind the lower bound in the higher Choi constants note.  These guards
-do not claim the conjectured matching upper bound. -/
+The closed form, three spectral-sector actions, Hilbert--Schmidt norm, and
+attained ratio behind the lower bound in the higher Choi constants note.  These
+guards do not claim the conjectured matching upper bound. -/
 
 /-- info: 'RankR.correlatedSkew_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
@@ -719,6 +719,14 @@ do not claim the conjectured matching upper bound. -/
 /-- info: 'RankR.mulVecE_correlatedSkew_singleOmega' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms mulVecE_correlatedSkew_singleOmega
+
+/-- info: 'RankR.correlatedSkew_spectral_actions' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms correlatedSkew_spectral_actions
+
+/-- info: 'RankR.exists_ne_zero_correlatedSkew_half_eigenvector' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms exists_ne_zero_correlatedSkew_half_eigenvector
 
 /-- info: 'RankR.hsNormSq_correlatedSkew' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

@@ -208,6 +208,77 @@ theorem mulVecE_correlatedSkew_of_flip_eq_neg
   ext p
   simp
 
+/-- A flip-antisymmetric vector is automatically orthogonal to the diagonal
+vector. -/
+theorem inner_singleOmegaVec_eq_zero_of_tensorFlip_eq_neg
+    {x : EuclideanSpace ℂ (T × T)}
+    (hflip : mulVecE tensorFlip x = -x) :
+    inner ℂ (singleOmegaVec (T := T)) x = 0 := by
+  have hdiag (i : T) : x (i, i) = 0 := by
+    have hi := congrArg (fun y => y (i, i)) hflip
+    rw [mulVecE_tensorFlip] at hi
+    simp only [PiLp.neg_apply] at hi
+    linear_combination hi / 2
+  rw [PiLp.inner_apply, Fintype.sum_prod_type]
+  simp [singleOmegaVec_apply, hdiag]
+
+/-- The correlated skew operator has eigenvalue `1/2` on the entire
+flip-antisymmetric sector; no separate orthogonality hypothesis is needed. -/
+theorem mulVecE_correlatedSkew_of_tensorFlip_eq_neg
+    {x : EuclideanSpace ℂ (T × T)}
+    (hflip : mulVecE tensorFlip x = -x) :
+    mulVecE (correlatedSkew (T := T)) x = (1 / 2 : ℂ) • x :=
+  mulVecE_correlatedSkew_of_flip_eq_neg
+    (inner_singleOmegaVec_eq_zero_of_tensorFlip_eq_neg hflip) hflip
+
+/-- The three spectral actions used in the level-one witness calculation:
+the diagonal line, the symmetric orthogonal sector, and the antisymmetric
+sector. -/
+theorem correlatedSkew_spectral_actions :
+    mulVecE (correlatedSkew (T := T)) singleOmegaVec
+        = (((Fintype.card T : ℝ) - 1) / 2 : ℂ) • singleOmegaVec
+      ∧
+    (∀ x : EuclideanSpace ℂ (T × T),
+      inner ℂ (singleOmegaVec (T := T)) x = 0 →
+      mulVecE tensorFlip x = x →
+      mulVecE correlatedSkew x = (-1 / 2 : ℂ) • x)
+      ∧
+    (∀ x : EuclideanSpace ℂ (T × T),
+      mulVecE tensorFlip x = -x →
+      mulVecE correlatedSkew x = (1 / 2 : ℂ) • x) := by
+  exact ⟨mulVecE_correlatedSkew_singleOmega,
+    fun x => mulVecE_correlatedSkew_of_flip_eq,
+    fun x => mulVecE_correlatedSkew_of_tensorFlip_eq_neg⟩
+
+/-- In every dimension at least two the `+1/2` antisymmetric sector is
+nonzero.  Thus at dimension two it ties the distinguished diagonal
+eigenvalue `(d-1)/2 = 1/2`; that eigenvalue is not simple there. -/
+theorem exists_ne_zero_correlatedSkew_half_eigenvector
+    (hT : 2 ≤ Fintype.card T) :
+    ∃ x : EuclideanSpace ℂ (T × T), x ≠ 0 ∧
+      mulVecE (correlatedSkew (T := T)) x = (1 / 2 : ℂ) • x := by
+  obtain ⟨i⟩ := Fintype.card_pos_iff.mp (by omega : 0 < Fintype.card T)
+  obtain ⟨j, hji⟩ :=
+    Fintype.exists_ne_of_one_lt_card (by omega : 1 < Fintype.card T) i
+  have hij : i ≠ j := Ne.symm hji
+  let x : EuclideanSpace ℂ (T × T) := vec (skewUnit i j)
+  have hflip : mulVecE tensorFlip x = -x := by
+    ext p
+    rw [mulVecE_tensorFlip]
+    simp only [x, vec_apply, PiLp.neg_apply]
+    rw [skewUnit_apply, skewUnit_apply]
+    by_cases hpi : p.1 = i
+      <;> by_cases hpj : p.1 = j
+      <;> by_cases hqi : p.2 = i
+      <;> by_cases hqj : p.2 = j
+      <;> simp_all [eq_comm]
+  have hx : x ≠ 0 := by
+    intro hx
+    have hij := congrArg (fun y => y (i, j)) hx
+    simp [x, skewUnit, hji] at hij
+  exact ⟨x, hx,
+    mulVecE_correlatedSkew_of_tensorFlip_eq_neg hflip⟩
+
 /-- The tensor flip is a permutation matrix on `T × T`, so its squared
 Hilbert--Schmidt norm is `(card T)^2`. -/
 theorem hsNormSq_tensorFlip :

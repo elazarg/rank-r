@@ -168,9 +168,13 @@ Then
     K_m=\tfrac12\bigl(m\ketbra\omega\omega-F\bigr),
 \end{equation}
 where $F$ is the flip on $\C^m\otimes\C^m$ and
-$\omega=m^{-1/2}\sum_ae_a\otimes e_a$.  Consequently $K_m$ has eigenvalue
-$\frac{m-1}2$ with multiplicity one and eigenvalues $\pm\frac12$ on the
-orthogonal complement, so
+$\omega=m^{-1/2}\sum_ae_a\otimes e_a$.  Consequently the invariant line
+$\C\omega$ has eigenvalue $\frac{m-1}2$, while its orthogonal complement
+splits into eigenvalues $-\frac12$ on
+$\operatorname{Sym}^2\ominus\C\omega$ and $+\frac12$ on $\wedge^2$.
+For $m\ge3$ the distinguished eigenvalue is the simple largest eigenvalue.
+At $m=2$ it ties the $+\frac12$ eigenvalue on $\wedge^2$, so it is not simple,
+but the same singular-value calculation gives
 \[
     \frac{s_1(K_m)^2}{\norm{K_m}_F^2}
     =\frac{(m-1)^2/4}{m(m-1)/2}
@@ -210,11 +214,12 @@ only enlarge $\mathcal A$, so the bound persists with $m=\min\{\dim U,\dim V\}$.
 \end{proof}
 
 \begin{remark}[Formalization status]
-The equal-dimension closed form \eqref{eq:Km}, its action on the distinguished
-diagonal vector, its Hilbert--Schmidt norm, the attained ratio, and the strict
-comparison with $1/4$ are machine-checked in finite coordinates.  The
-eigenspace multiplicity count and the unequal-dimension embedding sentence are
-not separately formalized, and the matching upper bound remains conjectural.
+The equal-dimension closed form \eqref{eq:Km}, its action on all three spectral
+sectors, its Hilbert--Schmidt norm, the attained ratio, and the strict
+comparison with $1/4$ are machine-checked in finite coordinates.  The sector
+dimension and multiplicity counts and the unequal-dimension embedding sentence
+are not separately formalized, and the matching upper bound remains
+conjectural.
 \end{remark}
 
 \begin{conjecture}
