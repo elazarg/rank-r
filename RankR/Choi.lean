@@ -298,6 +298,18 @@ def ChoiKBound (J : Matrix (W × W) (W × W) ℂ) (k : ℕ) (β : ℝ) : Prop :=
     (qform J (vec (∑ i, rankOne (u i) (v i)))).re
       ≤ k * β * hsNormSq (∑ i, rankOne (u i) (v i))
 
+/-- The level-`k` bound is positively homogeneous in the Choi operator. -/
+theorem choiKBound_smul {J : Matrix (W × W) (W × W) ℂ}
+    {k : ℕ} {β t : ℝ} (ht : 0 ≤ t)
+    (h : ChoiKBound J k β) :
+    ChoiKBound ((t : ℂ) • J) k (t * β) := by
+  intro u v
+  have hq := h u v
+  rw [qform_smul, Complex.mul_re, Complex.ofReal_re,
+    Complex.ofReal_im, zero_mul, sub_zero]
+  nlinarith [hq, Nat.cast_nonneg (α := ℝ) k,
+    hsNormSq_nonneg (∑ i, rankOne (u i) (v i))]
+
 /-- The same level-`k` Choi bound stated directly for bipartite vectors of
 pure Schmidt rank at most `k`.  Its equivalence with `ChoiKBound` is proved in
 `Equivalence.lean`. -/

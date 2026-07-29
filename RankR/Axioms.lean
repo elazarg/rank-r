@@ -617,6 +617,18 @@ info: 'RankR.sum_norm_sq_le_min_of_doubleSkewQm' depends on axioms: [propext, Cl
 #guard_msgs in
 #print axioms sum_norm_sq_le_min_of_doubleSkewQm
 
+/-- info: 'RankR.hsNormSq_dsProj_le_min' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms hsNormSq_dsProj_le_min
+
+/-- info: 'RankR.qform_Qm_rank_le_min' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms qform_Qm_rank_le_min
+
+/-- info: 'RankR.choiKBound_four_smul_Qm_min' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiKBound_four_smul_Qm_min
+
 /-! ## Exterior indexing
 
 The two families of modes attached to the faces of `Fin r`. -/
@@ -704,6 +716,10 @@ info: 'RankR.choiTwoBound_iff_choiKBound_two' depends on axioms: [propext, Class
 -/
 #guard_msgs in
 #print axioms choiTwoBound_iff_choiKBound_two
+
+/-- info: 'RankR.choiKBound_smul' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiKBound_smul
 
 /-- info: 'RankR.norm_sq_pair_le_of_choiTwoBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

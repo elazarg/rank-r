@@ -94,9 +94,9 @@ extended-real-infimum layer.
 | Claim | Status | Lean certificate or precise gap |
 | --- | --- | --- |
 | every-pair action inequality | **Checked** | the double-skew action theorem applies to every orthonormal pair |
-| upper bound `κ_k ≤ min(k,4)/4` for `k ≥ 2` | **Checked** in action form | `sum_norm_sq_le_of_doubleSkewQm`, `sum_norm_sq_le_min_of_doubleSkewQm` |
+| upper bound `κ_k ≤ min(k,4)/4` for `k ≥ 2` | **Checked** in action and low-rank projection forms | `sum_norm_sq_le_of_doubleSkewQm`, `sum_norm_sq_le_min_of_doubleSkewQm`, `hsNormSq_dsProj_le_min`, `qform_Qm_rank_le_min` |
 | attainment and exact equality `κ_k = min(k,4)/4` for all `k ≥ 2` | **Open formalization except `k=2`** | `Sharp.lean` supplies the rank-two extremizer; the four-equal-singular-value calculation for general `k` is not formalized |
-| resulting concrete `beta_k(Λ_U ⊗ Λ_V)` formula | **Conditional** | generic `ChoiKBound` machinery is checked, but the exact concrete `k`-level constant is not composed |
+| resulting concrete `beta_k(Λ_U ⊗ Λ_V)` formula | **Checked upper bound; exactness open** | `choiKBound_four_smul_Qm_min` proves the manuscript-normalized bound `beta_k ≤ min(1,4/k)`; equality still depends on general-`k` attainment |
 | `K_m = (m|ω><ω| - F)/2` and the `κ_1` lower bound | **Open formalization** | no Lean counterpart |
 | exact `κ_1` formula | **Conjecture** | only a lower bound and numerical evidence are claimed |
 
@@ -112,7 +112,7 @@ extended-real-infimum layer.
 | protected-space dimension | **Checked** | modes are indexed by `Face r (k-2)` and proved orthonormal; `card_face` proves `|Face r (k-2)| = choose r (k-2)` |
 | `k=2` specialization | **Checked core** | pair-level corollaries and `upDeg_univ`; equality with every notation choice in the note is a rendering |
 | complete-hypergraph degree `r-k+1` | **Checked** | `upDeg_univ` |
-| double-skew specialization with exact `beta_k` | **Conditional** | blocked on the general-`k` exact constant in the preceding note |
+| double-skew specialization with exact `beta_k` | **Checked at the claimed coefficient; leastness open** | `choiKBound_four_smul_Qm_min` discharges the `ChoiKBound` hypothesis; leastness is blocked only on general-`k` attainment |
 | “no `r`-positivity hierarchy for `k>2`” explanatory spectral claim | **Open formalization** | no general partial-transpose spectral decomposition layer |
 
 ## Graph-inclusion note
