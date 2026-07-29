@@ -40,6 +40,7 @@ import RankR.GraphFamily
 import RankR.Theta
 import RankR.ThetaBound
 import RankR.Applications
+import RankR.MapPos
 import RankR.Staircase
 import RankR.Axioms
 import RankR.Rigidity

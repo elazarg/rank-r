@@ -681,7 +681,7 @@ theorem qform_reductionChoi {T : Type*} [Fintype T] [DecidableEq T]
     qform_rankOne, inner_singleOmegaVec, hsNormSq_eq_norm_sq]
   norm_cast
 
-private theorem reductionChoi_isHermitian {T : Type*} [DecidableEq T] (a : ℝ) :
+theorem reductionChoi_isHermitian {T : Type*} [DecidableEq T] (a : ℝ) :
     (reductionChoi (T := T) a).IsHermitian := by
   rw [Matrix.IsHermitian]
   simp [reductionChoi, singleOmegaChoi, Matrix.conjTranspose_sub, Matrix.conjTranspose_smul,
@@ -746,6 +746,14 @@ theorem productReductionChoi_posSemidef
   rw [productReductionChoi, regroupChoi, Matrix.reindex_apply]
   exact (reductionChoi_posSemidef ha0 hU ha).kronecker
     (reductionChoi_posSemidef hb0 hV hb) |>.submatrix _
+
+theorem productReductionChoi_isHermitian (a b : ℝ) :
+    (productReductionChoi (U := U) (V := V) a b).IsHermitian := by
+  have hkr :
+      ((reductionChoi (T := U) a) ⊗ₖ (reductionChoi (T := V) b)).IsHermitian := by
+    rw [Matrix.IsHermitian, Matrix.conjTranspose_kronecker,
+      (reductionChoi_isHermitian a).eq, (reductionChoi_isHermitian b).eq]
+  exact hkr.reindex (choiRegroupEquiv (U := U) (V := V))
 
 /-- The sum of rank-one Choi terms whose quadratic form is
 `‖Tr_U C‖₂²`. -/

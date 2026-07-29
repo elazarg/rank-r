@@ -112,11 +112,12 @@ asymmetric score curves; their exact score-nonnegativity thresholds for
 `1 ≤ r ≤ d`; the endpoint and strict adjacent-rank score separations; factor
 interchange; the coordinate Choi matrices of the reduction maps and their
 regrouped tensor product; block-positivity thresholds at every positive rank
-in equal local dimensions; and the rank-sensitive estimate used by the
-Kronecker-sum corollary. The generic passage from Choi block positivity to
-ampliation-based map `r`-positivity, trace-norm and Ky Fan duality, and
-mixed-state Schmidt-number claims remain outside the formal vocabulary. The
-exact claim-by-claim boundary is maintained in `FORMALIZATION.md`.
+in equal local dimensions; the finite-coordinate equivalence with positivity
+of the actual `Fin r` map ampliation; the symmetric and asymmetric map
+classifications; and the rank-sensitive estimate used by the Kronecker-sum
+corollary. Trace-norm and Ky Fan duality and mixed-state Schmidt-number claims
+remain outside the formal vocabulary. The exact claim-by-claim boundary is
+maintained in `FORMALIZATION.md`.
 
 ### Two sharpenings not in the manuscript
 
@@ -246,7 +247,7 @@ revision.
 
 | Path | Contents |
 | --- | --- |
-| `RankR/` | the formalization (45 files) |
+| `RankR/` | the formalization (46 files) |
 | `paper/` | the manuscript |
 
 ### The formalization, bottom-up
@@ -289,7 +290,8 @@ revision.
 | `GraphFamily` | the edge-Kraus family of a graph, and `lem:beta` two-sidedly |
 | `Theta` | `Θ^Φ_{R,λ}`, its Choi form, and the induced-average-degree obstruction |
 | `ThetaBound` | pair amplification in Choi form, and `thm:clique` |
-| `Applications` | exact score bounds, extremizers and thresholds; adjacent separation; Kronecker rank core |
+| `Applications` | exact score bounds, extremizers and thresholds; reduction-product Choi matrices; adjacent separation; Kronecker rank core |
+| `MapPos` | actual finite-coordinate map ampliations, the map/Choi `r`-positivity equivalence, and the symmetric and asymmetric map classifications |
 | `Staircase` | exact threshold algebra, convex boundary coefficient, moment identities, strict threshold ordering |
 | `Axioms` | the axiom surface, checked by the build |
 

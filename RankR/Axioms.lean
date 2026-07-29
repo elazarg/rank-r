@@ -38,6 +38,7 @@ import RankR.ThetaBound
 import RankR.Parity
 import RankR.Sharp
 import RankR.Applications
+import RankR.MapPos
 import RankR.Staircase
 
 namespace RankR
@@ -198,6 +199,40 @@ Ky-Fan corollary. -/
  Quot.sound] -/
 #guard_msgs in
 #print axioms isBlockPositive_productReductionChoi_iff_max_le_inv_min
+
+/-- info: 'RankR.rank_le_card_iff_exists_mul' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rank_le_card_iff_exists_mul
+
+/-- info: 'RankR.isMapRPositive_mapOfChoi_iff_isBlockPositive' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms isMapRPositive_mapOfChoi_iff_isBlockPositive
+
+/-- info: 'RankR.productReductionMapLinear_apply' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms productReductionMapLinear_apply
+
+/-- info: 'RankR.mapChoi_productReductionMapLinear' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms mapChoi_productReductionMapLinear
+
+/-- info: 'RankR.isMapRPositive_productReductionMapLinear_iff_max_le_inv' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms isMapRPositive_productReductionMapLinear_iff_max_le_inv
+
+/-- info: 'RankR.isMapRPositive_productReductionMapLinear_iff_max_le_inv_min' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms isMapRPositive_productReductionMapLinear_iff_max_le_inv_min
+
+/-- info: 'RankR.isMapRPositive_productReductionMapLinear_self_iff_le_inv_min' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms isMapRPositive_productReductionMapLinear_self_iff_le_inv_min
 
 /-- info: 'RankR.centeredPartialTrace_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

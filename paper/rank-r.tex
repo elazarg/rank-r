@@ -1559,10 +1559,11 @@ curves as pointwise lower bounds plus rank-exact attaining matrices, their
 rank-constrained nonnegativity thresholds, the adjacent-rank signed
 separation, the exact coordinate Choi matrices of the reduction maps and their
 regrouped tensor products, block-positivity thresholds at every positive rank
-in equal local dimensions, and the rank-sensitive estimate
-\cref{eq:kronecker-main-use}.  The generic equivalence between Choi block
-positivity and ampliation-based map $r$-positivity, the trace-norm and Ky Fan
-dualities, and the mixed-state Schmidt-number arguments are not formalized.
+in equal local dimensions, the equivalence with positivity of the actual
+finite-coordinate map ampliations, the resulting symmetric and asymmetric map
+classifications, and the rank-sensitive estimate \cref{eq:kronecker-main-use}.
+The trace-norm and Ky Fan dualities and the mixed-state Schmidt-number
+arguments are not formalized.
 
 The consequences at $r=2$ --- the two-copy distillability threshold and the
 statements at the endpoint $\alpha=-\frac12$ --- are also reached in
@@ -2748,6 +2749,16 @@ product-Choi block positivity for every positive $r$
       self\_\allowbreak iff\_\allowbreak le\_\allowbreak inv\_\allowbreak min},\\
   & \texttt{isBlockPositive\_\allowbreak productReductionChoi\_\allowbreak
       iff\_\allowbreak max\_\allowbreak le\_\allowbreak inv\_\allowbreak min}\\
+finite-coordinate map/Choi equivalence
+  & \texttt{isMapRPositive\_\allowbreak mapOfChoi\_\allowbreak
+      iff\_\allowbreak isBlockPositive}\\
+tensor product of the reduction maps
+  & \texttt{productReductionMapLinear\_\allowbreak apply}\\
+map $r$-positivity classifications
+  & \texttt{isMapRPositive\_\allowbreak productReductionMapLinear\_\allowbreak
+      self\_\allowbreak iff\_\allowbreak le\_\allowbreak inv\_\allowbreak min},\\
+  & \texttt{isMapRPositive\_\allowbreak productReductionMapLinear\_\allowbreak
+      iff\_\allowbreak max\_\allowbreak le\_\allowbreak inv\_\allowbreak min}\\
 \cref{eq:kronecker-main-use}
   & \texttt{centeredPartialTrace\_le}\\
 \end{longtable}
@@ -2818,9 +2829,12 @@ coordinate Choi quadratic identities.  It identifies the reduction maps'
 Choi matrices, performs the output/input register permutation in their tensor
 product, and proves its block-positivity threshold for every positive $r$ in
 equal local dimensions, using a positive-semidefinite Choi argument past the
-local dimension.  Its ampliation-based map-$r$-positivity reading is not
-formalized because the development has no generic map/Choi equivalence.  The
-development also covers the complete rank-sensitive estimate
+local dimension.  \texttt{MapPos.lean} defines positivity of the actual
+$\operatorname{id}_{\mathbb C^r}\otimes\Phi$ matrix ampliation, proves the
+finite-coordinate Choi equivalence, identifies the product map with the tensor
+product of the two reduction pencils, and derives the symmetric and asymmetric
+map-$r$-positivity classifications.  The development also covers the complete
+rank-sensitive estimate
 \cref{eq:kronecker-main-use}.  The Schatten-$1$ norm and singular-value Ky Fan
 duality appear nowhere in the development, so
 \cref{cor:two-copy-trace-distance} and the final step of
