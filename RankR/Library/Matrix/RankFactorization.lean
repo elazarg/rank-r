@@ -5,7 +5,7 @@ Range factorization: from a matrix `C`, produce orthonormal `eᵢ` spanning
 Section 3 of the manuscript opens by choosing "an orthonormal basis `{eᵢ}` of
 `ran C`" and setting `dᵢ := C* eᵢ`; this supplies both.
 -/
-import RankR.Core.PartialTrace.Operator
+import RankR.Library.Matrix.Elementary
 
 namespace RankR
 

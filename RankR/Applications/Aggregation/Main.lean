@@ -11,6 +11,7 @@ coordinates.
 -/
 import RankR.Applications.TraceDistance.Main
 import RankR.Library.Quantum.PositiveMaps
+import RankR.Applications.Reduction.PositiveMaps
 
 namespace RankR
 

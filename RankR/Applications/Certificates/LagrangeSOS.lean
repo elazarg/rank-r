@@ -8,6 +8,7 @@ choice-free ordered-pair form on any finite coordinate type, then recover the
 usual `α < β` form when the coordinates carry a linear order.
 -/
 import RankR.Core.Amplification.Sectors
+import RankR.Library.Matrix.Contraction
 import Mathlib.Data.Prod.Lex
 
 namespace RankR

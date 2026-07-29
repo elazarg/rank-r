@@ -11,6 +11,7 @@ Choi and actual-map renderings of the corrected graph map, and proves the exact
 clique threshold and adjacent-level separation.
 -/
 import RankR.Companions.Graph.Layers
+import RankR.Library.Quantum.MaximallyEntangled
 
 namespace RankR
 

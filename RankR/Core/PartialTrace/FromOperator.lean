@@ -2,6 +2,7 @@
 Assembly of Theorem 1.1 from Proposition 2.2.
 -/
 import RankR.Library.Matrix.Rank
+import RankR.Core.PartialTrace.Operator
 
 namespace RankR
 

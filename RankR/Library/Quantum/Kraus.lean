@@ -6,7 +6,7 @@ vector back through each `Kₐᴴ`.  Since the pullback only moves the vector, a
 matrix whose quadratic form has nonnegative real part is sent to another such
 matrix; positive semidefiniteness is preserved.
 -/
-import RankR.Core.PartialTrace.FromOperator
+import RankR.Library.Matrix.QuadraticForm
 
 namespace RankR
 

@@ -23,21 +23,11 @@ identifies `Ψ_r` with `r·R_{−1/r} ⊗ R_{−1/r}`, this is the `a = b = 1/r`
 of the asymmetric threshold, available without the score theorem.
 -/
 import RankR.Core.PartialTrace.Main
+import RankR.Library.Quantum.BlockPositive
 
 namespace RankR
 
 open Matrix Finset ComplexConjugate
-
-section BlockPositive
-
-variable {W : Type*} [Fintype W]
-
-/-- **`r`-block positivity.**  By `pureSchmidtRank_vec`, `Schmidt rank ≤ r`
-across the row:col cut is exactly the displayed `Matrix.rank ≤ r` condition. -/
-def IsBlockPositive (r : ℕ) (M : Matrix (W × W) (W × W) ℂ) : Prop :=
-  ∀ C : Matrix W W ℂ, C.rank ≤ r → 0 ≤ (qform M (vec C)).re
-
-end BlockPositive
 
 variable {U V : Type*} [DecidableEq U] [DecidableEq V]
 

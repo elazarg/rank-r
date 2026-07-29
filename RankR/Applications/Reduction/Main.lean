@@ -14,6 +14,8 @@ import RankR.Core.PartialTrace.OneSided
 import RankR.Core.PartialTrace.Optimality
 import RankR.Core.PartialTrace.Main
 import RankR.Core.PartialTrace.BlockPositivity
+import RankR.Library.Quantum.ChoiMap
+import RankR.Library.Quantum.MaximallyEntangled
 import Mathlib.Analysis.Matrix.Order
 
 namespace RankR
@@ -496,85 +498,10 @@ section ScoreOperators
 variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
 open scoped Kronecker
 
-/-- The permutation from product-Choi register order
-`(U_out,U_in):(V_out,V_in)` to vectorization order
-`(U_out,V_out):(U_in,V_in)`. -/
-def choiRegroupEquiv : (U × U) × (V × V) ≃ (U × V) × (U × V) where
-  toFun p := ((p.1.1, p.2.1), (p.1.2, p.2.2))
-  invFun p := ((p.1.1, p.2.1), (p.1.2, p.2.2))
-  left_inv := fun _ => rfl
-  right_inv := fun _ => rfl
-
-/-- A product of two one-factor Choi matrices, in vectorization register
-order. -/
-def regroupChoi (A : Matrix (U × U) (U × U) ℂ)
-    (B : Matrix (V × V) (V × V) ℂ) :
-    Matrix (((U × V) × (U × V))) (((U × V) × (U × V))) ℂ :=
-  Matrix.reindex (choiRegroupEquiv (U := U) (V := V))
-    (choiRegroupEquiv (U := U) (V := V)) (A ⊗ₖ B)
-
-omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
-theorem regroupChoi_sub_left (A A' : Matrix (U × U) (U × U) ℂ)
-    (B : Matrix (V × V) (V × V) ℂ) :
-    regroupChoi (A - A') B = regroupChoi A B - regroupChoi A' B := by
-  ext X Y
-  simp only [regroupChoi, Matrix.reindex_apply, Matrix.submatrix_apply,
-    Matrix.kroneckerMap_apply, Matrix.sub_apply]
-  ring
-
-omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
-theorem regroupChoi_sub_right (A : Matrix (U × U) (U × U) ℂ)
-    (B B' : Matrix (V × V) (V × V) ℂ) :
-    regroupChoi A (B - B') = regroupChoi A B - regroupChoi A B' := by
-  ext X Y
-  simp only [regroupChoi, Matrix.reindex_apply, Matrix.submatrix_apply,
-    Matrix.kroneckerMap_apply, Matrix.sub_apply]
-  ring
-
-omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
-theorem regroupChoi_smul_left (c : ℂ) (A : Matrix (U × U) (U × U) ℂ)
-    (B : Matrix (V × V) (V × V) ℂ) :
-    regroupChoi (c • A) B = c • regroupChoi A B := by
-  ext X Y
-  simp only [regroupChoi, Matrix.reindex_apply, Matrix.submatrix_apply,
-    Matrix.kroneckerMap_apply, Matrix.smul_apply, smul_eq_mul]
-  ring
-
-omit [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] in
-theorem regroupChoi_smul_right (c : ℂ) (A : Matrix (U × U) (U × U) ℂ)
-    (B : Matrix (V × V) (V × V) ℂ) :
-    regroupChoi A (c • B) = c • regroupChoi A B := by
-  ext X Y
-  simp only [regroupChoi, Matrix.reindex_apply, Matrix.submatrix_apply,
-    Matrix.kroneckerMap_apply, Matrix.smul_apply, smul_eq_mul]
-  ring
-
-/-- The one-factor maximally entangled vector. -/
-def singleOmegaVec {T : Type*} [DecidableEq T] :
-    EuclideanSpace ℂ (T × T) :=
-  WithLp.toLp 2 fun p => if p.1 = p.2 then (1 : ℂ) else 0
-
-@[simp]
-theorem singleOmegaVec_apply {T : Type*} [DecidableEq T] (p : T × T) :
-    singleOmegaVec p = if p.1 = p.2 then (1 : ℂ) else 0 := rfl
-
-/-- The Choi matrix of a coordinate map, with output index first and input
-index second. -/
-noncomputable def mapChoi {I O : Type*} [DecidableEq I]
-    (Φ : Matrix I I ℂ → Matrix O O ℂ) :
-    Matrix (O × I) (O × I) ℂ :=
-  Matrix.of fun p q => Φ (Matrix.single p.2 q.2 1) p.1 q.1
-
 /-- The one-factor reduction pencil `R_{-a}(X) = Tr(X)I - aX`. -/
 noncomputable def reductionMap {T : Type*} [Fintype T] [DecidableEq T]
     (a : ℝ) (X : Matrix T T ℂ) : Matrix T T ℂ :=
   X.trace • 1 - (a : ℂ) • X
-
-/-- `|Ω_T⟩⟨Ω_T|`, the nontrivial term in the Choi matrix of a reduction
-pencil. -/
-noncomputable def singleOmegaChoi {T : Type*} [DecidableEq T] :
-    Matrix (T × T) (T × T) ℂ :=
-  rankOne (singleOmegaVec (T := T)) singleOmegaVec
 
 /-- The Choi matrix `I - a|Ω⟩⟨Ω|` of the reduction pencil
 `R_{-a}(X) = Tr(X)I - aX`. -/
@@ -611,21 +538,6 @@ theorem productReductionChoi_eq_regroup_mapChoi (a b : ℝ) :
           (mapChoi (reductionMap (T := V) b)) := by
   rw [mapChoi_reductionMap, mapChoi_reductionMap]
   rfl
-
-theorem inner_singleOmegaVec {T : Type*} [Fintype T] [DecidableEq T]
-    (C : Matrix T T ℂ) :
-    inner ℂ (singleOmegaVec (T := T)) (vec C) = C.trace := by
-  rw [PiLp.inner_apply, Fintype.sum_prod_type, Matrix.trace]
-  refine Finset.sum_congr rfl fun x _ => ?_
-  rw [Matrix.diag_apply]
-  have h : ∀ y : T,
-      (inner ℂ (singleOmegaVec (T := T) (x, y)) (vec C (x, y)) : ℂ)
-        = if x = y then C x y else 0 := by
-    intro y
-    rw [RCLike.inner_apply', singleOmegaVec_apply, vec_apply]
-    by_cases hxy : x = y <;> simp [hxy]
-  rw [Finset.sum_congr rfl fun y _ => h y, Finset.sum_ite_eq]
-  simp
 
 theorem qform_reductionChoi {T : Type*} [Fintype T] [DecidableEq T]
     (a : ℝ) (C : Matrix T T ℂ) :

@@ -4,6 +4,7 @@ import RankR.Library.Matrix.Elementary
 import RankR.Core.PartialTrace.Operator
 import RankR.Library.Matrix.RankFactorization
 import RankR.Core.PartialTrace.FromOperator
+import RankR.Core.PartialTrace.DoubleSkew
 import RankR.Core.DoubleSkew.Basic
 import RankR.Library.Quantum.Kraus
 import RankR.Core.Amplification.Sectors
@@ -43,6 +44,7 @@ import RankR.Companions.Graph.Threshold
 import RankR.Companions.Graph.PairBound
 import RankR.Applications.Reduction.Main
 import RankR.Library.Quantum.PositiveMaps
+import RankR.Applications.Reduction.PositiveMaps
 import RankR.Companions.Staircase.Scalar
 import RankR.Companions.Staircase.ProductIsotropic
 import RankR.Companions.Staircase.States

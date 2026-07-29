@@ -40,6 +40,7 @@ import RankR.Core.DoubleSkew.Parity
 import RankR.Core.DoubleSkew.Sharp
 import RankR.Applications.Reduction.Main
 import RankR.Library.Quantum.PositiveMaps
+import RankR.Applications.Reduction.PositiveMaps
 import RankR.Companions.Staircase.Scalar
 import RankR.Companions.Staircase.ProductIsotropic
 import RankR.Companions.Staircase.States

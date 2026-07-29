@@ -10,6 +10,7 @@ two marginal terms for an identity term and a multiple of `ρ₀`.
 -/
 import RankR.Core.DoubleSkew.Choi
 import RankR.Core.Amplification.OperatorForms
+import RankR.Core.PartialTrace.DoubleSkew
 
 namespace RankR
 
