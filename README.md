@@ -276,15 +276,20 @@ arbitrary completely positive map with transpose-symmetric Kraus operators, and
 `thetaPositive_graphKraus_iff`: for a graph with an `R`-clique the amplification
 threshold is exactly `R − 1`.
 
-**Not proved:** `thm:inclusion` of that manuscript, and the operator systems
-`𝒮_G`, `𝒰_G`, the compression `lem:witness` and the free-spectrahedral dictionary
-`lem:dict` it rests on. Those restate `thm:clique` in matrix-convexity language;
-they establish no new constant.
+The graph-inclusion layer is also checked in finite coordinates.
+`RankR/Companions/Graph/` defines the operator systems `𝒮_G` and `𝒰_G`, proves
+their layer action and invariance, supplies the positive compressed clique
+witness, and proves the exact protected inclusion threshold at every matrix
+level, including the rook-graph specialization.  The remaining presentation
+interface is only the choice of the displayed real traceless basis that writes
+the same positivity loci as monic pencils.
 
 ## Building
 
 Requires [`elan`](https://github.com/leanprover/elan). Mathlib is the only
-dependency.
+dependency. RankR nevertheless keeps an explicit
+[Physlib alignment policy](docs/PHYSLIB_ALIGNMENT.md) for overlapping
+coordinate conventions.
 
 ```bash
 lake exe cache get     # Mathlib oleans — do not skip, a source build takes hours
@@ -303,6 +308,7 @@ revision.
 | --- | --- |
 | `RankR/` | the Lean formalization sources |
 | `paper/` | the manuscript |
+| `docs/` | project-level design and interoperability policies |
 
 ### Lean entry points
 
