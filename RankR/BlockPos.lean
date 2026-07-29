@@ -4,8 +4,9 @@ Theorem 1.1 as an `r`-block-positivity statement.
 A vector of Schmidt rank at most `r` across the row:col cut of `L(U ⊗ V)` is
 `vec C` for a matrix `C` of rank at most `r`, so `r`-block positivity of an
 operator `M` on the doubled space is the assertion that `⟪vec C, M vec C⟫ ≥ 0`
-whenever `rank C ≤ r`.  No separate notion of Schmidt rank is needed, exactly as
-for `FGPBound`.
+whenever `rank C ≤ r`.  The coordinate bridge is the theorem
+`pureSchmidtRank_vec`; the generic rank-`k` Choi formulation is identified with
+the direct pure-Schmidt-rank formulation in `Equivalence.lean`.
 
 The operator in question is the Choi operator of `Ψ_r`, built here from four
 explicit vectors rather than through a regrouping of tensor factors: the
@@ -31,8 +32,8 @@ section BlockPositive
 
 variable {W : Type*} [Fintype W]
 
-/-- **`r`-block positivity.**  `Schmidt rank ≤ r` across the row:col cut is
-unrolled as `Matrix.rank ≤ r`. -/
+/-- **`r`-block positivity.**  By `pureSchmidtRank_vec`, `Schmidt rank ≤ r`
+across the row:col cut is exactly the displayed `Matrix.rank ≤ r` condition. -/
 def IsBlockPositive (r : ℕ) (M : Matrix (W × W) (W × W) ℂ) : Prop :=
   ∀ C : Matrix W W ℂ, C.rank ≤ r → 0 ≤ (qform M (vec C)).re
 

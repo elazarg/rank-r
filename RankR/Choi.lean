@@ -254,8 +254,9 @@ its squared Hilbert-Schmidt norm.
 
 The rank-two hypothesis is unrolled, exactly as `FGPBound` unrolls "Schmidt rank
 at most two": a matrix has rank at most two precisely when it is a sum of two
-rank-one operators, so quantifying over the four vectors is the condition itself
-and no separate notion of Schmidt rank is needed.
+rank-one operators, so quantifying over the four vectors is the condition
+itself.  `choiTwoBound_iff_pureSchmidtKBound_two` proves equivalence with the
+direct `pureSchmidtRank` formulation.
 
 The least such `β` is `½‖J‖_{S(2)}`, a quantity of the map alone.  For
 `J = choiOf A` it is also `½ sup { s₁(K_c)² + s₂(K_c)² : ‖c‖ = 1 }` over the
@@ -296,6 +297,14 @@ def ChoiKBound (J : Matrix (W × W) (W × W) ℂ) (k : ℕ) (β : ℝ) : Prop :=
   ∀ u v : Fin k → EuclideanSpace ℂ W,
     (qform J (vec (∑ i, rankOne (u i) (v i)))).re
       ≤ k * β * hsNormSq (∑ i, rankOne (u i) (v i))
+
+/-- The same level-`k` Choi bound stated directly for bipartite vectors of
+pure Schmidt rank at most `k`.  Its equivalence with `ChoiKBound` is proved in
+`Equivalence.lean`. -/
+def PureSchmidtKBound
+    (J : Matrix (W × W) (W × W) ℂ) (k : ℕ) (β : ℝ) : Prop :=
+  ∀ z : EuclideanSpace ℂ (W × W), pureSchmidtRank z ≤ k →
+    (qform J z).re ≤ k * β * ‖z‖ ^ 2
 
 /-- **The rank-two bound is the level-two bound.**  A sum of two rank-one
 operators is a `Fin 2`-indexed sum of rank-one operators, and `k = 2` makes the

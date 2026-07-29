@@ -2974,9 +2974,14 @@ kernel and not before.  \Cref{eq:map-identity} is covered as
 \cref{eq:lambda-tau-monoidal} --- as separate lemmas, and the
 $r$-block-positivity reading of \cref{rem:operator-ineq-as-map} as
 \texttt{isBlockPositive\_psiChoi}.  The $r$-positivity statement of
-\cref{thm:amplification} is formalized in the unrolled form
-$\rank C\le r$ rather than through a definition of Schmidt rank, exactly as
-\texttt{FGPBound} is.  \Cref{rem:parity} is formalized, in both directions and
+\cref{thm:amplification} uses the coordinate condition $\rank C\le r$.
+\texttt{pureSchmidtRank} defines the corresponding vector notion,
+\texttt{pureSchmidtRank\_vec} proves \cref{eq:SR-vec-rank}, and
+\texttt{rank\_le\_iff\_exists\_sum\_rankOne} proves the general $k$-term
+decomposition.  In particular,
+\texttt{choiKBound\_iff\_pureSchmidtKBound} and its Fu--Gao--Park specialization
+identify the unrolled Choi bounds with their direct pure-Schmidt-rank
+statements.  \Cref{rem:parity} is formalized, in both directions and
 past the point the remark itself argues.  \texttt{inner\_delta\_placeQ\_zetaV\_iff}
 upgrades \cref{eq:T-orthogonal} to an equivalence --- orthogonality of every
 $(N\otimes I_Q)\zeta_{ij}$ to $\delta_e$ \emph{is} the degree-$0$ hypothesis, so

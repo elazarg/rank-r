@@ -21,8 +21,9 @@ variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
 
 A pure state on `(ℂ^d)^{⊗4}` has Schmidt rank at most two across the `12:34`
 cut exactly when it is `vec (|u₁⟩⟨v₁| + |u₂⟩⟨v₂|)`; quantifying over the four
-vectors is that condition unrolled, so no separate notion of Schmidt rank is
-needed.  With the index of `vec` read as `(U_out, V_out, U_in, V_in)`, the
+vectors is that condition unrolled.  The equivalence is
+`fgpBound_iff_pureSchmidtKBound_two`.  With the index of `vec` read as
+`(U_out, V_out, U_in, V_in)`, the
 antisymmetrized pairs of `Qm` are Fu–Gao–Park's `(1,3)` and `(2,4)` and the
 row:col cut is their `12:34`. -/
 def FGPBound (U V : Type*) [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V] :

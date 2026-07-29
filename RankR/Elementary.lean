@@ -93,6 +93,45 @@ theorem rankFactor_eq_sum (e d : Fin s → EuclideanSpace ℂ W) :
 
 end Entrywise
 
+section SchmidtDecomposition
+
+variable {W : Type*} [Fintype W] [DecidableEq W] {k : ℕ}
+
+/-- A square coefficient matrix has rank at most `k` exactly when it is a sum
+of `k` rank-one matrices.  Zero summands provide the padding when the rank is
+strictly smaller than `k`. -/
+theorem rank_le_iff_exists_sum_rankOne (M : Matrix W W ℂ) :
+    M.rank ≤ k ↔
+      ∃ u v : Fin k → EuclideanSpace ℂ W,
+        M = ∑ i, rankOne (u i) (v i) := by
+  constructor
+  · intro hrank
+    have hcard : M.rank ≤ Fintype.card (Fin k) := by simpa using hrank
+    obtain ⟨X, Y, hXY⟩ :=
+      (rank_le_card_iff_exists_mul (A := Fin k) M).mp hcard
+    let u : Fin k → EuclideanSpace ℂ W :=
+      fun i => WithLp.toLp 2 fun p => X p i
+    let v : Fin k → EuclideanSpace ℂ W :=
+      fun i => WithLp.toLp 2 fun q => conj (Y i q)
+    refine ⟨u, v, ?_⟩
+    rw [← hXY]
+    ext p q
+    simp [Matrix.mul_apply, Matrix.sum_apply, rankOne, u, v]
+  · rintro ⟨u, v, rfl⟩
+    have hfac :
+        ∃ X : Matrix W (Fin k) ℂ, ∃ Y : Matrix (Fin k) W ℂ,
+          X * Y = ∑ i, rankOne (u i) (v i) := by
+      refine ⟨Matrix.of fun p i => u i p,
+        Matrix.of fun i q => conj (v i q), ?_⟩
+      ext p q
+      simp [Matrix.mul_apply, Matrix.sum_apply, rankOne]
+    have hcard :=
+      (rank_le_card_iff_exists_mul
+        (A := Fin k) (∑ i, rankOne (u i) (v i))).mpr hfac
+    simpa using hcard
+
+end SchmidtDecomposition
+
 section Contractions
 
 variable {W : Type*} [Fintype W] {s : ℕ}

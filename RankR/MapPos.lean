@@ -7,51 +7,11 @@ map is defined by positivity of its actual `Fin r` ampliation.  The bridge to
 positive-semidefinite square decomposition.
 -/
 import RankR.Applications
-import Mathlib.LinearAlgebra.Dimension.Free
 
 namespace RankR
 
 open Matrix Finset ComplexConjugate
 open scoped ComplexOrder MatrixOrder
-
-section RankFactorization
-
-variable {I O A : Type*} [Fintype I] [Fintype O] [Fintype A]
-  [DecidableEq I] [DecidableEq O] [DecidableEq A]
-
-/-- A matrix has rank at most the size of an intermediate coordinate type iff
-it factors through that type. -/
-theorem rank_le_card_iff_exists_mul (C : Matrix O I ℂ) :
-    C.rank ≤ Fintype.card A ↔
-      ∃ X : Matrix O A ℂ, ∃ Y : Matrix A I ℂ, X * Y = C := by
-  constructor
-  · intro hrank
-    let R := LinearMap.range C.mulVecLin
-    have hdim : Module.finrank ℂ R ≤ Module.finrank ℂ (A → ℂ) := by
-      simpa [R, Matrix.rank, Module.finrank_pi] using hrank
-    obtain ⟨e, he⟩ := finrank_le_iff_exists_linearMap.mp hdim
-    have heker : LinearMap.ker e = ⊥ := LinearMap.ker_eq_bot.mpr he
-    let g : (A → ℂ) →ₗ[ℂ] R := e.leftInverse
-    let intoRange : (I → ℂ) →ₗ[ℂ] R := C.mulVecLin.rangeRestrict
-    let fromRange : R →ₗ[ℂ] O → ℂ := R.subtype
-    let X : Matrix O A ℂ := LinearMap.toMatrix' (fromRange.comp g)
-    let Y : Matrix A I ℂ := LinearMap.toMatrix' (e.comp intoRange)
-    refine ⟨X, Y, ?_⟩
-    dsimp only [X, Y]
-    rw [← LinearMap.toMatrix'_comp]
-    change LinearMap.toMatrix' ((fromRange.comp g).comp (e.comp intoRange)) = C
-    rw [← LinearMap.toMatrix'_toLin' C]
-    congr 1
-    apply LinearMap.ext
-    intro x
-    simp only [LinearMap.comp_apply]
-    rw [show g (e (intoRange x)) = intoRange x by
-      exact LinearMap.leftInverse_apply_of_inj heker (intoRange x)]
-    rfl
-  · rintro ⟨X, Y, rfl⟩
-    exact (Matrix.rank_mul_le_left X Y).trans (Matrix.rank_le_card_width X)
-
-end RankFactorization
 
 section ChoiMap
 

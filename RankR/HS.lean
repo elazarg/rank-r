@@ -6,6 +6,8 @@ The inner product space structure on `Matrix m n ℂ` is transported along
 and the norm/inner bridge are inherited from Mathlib.
 -/
 import RankR.Conventions
+import Mathlib.LinearAlgebra.Dimension.Free
+import Mathlib.LinearAlgebra.Matrix.Rank
 
 namespace RankR
 
@@ -46,6 +48,94 @@ theorem vec_sum {ι : Type*} (t : Finset ι) (A : ι → Matrix m n ℂ) :
   rfl
 
 end Vec
+
+/-! ## Pure-vector Schmidt rank in fixed coordinates -/
+
+section SchmidtRank
+
+variable {m n : Type*} [Fintype m] [Fintype n]
+
+/-- The coefficient matrix of a bipartite Euclidean vector in the fixed
+product basis. -/
+def unvec (z : EuclideanSpace ℂ (m × n)) : Matrix m n ℂ :=
+  fun i j => z (i, j)
+
+omit [Fintype m] [Fintype n] in
+@[simp]
+theorem unvec_vec (A : Matrix m n ℂ) : unvec (vec A) = A := by
+  ext i j
+  rfl
+
+omit [Fintype m] [Fintype n] in
+@[simp]
+theorem vec_unvec (z : EuclideanSpace ℂ (m × n)) : vec (unvec z) = z := by
+  ext p
+  rfl
+
+/-- Pure-state Schmidt rank across the `m : n` cut, defined as the matrix rank
+of the coefficient matrix in the fixed product basis. -/
+noncomputable def pureSchmidtRank
+    (z : EuclideanSpace ℂ (m × n)) : ℕ :=
+  (unvec z).rank
+
+omit [Fintype m] in
+/-- `eq:SR-vec-rank`: vectorization identifies pure Schmidt rank with matrix
+rank exactly. -/
+@[simp]
+theorem pureSchmidtRank_vec (A : Matrix m n ℂ) :
+    pureSchmidtRank (vec A) = A.rank := by
+  rw [pureSchmidtRank, unvec_vec]
+
+omit [Fintype m] in
+theorem pureSchmidtRank_le_iff_rank_unvec_le
+    (z : EuclideanSpace ℂ (m × n)) (r : ℕ) :
+    pureSchmidtRank z ≤ r ↔ (unvec z).rank ≤ r :=
+  Iff.rfl
+
+end SchmidtRank
+
+/-! ## Finite rank factorization through a coordinate type -/
+
+section RankFactorization
+
+variable {I O A : Type*} [Fintype I] [Fintype O] [Fintype A]
+  [DecidableEq I] [DecidableEq O] [DecidableEq A]
+
+omit [Fintype O] [DecidableEq O] in
+/-- A matrix has rank at most the size of an intermediate coordinate type iff
+it factors through that type. -/
+theorem rank_le_card_iff_exists_mul (C : Matrix O I ℂ) :
+    C.rank ≤ Fintype.card A ↔
+      ∃ X : Matrix O A ℂ, ∃ Y : Matrix A I ℂ, X * Y = C := by
+  constructor
+  · intro hrank
+    let R := LinearMap.range C.mulVecLin
+    have hdim : Module.finrank ℂ R ≤ Module.finrank ℂ (A → ℂ) := by
+      simpa [R, Matrix.rank, Module.finrank_pi] using hrank
+    obtain ⟨e, he⟩ := finrank_le_iff_exists_linearMap.mp hdim
+    have heker : LinearMap.ker e = ⊥ := LinearMap.ker_eq_bot.mpr he
+    let g : (A → ℂ) →ₗ[ℂ] R := e.leftInverse
+    let intoRange : (I → ℂ) →ₗ[ℂ] R := C.mulVecLin.rangeRestrict
+    let fromRange : R →ₗ[ℂ] O → ℂ := R.subtype
+    let X : Matrix O A ℂ := LinearMap.toMatrix' (fromRange.comp g)
+    let Y : Matrix A I ℂ := LinearMap.toMatrix' (e.comp intoRange)
+    refine ⟨X, Y, ?_⟩
+    dsimp only [X, Y]
+    rw [← LinearMap.toMatrix'_comp]
+    change LinearMap.toMatrix' ((fromRange.comp g).comp (e.comp intoRange)) = C
+    rw [← LinearMap.toMatrix'_toLin' C]
+    congr 1
+    apply LinearMap.ext
+    intro x
+    simp only [LinearMap.comp_apply]
+    rw [show g (e (intoRange x)) = intoRange x by
+      exact LinearMap.leftInverse_apply_of_inj heker (intoRange x)]
+    rfl
+  · rintro ⟨X, Y, rfl⟩
+    exact (Matrix.rank_mul_le_left X Y).trans
+      (Matrix.rank_le_card_width X)
+
+end RankFactorization
 
 /-! ## The standard basis
 

@@ -212,6 +212,26 @@ Ky-Fan corollary. -/
 #guard_msgs in
 #print axioms rank_le_card_iff_exists_mul
 
+/-- info: 'RankR.pureSchmidtRank_vec' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms pureSchmidtRank_vec
+
+/-- info: 'RankR.rank_le_iff_exists_sum_rankOne' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rank_le_iff_exists_sum_rankOne
+
+/-- info: 'RankR.choiKBound_iff_pureSchmidtKBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiKBound_iff_pureSchmidtKBound
+
+/-- info: 'RankR.choiTwoBound_iff_pureSchmidtKBound_two' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiTwoBound_iff_pureSchmidtKBound_two
+
+/-- info: 'RankR.fgpBound_iff_pureSchmidtKBound_two' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms fgpBound_iff_pureSchmidtKBound_two
+
 /-- info: 'RankR.isMapRPositive_mapOfChoi_iff_isBlockPositive' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms isMapRPositive_mapOfChoi_iff_isBlockPositive

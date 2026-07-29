@@ -307,9 +307,33 @@ theorem hsNormSq_dsProj_le (hDS : DoubleSkewBoundQm U V)
       ≤ hsNormSq M * (hsNormSq (dsProj M) / 2) := mul_le_mul_of_nonneg_left hS hB0
   nlinarith [hAsq, hBS, hA0, hB0]
 
+/-- Every square matrix of rank at most two is a sum of two rank-one
+operators, with a zero summand allowed. -/
+theorem exists_rankOne_add_of_rank_le_two {W : Type*}
+    [Fintype W] [DecidableEq W] {M : Matrix W W ℂ}
+    (hrank : M.rank ≤ 2) :
+    ∃ u₁ v₁ u₂ v₂ : EuclideanSpace ℂ W,
+      M = rankOne u₁ v₁ + rankOne u₂ v₂ := by
+  obtain ⟨e, d, _, hM⟩ := exists_rankFactor_rank M
+  rw [rankFactor_eq_sum] at hM
+  interval_cases h : M.rank
+  · refine ⟨0, 0, 0, 0, ?_⟩
+    rw [hM]
+    ext p q
+    simp [rankOne]
+  · refine ⟨e ⟨0, by omega⟩, d ⟨0, by omega⟩, 0, 0, ?_⟩
+    rw [hM]
+    ext p q
+    simp [rankOne]
+  · refine ⟨e ⟨0, by omega⟩, d ⟨0, by omega⟩,
+      e ⟨1, by omega⟩, d ⟨1, by omega⟩, ?_⟩
+    rw [hM]
+    ext p q
+    simp [rankOne]
+
 /-- A sum of two rank-one operators factors through a two-element index type,
 hence has rank at most two. -/
-private theorem rank_rankOne_add_le {W : Type*} [Fintype W]
+theorem rank_rankOne_add_le {W : Type*} [Fintype W]
     (u₁ v₁ u₂ v₂ : EuclideanSpace ℂ W) :
     (rankOne u₁ v₁ + rankOne u₂ v₂).rank ≤ 2 := by
   have hfac : rankOne u₁ v₁ + rankOne u₂ v₂
@@ -321,6 +345,47 @@ private theorem rank_rankOne_add_le {W : Type*} [Fintype W]
   refine (Matrix.rank_mul_le_left _ _).trans ?_
   simpa using Matrix.rank_le_card_width
     (Matrix.of fun (p : W) (i : Fin 2) => ![u₁ p, u₂ p] i)
+
+/-- The explicit `k`-term formulation of the Choi bound is exactly the direct
+pure-Schmidt-rank formulation. -/
+theorem choiKBound_iff_pureSchmidtKBound
+    {W : Type*} [Fintype W] [DecidableEq W]
+    {J : Matrix (W × W) (W × W) ℂ} {k : ℕ} {β : ℝ} :
+    ChoiKBound J k β ↔ PureSchmidtKBound J k β := by
+  constructor
+  · intro h z hz
+    have hrank : (unvec z).rank ≤ k := by
+      simpa [pureSchmidtRank] using hz
+    obtain ⟨u, v, hdecomp⟩ :=
+      (rank_le_iff_exists_sum_rankOne (unvec z)).mp hrank
+    have hb := h u v
+    rw [← hdecomp] at hb
+    simpa [hsNormSq_eq_norm_sq] using hb
+  · intro h u v
+    let M : Matrix W W ℂ := ∑ i, rankOne (u i) (v i)
+    have hrank : pureSchmidtRank (vec M) ≤ k := by
+      rw [pureSchmidtRank_vec]
+      exact (rank_le_iff_exists_sum_rankOne M).mpr ⟨u, v, rfl⟩
+    have hb := h (vec M) hrank
+    simpa [M, hsNormSq_eq_norm_sq] using hb
+
+/-- The rank-two Choi bound used by pair amplification is literally the bound
+over vectors of pure Schmidt rank at most two. -/
+theorem choiTwoBound_iff_pureSchmidtKBound_two
+    {W : Type*} [Fintype W] [DecidableEq W]
+    {J : Matrix (W × W) (W × W) ℂ} {β : ℝ} :
+    ChoiTwoBound J β ↔ PureSchmidtKBound J 2 β :=
+  choiTwoBound_iff_choiKBound_two.trans
+    choiKBound_iff_pureSchmidtKBound
+
+/-- Fu--Gao--Park's four-vector formulation is exactly its usual
+Schmidt-rank-two formulation. -/
+theorem fgpBound_iff_pureSchmidtKBound_two :
+    FGPBound U V ↔
+      PureSchmidtKBound
+        (Qm : Matrix (Idx U V) (Idx U V) ℂ) 2 (1 / 4) :=
+  choiTwoBound_Qm_iff.symm.trans
+    choiTwoBound_iff_pureSchmidtKBound_two
 
 /-- **Fu-Gao-Park's estimate, from the double-skew bound.**  The converse of
 `doubleSkewBound_of_FGP`, so the two are equivalent. -/
@@ -335,10 +400,9 @@ Together with `doubleSkewBound_of_FGP` this closes the loop: the estimate
 Fu-Gao-Park state and the double-skew action bound of the manuscript are
 equivalent, and both are proved from the Autonne-Takagi factorization.
 
-What is proved is `FGPBound` as `Conventions.lean` renders it — the homogeneous
-form, quantified over `|u₁⟩⟨v₁| + |u₂⟩⟨v₂|` rather than over vectors of Schmidt
-rank at most two.  By `eq:SR-vec-rank` those are the same statement, but that
-identification is a reading of the definitions, not a theorem here. -/
+The homogeneous four-vector form `FGPBound` is identified with the direct
+pure-Schmidt-rank-two statement by
+`fgpBound_iff_pureSchmidtKBound_two`. -/
 theorem fgpBound_holds : FGPBound U V :=
   FGPBound_of_doubleSkewBoundQm doubleSkewBoundQm_holds
 

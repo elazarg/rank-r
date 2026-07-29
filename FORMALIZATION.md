@@ -19,9 +19,10 @@ Status meanings:
 The global rendering boundary applies throughout: finite-dimensional Hilbert
 spaces are represented by matrices over finite coordinate types. The
 basis-transport theorem from abstract Hilbert spaces to those coordinates is
-an open formalization item. Likewise, “Schmidt rank at most `r`” is usually
-unrolled as “matrix rank at most `r`”; the vectorization equivalence is
-mathematically standard but is not packaged as an abstract Schmidt-rank type.
+an open formalization item. Within fixed coordinates, `pureSchmidtRank` is the
+rank of the coefficient matrix, `pureSchmidtRank_vec` proves
+`SR(vec A) = rank A`, and `rank_le_iff_exists_sum_rankOne` proves the exact
+rank-`k` decomposition used by the Choi bounds.
 
 ## Main manuscript
 
@@ -30,7 +31,7 @@ mathematically standard but is not packaged as an abstract Schmidt-rank type.
 | Manuscript claim | Status | Lean certificate or precise gap |
 | --- | --- | --- |
 | `lem:double-skew` | **Checked** | `doubleSkewBound_of_takagi`, `doubleSkewBound_holds` |
-| Fu–Gao–Park projection estimate and its equivalence with the double-skew bound | **Checked** in homogeneous coordinate form | `FGPBound_of_doubleSkewBoundQm`, `doubleSkewBound_of_FGP`, `fgpBound_holds`; abstract Schmidt-rank wording is part of the global rendering boundary |
+| Fu–Gao–Park projection estimate and its equivalence with the double-skew bound | **Checked** in finite coordinates | `FGPBound_of_doubleSkewBoundQm`, `doubleSkewBound_of_FGP`, `fgpBound_holds`; `fgpBound_iff_pureSchmidtKBound_two` proves equivalence with the direct pure-Schmidt-rank-two statement |
 | `def:beta2`, Choi quadratic-form bound | **Checked rendering** | `ChoiTwoBound`; the equality with the published `S(2)`-norm definition is not a theorem about an independently defined norm |
 | `beta_2(Λ_U ⊗ Λ_V) ≤ 1` in all dimensions | **Checked** | `choiTwoBound_skewKraus` after scaling |
 | `beta_2(Λ_U ⊗ Λ_V) = 1` when both dimensions are at least two; value zero in degenerate dimensions | **Checked** | `choiTwoBound_skewKraus_iff` and the vanishing-family lemmas in `Sharp.lean` |
@@ -153,11 +154,9 @@ The shortest route to a fully formalized application suite is:
 
 1. prove `KyFanFrobeniusDuality`, the equality between `kyFanSq` and
    `frobeniusRankTestSq`;
-2. define pure-vector Schmidt rank and identify it with matrix rank under
-   `vec`, closing the remaining wording-level interfaces;
-3. add isotropic states and the product-isotropic twirl;
-4. add operator systems/free spectrahedra for the graph-inclusion translation.
+2. add isotropic states and the product-isotropic twirl;
+3. add operator systems/free spectrahedra for the graph-inclusion translation.
 
-Items 1–2 close the remaining main-paper interfaces and applications. Items
-3–4 concern companion constructions and appendices rather than the proof of
-the central theorem.
+Item 1 closes the remaining main-paper application interface. Items 2–3
+concern companion constructions and appendices rather than the proof of the
+central theorem.

@@ -59,11 +59,13 @@ Restating the bound with the fixed-point hypothesis `Qm (vec K) = vec K`
 (`DoubleSkewBoundQm`) avoids that entirely: the new form is formally *stronger*,
 yet no harder to prove, because `Qm (vec K) = vec K` already forces `Kᵀ = K`.
 
-What remains a rendering rather than a transcription is that `FGPBound` is
-stated in homogeneous form over `|u₁⟩⟨v₁| + |u₂⟩⟨v₂|` rather than over unit
-vectors of Schmidt rank at most two. By `eq:SR-vec-rank` those are the same
-statement, but that identification is a reading of the definitions, not a
-theorem here.
+`FGPBound` is stored in homogeneous form over
+`|u₁⟩⟨v₁| + |u₂⟩⟨v₂|` rather than over unit vectors of Schmidt rank at most
+two. By `eq:SR-vec-rank` those are the same statement.  The development defines
+`pureSchmidtRank` from the coefficient matrix, proves
+`pureSchmidtRank (vec A) = Matrix.rank A`, proves the general rank-`k`
+decomposition into `k` rank-one summands, and packages the precise equivalence
+as `fgpBound_iff_pureSchmidtKBound_two`.
 
 **What this does and does not certify.** Lean checks the *deduction* — that the
 conclusion follows from the hypothesis, given the formal definitions in
@@ -73,10 +75,11 @@ human judgement, which is why `Conventions.lean` states each convention
 explicitly (inner products conjugate-linear in the first argument;
 $\mathrm{Tr}_U$ = trace *over* $U$; $\mathrm{vec}(|x\rangle\langle y|) = x \otimes \bar y$;
 $\mathfrak{so}$ defined by $L^T = -L$, not $L^H = -L$) rather than leaving them
-implicit. One rendering is worth singling out:
-`FGPBound` quantifies over the explicit two-term form
-`M = |u₁⟩⟨v₁| + |u₂⟩⟨v₂|`, which is "Schmidt rank ≤ 2 across the row:col cut"
-unrolled rather than a theorem about it.
+implicit. One rendering is worth singling out: `FGPBound` quantifies over the
+explicit two-term form `M = |u₁⟩⟨v₁| + |u₂⟩⟨v₂|`.  The equivalence with
+“Schmidt rank at most two across the row:column cut” is a theorem, while
+transport between an abstract bipartite Hilbert space and the fixed coordinate
+basis remains an informal interface.
 
 The sharpness claims around Theorem 1.1 are covered too.
 `rank_r_partial_trace_exact` is the exact-rank form (`r = rank C`),
@@ -98,15 +101,14 @@ statements: any bound `‖Tr_U C‖₂² + ‖Tr_V C‖₂² ≤ a‖C‖₂² +
 rank `r` has `a ≥ r` (`le_coeff_hsNormSq_of_bound`), and once `a = r` is fixed,
 `b ≥ 1/r` (`inv_le_coeff_trace_of_bound`).
 
-**Still an interface rather than a theorem here:** the identification of
-`FGPBound` with Theorem 2.4 as stated
-via an abstract Schmidt-rank predicate. `FGPBound` quantifies over the explicit
-two-term form; that this is the same condition as "Schmidt rank ≤ 2" is
-`eq:SR-vec-rank`, a definitional reading rather than a formalized theorem — the
-development contains no separate definition of pure-vector Schmidt rank. The
-mixed-state decomposition predicate `SchmidtNumberLE` is introduced only for
-the trace-distance application. The estimate itself *is* proved
-(`fgpBound_holds`).
+**Still an interface rather than a theorem here:** basis transport from the
+paper's abstract bipartite Hilbert spaces to finite coordinate types.  Within
+fixed coordinates, `pureSchmidtRank_vec`,
+`rank_le_iff_exists_sum_rankOne`, and
+`fgpBound_iff_pureSchmidtKBound_two` formalize the pure-vector identification
+and the exact rank-two quantifier.  The mixed-state decomposition predicate
+`SchmidtNumberLE` supports the trace-distance application.  The estimate
+itself is proved (`fgpBound_holds`).
 
 `RankR/Applications.lean` checks the algebraic cores of the main-paper
 applications: both branches and attaining matrices of the symmetric and
