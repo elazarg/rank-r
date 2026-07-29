@@ -39,8 +39,8 @@ graph. The corresponding Lean layers are:
 The focused manuscript is `paper/rank-r.tex`.  Its central chain is the generic
 rank-two Choi lift, the double-skew local estimate, the partial-trace
 application, and the graph sharpness family.  The balanced-factorization
-comparison is mathematically proved in the paper but is not yet represented by
-Lean declarations.
+comparison is checked from an explicit balanced factorization; existence of
+that factorization remains an open library theorem.
 
 | Manuscript item | Status | Lean certificate or remaining gap |
 | --- | --- | --- |
@@ -60,11 +60,12 @@ Lean declarations.
 | Theorem 5.1, exact-rank and rank-at-most partial-trace inequalities | **Checked** | `rank_r_partial_trace_exact`, `rank_r_partial_trace` |
 | Equality in Theorem 5.1 forces exact rank | **Checked** | `rank_r_partial_trace_strict`, `rank_eq_of_eq_rank_r_partial_trace` |
 | Proposition 5.2, optimal coefficients and witnesses | **Checked for coordinate-basis witnesses** | `projWit_bound_eq`, `le_coeff_hsNormSq_of_bound`, `inv_le_coeff_trace_of_bound`; arbitrary unit-vector formulas are not separately packaged because basis choices already force both constants |
-| Proposition 5.3, abstract balanced-polarization lift | **Open formalization** | The generic lift is extracted from Fraser–Huber–Pozsgay–Vona; the final algebra can reuse existing marginal and variance lemmas, but no Lean declaration packages it |
+| Proposition 5.3, abstract balanced-polarization lift | **Conditional** | `balancedPolarization_rankFactor_trace_le` proves the generic lift along a supplied balanced exact-rank factorization; `partialTrace_of_hasBalancedRankFactorization` includes the exact-rank-to-`r` step |
+| Rank-one and crossing inputs for the partial-trace instance | **Checked** | `hsNormSq_partialTrace_rankOne_add_le` proves the sharp rank-one inequality from the double-antisymmetric projection certificate; `partialTracePair_hasCrossedPolarization` proves the four-state marginal identity |
 | Gram-operator rendering of Proposition 5.3 | **Open formalization** | No crossing-reshuffle operator or equivalence for `Γ = L* L` is defined |
-| Balanced rank factorization used in Proposition 5.3 | **Open library theorem** | `exists_rankFactor_rank` gives exact rank, but equal left/right Gram matrices and the Parker–Fillmore constant-diagonal theorem are missing |
-| Equation (26), balanced complete-graph defect | **Checked algebraic ingredient; assembly open** | `completeGraph_variance` proves the variance identity; the balanced-factorization specialization and off-diagonal Gram assembly are not formalized |
-| Corollary 5.4, spectral stability | **Open formalization; checked paper deduction** | Once the balanced factorization and defect are available, the estimate is complete-graph variance plus unitary invariance of the Hilbert–Schmidt norm |
+| Balanced rank factorization used in Proposition 5.3 | **Checked construction; open existence inputs** | `exists_balanced_mixRankFamily` proves that constant-diagonal unitary mixing balances any equal-Gram factorization while preserving the represented matrix. `hasBalancedRankFactorization_of_equalGram_of_constantDiagonals` isolates the two missing general theorems: existence of an equal-Gram exact-rank factorization and Parker–Fillmore (`HasConstantDiagonals`) |
+| Equation (26), balanced complete-graph defect | **Checked along a supplied balanced factorization** | `balancedPolarization_rankFactor_defect_le` proves the generic ordered-pair form; `balanced_partialTrace_rankFactor_defect_le` specializes it to the two marginals. Ordered off-diagonal mass is twice the paper's sum over `i < j` |
+| Corollary 5.4, spectral stability | **Open formalization; defect checked** | The factorization-level defect is checked. The remaining bridge identifies the centered equal-Gram matrix with the variance of the nonzero singular values |
 | Graph family, symmetric Kraus operators and exact `β₂ = 1` | **Checked** | `graphKraus_transpose`, `choiTwoBound_graphKraus_iff` |
 | Theorem 6.1, induced-density obstruction and clique threshold | **Checked** | `hsInner_edgeKraus_mul_projWit`, `thetaPair_graphKraus_projWit`, `two_mul_card_le_of_thetaPositive`, `sub_one_le_lam_of_clique`, `thetaPositive_graphKraus_iff` |
 | One-layer loss and two-layer retention | **Checked in coordinates** | `graphPhiTranspose_layers`, `graphTheta_layers`, `graphTheta_mem_graphTwoLayerSpace`; the paper states only the elementary corner consequence |
