@@ -123,23 +123,6 @@ theorem mulVecE_rankOne_eq (u v x : EuclideanSpace ℂ (T × T)) :
   rw [Finset.sum_mul]
   exact Finset.sum_congr rfl fun q _ => by ring
 
-/-- The squared norm of the diagonal vector, in inner-product form. -/
-theorem inner_singleOmegaVec_self :
-    inner ℂ (singleOmegaVec (T := T)) singleOmegaVec
-      = (Fintype.card T : ℂ) := by
-  rw [PiLp.inner_apply, Fintype.sum_prod_type]
-  have hterm : ∀ p q : T,
-      inner ℂ (singleOmegaVec (T := T) (p, q))
-          (singleOmegaVec (T := T) (p, q))
-        = if p = q then (1 : ℂ) else 0 := by
-    intro p q
-    by_cases hpq : p = q <;>
-      simp [singleOmegaVec_apply, hpq]
-  rw [Finset.sum_congr rfl fun p _ =>
-    Finset.sum_congr rfl fun q _ => hterm p q]
-  simp only [Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte,
-    Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_one]
-
 /-- The maximally entangled rank-one operator has eigenvalue `card T` on its
 diagonal vector. -/
 theorem mulVecE_singleOmegaChoi_singleOmega :
@@ -314,16 +297,6 @@ theorem hsNormSq_tensorFlip :
   rw [hsNormSq, Finset.sum_congr rfl fun p _ => hrow p,
     Finset.sum_const, Finset.card_univ, Fintype.card_prod, nsmul_eq_mul]
   push_cast
-  ring
-
-/-- The maximally entangled rank-one operator has squared Hilbert--Schmidt
-norm `(card T)^2`. -/
-theorem hsInner_singleOmegaChoi_self :
-    hsInner (singleOmegaChoi (T := T)) singleOmegaChoi
-      = ((Fintype.card T : ℝ) ^ 2 : ℂ) := by
-  rw [singleOmegaChoi, hsInner_rankOne,
-    inner_singleOmegaVec_self]
-  simp only [map_natCast, Complex.ofReal_natCast]
   ring
 
 /-- The flip and the maximally entangled rank-one operator have
