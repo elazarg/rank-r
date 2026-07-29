@@ -357,4 +357,40 @@ theorem balancedPolarization_rankFactor_trace_le
 
 end Lift
 
+section MatrixLift
+
+variable {W E : Type*} [Fintype W]
+  [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+  {L : Matrix W W ℂ →ₗ[ℂ] E}
+
+/-- The balanced-polarization lift at the exact matrix rank. -/
+theorem balancedPolarization_exact
+    (C : Matrix W W ℂ) (hC : C ≠ 0)
+    (hOne : HasRankOneTraceBound L)
+    (hCross : HasCrossedPolarization L) :
+    ‖L C‖ ^ 2
+      ≤ (C.rank : ℝ) * hsNormSq C
+        + (1 / (C.rank : ℝ)) * Complex.normSq C.trace := by
+  obtain ⟨e, d, τ, hfac, hbal⟩ := hasBalancedRankFactorization C
+  have h := balancedPolarization_rankFactor_trace_le
+    (rank_pos_of_ne_zero hC) hOne hCross hbal
+  rwa [← hfac] at h
+
+/-- The balanced-polarization lift at any upper bound on the matrix rank. -/
+theorem balancedPolarization
+    (C : Matrix W W ℂ)
+    (hOne : HasRankOneTraceBound L)
+    (hCross : HasCrossedPolarization L)
+    (r : ℕ) (hrank : C.rank ≤ r) :
+    ‖L C‖ ^ 2
+      ≤ (r : ℝ) * hsNormSq C
+        + (1 / (r : ℝ)) * Complex.normSq C.trace := by
+  rcases eq_or_ne C 0 with rfl | hC
+  · simp [hsNormSq]
+  · exact (balancedPolarization_exact C hC hOne hCross).trans
+      (rank_mono (Complex.normSq_nonneg _) (rank_pos_of_ne_zero hC)
+        hrank (normSq_trace_le_rank C))
+
+end MatrixLift
+
 end RankR

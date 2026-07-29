@@ -100,8 +100,11 @@ theorem partialTrace_via_balancedPolarization
     (r : ℕ) (hrank : C.rank ≤ r) :
     hsNormSq (ptraceU C) + hsNormSq (ptraceV C)
       ≤ r * hsNormSq C + (1 / r : ℝ) * Complex.normSq C.trace :=
-  partialTrace_of_balancedRankFactorizations
-    (C := C) hasBalancedRankFactorizations r hrank
+  by
+    have h := balancedPolarization C
+      partialTracePair_hasRankOneTraceBound
+      partialTracePair_hasCrossedPolarization r hrank
+    rwa [norm_partialTracePair_sq] at h
 
 end ExactRank
 

@@ -114,6 +114,10 @@ theorem. -/
 #guard_msgs in
 #print axioms balancedPolarization_rankFactor_defect_le
 
+/-- info: 'RankR.balancedPolarization' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms balancedPolarization
+
 /-- info: 'RankR.partialTracePair_hasRankOneTraceBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms partialTracePair_hasRankOneTraceBound
