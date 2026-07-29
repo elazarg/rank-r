@@ -52,6 +52,7 @@ import RankR.Applications.TraceDistance.Main
 import RankR.Applications.Kronecker.Inequality
 import RankR.Applications.Kronecker.KyFan
 import RankR.Applications.SchmidtWitness
+import RankR.Library.Quantum.KrausSpace
 import RankR.Companions.HigherChoi.Sharp
 import RankR.Companions.HigherArity.DoubleSkew
 import RankR.Companions.HigherChoi.KappaOne
@@ -1339,6 +1340,16 @@ info: 'RankR.thetaPositive_of_choiTwoBound_le' depends on axioms: [propext, Clas
 /-- info: 'RankR.thetaPositive_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms thetaPositive_zero
+
+/-! ## Kraus-space representation independence -/
+
+/-- info: 'RankR.map_krausSpace_vec' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms map_krausSpace_vec
+
+/-- info: 'RankR.krausSpace_eq_of_choiOf_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms krausSpace_eq_of_choiOf_eq
 
 /--
 info: 'RankR.thetaPositive_graphKraus_iff' depends on axioms: [propext, Classical.choice, Quot.sound]

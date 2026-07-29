@@ -17,7 +17,8 @@ section SingularVectors
 
 variable {W : Type*} [Fintype W]
 
-noncomputable local instance : DecidableEq W := Classical.decEq W
+noncomputable local instance singularFactorizationDecidableEq :
+    DecidableEq W := Classical.decEq W
 
 /-- The positive singular values of a matrix, indexed by its exact rank. -/
 noncomputable def matrixSingularValue

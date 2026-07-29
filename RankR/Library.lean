@@ -18,12 +18,14 @@ import RankR.Library.Matrix.Placement
 import RankR.Library.Matrix.QuadraticForm
 import RankR.Library.Matrix.Rank
 import RankR.Library.Matrix.RankFactorization
+import RankR.Library.Matrix.SingularFactorization
 import RankR.Library.Matrix.Tensor
 import RankR.Library.Quantum.BlockPositive
 import RankR.Library.Quantum.Choi
 import RankR.Library.Quantum.ChoiMap
 import RankR.Library.Quantum.Isotropic
 import RankR.Library.Quantum.Kraus
+import RankR.Library.Quantum.KrausSpace
 import RankR.Library.Quantum.MaximallyEntangled
 import RankR.Library.Quantum.PositiveMaps
 import RankR.Library.Quantum.Reduction

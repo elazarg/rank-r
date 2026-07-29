@@ -48,6 +48,37 @@ theorem vec_sum {ι : Type*} (t : Finset ι) (A : ι → Matrix m n ℂ) :
   rw [WithLp.ofLp_sum, Finset.sum_apply]
   rfl
 
+/-- The coefficient matrix of a bipartite Euclidean vector in the fixed
+product basis. -/
+def unvec (z : EuclideanSpace ℂ (m × n)) : Matrix m n ℂ :=
+  fun i j => z (i, j)
+
+@[simp]
+theorem unvec_vec (A : Matrix m n ℂ) : unvec (vec A) = A := by
+  ext i j
+  rfl
+
+@[simp]
+theorem vec_unvec (z : EuclideanSpace ℂ (m × n)) : vec (unvec z) = z := by
+  ext p
+  rfl
+
+@[simp]
+theorem unvec_smul (c : ℂ) (z : EuclideanSpace ℂ (m × n)) :
+    unvec (c • z) = c • unvec z := by
+  ext i j
+  rfl
+
+/-- Vectorization as a linear equivalence between matrices and bipartite
+coordinate vectors. -/
+def vecLinearEquiv : Matrix m n ℂ ≃ₗ[ℂ] EuclideanSpace ℂ (m × n) where
+  toFun := vec
+  invFun := unvec
+  left_inv := unvec_vec
+  right_inv := vec_unvec
+  map_add' := vec_add
+  map_smul' := vec_smul
+
 end Vec
 
 /-! ## Pure-vector Schmidt rank in fixed coordinates -/
@@ -55,30 +86,6 @@ end Vec
 section SchmidtRank
 
 variable {m n : Type*} [Fintype m] [Fintype n]
-
-/-- The coefficient matrix of a bipartite Euclidean vector in the fixed
-product basis. -/
-def unvec (z : EuclideanSpace ℂ (m × n)) : Matrix m n ℂ :=
-  fun i j => z (i, j)
-
-omit [Fintype m] [Fintype n] in
-@[simp]
-theorem unvec_vec (A : Matrix m n ℂ) : unvec (vec A) = A := by
-  ext i j
-  rfl
-
-omit [Fintype m] [Fintype n] in
-@[simp]
-theorem vec_unvec (z : EuclideanSpace ℂ (m × n)) : vec (unvec z) = z := by
-  ext p
-  rfl
-
-omit [Fintype m] [Fintype n] in
-@[simp]
-theorem unvec_smul (c : ℂ) (z : EuclideanSpace ℂ (m × n)) :
-    unvec (c • z) = c • unvec z := by
-  ext i j
-  rfl
 
 /-- Pure-state Schmidt rank across the `m : n` cut, defined as the matrix rank
 of the coefficient matrix in the fixed product basis. -/
