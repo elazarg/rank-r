@@ -148,8 +148,8 @@ extended-real-infimum layer.
 | strict monotonicity of thresholds | **Checked** | `staircaseGamma_succ_sub`, `staircaseP_lt_succ` |
 | exact staircase | **Open formalization** | depends on the product-seed lemma, twirl preservation, and mixed-state Schmidt-number semantics; the boundary operator identity itself is checked |
 | adjacent threshold and equality mode | **Checked only at the score core** | `twoCopyScore_adjacent_endpoint`; the isotropic-state and twirl identifications are absent |
-| protected/unprotected threshold comparison | **Checked scalar core** | `staircaseP_lt_unprotected` proves the strict threshold comparison; the Choi-state identity for the unprotected witness remains part of the missing semantic layer |
-| entangled-marginal comparison | **Checked scalar core** | `staircaseP_lt_marginal` proves the displayed strict rational comparison; identifying it as the exact marginal Schmidt-number threshold still requires isotropic-state and partial-trace semantics |
+| protected/unprotected threshold comparison | **Checked** at matrix level | `staircaseUnprotectedWitness`, `trace_mul_staircaseUnprotectedWitness_staircaseState_neg_iff`, and `staircaseP_lt_unprotected` prove the extra maximally entangled term, its exact expectation threshold, and the strict comparison |
+| entangled-marginal comparison | **Checked state identity and scalar comparison** | `ptraceV_staircaseState` proves the displayed isotropic marginal and `staircaseP_lt_marginal` proves the strict rational comparison; identifying the marginal crossing as an exact Schmidt-number threshold still requires the isotropic stratification theorem |
 
 ## Closure order
 

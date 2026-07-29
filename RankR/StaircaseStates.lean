@@ -3,7 +3,8 @@ Finite operator algebra for the state family and boundary decomposition in
 `paper/derivation-schmidt-staircase.tex`.
 
 The matrices are kept in the paper's `A₁B₁A₂B₂` register order.  This file
-proves the normalized isotropic white-noise identity and the exact boundary
+proves the normalized isotropic white-noise identity, protected and unprotected
+witness expectations, the isotropic marginal formula, and the exact boundary
 operator equality.  It does not assert that the algebraic product-isotropic
 space is the range of a Haar twirl, or that the twirl preserves Schmidt number.
 -/
@@ -64,6 +65,18 @@ noncomputable def staircaseWitness (k : ℝ) :
   (k : ℂ) •
     (staircaseWitnessFactor U k ⊗ₖ staircaseWitnessFactor V k)
 
+/-- The maximally entangled rank-one term on the two product factors, in the
+paper's `A₁B₁A₂B₂` register order. -/
+noncomputable def staircaseOmegaProduct :
+    Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ :=
+  singleOmegaChoi (T := U) ⊗ₖ singleOmegaChoi (T := V)
+
+/-- The witness obtained when the protected `-id/k` correction is omitted. -/
+noncomputable def staircaseUnprotectedWitness (k : ℝ) :
+    Matrix ((U × U) × (V × V)) ((U × U) × (V × V)) ℂ :=
+  staircaseWitness k
+    + (((k - 1) / k : ℝ) : ℂ) • staircaseOmegaProduct
+
 theorem staircaseWitnessFactor_isHermitian
     {T : Type*} [Fintype T] [DecidableEq T] (k : ℝ) :
     (staircaseWitnessFactor T k).IsHermitian := by
@@ -83,6 +96,21 @@ theorem staircaseWitness_isHermitian (k : ℝ) :
   apply hkr.smul
   change conj (k : ℂ) = (k : ℂ)
   exact Complex.conj_ofReal k
+
+omit [Fintype U] [Fintype V] in
+theorem staircaseOmegaProduct_isHermitian :
+    (staircaseOmegaProduct (U := U) (V := V)).IsHermitian := by
+  rw [Matrix.IsHermitian, staircaseOmegaProduct,
+    Matrix.conjTranspose_kronecker]
+  simp [singleOmegaChoi, rankOne_conjTranspose]
+
+theorem staircaseUnprotectedWitness_isHermitian (k : ℝ) :
+    (staircaseUnprotectedWitness (U := U) (V := V) k).IsHermitian := by
+  apply Matrix.IsHermitian.add (staircaseWitness_isHermitian k)
+  apply staircaseOmegaProduct_isHermitian.smul
+  change conj ((((k - 1) / k : ℝ) : ℂ)) =
+    ((((k - 1) / k : ℝ) : ℂ))
+  exact Complex.conj_ofReal _
 
 theorem hsInner_staircaseWitnessFactor_isotropicState
     {T : Type*} [Fintype T] [DecidableEq T]
@@ -121,6 +149,40 @@ theorem trace_mul_staircaseWitness_biIsotropicState
         (1 - (Fintype.card V : ℝ) * G / k) : ℝ) : ℂ) := by
   rw [← hsInner_staircaseWitness_biIsotropicState hU hV]
   simp only [hsInner, (staircaseWitness_isHermitian k).eq]
+
+theorem hsInner_staircaseOmegaProduct_biIsotropicState
+    (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
+    (F G : ℝ) :
+    hsInner staircaseOmegaProduct
+        (biIsotropicState (U := U) (V := V) F G) =
+      (((Fintype.card U : ℝ) * F *
+        ((Fintype.card V : ℝ) * G) : ℝ) : ℂ) := by
+  rw [staircaseOmegaProduct, biIsotropicState, hsInner_kron,
+    hsInner_singleOmegaChoi_isotropicState hU,
+    hsInner_singleOmegaChoi_isotropicState hV]
+  push_cast
+  rfl
+
+theorem trace_mul_staircaseUnprotectedWitness_biIsotropicState
+    (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
+    (k F G : ℝ) :
+    (staircaseUnprotectedWitness (U := U) (V := V) k *
+        biIsotropicState F G).trace =
+      ((k * (1 - (Fintype.card U : ℝ) * F / k) *
+          (1 - (Fintype.card V : ℝ) * G / k)
+        + (k - 1) / k *
+          ((Fintype.card U : ℝ) * F *
+            ((Fintype.card V : ℝ) * G)) : ℝ) : ℂ) := by
+  rw [← (staircaseUnprotectedWitness_isHermitian k).eq]
+  change
+    hsInner (staircaseUnprotectedWitness (U := U) (V := V) k)
+      (biIsotropicState F G) = _
+  rw [staircaseUnprotectedWitness, hsInner_add_left, hsInner_smul_left,
+    hsInner_staircaseWitness_biIsotropicState hU hV,
+    hsInner_staircaseOmegaProduct_biIsotropicState hU hV]
+  simp only [Complex.conj_ofReal]
+  push_cast
+  ring
 
 theorem hsInner_staircaseWitness_seed
     (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
@@ -196,6 +258,81 @@ theorem trace_mul_staircaseWitness_staircaseState_neg_iff
       (p := p)
       (staircaseGamma_pos hm hn hk hks) (sub_pos.mpr hks))
 
+theorem trace_mul_staircaseUnprotectedWitness_seed
+    (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
+    {k : ℝ} (hk : 1 ≤ k) (s : ℝ) :
+    (staircaseUnprotectedWitness (U := U) (V := V) k *
+        staircaseSeedState s).trace = ((k - s : ℝ) : ℂ) := by
+  rw [staircaseSeedState,
+    trace_mul_staircaseUnprotectedWitness_biIsotropicState hU hV]
+  have hUc : (Fintype.card U : ℝ) ≠ 0 := by
+    exact_mod_cast (show Fintype.card U ≠ 0 by omega)
+  have hk0 : k ≠ 0 := ne_of_gt (lt_of_lt_of_le (by norm_num) hk)
+  push_cast
+  field_simp
+  ring
+
+theorem trace_mul_staircaseUnprotectedWitness_whiteNoise
+    (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
+    {k : ℝ} (hk : 1 ≤ k) :
+    (staircaseUnprotectedWitness (U := U) (V := V) k *
+        staircaseWhiteNoiseState).trace =
+      (staircaseGammaUnprotected
+        (Fintype.card U) (Fintype.card V) k : ℂ) := by
+  rw [staircaseWhiteNoiseState,
+    trace_mul_staircaseUnprotectedWitness_biIsotropicState hU hV,
+    staircaseGammaUnprotected, staircaseGamma]
+  have hUc : (Fintype.card U : ℝ) ≠ 0 := by
+    exact_mod_cast (show Fintype.card U ≠ 0 by omega)
+  have hVc : (Fintype.card V : ℝ) ≠ 0 := by
+    exact_mod_cast (show Fintype.card V ≠ 0 by omega)
+  have hk0 : k ≠ 0 := ne_of_gt (lt_of_lt_of_le (by norm_num) hk)
+  push_cast
+  field_simp
+
+theorem trace_mul_staircaseUnprotectedWitness_staircaseState
+    (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
+    {k : ℝ} (hk : 1 ≤ k) (s p : ℝ) :
+    (staircaseUnprotectedWitness (U := U) (V := V) k *
+        staircaseState s p).trace =
+      (((1 - p) *
+          staircaseGammaUnprotected
+            (Fintype.card U) (Fintype.card V) k
+        - p * (s - k) : ℝ) : ℂ) := by
+  rw [staircaseState, Matrix.mul_add, Matrix.mul_smul,
+    Matrix.mul_smul, Matrix.trace_add, Matrix.trace_smul,
+    Matrix.trace_smul,
+    trace_mul_staircaseUnprotectedWitness_seed hU hV hk,
+    trace_mul_staircaseUnprotectedWitness_whiteNoise hU hV hk]
+  push_cast
+  ring
+
+theorem trace_mul_staircaseUnprotectedWitness_staircaseState_neg_iff
+    (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V)
+    {s k p : ℝ} (hk : 1 ≤ k) (hks : k < s) :
+    ((staircaseUnprotectedWitness (U := U) (V := V) k *
+        staircaseState s p).trace).re < 0 ↔
+      staircasePUnprotected
+        (Fintype.card U) (Fintype.card V) s k < p := by
+  have hm : (2 : ℝ) ≤ Fintype.card U := by exact_mod_cast hU
+  have hn : (2 : ℝ) ≤ Fintype.card V := by exact_mod_cast hV
+  have hγ := staircaseGamma_pos hm hn hk hks
+  have hγun :
+      0 < staircaseGammaUnprotected
+        (Fintype.card U) (Fintype.card V) k := by
+    rw [staircaseGammaUnprotected]
+    have hkpos : 0 < k := lt_of_lt_of_le (by norm_num) hk
+    have hmpos : (0 : ℝ) < Fintype.card U := by linarith
+    have hnpos : (0 : ℝ) < Fintype.card V := by linarith
+    have hextra : 0 ≤ (k - 1) /
+        (k * (Fintype.card U : ℝ) * Fintype.card V) := by positivity
+    linarith
+  rw [trace_mul_staircaseUnprotectedWitness_staircaseState hU hV hk,
+    Complex.ofReal_re, staircasePUnprotected]
+  simpa [sub_eq_add_neg, add_assoc] using
+    (affine_threshold_iff
+      (p := p) hγun (sub_pos.mpr hks))
+
 theorem staircaseWhiteNoiseState_eq
     (hU : 2 ≤ Fintype.card U) (hV : 2 ≤ Fintype.card V) :
     staircaseWhiteNoiseState (U := U) (V := V) =
@@ -262,6 +399,34 @@ theorem staircaseState_normalized_posSemidef
       Matrix.trace_smul, staircaseSeedState, staircaseWhiteNoiseState,
       trace_biIsotropicState hU hV, trace_biIsotropicState hU hV]
     norm_num
+
+/-- Tracing out the second product factor leaves the isotropic marginal used
+in the marginal-threshold comparison. -/
+theorem ptraceV_staircaseState
+    (hV : 2 ≤ Fintype.card V) (s p : ℝ) :
+    ptraceV (staircaseState (U := U) (V := V) s p) =
+      isotropicState (T := U)
+        (p * (s / Fintype.card U)
+          + (1 - p) / (Fintype.card U : ℝ) ^ 2) := by
+  rw [staircaseState, ptraceV_add, ptraceV_smul, ptraceV_smul,
+    staircaseSeedState, staircaseWhiteNoiseState,
+    ptraceV_biIsotropicState hV, ptraceV_biIsotropicState hV]
+  rw [isotropicState_affine (T := U)]
+  congr 1
+  ring
+
+/-- The other marginal of the noisy family. -/
+theorem ptraceU_staircaseState
+    (hU : 2 ≤ Fintype.card U) (s p : ℝ) :
+    ptraceU (staircaseState (U := U) (V := V) s p) =
+      isotropicState (T := V)
+        ((1 - p) / (Fintype.card V : ℝ) ^ 2) := by
+  rw [staircaseState, ptraceU_add, ptraceU_smul, ptraceU_smul,
+    staircaseSeedState, staircaseWhiteNoiseState,
+    ptraceU_biIsotropicState hU, ptraceU_biIsotropicState hU]
+  rw [isotropicState_affine (T := V)]
+  congr 1
+  ring
 
 theorem memBiIsotropicSpace_staircaseState (s p : ℝ) :
     MemBiIsotropicSpace (staircaseState (U := U) (V := V) s p) := by

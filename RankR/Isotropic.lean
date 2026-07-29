@@ -36,6 +36,13 @@ noncomputable def isotropicState (F : ℝ) :
 noncomputable def isotropicMoment (ρ : Matrix (T × T) (T × T) ℂ) : ℝ :=
   (hsInner (omegaProjection (T := T)) ρ).re
 
+theorem isotropicState_affine (a F G : ℝ) :
+    (a : ℂ) • isotropicState (T := T) F
+        + ((1 - a : ℝ) : ℂ) • isotropicState G =
+      isotropicState (a * F + (1 - a) * G) := by
+  simp only [isotropicState]
+  module
+
 theorem trace_singleOmegaChoi :
     (singleOmegaChoi (T := T)).trace = Fintype.card T := by
   rw [Matrix.trace, Fintype.sum_prod_type]
@@ -110,6 +117,29 @@ theorem hsInner_omegaProjection_isotropicState
     hsInner_omegaProjection_self (by omega)]
   norm_cast
   simp
+
+theorem hsInner_singleOmegaChoi_isotropicState
+    (hT : 2 ≤ Fintype.card T) (F : ℝ) :
+    hsInner (singleOmegaChoi (T := T)) (isotropicState F) =
+      ((Fintype.card T : ℝ) * F : ℂ) := by
+  have hd : (Fintype.card T : ℝ) ≠ 0 := by
+    exact_mod_cast (show Fintype.card T ≠ 0 by omega)
+  have hscale :
+      ((Fintype.card T : ℂ) • omegaProjection (T := T)) =
+        singleOmegaChoi := by
+    rw [omegaProjection, smul_smul]
+    have hcoef :
+        (Fintype.card T : ℂ) *
+            (((1 / (Fintype.card T : ℝ) : ℝ)) : ℂ) = 1 := by
+      have hdC : (Fintype.card T : ℂ) ≠ 0 := by
+        exact_mod_cast (show Fintype.card T ≠ 0 by omega)
+      rw [one_div, Complex.ofReal_inv]
+      exact mul_inv_cancel₀ hdC
+    rw [hcoef, one_smul]
+  rw [← hscale, hsInner_smul_left,
+    hsInner_omegaProjection_isotropicState hT]
+  simp only [map_natCast]
+  norm_cast
 
 theorem isotropicMoment_isotropicState
     (hT : 2 ≤ Fintype.card T) (F : ℝ) :
@@ -504,6 +534,20 @@ theorem biIsotropicState_normalized_posSemidef
       (biIsotropicState (U := U) (V := V) F G).trace = 1 :=
   ⟨biIsotropicState_posSemidef hU hV hF0 hF1 hG0 hG1,
     trace_biIsotropicState hU hV F G⟩
+
+theorem ptraceV_biIsotropicState
+    (hV : 2 ≤ Fintype.card V) (F G : ℝ) :
+    ptraceV (biIsotropicState (U := U) (V := V) F G) =
+      isotropicState (T := U) F := by
+  rw [biIsotropicState, ptraceV_kronecker,
+    trace_isotropicState hV G, one_smul]
+
+theorem ptraceU_biIsotropicState
+    (hU : 2 ≤ Fintype.card U) (F G : ℝ) :
+    ptraceU (biIsotropicState (U := U) (V := V) F G) =
+      isotropicState (T := V) G := by
+  rw [biIsotropicState, ptraceU_kronecker,
+    trace_isotropicState hU F, one_smul]
 
 /-- A trace-one operator in the real product-isotropic space is determined by
 its three moments.  When the joint moment factors, it is the product of the

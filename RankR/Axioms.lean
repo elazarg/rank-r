@@ -515,6 +515,10 @@ trace formula and the exact boundary operator identity. -/
 #guard_msgs in
 #print axioms isotropicState_whiteNoise
 
+/-- info: 'RankR.ptraceV_kronecker' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms ptraceV_kronecker
+
 /-- info: 'RankR.eq_of_memBiIsotropicSpace_of_trace_moments' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms eq_of_memBiIsotropicSpace_of_trace_moments
@@ -526,6 +530,18 @@ trace formula and the exact boundary operator identity. -/
 /-- info: 'RankR.trace_mul_staircaseWitness_staircaseState_neg_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms trace_mul_staircaseWitness_staircaseState_neg_iff
+
+/--
+info: 'RankR.trace_mul_staircaseUnprotectedWitness_staircaseState_neg_iff' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+-/
+#guard_msgs in
+#print axioms trace_mul_staircaseUnprotectedWitness_staircaseState_neg_iff
+
+/-- info: 'RankR.ptraceV_staircaseState' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms ptraceV_staircaseState
 
 /-- info: 'RankR.staircase_boundary_operator_identity' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

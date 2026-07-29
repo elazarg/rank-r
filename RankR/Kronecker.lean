@@ -72,6 +72,58 @@ theorem trace_ptraceU (C : Matrix (U × V) (U × V) ℂ) :
   simp only [Matrix.trace, Matrix.diag_apply, ptraceU_apply, Fintype.sum_prod_type]
   exact Finset.sum_comm
 
+omit [Fintype U] [DecidableEq U] [DecidableEq V] in
+/-- The partial trace of a Kronecker product is the trace of the contracted
+factor times the surviving factor. -/
+theorem ptraceV_kronecker
+    (A : Matrix U U ℂ) (B : Matrix V V ℂ) :
+    ptraceV (A ⊗ₖ B) = B.trace • A := by
+  ext i j
+  simp only [ptraceV_apply, Matrix.kroneckerMap_apply,
+    Matrix.smul_apply, smul_eq_mul, Matrix.trace, Matrix.diag_apply]
+  rw [Finset.sum_mul]
+  apply Finset.sum_congr rfl
+  intro x _
+  ring
+
+omit [Fintype V] [DecidableEq U] [DecidableEq V] in
+/-- The other partial trace of a Kronecker product. -/
+theorem ptraceU_kronecker
+    (A : Matrix U U ℂ) (B : Matrix V V ℂ) :
+    ptraceU (A ⊗ₖ B) = A.trace • B := by
+  ext i j
+  simp only [ptraceU_apply, Matrix.kroneckerMap_apply,
+    Matrix.smul_apply, smul_eq_mul, Matrix.trace, Matrix.diag_apply]
+  rw [Finset.sum_mul]
+
+omit [Fintype U] [DecidableEq U] [DecidableEq V] in
+theorem ptraceV_add
+    (A B : Matrix (U × V) (U × V) ℂ) :
+  ptraceV (A + B) = ptraceV A + ptraceV B := by
+  ext i j
+  simp [Finset.sum_add_distrib]
+
+omit [Fintype U] [DecidableEq U] [DecidableEq V] in
+theorem ptraceV_smul
+    (c : ℂ) (A : Matrix (U × V) (U × V) ℂ) :
+  ptraceV (c • A) = c • ptraceV A := by
+  ext i j
+  simp [Finset.mul_sum]
+
+omit [Fintype V] [DecidableEq U] [DecidableEq V] in
+theorem ptraceU_add
+    (A B : Matrix (U × V) (U × V) ℂ) :
+  ptraceU (A + B) = ptraceU A + ptraceU B := by
+  ext i j
+  simp [Finset.sum_add_distrib]
+
+omit [Fintype V] [DecidableEq U] [DecidableEq V] in
+theorem ptraceU_smul
+    (c : ℂ) (A : Matrix (U × V) (U × V) ℂ) :
+  ptraceU (c • A) = c • ptraceU A := by
+  ext i j
+  simp [Finset.mul_sum]
+
 end Pairing
 
 section Centering
