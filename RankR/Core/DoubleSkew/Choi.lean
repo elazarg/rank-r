@@ -121,11 +121,11 @@ theorem skewKraus_family_eq_zero_of_card_lt_two
     (hcard : Fintype.card U < 2 ∨ Fintype.card V < 2) :
     skewKraus (U := U) (V := V) = 0 := by
   rcases hcard with hU | hV
-  · letI : Subsingleton U :=
+  · let : Subsingleton U :=
       Fintype.card_le_one_iff_subsingleton.mp (by omega)
     funext f
     exact skewKraus_eq_zero_of_subsingleton f
-  · letI : Subsingleton V :=
+  · let : Subsingleton V :=
       Fintype.card_le_one_iff_subsingleton.mp (by omega)
     funext f
     rw [skewKraus]

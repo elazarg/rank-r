@@ -152,7 +152,7 @@ The source tree follows the same boundary:
 
 ## Build
 
-The project uses Lean 4.32.0 and the Mathlib revision pinned in
+The project uses Lean 4.33.1 and the Mathlib revision pinned in
 `lake-manifest.json`.
 
 ```bash

@@ -120,7 +120,7 @@ theorem Qm_mul_self : (Qm (U := U) (V := V)) * Qm = Qm := by
       = mulVecE Qm (WithLp.toLp 2 fun Z : Idx U V => Qm Z Y) X := rfl
   rw [key, mulVecE_Qm]
   simp only [Qm_apply, swU_swU, swV_swV, swU_swV]
-  split_ifs <;> ring
+  split_ifs <;> simp_all <;> ring
 
 /-- The quadratic form of the double antisymmetrizer, written pointwise as a single
 sum over the Klein four-group orbit of each index. -/
