@@ -80,15 +80,17 @@ theorem extM_apply (M : Matrix (U × V) (U × V) ℂ) (X Y : U' × V') :
 /-- On the image of the embedding, the zero-extension reproduces the original entries. -/
 @[simp] theorem extM_apply_mk (M : Matrix (U × V) (U × V) ℂ) (a : U) (b : V) (a' : U) (b' : V) :
     extM f g M (f a, g b) (f a', g b') = M (a, b) (a', b') := by
-  rw [extM_apply, Finset.sum_eq_single (a, b) (fun p _ hp => Finset.sum_eq_zero
-    fun q _ => if_neg ?_) (fun h => absurd (Finset.mem_univ (a, b)) h)]
-  · rw [Finset.sum_eq_single (a', b') (fun q _ hq => if_neg ?_)
-      (fun h => absurd (Finset.mem_univ (a', b')) h)]
-    · exact if_pos ⟨rfl, rfl⟩
-    · rintro ⟨-, hc⟩
-      exact hq (Prod.ext (f.injective (congrArg Prod.fst hc)) (g.injective (congrArg Prod.snd hc)))
-  · rintro ⟨hc, -⟩
-    exact hp (Prod.ext (f.injective (congrArg Prod.fst hc)) (g.injective (congrArg Prod.snd hc)))
+  classical
+  have hcond : ∀ (c : U) (d : V) (p : U × V),
+      (((f p.1, g p.2) = ((f c, g d) : U' × V')) ↔ p = (c, d)) := by
+    intro c d p
+    constructor
+    · intro h
+      exact Prod.ext (f.injective (congrArg Prod.fst h)) (g.injective (congrArg Prod.snd h))
+    · rintro rfl
+      rfl
+  rw [extM_apply]
+  simp [hcond, ite_and]
 
 /-- The zero-extension vanishes on rows outside the image of the embedding. -/
 theorem extM_apply_eq_zero_row (M : Matrix (U × V) (U × V) ℂ) {X : U' × V'}
