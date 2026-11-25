@@ -72,7 +72,7 @@ theorem projWitRow_mul_projWitCol (x : V) :
   ext i j
   rw [Matrix.mul_apply, Matrix.one_apply]
   simp only [projWitCol, projWitRow, Matrix.of_apply, Fintype.sum_prod_type]
-  simp only [Finset.sum_ite_eq', Finset.mem_univ, if_true, mul_ite, mul_one, mul_zero,
+  simp only [Finset.sum_ite_eq', Finset.mem_univ, ite_true, mul_ite, mul_one, mul_zero,
     Subtype.ext_iff, @eq_comm _ (j : U) (i : U)]
 
 /-- **The extremizer has rank exactly `r`.**  Sandwiching it between the two
@@ -157,7 +157,7 @@ theorem le_coeff_hsNormSq_of_bound (hr : 0 < r) (hU : r ≤ Fintype.card U)
   obtain ⟨x₀, x₁, hx⟩ := Fintype.exists_pair_of_one_lt_card (by omega : 1 < Fintype.card V)
   have hkey := h (projWit S x₀ x₁) (by simpa [hcard] using (rank_projWit S x₀ x₁).le)
   rw [hsNormSq_ptraceU_projWit, hsNormSq_ptraceV_projWit, hsNormSq_projWit,
-    trace_projWit, if_neg hx, if_neg hx, hcard] at hkey
+    trace_projWit, ite_eq_right hx, ite_eq_right hx, hcard] at hkey
   have hrpos : (0 : ℝ) < r := by exact_mod_cast hr
   simp only [Complex.normSq_zero, mul_zero, add_zero] at hkey
   nlinarith
@@ -175,7 +175,7 @@ theorem inv_le_coeff_trace_of_bound (hr : 0 < r) (hU : r ≤ Fintype.card U)
   obtain ⟨x₀⟩ := Fintype.card_pos_iff.mp hV
   have hkey := h (projWit S x₀ x₀) (by simpa [hcard] using (rank_projWit S x₀ x₀).le)
   rw [hsNormSq_ptraceU_projWit, hsNormSq_ptraceV_projWit, hsNormSq_projWit,
-    trace_projWit, if_pos rfl, if_pos rfl, hcard] at hkey
+    trace_projWit, ite_eq_left rfl, ite_eq_left rfl, hcard] at hkey
   have hrpos : (0 : ℝ) < r := by exact_mod_cast hr
   rw [Complex.normSq_natCast] at hkey
   rw [div_le_iff₀ hrpos]

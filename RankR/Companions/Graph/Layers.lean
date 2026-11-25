@@ -214,7 +214,7 @@ omit [Fintype U] [LinearOrder U] in
 theorem one_mem_graphOperatorSpace (E : Finset (U × U)) :
     (1 : Matrix U U ℂ) ∈ graphOperatorSpace E := by
   intro i j h
-  rw [Matrix.one_apply, if_neg]
+  rw [Matrix.one_apply, ite_eq_right]
   exact fun hij => h (Or.inl hij)
 
 omit [Fintype U] [DecidableEq U] [LinearOrder U] in
@@ -462,14 +462,12 @@ theorem matrixLevelBlock_cliqueLayerWitness
   ext x y
   obtain ⟨i, c⟩ := x
   obtain ⟨j, d⟩ := y
-  fin_cases c <;> fin_cases d
-  all_goals
+  fin_cases c <;> fin_cases d <;>
     simp [matrixLevelBlock, cliqueLayerWitness, rankOne,
       cliqueInputVec, Matrix.kroneckerMap_apply, qubitQ,
-      Matrix.single_apply]
-  all_goals aesop
+      Matrix.single_apply]; aesop
 
-omit [LinearOrder U] in
+omit [Fintype U] [LinearOrder U] in
 /-- The compressed clique input is positive semidefinite. -/
 theorem cliqueLayerWitness_posSemidef (S : Finset U) :
     Matrix.PosSemidef (cliqueLayerWitness S) := by
@@ -533,7 +531,7 @@ theorem mul_single_one_mul_apply
         simp [Ne.symm hyr]
       · intro h
         exact (h (Finset.mem_univ _)).elim
-    · rw [if_neg hxs, Matrix.mul_apply]
+    · rw [ite_eq_right hxs, Matrix.mul_apply]
       apply Finset.sum_eq_zero
       intro y _
       simp [Ne.symm hxs]
@@ -624,14 +622,14 @@ theorem graphReduction_single_clique_apply
     graphReduction E (Matrix.single a.val b.val (1 : ℂ)) a.val b.val
       = if a = b then 0 else -1 := by
   rcases lt_trichotomy a.val b.val with hlt | heq | hgt
-  · rw [if_neg (fun hab => ne_of_lt hlt (congrArg Subtype.val hab))]
+  · rw [ite_eq_right (fun hab => ne_of_lt hlt (congrArg Subtype.val hab))]
     exact graphReduction_single_apply_of_lt hE hlt
       (hcl a.val a.property b.val b.property hlt)
   · have hab : a = b := Subtype.ext heq
     subst b
-    rw [if_pos rfl]
+    rw [ite_eq_left rfl]
     exact graphReduction_single_diag_apply_self E a.val
-  · rw [if_neg (fun hab => ne_of_gt hgt (congrArg Subtype.val hab))]
+  · rw [ite_eq_right (fun hab => ne_of_gt hgt (congrArg Subtype.val hab))]
     exact graphReduction_single_apply_of_gt hE hgt
       (hcl b.val b.property a.val a.property hgt)
 
@@ -682,9 +680,9 @@ theorem graphTheta_singleQ_apply_p
         = if i = j then 1 else 0 := by
     by_cases hij : i = j
     · subst j
-      rw [if_pos rfl]
+      rw [ite_eq_left rfl]
       exact Matrix.trace_single_eq_same i (1 : ℂ)
-    · rw [if_neg hij]
+    · rw [ite_eq_right hij]
       exact Matrix.trace_single_eq_of_ne i j (1 : ℂ) hij
   rw [hinput, graphTheta_layers]
   simp [Matrix.kroneckerMap_apply, Matrix.add_apply,

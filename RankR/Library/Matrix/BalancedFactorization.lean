@@ -130,7 +130,7 @@ theorem norm_balancedSingularLeft_sq
     (C : Matrix W W ℂ) (i : Fin C.rank) :
     ‖balancedSingularLeft C i‖ ^ 2 = matrixSingularValue C i := by
   have h := inner_balancedSingularLeft C i i
-  rw [if_pos rfl, inner_self_eq_norm_sq_to_K] at h
+  rw [ite_eq_left rfl, inner_self_eq_norm_sq_to_K] at h
   apply Complex.ofReal_injective
   simpa using h
 
@@ -154,10 +154,10 @@ theorem hsNormSq_centered_balancedSingular
     apply Finset.sum_congr rfl
     intro i _
     rw [Finset.sum_eq_single i]
-    · rw [if_pos rfl, Complex.normSq_ofReal]
+    · rw [ite_eq_left rfl, Complex.normSq_ofReal]
       ring
     · intro j _ hji
-      rw [if_neg (Ne.symm hji), Complex.normSq_zero]
+      rw [ite_eq_right (Ne.symm hji), Complex.normSq_zero]
     · simp
   rw [htotal]
   have hqR : (0 : ℝ) < C.rank := by exact_mod_cast hq
@@ -392,7 +392,7 @@ theorem spectralBalance_isEqualGram
     · have hd0 : d i = 0 := by
         apply norm_eq_zero.mp
         have h := hDij i i
-        rw [if_pos rfl, inner_self_eq_norm_sq_to_K, hi] at h
+        rw [ite_eq_left rfl, inner_self_eq_norm_sq_to_K, hi] at h
         have hsq : ‖d i‖ ^ 2 = 0 := by exact_mod_cast h
         nlinarith [sq_nonneg ‖d i‖]
       ext p r
@@ -452,14 +452,14 @@ theorem spectralBalance_isEqualGram
                     inner_smul_left, inner_smul_right]
           _ = (gramQuarterRoot lam i : ℂ) *
                 (gramQuarterRoot lam i : ℂ) := by
-                  rw [hEij i i, if_pos rfl]
+                  rw [hEij i i, ite_eq_left rfl]
                   simp only [Complex.conj_ofReal, mul_one]
           _ = (gramQuarterRoot lam i : ℂ)⁻¹ *
                 ((gramQuarterRoot lam i : ℂ)⁻¹ * (lam i : ℂ)) :=
             hcomplex
           _ = conj ((gramQuarterRoot lam i : ℂ)⁻¹) *
                 ((gramQuarterRoot lam i : ℂ)⁻¹ * inner ℂ (d i) (d i)) := by
-                  rw [hDij i i, if_pos rfl]
+                  rw [hDij i i, ite_eq_left rfl]
                   simp only [map_inv₀, Complex.conj_ofReal]
                   rfl
           _ = inner ℂ (balanceSpectralRight d lam i)
@@ -473,10 +473,10 @@ theorem spectralBalance_isEqualGram
               ((gramQuarterRoot lam j : ℂ) * inner ℂ (e i) (e j)) := by
                 simp only [balanceSpectralLeft]
                 rw [inner_smul_left, inner_smul_right]
-        _ = 0 := by rw [hEij i j, if_neg hij, mul_zero, mul_zero]
+        _ = 0 := by rw [hEij i j, ite_eq_right hij, mul_zero, mul_zero]
         _ = conj ((gramQuarterRoot lam i : ℂ)⁻¹) *
               ((gramQuarterRoot lam j : ℂ)⁻¹ * inner ℂ (d i) (d j)) := by
-                rw [hDij i j, if_neg hij, mul_zero, mul_zero]
+                rw [hDij i j, ite_eq_right hij, mul_zero, mul_zero]
         _ = inner ℂ (balanceSpectralRight d lam i)
               (balanceSpectralRight d lam j) := by
                 simp only [balanceSpectralRight]

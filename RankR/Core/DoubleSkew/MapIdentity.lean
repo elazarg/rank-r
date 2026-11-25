@@ -233,8 +233,8 @@ theorem Lam4_apply (X : Matrix (U × V) (U × V) ℂ) (x y : U × V) :
     rfl
   rw [hS]
   by_cases h1 : x.1 = y.1 <;> by_cases h2 : x.2 = y.2 <;>
-    simp only [h1, h2, if_false, and_true, and_false, one_mul, zero_mul, mul_one, mul_zero,
-      sub_zero, zero_sub, if_pos, ptraceU_apply, ptraceV_apply]
+    simp only [h1, h2, ite_false, and_true, and_false, one_mul, zero_mul, mul_one, mul_zero,
+      sub_zero, zero_sub, ite_eq_left, ptraceU_apply, ptraceV_apply]
 
 /-- **`(Λ_U ⊗ Λ_V) ∘ τ = S_U ⊗ S_V`**, at `S = Δ − id`.
 
@@ -255,7 +255,7 @@ theorem Lam4_transpose (X : Matrix (U × V) (U × V) ℂ) :
     simp only [Matrix.transpose_apply]
   rw [hx]
   by_cases h1 : x.1 = y.1 <;> by_cases h2 : x.2 = y.2 <;>
-    simp only [h1, h2, if_false, if_true, and_true, and_false, one_mul, zero_mul, mul_one,
+    simp only [h1, h2, ite_false, ite_true, and_true, and_false, one_mul, zero_mul, mul_one,
       mul_zero, sub_zero, zero_sub]
   ring
 

@@ -61,8 +61,8 @@ theorem extV_apply (w : EuclideanSpace ℂ (U × V)) (X : U' × V') :
 /-- On the image of the embedding, the zero-extension reproduces the original entries. -/
 @[simp] theorem extV_apply_mk (w : EuclideanSpace ℂ (U × V)) (a : U) (b : V) :
     extV f g w (f a, g b) = w (a, b) := by
-  rw [extV_apply, Finset.sum_eq_single (a, b) (fun p _ hp => if_neg ?_) (fun h => ?_)]
-  · exact if_pos rfl
+  rw [extV_apply, Finset.sum_eq_single (a, b) (fun p _ hp => ite_eq_right ?_) (fun h => ?_)]
+  · exact ite_eq_left rfl
   · rintro hc
     exact hp (Prod.ext (f.injective (congrArg Prod.fst hc)) (g.injective (congrArg Prod.snd hc)))
   · exact absurd (Finset.mem_univ (a, b)) h
@@ -96,13 +96,13 @@ theorem extM_apply (M : Matrix (U × V) (U × V) ℂ) (X Y : U' × V') :
 theorem extM_apply_eq_zero_row (M : Matrix (U × V) (U × V) ℂ) {X : U' × V'}
     (hX : ∀ p : U × V, (f p.1, g p.2) ≠ X) (Y : U' × V') : extM f g M X Y = 0 := by
   rw [extM_apply]
-  exact Finset.sum_eq_zero fun p _ => Finset.sum_eq_zero fun q _ => if_neg fun hc => hX p hc.1
+  exact Finset.sum_eq_zero fun p _ => Finset.sum_eq_zero fun q _ => ite_eq_right fun hc => hX p hc.1
 
 /-- The zero-extension vanishes on columns outside the image of the embedding. -/
 theorem extM_apply_eq_zero_col (M : Matrix (U × V) (U × V) ℂ) (X : U' × V') {Y : U' × V'}
     (hY : ∀ q : U × V, (f q.1, g q.2) ≠ Y) : extM f g M X Y = 0 := by
   rw [extM_apply]
-  exact Finset.sum_eq_zero fun p _ => Finset.sum_eq_zero fun q _ => if_neg fun hc => hY q hc.2
+  exact Finset.sum_eq_zero fun p _ => Finset.sum_eq_zero fun q _ => ite_eq_right fun hc => hY q hc.2
 
 /-- Zero-extension is additive. -/
 theorem extM_add (M N : Matrix (U × V) (U × V) ℂ) :
@@ -148,7 +148,7 @@ index embedding. -/
 theorem vec_extM_eq_zero (M : Matrix (U × V) (U × V) ℂ) {X : Idx U' V'}
     (hX : ∀ Y : Idx U V, idxEmb f g Y ≠ X) : vec (extM f g M) X = 0 := by
   rw [vec_apply, extM_apply]
-  refine Finset.sum_eq_zero fun p _ => Finset.sum_eq_zero fun q _ => if_neg fun hc => ?_
+  refine Finset.sum_eq_zero fun p _ => Finset.sum_eq_zero fun q _ => ite_eq_right fun hc => ?_
   refine hX (p, q) ?_
   show ((f p.1, g p.2), (f q.1, g q.2)) = X
   rw [hc.1, hc.2]

@@ -237,7 +237,7 @@ theorem isotropicComplementState_posSemidef
   apply (RCLike.ofReal_nonneg (K := ℂ)).mpr
   apply inv_nonneg.mpr
   have hd : (2 : ℝ) ≤ Fintype.card T := by exact_mod_cast hT
-  nlinarith
+  exact sub_nonneg.mpr (one_le_pow₀ (n := 2) (le_trans (by norm_num) hd))
 
 theorem isotropicState_posSemidef
     (hT : 2 ≤ Fintype.card T) {F : ℝ} (hF0 : 0 ≤ F) (hF1 : F ≤ 1) :

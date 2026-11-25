@@ -55,7 +55,7 @@ theorem qform_one [DecidableEq W] (x : EuclideanSpace ℂ W) :
     qform (1 : Matrix W W ℂ) x = ((‖x‖ ^ 2 : ℝ) : ℂ) := by
   have h : qform (1 : Matrix W W ℂ) x = ∑ p, conj (x p) * x p := by
     simp only [qform, Matrix.one_apply, mul_ite, ite_mul, mul_one, mul_zero,
-      zero_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+      zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
   rw [h, EuclideanSpace.norm_eq, Real.sq_sqrt (by positivity)]
   push_cast
   exact Finset.sum_congr rfl fun p _ => by

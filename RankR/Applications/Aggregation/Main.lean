@@ -376,6 +376,7 @@ theorem localKrausPullback_isHermitian
     exact Finset.sum_congr rfl fun j _ => by
       simp [Matrix.conjTranspose_mul, hW.eq, Matrix.mul_assoc]
 
+omit [Fintype A] [Fintype B] in
 /-- Pullback through local Kraus families preserves positive
 semidefiniteness. -/
 theorem localKrausPullback_posSemidef
@@ -591,6 +592,7 @@ theorem aggregateLocalWitnessDependent_shift_eq
             congr 2
             norm_cast
 
+omit [Fintype A] [Fintype B] in
 /-- Nonnegative weighted aggregation preserves positivity after each output
 witness has been shifted to be positive semidefinite. -/
 theorem aggregateLocalWitnessDependent_shift_posSemidef
@@ -929,6 +931,7 @@ theorem not_schmidtNumberLEBetween_of_dependentReductionAggregate_neg
     (fun e => productReductionChoi_inv_isBlockPositiveBetween_all hr (hrT e))
     hneg
 
+omit [Fintype A] [Fintype B] in
 /-- The weighted aggregate of the concretely shifted reduction-product
 witnesses is positive semidefinite. -/
 theorem dependentReductionAggregate_shift_posSemidef

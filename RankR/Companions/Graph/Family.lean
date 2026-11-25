@@ -90,7 +90,7 @@ theorem hsInner_edgeKraus {p q : U × U} (hp : p.1 < p.2) (hq : q.1 < q.2) :
       ite_self, sub_zero]
     norm_num
   · have hne : ¬ (p.1 = q.1 ∧ p.2 = q.2) := fun h => hpq (Prod.ext h.1 h.2)
-    rw [if_neg hpq]
+    rw [ite_eq_right hpq]
     by_cases h1 : p.1 = q.1 <;> by_cases h2 : p.2 = q.2 <;>
       by_cases h3 : p.1 = q.2 <;> by_cases h4 : p.2 = q.1 <;>
         simp_all
@@ -124,10 +124,10 @@ theorem orthonormal_graphKraus {E : Finset (U × U)} (hE : ∀ p ∈ E, p.1 < p.
     hsInner_edgeKraus (hE e.val e.property) (hE f.val f.property)]
   by_cases h : e = f
   · subst h
-    rw [if_pos rfl, if_pos rfl]
+    rw [ite_eq_left rfl, ite_eq_left rfl]
     norm_num [map_ofNat]
   · have hne : e.val ≠ f.val := fun hv => h (Subtype.ext hv)
-    rw [if_neg hne, if_neg h]
+    rw [ite_eq_right hne, ite_eq_right h]
     ring
 
 end EdgeFamily
@@ -204,7 +204,7 @@ theorem hsInner_sharpWit {V : Type*} [Fintype V] [DecidableEq V]
       = conj (A (a₁, b₁) (a₀, b₀)) - conj (A (a₁, b₀) (a₀, b₁)) := by
   rw [hsInner_eq_sum_vec, Fintype.sum_prod_type]
   simp only [vec_apply, sharpWit_apply, mul_sub, mul_ite, mul_one, mul_zero,
-    Finset.sum_sub_distrib, Finset.sum_ite_eq', Finset.mem_univ, if_true]
+    Finset.sum_sub_distrib, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
 
 /-- The pairing of an edge operator against the extremizer at that edge's
 endpoints: `2` for the edge itself, `0` for every other edge. -/
@@ -222,7 +222,7 @@ theorem hsInner_edgeKraus_sharpWit {p : U × U} (hp : p.1 < p.2) {a₀ a₁ : U}
       mul_neg, neg_neg, map_one, sub_zero, map_neg, sub_neg_eq_add]
     norm_num
   · have h2 : ¬ (p.1 = a₀ ∧ p.2 = a₁) := fun h => hpq (Prod.ext h.1 h.2)
-    rw [if_neg hpq]
+    rw [ite_eq_right hpq]
     by_cases c1 : p.1 = a₁ <;> by_cases c2 : p.2 = a₀ <;>
       by_cases c3 : p.1 = a₀ <;> by_cases c4 : p.2 = a₁ <;>
         simp_all
@@ -243,11 +243,11 @@ theorem choiTwoBound_graphKraus_iff {E : Finset (U × U)} (hE : ∀ p ∈ E, p.1
       (sharpWit_ne_zero (ne_of_lt (by decide : (0 : Fin 2) < 1))) ?_
     rw [re_qform_choiOf, hsNormSq_sharpWit (ne_of_lt (by decide : (0 : Fin 2) < 1))]
     rw [Finset.sum_eq_single (⟨(a₀, a₁), hmem⟩ : {p : U × U // p ∈ E})]
-    · rw [← hsInner_eq_inner, graphKraus, hsInner_edgeKraus_sharpWit (hE _ hmem) ha, if_pos rfl]
+    · rw [← hsInner_eq_inner, graphKraus, hsInner_edgeKraus_sharpWit (hE _ hmem) ha, ite_eq_left rfl]
       norm_num [Complex.normSq_apply]
     · rintro ⟨q, hq⟩ _ hne
       have hq' : q ≠ (a₀, a₁) := fun h => hne (Subtype.ext h)
-      rw [← hsInner_eq_inner, graphKraus, hsInner_edgeKraus_sharpWit (hE _ hq) ha, if_neg hq']
+      rw [← hsInner_eq_inner, graphKraus, hsInner_edgeKraus_sharpWit (hE _ hq) ha, ite_eq_right hq']
       simp
     · simp
   exact ⟨fun h => le_of_choiTwoAttained hattain h,

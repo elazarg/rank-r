@@ -77,7 +77,7 @@ theorem qform_pair (F : Matrix W W ℂ) (a b : ℂ) {x y : W} :
       rw [hz q]; split_ifs <;> ring
     rw [Finset.sum_congr rfl fun q _ => hstep q, Finset.sum_add_distrib,
       Finset.sum_ite_eq' Finset.univ x, Finset.sum_ite_eq' Finset.univ y]
-    simp only [Finset.mem_univ, if_true]
+    simp only [Finset.mem_univ, ite_true]
     ring
   rw [qform, Finset.sum_congr rfl fun p _ => hinner p]
   have hsplit : ∀ p : W, conj (z p) * (F p x * a + F p y * b)
@@ -87,7 +87,7 @@ theorem qform_pair (F : Matrix W W ℂ) (a b : ℂ) {x y : W} :
     split_ifs <;> ring
   rw [Finset.sum_congr rfl fun p _ => hsplit p, Finset.sum_add_distrib,
     Finset.sum_ite_eq' Finset.univ x, Finset.sum_ite_eq' Finset.univ y]
-  simp only [Finset.mem_univ, if_true]
+  simp only [Finset.mem_univ, ite_true]
   ring
 
 /-- **A vanishing diagonal entry annihilates its row.**  For `F` Hermitian with
@@ -161,7 +161,7 @@ theorem diag_eq_zero_of_ptraceV {F : Matrix (U × V) (U × V) ℂ} (hherm : Fᴴ
     {a : U} (ha : a ≠ i) (b : V) : F (a, b) (a, b) = 0 := by
   have hsum : ∑ b' : V, F (a, b') (a, b') = 0 := by
     have h := congrFun (congrFun hU a) a
-    rw [ptraceV_apply, basisProj_apply, if_neg ha] at h
+    rw [ptraceV_apply, basisProj_apply, ite_eq_right ha] at h
     exact h
   have hre : ∑ b' : V, (F (a, b') (a, b')).re = 0 := by
     have := congrArg Complex.re hsum
@@ -181,7 +181,7 @@ theorem diag_eq_zero_of_ptraceU {F : Matrix (U × V) (U × V) ℂ} (hherm : Fᴴ
     (a : U) {b : V} (hb : b ≠ j) : F (a, b) (a, b) = 0 := by
   have hsum : ∑ a' : U, F (a', b) (a', b) = 0 := by
     have h := congrFun (congrFun hV b) b
-    rw [ptraceU_apply, basisProj_apply, if_neg hb] at h
+    rw [ptraceU_apply, basisProj_apply, ite_eq_right hb] at h
     exact h
   have hre : ∑ a' : U, (F (a', b) (a', b)).re = 0 := by
     have := congrArg Complex.re hsum
@@ -214,7 +214,7 @@ theorem eq_basisProj_of_pure_marginals {F : Matrix (U × V) (U × V) ℂ}
     · exact diag_eq_zero_of_ptraceV hherm hpos hU ha b
   have hone : F (i, j) (i, j) = 1 := by
     have h := congrFun (congrFun hU i) i
-    rw [ptraceV_apply, basisProj_apply, if_pos rfl, if_pos rfl] at h
+    rw [ptraceV_apply, basisProj_apply, ite_eq_left rfl, ite_eq_left rfl] at h
     rw [← h]
     refine (Finset.sum_eq_single (f := fun b : V => F (i, b) (i, b)) j
       (fun b _ hb => ?_) (fun hb => absurd (Finset.mem_univ j) hb)).symm
@@ -222,7 +222,7 @@ theorem eq_basisProj_of_pure_marginals {F : Matrix (U × V) (U × V) ℂ}
   ext x y
   rcases eq_or_ne x (i, j) with rfl | hx
   · rcases eq_or_ne y (i, j) with rfl | hy
-    · rw [hone, basisProj_apply, if_pos rfl, if_pos rfl]
+    · rw [hone, basisProj_apply, ite_eq_left rfl, ite_eq_left rfl]
     · have hyz : F y y = 0 := hdiag y hy
       have hyx0 : F y (i, j) = 0 := row_eq_zero_of_diag_eq_zero hherm hpos hyz (i, j)
       have hxy0 : F (i, j) y = 0 := by
@@ -230,9 +230,9 @@ theorem eq_basisProj_of_pure_marginals {F : Matrix (U × V) (U × V) ℂ}
         rw [Matrix.conjTranspose_apply] at hh
         rw [← hh, hyx0]
         simp
-      rw [hxy0, basisProj_apply, if_pos rfl, if_neg hy]
+      rw [hxy0, basisProj_apply, ite_eq_left rfl, ite_eq_right hy]
   · rw [row_eq_zero_of_diag_eq_zero hherm hpos (hdiag x hx) y,
-      basisProj_apply, if_neg hx]
+      basisProj_apply, ite_eq_right hx]
 
 /-- **The encoding is the diagonal one.**  Any encoding that is determined by
 its values on point masses, sends each point mass to a positive semidefinite
@@ -263,9 +263,9 @@ theorem sum_smul_basisProj_eq_diagonal (P : Matrix U V ℝ) :
     intro p
     rw [Matrix.smul_apply, smul_eq_mul, basisProj_apply]
     by_cases hpx : p = x
-    · rw [hpx, if_pos rfl, if_pos rfl]
+    · rw [hpx, ite_eq_left rfl, ite_eq_left rfl]
       by_cases hxy : x = y <;> simp [hxy, eq_comm]
-    · rw [if_neg hpx, if_neg (Ne.symm hpx), mul_zero]
+    · rw [ite_eq_right hpx, ite_eq_right (Ne.symm hpx), mul_zero]
   rw [Finset.sum_congr rfl fun p _ => hterm p,
     Finset.sum_ite_eq' Finset.univ x
       (fun p : U × V => if x = y then ((P p.1 p.2 : ℝ) : ℂ) else 0)]

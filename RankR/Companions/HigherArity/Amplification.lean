@@ -225,6 +225,7 @@ noncomputable def Phyp (e : Fin r → EuclideanSpace ℂ W) (H : Finset (Face r 
 def upDeg (H : Finset (Face r k)) : ℕ :=
   Finset.univ.sup fun J : Face r (k - 1) => (H.filter fun I => J.val ⊆ I.val).card
 
+set_option maxHeartbeats 1000000 in
 /-- Each `(k-1)`-face lies in at most `d↑_{k-1}(H)` hyperedges. -/
 theorem card_le_upDeg (H : Finset (Face r k)) (J : Face r (k - 1)) :
     (H.filter fun I => J.val ⊆ I.val).card ≤ upDeg H :=
@@ -276,12 +277,12 @@ theorem qform_PhypAmp (A : Face r k → ι → Matrix W W ℂ)
         rw [Finset.sum_ite_mem, Finset.univ_inter]]
     refine Finset.sum_congr rfl fun I _ => ?_
     by_cases h : I ∈ H
-    · rw [if_pos h, qform_krausSum]
+    · rw [ite_eq_left h, qform_krausSum]
       refine Finset.sum_congr rfl fun f _ => ?_
-      rw [qform_rankOne, wvecF, if_pos h, inner_mulVecE_left,
+      rw [qform_rankOne, wvecF, ite_eq_left h, inner_mulVecE_left,
         Matrix.conjTranspose_conjTranspose]
-    · rw [if_neg h]
-      exact (Finset.sum_eq_zero fun f _ => by rw [wvecF, if_neg h]; simp).symm
+    · rw [ite_eq_right h]
+      exact (Finset.sum_eq_zero fun f _ => by rw [wvecF, ite_eq_right h]; simp).symm
   rw [key]
   exact Finset.sum_comm
 
@@ -351,11 +352,11 @@ theorem mulVecE_placeT_etaMode (hk : 1 ≤ k) (N : Matrix W W ℂ)
   rw [mulVecE_placeT_etaMode_raw, Finset.smul_sum]
   refine Finset.sum_congr rfl fun v _ => ?_
   by_cases hv : v ∈ I.val
-  · rw [if_pos hv, placeAt_smul, placeAt_smul]
+  · rw [ite_eq_left hv, placeAt_smul, placeAt_smul]
   · have hc : (I.val.erase v).card ≠ k - 1 := by
       rw [Finset.erase_eq_of_notMem hv, I.2]
       omega
-    rw [if_neg hv, placeAt_eq_zero _ hc, placeAt_eq_zero _ hc, smul_zero, smul_zero]
+    rw [ite_eq_right hv, placeAt_eq_zero _ hc, placeAt_eq_zero _ hc, smul_zero, smul_zero]
 
 /-- Synthesizing the frame with coefficients `c` deposits, at each incidence
 `(I, v)` of the hypergraph, the vector `uterm` at the face `I ∖ v`. -/
@@ -370,15 +371,15 @@ theorem sum_smul_wvecF (hk : 1 ≤ k) (A : Face r k → ι → Matrix W W ℂ)
       = if I ∈ H then ∑ v : Fin r, placeAt (uterm A e c (I, v)) (I.val.erase v) else 0 := by
     intro I
     by_cases h : I ∈ H
-    · rw [if_pos h]
+    · rw [ite_eq_left h]
       have hstep : ∀ f : ι, c (f, I) • wvecF A e H f I
           = mulVecE (placeT (T := Face r (k - 1)) (c (f, I) • A I f)) (etaMode e I) :=
-        fun f => by rw [wvecF, if_pos h, placeT_smul, smul_mulVecE]
+        fun f => by rw [wvecF, ite_eq_left h, placeT_smul, smul_mulVecE]
       rw [Finset.sum_congr rfl fun f _ => hstep f, ← sum_mulVecE, ← placeT_sum,
         mulVecE_placeT_etaMode hk]
       exact Finset.sum_congr rfl fun v _ => rfl
-    · rw [if_neg h]
-      exact Finset.sum_eq_zero fun f _ => by rw [wvecF, if_neg h, smul_zero]
+    · rw [ite_eq_right h]
+      exact Finset.sum_eq_zero fun f _ => by rw [wvecF, ite_eq_right h, smul_zero]
   rw [Finset.sum_congr rfl fun I _ => hI I, Finset.sum_ite_mem, Finset.univ_inter]
 
 /-! ## The incidence correspondence
@@ -494,8 +495,8 @@ theorem norm_sq_uterm (A : Face r k → ι → Matrix W W ℂ) (e : Fin r → Eu
       inv_pow, Real.sq_sqrt (Nat.cast_nonneg k)]
   rw [uterm]
   by_cases hv : v ∈ I.val
-  · rw [if_pos hv, if_pos hv, norm_smul, norm_smul, norm_esign, one_mul, mul_pow, hs]
-  · rw [if_neg hv, if_neg hv, norm_zero]
+  · rw [ite_eq_left hv, ite_eq_left hv, norm_smul, norm_smul, norm_esign, one_mul, mul_pow, hs]
+  · rw [ite_eq_right hv, ite_eq_right hv, norm_zero]
     exact zero_pow (by norm_num)
 
 /-- **The mass one hyperedge carries.**  Lifting I at level `k` bounds the
@@ -638,12 +639,12 @@ variable {W ι : Type*} [Fintype W] {r k : ℕ}
 unchanged. -/
 theorem esign_insert_of_not_lt (L : Finset (Fin r)) {a b : Fin r} (hab : ¬a < b) :
     esign (insert a L) b = esign L b := by
-  rw [esign, esign, Finset.filter_insert, if_neg hab]
+  rw [esign, esign, Finset.filter_insert, ite_eq_right hab]
 
 /-- Adjoining a vertex below `b` reverses the position sign of `b`. -/
 theorem esign_insert_of_lt {L : Finset (Fin r)} {a b : Fin r} (ha : a ∉ L) (hab : a < b) :
     esign (insert a L) b = -esign L b := by
-  rw [esign, esign, Finset.filter_insert, if_pos hab,
+  rw [esign, esign, Finset.filter_insert, ite_eq_left hab,
     Finset.card_insert_of_notMem fun h => ha (Finset.mem_filter.mp h).1, pow_succ]
   ring
 
@@ -712,7 +713,7 @@ theorem inner_deltaMode_mulVecE_placeT_etaMode (hk : 2 ≤ k)
     · have hc : (insert j L.val).card = k - 1 := by
         rw [Finset.card_insert_of_notMem hj, L.2]
         omega
-      rw [inner_placeAt _ _ hc, if_neg fun hh => h ⟨hj, hh⟩]
+      rw [inner_placeAt _ _ hc, ite_eq_right fun hh => h ⟨hj, hh⟩]
   -- a contributing pair exhibits `I` as `L` with two vertices adjoined
   have hstruct : ∀ j v : Fin r, j ∉ L.val → insert j L.val = I.val.erase v →
       v ∉ L.val ∧ v ≠ j ∧ I.val = insert v (insert j L.val)
@@ -753,7 +754,7 @@ theorem inner_deltaMode_mulVecE_placeT_etaMode (hk : 2 ≤ k)
       have hcins2 : (insert v L.val).card = k - 1 := by
         rw [Finset.card_insert_of_notMem hvL, L.2]
         omega
-      rw [inner_placeAt _ _ hcins, if_pos h, inner_placeAt _ _ hcins2, if_pos hj2,
+      rw [inner_placeAt _ _ hcins, ite_eq_left h, inner_placeAt _ _ hcins2, ite_eq_left hj2,
         hN v j, hIeq]
       linear_combination
         (inner ℂ (e j) (mulVecE N (ebar e v)) : ℂ) * esign_cancel hj hvL (Ne.symm hvj)
@@ -881,10 +882,10 @@ theorem etaMode_two (e : Fin r → EuclideanSpace ℂ W) {i j : Fin r} (hij : i 
       = ((Real.sqrt 2 : ℝ) : ℂ)⁻¹ • (placeAt (ebar e i) {j} - placeAt (ebar e j) {i}) := by
   have hne : i ≠ j := ne_of_lt hij
   have hsi : esign ({i, j} : Finset (Fin r)) i = 1 := by
-    rw [esign, Finset.filter_insert, if_neg (lt_irrefl i), Finset.filter_singleton,
-      if_neg (asymm hij), Finset.card_empty, pow_zero]
+    rw [esign, Finset.filter_insert, ite_eq_right (lt_irrefl i), Finset.filter_singleton,
+      ite_eq_right (asymm hij), Finset.card_empty, pow_zero]
   have hsj : esign ({i, j} : Finset (Fin r)) j = -1 := by
-    rw [esign, Finset.filter_insert, if_pos hij, Finset.filter_singleton, if_neg (lt_irrefl j),
+    rw [esign, Finset.filter_insert, ite_eq_left hij, Finset.filter_singleton, ite_eq_right (lt_irrefl j),
       Finset.card_insert_of_notMem (Finset.notMem_empty i), Finset.card_empty]
     norm_num
   have hei : ({i, j} : Finset (Fin r)).erase i = {j} := by

@@ -75,8 +75,6 @@ theorem regroupChoi_smul_right (c : ℂ) (A : Matrix (U × U) (U × U) ℂ)
     Matrix.kroneckerMap_apply, Matrix.smul_apply, smul_eq_mul]
   ring
 
-variable [Fintype U] [Fintype V]
-
 /-- Regrouping a Kronecker product preserves positive semidefiniteness. -/
 theorem regroupChoi_posSemidef
     {A : Matrix (U × U) (U × U) ℂ} {B : Matrix (V × V) (V × V) ℂ}

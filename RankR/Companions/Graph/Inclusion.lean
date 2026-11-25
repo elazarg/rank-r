@@ -511,7 +511,7 @@ theorem padMatrixLevel_mem
   exact Submodule.sum_mem _ fun k _ =>
     Submodule.sum_mem _ fun l _ => Submodule.smul_mem _ _ (hZ k l)
 
-omit [DecidableEq K] in
+omit [Fintype L] [DecidableEq K] in
 /-- Padding preserves positive semidefiniteness. -/
 theorem padMatrixLevel_posSemidef
     (e : K ↪ L) {Z : Matrix (K × W) (K × W) ℂ}
@@ -536,7 +536,7 @@ def GraphLevelInclusion
         (graphTwoLayerSpace E)
         (graphThetaLinear E R (lam : ℂ)) Z
 
-omit [LinearOrder U] in
+omit [Fintype L] [LinearOrder U] in
 /-- Matrix-level inclusion is downward closed under embeddings of the level
 index type. -/
 theorem graphLevelInclusion_of_embedding

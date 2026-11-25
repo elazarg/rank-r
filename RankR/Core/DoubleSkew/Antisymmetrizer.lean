@@ -111,7 +111,7 @@ theorem mulVecE_Qm (v : EuclideanSpace ℂ (Idx U V)) (X : Idx U V) :
     rw [Qm_apply]
     split_ifs <;> ring
   simp only [hterm, ← Finset.mul_sum, Finset.sum_add_distrib, Finset.sum_sub_distrib,
-    Finset.sum_ite_eq', Finset.mem_univ, if_true]
+    Finset.sum_ite_eq', Finset.mem_univ, ite_true]
 
 /-- `Qm` is idempotent, hence an orthogonal projection. -/
 theorem Qm_mul_self : (Qm (U := U) (V := V)) * Qm = Qm := by

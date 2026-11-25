@@ -61,7 +61,7 @@ theorem qform_placeUQ_expand (y x : EuclideanSpace ℂ ((U × V) × Fin s)) :
   rw [Finset.sum_comm]
   refine Finset.sum_congr rfl fun i' _ => ?_
   rw [Finset.sum_ite_eq Finset.univ b]
-  simp only [Finset.mem_univ, if_true]
+  simp only [Finset.mem_univ, ite_true]
   exact Finset.sum_congr rfl fun c _ => by ring
 
 omit [DecidableEq U] in
@@ -104,7 +104,7 @@ theorem qform_placeVQ_expand (y x : EuclideanSpace ℂ ((U × V) × Fin s)) :
   rw [Finset.sum_comm]
   refine Finset.sum_congr rfl fun i' _ => ?_
   rw [Finset.sum_ite_eq Finset.univ a]
-  simp only [Finset.mem_univ, if_true]
+  simp only [Finset.mem_univ, ite_true]
   exact Finset.sum_congr rfl fun c _ => by ring
 
 omit [DecidableEq V] in

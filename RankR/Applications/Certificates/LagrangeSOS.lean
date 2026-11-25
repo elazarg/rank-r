@@ -9,7 +9,7 @@ usual `α < β` form when the coordinates carry a linear order.
 -/
 import RankR.Core.Amplification.Sectors
 import RankR.Library.Matrix.Contraction
-import Mathlib.Data.Prod.Lex
+import Mathlib.Order.Prod.Lex.Basic
 
 namespace RankR
 

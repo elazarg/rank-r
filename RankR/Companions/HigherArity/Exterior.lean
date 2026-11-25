@@ -98,7 +98,7 @@ theorem inner_placeAt (u v : EuclideanSpace ℂ W) {t t' : Finset (Fin r)} (ht :
   rw [PiLp.inner_apply, Fintype.sum_prod_type]
   by_cases htt : t = t'
   · subst htt
-    rw [if_pos rfl, PiLp.inner_apply]
+    rw [ite_eq_left rfl, PiLp.inner_apply]
     refine Finset.sum_congr rfl fun p _ => ?_
     rw [Finset.sum_eq_single (⟨t, ht⟩ : Face r m)]
     · simp
@@ -107,7 +107,7 @@ theorem inner_placeAt (u v : EuclideanSpace ℂ W) {t t' : Finset (Fin r)} (ht :
       simp [hbt]
     · intro h
       exact absurd (Finset.mem_univ _) h
-  · rw [if_neg htt]
+  · rw [ite_eq_right htt]
     refine Finset.sum_eq_zero fun p _ => Finset.sum_eq_zero fun J _ => ?_
     by_cases h1 : J.val = t
     · have h2 : J.val ≠ t' := fun h => htt (h1 ▸ h)
@@ -139,7 +139,7 @@ theorem mulVecE_placeT_placeAt (N : Matrix W W ℂ) (u : EuclideanSpace ℂ W)
     have h' : ∀ J : Face r m, placeT (T := Face r m) N x (q, J) * placeAt u t (q, J)
         = if J = x.2 then (if x.2.val = t then N x.1 q * u q else 0) else 0 := fun J => by
       by_cases hJ : J = x.2
-      · rw [if_pos hJ, hJ]
+      · rw [ite_eq_left hJ, hJ]
         by_cases hx : x.2.val = t <;> simp [hx]
       · simp [hJ, Ne.symm hJ]
     rw [Finset.sum_congr rfl fun J _ => h' J, Finset.sum_ite_eq']
@@ -179,7 +179,7 @@ theorem inner_placeAt_erase {e : Fin r → EuclideanSpace ℂ W} (he : Orthonorm
     rw [inner_placeAt _ _ hc, orthonormal_iff_ite.mp (orthonormal_ebar he) v v']
     by_cases hvv : v = v'
     · subst hvv
-      rw [if_pos rfl]
+      rw [ite_eq_left rfl]
       have hiff : I.val.erase v = I'.val.erase v ↔ I = I' := by
         constructor
         · intro h
@@ -193,13 +193,13 @@ theorem inner_placeAt_erase {e : Fin r → EuclideanSpace ℂ W} (he : Orthonorm
           rw [← Finset.insert_erase hv, ← Finset.insert_erase hv', h]
         · intro h; rw [h]
       by_cases hII : I = I'
-      · rw [if_pos (hiff.mpr hII), if_pos ⟨rfl, hv, hII⟩]
-      · rw [if_neg (fun h => hII (hiff.mp h)), if_neg (fun h => hII h.2.2)]
-    · rw [if_neg hvv, ite_self, if_neg (fun h => hvv h.1)]
+      · rw [ite_eq_left (hiff.mpr hII), ite_eq_left ⟨rfl, hv, hII⟩]
+      · rw [ite_eq_right (fun h => hII (hiff.mp h)), ite_eq_right (fun h => hII h.2.2)]
+    · rw [ite_eq_right hvv, ite_self, ite_eq_right (fun h => hvv h.1)]
   · have hc : (I.val.erase v).card ≠ k - 1 := by
       rw [Finset.erase_eq_of_notMem hv, I.2]
       omega
-    rw [placeAt_eq_zero _ hc, inner_zero_left, if_neg (fun h => hv h.2.1)]
+    rw [placeAt_eq_zero _ hc, inner_zero_left, ite_eq_right (fun h => hv h.2.1)]
 
 /-- The reciprocal of `√n`, squared, is the reciprocal of `n`. -/
 theorem inv_sqrt_mul_inv_sqrt (n : ℕ) :
@@ -242,13 +242,13 @@ theorem inner_of_pairing {S E : Type*} [DecidableEq S] [NormedAddCommGroup E]
       by_cases hvv : v = v'
       · subst hvv
         by_cases hcond : P s v ∧ s = s'
-        · rw [if_pos ⟨rfl, hcond.1, hcond.2⟩, if_pos rfl, if_pos hcond, mul_one, mul_one,
+        · rw [ite_eq_left ⟨rfl, hcond.1, hcond.2⟩, ite_eq_left rfl, ite_eq_left hcond, mul_one, mul_one,
             hcond.2]
-        · rw [if_neg (fun h => hcond ⟨h.2.1, h.2.2⟩), if_pos rfl, if_neg hcond,
+        · rw [ite_eq_right (fun h => hcond ⟨h.2.1, h.2.2⟩), ite_eq_left rfl, ite_eq_right hcond,
             mul_zero, mul_zero]
-      · rw [if_neg (fun h => hvv h.1), if_neg (Ne.symm hvv), mul_zero]
+      · rw [ite_eq_right (fun h => hvv h.1), ite_eq_right (Ne.symm hvv), mul_zero]
     rw [Finset.sum_congr rfl fun v' _ => hv' v', Finset.sum_ite_eq' Finset.univ v,
-      if_pos (Finset.mem_univ v)]
+      ite_eq_left (Finset.mem_univ v)]
   rw [Finset.sum_congr rfl fun v _ => hv v]
   simp only [← mul_assoc, hσ, one_mul]
   by_cases hss : s = s'
@@ -259,10 +259,10 @@ theorem inner_of_pairing {S E : Type*} [DecidableEq S] [NormedAddCommGroup E]
       rw [Finset.sum_congr rfl fun v _ => h v, Finset.sum_ite_mem, Finset.univ_inter,
         Finset.sum_const, nsmul_eq_mul, mul_one, ← hcount s]
       norm_cast
-    rw [hc, if_pos rfl, inv_sqrt_mul_inv_sqrt, inv_mul_cancel₀ hN]
+    rw [hc, ite_eq_left rfl, inv_sqrt_mul_inv_sqrt, inv_mul_cancel₀ hN]
   · have h : ∀ v : Fin r, (if P s v ∧ s = s' then (1 : ℂ) else 0) = 0 :=
-      fun v => if_neg (fun h => hss h.2)
-    rw [Finset.sum_congr rfl fun v _ => h v, Finset.sum_const_zero, mul_zero, if_neg hss]
+      fun v => ite_eq_right (fun h => hss h.2)
+    rw [Finset.sum_congr rfl fun v _ => h v, Finset.sum_const_zero, mul_zero, ite_eq_right hss]
 
 /-- The incidence modes are orthonormal. -/
 theorem inner_etaMode {e : Fin r → EuclideanSpace ℂ W} (he : Orthonormal ℂ e) (hk : 1 ≤ k)
@@ -313,14 +313,14 @@ theorem inner_placeAt_insert {e : Fin r → EuclideanSpace ℂ W} (he : Orthonor
   · have hc : (insert j L.val).card ≠ k - 1 := by
       rw [Finset.insert_eq_self.mpr hj, L.2]
       omega
-    rw [placeAt_eq_zero _ hc, inner_zero_left, if_neg (fun h => h.2.1 hj)]
+    rw [placeAt_eq_zero _ hc, inner_zero_left, ite_eq_right (fun h => h.2.1 hj)]
   · have hc : (insert j L.val).card = k - 1 := by
       rw [Finset.card_insert_of_notMem hj, L.2]
       omega
     rw [inner_placeAt _ _ hc, orthonormal_iff_ite.mp he j j']
     by_cases hjj : j = j'
     · subst hjj
-      rw [if_pos rfl]
+      rw [ite_eq_left rfl]
       have hiff : insert j L.val = insert j L'.val ↔ L = L' := by
         constructor
         · intro h
@@ -334,9 +334,9 @@ theorem inner_placeAt_insert {e : Fin r → EuclideanSpace ℂ W} (he : Orthonor
           rw [← Finset.erase_insert hj, ← Finset.erase_insert hj', h]
         · intro h; rw [h]
       by_cases hLL : L = L'
-      · rw [if_pos (hiff.mpr hLL), if_pos ⟨rfl, hj, hLL⟩]
-      · rw [if_neg (fun h => hLL (hiff.mp h)), if_neg (fun h => hLL h.2.2)]
-    · rw [if_neg hjj, ite_self, if_neg (fun h => hjj h.1)]
+      · rw [ite_eq_left (hiff.mpr hLL), ite_eq_left ⟨rfl, hj, hLL⟩]
+      · rw [ite_eq_right (fun h => hLL (hiff.mp h)), ite_eq_right (fun h => hLL h.2.2)]
+    · rw [ite_eq_right hjj, ite_self, ite_eq_right (fun h => hjj h.1)]
 
 /-- The protected modes are orthonormal. -/
 theorem inner_deltaMode {e : Fin r → EuclideanSpace ℂ W} (he : Orthonormal ℂ e)

@@ -78,7 +78,7 @@ private theorem hsInner_pair_single {i j : U} (hne : i ≠ j) (a b : ℂ) :
         (a • Matrix.single j i (1 : ℂ) - b • Matrix.single i j 1)
       = -(conj a * b) - conj b * a := by
   simp only [hsInner_sub_left, hsInner_sub_right, hsInner_smul_left, hsInner_smul_right,
-    hsInner_single, if_neg hne, if_neg (Ne.symm hne), if_true, mul_one]
+    hsInner_single, ite_eq_right hne, ite_eq_right (Ne.symm hne), ite_true, mul_one]
   ring
 
 /-- **One edge's contribution.**  The Hilbert-Schmidt pairing of `A_e C` against
@@ -122,7 +122,7 @@ theorem hsInner_edgeKraus_mul_projWit {p : U × U} (hp : p.1 < p.2) (S : Finset 
     norm_num
   rw [hmul, htr, hsInner_kron, hqubit, mul_one, hsInner_pair_single hne]
   by_cases h1 : p.1 ∈ S <;> by_cases h2 : p.2 ∈ S <;> simp only [h1, h2, and_true,
-    and_false, if_true, if_false, map_one, map_zero] <;> ring
+    and_false, ite_true, ite_false, map_one, map_zero] <;> ring
 
 
 end Obstruction
@@ -153,7 +153,7 @@ theorem two_mul_card_ltPairs (S : Finset U) :
     rw [Finset.sum_product]
     have h : ∀ i ∈ S, (∑ y ∈ S, if i = y then (1 : ℕ) else 0) = 1 := by
       intro i hi
-      rw [Finset.sum_ite_eq S i (fun _ => (1 : ℕ)), if_pos hi]
+      rw [Finset.sum_ite_eq S i (fun _ => (1 : ℕ)), ite_eq_left hi]
     rw [Finset.sum_congr rfl h]
     simp
   have htotal : (∑ p ∈ S ×ˢ S, ((if p.1 < p.2 then (1 : ℕ) else 0)
@@ -222,7 +222,7 @@ theorem two_mul_card_le_of_thetaPositive {E : Finset (U × U)} (hE : ∀ p ∈ E
     rw [rank_projWit]; exact hS
   have hkey := h _ hrank
   rw [thetaPair_graphKraus_projWit hE S, hsNormSq_projWit, trace_projWit,
-    if_neg (by decide : ¬ (0 : Fin 2) = 1)] at hkey
+    ite_eq_right (by decide : ¬ (0 : Fin 2) = 1)] at hkey
   simp only [Complex.mul_re, Complex.re_ofNat, Complex.im_ofNat, Complex.natCast_re,
     Complex.natCast_im, Complex.neg_re, Complex.neg_im, map_zero,
     zero_div, sub_zero, mul_zero, neg_zero] at hkey

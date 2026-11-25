@@ -176,9 +176,9 @@ theorem qform_Qm_sharpWit {a₀ a₁ : U} {b₀ b₁ : V} (ha : a₀ ≠ a₁) (
     simp [wit₁, wit₂, Prod.ext_iff]; exact fun _ => hb
   -- the six values of the vectorized witness that the alternating sum can see
   have e1 : vec (sharpWit a₀ a₁ b₀ b₁) (wit₁ a₀ a₁ b₀ b₁) = 1 := by
-    rw [vec_sharpWit, if_pos rfl, if_neg h12]; ring
+    rw [vec_sharpWit, ite_eq_left rfl, ite_eq_right h12]; ring
   have e2 : vec (sharpWit a₀ a₁ b₀ b₁) (wit₂ a₀ a₁ b₀ b₁) = -1 := by
-    rw [vec_sharpWit, if_neg (Ne.symm h12), if_pos rfl]; ring
+    rw [vec_sharpWit, ite_eq_right (Ne.symm h12), ite_eq_left rfl]; ring
   have e3 : vec (sharpWit a₀ a₁ b₀ b₁) (swU (wit₁ a₀ a₁ b₀ b₁)) = 0 := by
     rw [vec_sharpWit]; simp [wit₁, wit₂, swU, Prod.ext_iff, ha]
   have e4 : vec (sharpWit a₀ a₁ b₀ b₁) (swV (swU (wit₁ a₀ a₁ b₀ b₁))) = 0 := by
@@ -196,20 +196,20 @@ theorem qform_Qm_sharpWit {a₀ a₁ : U} {b₀ b₁ : V} (ha : a₀ ≠ a₁) (
           + 2 * (if X = wit₂ a₀ a₁ b₀ b₁ then 1 else 0) := by
     intro X
     by_cases h1 : X = wit₁ a₀ a₁ b₀ b₁
-    · rw [h1, e1, e3, swV_wit₁, e2, e4, if_pos rfl, if_neg h12]
+    · rw [h1, e1, e3, swV_wit₁, e2, e4, ite_eq_left rfl, ite_eq_right h12]
       norm_num
     · by_cases h2 : X = wit₂ a₀ a₁ b₀ b₁
-      · rw [h2, e2, e5, swV_wit₂, e1, e6, if_neg (Ne.symm h12), if_pos rfl]
+      · rw [h2, e2, e5, swV_wit₂, e1, e6, ite_eq_right (Ne.symm h12), ite_eq_left rfl]
         norm_num
       · have h0 : vec (sharpWit a₀ a₁ b₀ b₁) X = 0 := by
-          rw [vec_sharpWit, if_neg h1, if_neg h2]; ring
-        rw [h0, if_neg h1, if_neg h2]
+          rw [vec_sharpWit, ite_eq_right h1, ite_eq_right h2]; ring
+        rw [h0, ite_eq_right h1, ite_eq_right h2]
         simp
   rw [qform_Qm_eq, Finset.sum_congr rfl fun X _ => hsummand X]
   simp only [mul_ite, mul_one, mul_zero, Finset.sum_add_distrib,
     Finset.sum_ite_eq' Finset.univ (wit₁ a₀ a₁ b₀ b₁) (fun _ => (2 : ℂ)),
     Finset.sum_ite_eq' Finset.univ (wit₂ a₀ a₁ b₀ b₁) (fun _ => (2 : ℂ)),
-    Finset.mem_univ, if_true]
+    Finset.mem_univ, ite_true]
   norm_num
 
 /-! ## The rank-three truncation -/
@@ -256,10 +256,10 @@ theorem vec_sharpWitThree (a₀ a₁ : U) (b₀ b₁ : V) (X : Idx U V) :
   rw [vec_rankOne_neg_eBasis]
   by_cases h3 : X = wit₃ a₀ a₁ b₀ b₁
   · have h3' : X = ((a₀, b₁), (a₁, b₀)) := by simpa [wit₃] using h3
-    rw [if_pos h3', if_pos h3]
+    rw [ite_eq_left h3', ite_eq_left h3]
     abel
   · have h3' : X ≠ ((a₀, b₁), (a₁, b₀)) := by simpa [wit₃] using h3
-    rw [if_neg h3', if_neg h3]
+    rw [ite_eq_right h3', ite_eq_right h3]
     simp
 
 /-- The squared Hilbert--Schmidt norm of the rank-three truncation is three. -/
@@ -378,20 +378,20 @@ theorem qform_Qm_sharpWitThree {a₀ a₁ : U} {b₀ b₁ : V}
     exact hb h'
   have e1 :
       vec (sharpWitThree a₀ a₁ b₀ b₁) (wit₁ a₀ a₁ b₀ b₁) = 1 := by
-    rw [vec_sharpWitThree, if_pos rfl, if_neg h12, if_neg h13]
+    rw [vec_sharpWitThree, ite_eq_left rfl, ite_eq_right h12, ite_eq_right h13]
     ring
   have e2 :
       vec (sharpWitThree a₀ a₁ b₀ b₁) (wit₂ a₀ a₁ b₀ b₁) = -1 := by
-    rw [vec_sharpWitThree, if_neg (Ne.symm h12), if_pos rfl, if_neg h23]
+    rw [vec_sharpWitThree, ite_eq_right (Ne.symm h12), ite_eq_left rfl, ite_eq_right h23]
     ring
   have e3 :
       vec (sharpWitThree a₀ a₁ b₀ b₁) (wit₃ a₀ a₁ b₀ b₁) = -1 := by
-    rw [vec_sharpWitThree, if_neg (Ne.symm h13),
-      if_neg (Ne.symm h23), if_pos rfl]
+    rw [vec_sharpWitThree, ite_eq_right (Ne.symm h13),
+      ite_eq_right (Ne.symm h23), ite_eq_left rfl]
     ring
   have e4 :
       vec (sharpWitThree a₀ a₁ b₀ b₁) (wit₄ a₀ a₁ b₀ b₁) = 0 := by
-    rw [vec_sharpWitThree, if_neg h41, if_neg h42, if_neg h43]
+    rw [vec_sharpWitThree, ite_eq_right h41, ite_eq_right h42, ite_eq_right h43]
     ring
   have hsummand : ∀ X : Idx U V,
       conj (vec (sharpWitThree a₀ a₁ b₀ b₁) X) *
@@ -405,29 +405,29 @@ theorem qform_Qm_sharpWitThree {a₀ a₁ : U} {b₀ b₁ : V}
     intro X
     by_cases h1 : X = wit₁ a₀ a₁ b₀ b₁
     · rw [h1, e1, swU_wit₁_three, e3, swV_wit₁, e2,
-        swV_wit₃_three, e4, if_pos rfl, if_neg h12, if_neg h13]
+        swV_wit₃_three, e4, ite_eq_left rfl, ite_eq_right h12, ite_eq_right h13]
       norm_num
     · by_cases h2 : X = wit₂ a₀ a₁ b₀ b₁
       · rw [h2, e2, swU_wit₂_three, e4, swV_wit₂, e1,
-          swV_wit₄_three, e3, if_neg (Ne.symm h12), if_pos rfl,
-          if_neg h23]
+          swV_wit₄_three, e3, ite_eq_right (Ne.symm h12), ite_eq_left rfl,
+          ite_eq_right h23]
         norm_num
       · by_cases h3 : X = wit₃ a₀ a₁ b₀ b₁
         · rw [h3, e3, swU_wit₃_three, e1, swV_wit₃_three, e4,
-            swV_wit₁, e2, if_neg (Ne.symm h13),
-            if_neg (Ne.symm h23), if_pos rfl]
+            swV_wit₁, e2, ite_eq_right (Ne.symm h13),
+            ite_eq_right (Ne.symm h23), ite_eq_left rfl]
           norm_num
         · have h0 : vec (sharpWitThree a₀ a₁ b₀ b₁) X = 0 := by
-            rw [vec_sharpWitThree, if_neg h1, if_neg h2, if_neg h3]
+            rw [vec_sharpWitThree, ite_eq_right h1, ite_eq_right h2, ite_eq_right h3]
             ring
-          rw [h0, if_neg h1, if_neg h2, if_neg h3]
+          rw [h0, ite_eq_right h1, ite_eq_right h2, ite_eq_right h3]
           simp
   rw [qform_Qm_eq, Finset.sum_congr rfl fun X _ => hsummand X]
   simp only [mul_ite, mul_one, mul_zero, Finset.sum_add_distrib,
     Finset.sum_ite_eq' Finset.univ (wit₁ a₀ a₁ b₀ b₁) (fun _ => (3 : ℂ)),
     Finset.sum_ite_eq' Finset.univ (wit₂ a₀ a₁ b₀ b₁) (fun _ => (3 : ℂ)),
     Finset.sum_ite_eq' Finset.univ (wit₃ a₀ a₁ b₀ b₁) (fun _ => (3 : ℂ)),
-    Finset.mem_univ, if_true]
+    Finset.mem_univ, ite_true]
   norm_num
 
 /-- `1/4` is attained by `Qm` at level three. -/

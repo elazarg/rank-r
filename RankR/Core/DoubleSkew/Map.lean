@@ -340,8 +340,8 @@ theorem Phi4_apply (Y : Matrix ((U × V) × Fin s) ((U × V) × Fin s) ℂ) (x y
       = ∑ q : U × V, Y (q, x.2) (q, y.2) := by rw [Fintype.sum_prod_type]
   rw [hS]
   by_cases h1 : x.1.1 = y.1.1 <;> by_cases h2 : x.1.2 = y.1.2 <;>
-    simp only [h1, h2, if_false, and_true, and_false, one_mul, zero_mul, mul_one, mul_zero,
-      sub_zero, zero_sub, if_pos]
+    simp only [h1, h2, ite_false, and_true, and_false, one_mul, zero_mul, mul_one, mul_zero,
+      sub_zero, zero_sub, ite_eq_left]
 
 end Phi
 

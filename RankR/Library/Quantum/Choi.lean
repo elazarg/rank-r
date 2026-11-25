@@ -101,8 +101,8 @@ theorem projK_mul_self (hx : Orthonormal ℂ x) : projK x * projK x = projK x :=
       = if i = j then rankOne (x i) (x i) else 0 := fun j => by
     rw [rankOne_mul_rankOne, orthonormal_iff_ite.mp hx i j]
     by_cases hij : i = j
-    · subst hij; rw [if_pos rfl, if_pos rfl, one_smul]
-    · rw [if_neg hij, if_neg hij, zero_smul]
+    · subst hij; rw [ite_eq_left rfl, ite_eq_left rfl, one_smul]
+    · rw [ite_eq_right hij, ite_eq_right hij, zero_smul]
   rw [Finset.sum_congr rfl fun j _ => h j, Finset.sum_ite_eq]
   simp
 
@@ -124,9 +124,9 @@ theorem hsNormSq_mul_projK (K : Matrix W W ℂ) (hx : Orthonormal ℂ x) :
     rw [hsInner_rankOne, orthonormal_iff_ite.mp hx i j]
     by_cases hij : i = j
     · subst hij
-      rw [if_pos rfl, if_pos rfl, map_one, mul_one, inner_self_eq_norm_sq_to_K]
+      rw [ite_eq_left rfl, ite_eq_left rfl, map_one, mul_one, inner_self_eq_norm_sq_to_K]
       norm_cast
-    · rw [if_neg hij, if_neg hij, map_zero, mul_zero]
+    · rw [ite_eq_right hij, ite_eq_right hij, map_zero, mul_zero]
   rw [Finset.sum_congr rfl fun j _ => h j, Finset.sum_ite_eq]
   simp
 

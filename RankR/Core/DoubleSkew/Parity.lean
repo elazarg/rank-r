@@ -61,7 +61,7 @@ theorem inner_pb_mulVecE_skewFam :
 /-- The single edge vector pairs against `δ_e` to `-2`. -/
 theorem inner_delta_wvec_skewFam :
     inner ℂ (delta pb) (wvec skewFam pb () (0, 1)) = -2 := by
-  rw [wvec, if_pos (by decide : ((0 : Fin 2), (1 : Fin 2)).1 < ((0 : Fin 2), (1 : Fin 2)).2),
+  rw [wvec, ite_eq_left (by decide : ((0 : Fin 2), (1 : Fin 2)).1 < ((0 : Fin 2), (1 : Fin 2)).2),
     inner_delta_placeT_zetaV_of_isSkew pb (skewFam_isSkew ()) 0 1, inner_pb_mulVecE_skewFam]
   ring
 

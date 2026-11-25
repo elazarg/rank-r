@@ -7,7 +7,7 @@ increasing orientation.  A fixed row contains canonical cliques of every size
 `R ≤ q`, which instantiate the exact threshold and all-level separation
 theorems from `GraphSpectrahedron.lean`.
 -/
-import Mathlib.Data.Prod.Lex
+import Mathlib.Order.Prod.Lex.Basic
 import RankR.Companions.Graph.Dimensions
 import RankR.Companions.Graph.Inclusion
 

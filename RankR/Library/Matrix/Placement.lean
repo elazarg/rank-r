@@ -56,7 +56,7 @@ theorem sum_placeT_left (N : Matrix W W ℂ) (x : W × T) (F : W × T → ℂ) :
     ∑ u, placeT N x u * F u = ∑ q : W, N x.1 q * F (q, x.2) := by
   rw [Fintype.sum_prod_type]
   refine Finset.sum_congr rfl fun q _ => ?_
-  simp only [placeT_apply, ite_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+  simp only [placeT_apply, ite_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
 
 /-- Contracting `placeT N` on the right collapses the second-factor sum. -/
 theorem sum_placeT_right (N : Matrix W W ℂ) (y : W × T) (F : W × T → ℂ) :
@@ -64,7 +64,7 @@ theorem sum_placeT_right (N : Matrix W W ℂ) (y : W × T) (F : W × T → ℂ) 
   rw [Fintype.sum_prod_type]
   refine Finset.sum_congr rfl fun q _ => ?_
   simp only [placeT_apply, apply_ite conj, map_zero, mul_ite, mul_zero, Finset.sum_ite_eq,
-    Finset.mem_univ, if_true]
+    Finset.mem_univ, ite_true]
 
 /-- Entries of `placeT N · Y · (placeT N)ᴴ`. -/
 theorem placeT_conj_apply (N : Matrix W W ℂ) (Y : Matrix (W × T) (W × T) ℂ)

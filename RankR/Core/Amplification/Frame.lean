@@ -56,7 +56,7 @@ theorem inner_delta_epsOf (e : Fin s → EuclideanSpace ℂ W) (v : EuclideanSpa
     by_cases hm : m = k
     · subst hm; simp
     · simp [hm]
-  rw [Finset.sum_congr rfl fun m _ => h m, Finset.sum_ite_eq', if_pos (Finset.mem_univ k),
+  rw [Finset.sum_congr rfl fun m _ => h m, Finset.sum_ite_eq', ite_eq_left (Finset.mem_univ k),
     RCLike.inner_apply']
 
 /-- The bilinear expansion of `⟪e_a, N ē_b⟫` in the entries of `N`. -/

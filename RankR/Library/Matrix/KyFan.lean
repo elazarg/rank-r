@@ -95,6 +95,7 @@ theorem weighted_antitone_sum_le_head
 
 open Matrix ComplexConjugate
 
+set_option maxHeartbeats 1000000 in
 /-- Spectral expansion of the squared norm of a finite complex matrix acting
 on a Euclidean vector. -/
 theorem norm_sq_toEuclideanLin_eq_sum_eigenvalues
@@ -177,6 +178,7 @@ theorem norm_sq_mulVecE_eigenvector
       rw [inner_smul_right, inner_self_eq_norm_sq_to_K, b.norm_eq_one]
       simp
 
+set_option maxHeartbeats 1000000 in
 /-- The top right singular eigenvectors attain the squared Ky Fan sum. -/
 theorem sum_norm_sq_top_eigenvectors_eq_kyFanSq
     {W : Type*} [Fintype W] [DecidableEq W]
@@ -188,29 +190,21 @@ theorem sum_norm_sq_top_eigenvectors_eq_kyFanSq
         finrank_euclideanSpace
     ∑ i : Fin ell, ‖mulVecE M (b (Fin.castLE hEll i))‖ ^ 2 =
       kyFanSq k M := by
-  dsimp only
+  intro ell hEll b
   let T := Matrix.toEuclideanLin M
-  let hS := T.isSymmetric_adjoint_comp_self
-  let b := hS.eigenvectorBasis finrank_euclideanSpace
-  let ell := min k (Fintype.card W)
-  let hEll : ell ≤ Fintype.card W := min_le_right _ _
-  change
-    ∑ i : Fin ell, ‖T (b (Fin.castLE hEll i))‖ ^ 2 =
-      ∑ i ∈ Finset.range k, T.singularValues i ^ 2
+  unfold kyFanSq
   calc
-    ∑ i : Fin ell, ‖T (b (Fin.castLE hEll i))‖ ^ 2 =
+    ∑ i : Fin ell, ‖mulVecE M (b (Fin.castLE hEll i))‖ ^ 2 =
         ∑ i : Fin ell,
           T.singularValues (Fin.castLE hEll i) ^ 2 := by
       apply Finset.sum_congr rfl
-      intro i hi
-      have hnorm :=
-        norm_sq_mulVecE_eigenvector M (Fin.castLE hEll i)
-      change
-        ‖T (b (Fin.castLE hEll i))‖ ^ 2 =
-          hS.eigenvalues finrank_euclideanSpace (Fin.castLE hEll i) at hnorm
-      rw [hnorm]
-      exact (T.sq_singularValues_fin finrank_euclideanSpace
-        (Fin.castLE hEll i)).symm
+      intro i _
+      let j := Fin.castLE hEll i
+      change ‖mulVecE M
+        ((Matrix.toEuclideanLin M).isSymmetric_adjoint_comp_self.eigenvectorBasis
+          finrank_euclideanSpace j)‖ ^ 2 = (Matrix.toEuclideanLin M).singularValues j ^ 2
+      rw [norm_sq_mulVecE_eigenvector M j,
+        (Matrix.toEuclideanLin M).sq_singularValues_fin finrank_euclideanSpace j]
     _ = ∑ i ∈ Finset.range ell, T.singularValues i ^ 2 := by
       change
         (∑ i : Fin ell, T.singularValues i.val ^ 2) =

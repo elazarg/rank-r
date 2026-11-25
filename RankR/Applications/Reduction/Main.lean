@@ -158,7 +158,7 @@ theorem twoCopyScore_projWit_same {S : Finset U} {x : V} {r : ℕ}
     twoCopyScore t (projWit S x x)
       = (1 - t) * (1 - r * t) * hsNormSq (projWit S x x) := by
   rw [twoCopyScore, hsNormSq_projWit, hsNormSq_ptraceU_projWit,
-    hsNormSq_ptraceV_projWit, trace_projWit, if_pos rfl, if_pos rfl, hS,
+    hsNormSq_ptraceV_projWit, trace_projWit, ite_eq_left rfl, ite_eq_left rfl, hS,
     Complex.normSq_natCast]
   ring
 
@@ -168,7 +168,7 @@ theorem twoCopyScore_projWit_orthogonal {S : Finset U} {x₀ x₁ : V} (hx : x�
     twoCopyScore t (projWit S x₀ x₁)
       = (1 - r * t) * hsNormSq (projWit S x₀ x₁) := by
   rw [twoCopyScore, hsNormSq_projWit, hsNormSq_ptraceU_projWit,
-    hsNormSq_ptraceV_projWit, trace_projWit, if_neg hx, if_neg hx, hS]
+    hsNormSq_ptraceV_projWit, trace_projWit, ite_eq_right hx, ite_eq_right hx, hS]
   simp only [add_zero, map_zero, mul_zero]
   ring
 
@@ -241,9 +241,8 @@ theorem twoCopyScore_strict_separation_lower {r : ℕ} (hr : 0 < r)
     exact (div_le_div_iff_of_pos_right hrR).mpr (by linarith)
   have hlower := twoCopyScore_lower_of_le_inv hr ht0 ht C hrank
   convert hlower using 1
-  all_goals
-    field_simp [ne_of_gt hrR]
-    ring
+  field_simp [ne_of_gt hrR]
+  ring
 
 /-- The positive side of the strict signed separation for every nonzero
 rank-at-most-`r` matrix. -/
@@ -387,7 +386,7 @@ theorem asymmetricScore_projWit_same {S : Finset U} {x : V} {r : ℕ}
     asymmetricScore a b (projWit S x x)
       = (1 - b) * (1 - r * a) * hsNormSq (projWit S x x) := by
   rw [asymmetricScore, hsNormSq_projWit, hsNormSq_ptraceU_projWit,
-    hsNormSq_ptraceV_projWit, trace_projWit, if_pos rfl, if_pos rfl, hS,
+    hsNormSq_ptraceV_projWit, trace_projWit, ite_eq_left rfl, ite_eq_left rfl, hS,
     Complex.normSq_natCast]
   ring
 
@@ -397,7 +396,7 @@ theorem asymmetricScore_projWit_orthogonal {S : Finset U} {x₀ x₁ : V}
     asymmetricScore a b (projWit S x₀ x₁)
       = (1 - r * a) * hsNormSq (projWit S x₀ x₁) := by
   rw [asymmetricScore, hsNormSq_projWit, hsNormSq_ptraceU_projWit,
-    hsNormSq_ptraceV_projWit, trace_projWit, if_neg hx, if_neg hx, hS]
+    hsNormSq_ptraceV_projWit, trace_projWit, ite_eq_right hx, ite_eq_right hx, hS]
   simp only [mul_zero, sub_zero, map_zero, add_zero]
   ring
 

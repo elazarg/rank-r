@@ -25,6 +25,7 @@ theorem omegaComplement_add_projection :
     omegaComplement (T := T) + omegaProjection (T := T) = 1 := by
   rw [omegaComplement, sub_add_cancel]
 
+omit [Fintype T] in
 theorem singleOmegaChoi_posSemidef :
     (singleOmegaChoi (T := T)).PosSemidef := by
   have h :

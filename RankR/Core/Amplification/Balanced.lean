@@ -154,7 +154,7 @@ theorem norm_sum_sq_le_balanced_expansion
     intro i j
     by_cases hij : i = j
     · subst j
-      rw [if_pos rfl]
+      rw [ite_eq_left rfl]
       calc
         (inner ℂ (z i) (z i)).re = ‖z i‖ ^ 2 :=
           (InnerProductSpace.norm_sq_eq_re_inner (𝕜 := ℂ) _).symm

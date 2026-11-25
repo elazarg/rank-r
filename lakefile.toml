@@ -1,11 +1,13 @@
 name = "rankr"
 defaultTargets = ["RankR"]
+# Keep RankR's existing import semantics when consuming Mathlib modules.
+allowNonModules = true
 
 # Mathlib is the only dependency.
 [[require]]
 name = "mathlib"
-git = "https://github.com/leanprover-community/mathlib4.git"
-rev = "v4.33.1"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "v4.36.0"
 
 [[lean_lib]]
 name = "RankR"

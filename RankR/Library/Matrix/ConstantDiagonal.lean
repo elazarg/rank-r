@@ -6,7 +6,7 @@ the Hermitian part, averaging over Boolean sign vectors, and interpolating
 their phases.  A finite-dimensional compression induction then produces the
 full constant diagonal.
 -/
-import Mathlib.Data.Complex.Basic
+import Mathlib.Basic.Complex.Basic
 import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.Tactic.FieldSimp
@@ -285,7 +285,7 @@ theorem sum_conj_boolSign_mul_boolSign (i j : Fin q) :
   by_cases hij : i = j
   · subst j
     simp
-  · rw [if_neg hij]
+  · rw [ite_eq_right hij]
     apply Finset.sum_involution
         (s := (Finset.univ : Finset (Fin q → Bool)))
         (fun s _ => flipBool i s)
@@ -327,10 +327,10 @@ theorem sum_qform_boolSignVector (A : Matrix (Fin q) (Fin q) ℂ) :
           apply Finset.sum_congr rfl
           intro i _
           rw [Finset.sum_eq_single i]
-          · rw [sum_conj_boolSign_mul_boolSign, if_pos rfl]
+          · rw [sum_conj_boolSign_mul_boolSign, ite_eq_left rfl]
             ring
           · intro j _ hji
-            rw [sum_conj_boolSign_mul_boolSign, if_neg (Ne.symm hji)]
+            rw [sum_conj_boolSign_mul_boolSign, ite_eq_right (Ne.symm hji)]
             simp
           · simp
     _ = (Fintype.card (Fin q → Bool) : ℂ) * A.trace := by
@@ -423,7 +423,7 @@ theorem normSq_boolPhasePath (a b : Bool) (t : ℝ) :
   by_cases hab : a = b
   · subst b
     cases a <;> simp [boolPhasePath]
-  · rw [boolPhasePath, if_neg hab, Complex.normSq_eq_norm_sq, norm_mul,
+  · rw [boolPhasePath, ite_eq_right hab, Complex.normSq_eq_norm_sq, norm_mul,
       Complex.norm_exp]
     have him :
         (((Real.pi * t : ℂ) * Complex.I).re) = 0 := by simp
@@ -434,10 +434,10 @@ theorem continuous_boolPhasePath (a b : Bool) :
     Continuous (boolPhasePath a b) := by
   by_cases hab : a = b
   · unfold boolPhasePath
-    simp only [if_pos hab]
+    simp only [ite_eq_left hab]
     exact continuous_const
   · unfold boolPhasePath
-    simp only [if_neg hab]
+    simp only [ite_eq_right hab]
     fun_prop
 
 /-- Coordinatewise phase interpolation between Boolean sign vectors. -/
@@ -529,12 +529,12 @@ theorem exists_unitary_firstColumn
       U ∈ Matrix.unitaryGroup (Fin q.succ) ℂ ∧ ∀ i, U i 0 = x i := by
   let v : Fin q.succ → EuclideanSpace ℂ (Fin q.succ) := fun _ => x
   have hv : Orthonormal ℂ
-      (({0} : Set (Fin q.succ)).restrict v) := by
+      (({0} : Set (Fin q.succ)).domRestrict v) := by
     rw [orthonormal_iff_ite]
     intro i j
     have hij : i = j := Subsingleton.elim _ _
     subst j
-    rw [if_pos rfl]
+    rw [ite_eq_left rfl]
     change inner ℂ x x = 1
     rw [inner_self_eq_norm_sq_to_K, hx]
     norm_num
@@ -637,7 +637,7 @@ theorem exists_unit_qform_eq_zero_of_trace_eq_zero
       have hone : mulVecE (1 : Matrix (Fin q.succ) (Fin q.succ) ℂ) x = x := by
         ext i
         simp only [mulVecE_apply, Matrix.one_apply, ite_mul, one_mul,
-          zero_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+          zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
       apply (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp
       rw [InnerProductSpace.norm_sq_eq_re_inner (𝕜 := ℂ),
         InnerProductSpace.norm_sq_eq_re_inner (𝕜 := ℂ),

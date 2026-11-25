@@ -227,7 +227,7 @@ theorem hsNormSq_pairMat {s₁ s₂ : ℝ} {w : (U × V) → EuclideanSpace ℂ 
   rw [← Complex.ofReal_inj, ← hsInner_self]
   simp only [pairMat, hsInner_add_left, hsInner_add_right, hsInner_smul_left,
     hsInner_smul_right, hsInner_symOuter, Complex.conj_ofReal, hio a a, hio a b,
-    hio b a, hio b b, if_neg hab, if_neg (Ne.symm hab)]
+    hio b a, hio b b, ite_eq_right hab, ite_eq_right (Ne.symm hab)]
   push_cast
   ring
 
@@ -251,7 +251,7 @@ theorem hsInner_takagi_pairMat {s : (U × V) → ℝ} {w : (U × V) → Euclidea
     · ring
   rw [hsInner_sum_left]
   simp only [key, Finset.sum_add_distrib, Finset.sum_ite_eq' Finset.univ, Finset.mem_univ,
-    if_true]
+    ite_true]
   push_cast
   ring
 
@@ -310,14 +310,14 @@ theorem action_eq_sum_weights {s : (U × V) → ℝ}
     refine Finset.sum_congr rfl fun i _ => ?_
     rw [Matrix.mul_sum, Finset.sum_eq_single i]
     · rw [Matrix.conjTranspose_smul, Matrix.smul_mul, Matrix.mul_smul,
-        conjTranspose_symOuter_mul, hio i i, if_pos rfl, one_smul, smul_smul,
+        conjTranspose_symOuter_mul, hio i i, ite_eq_left rfl, one_smul, smul_smul,
         RCLike.star_def, Complex.conj_ofReal]
       congr 1
       push_cast
       ring
     · intro j _ hji
       rw [Matrix.conjTranspose_smul, Matrix.smul_mul, Matrix.mul_smul,
-        conjTranspose_symOuter_mul, hio i j, if_neg (Ne.symm hji), zero_smul,
+        conjTranspose_symOuter_mul, hio i j, ite_eq_right (Ne.symm hji), zero_smul,
         smul_zero, smul_zero]
     · exact fun h => absurd (Finset.mem_univ i) h
   have hq : ∀ z : EuclideanSpace ℂ (U × V), (qform (Kᴴ * K) z).re

@@ -102,7 +102,7 @@ theorem qform_krausQ_Pneg (A : ι → Matrix W W ℂ) (e : Fin s → EuclideanSp
   rw [qform_Pneg_eq, Edges_def, Finset.sum_filter]
   refine Finset.sum_congr rfl fun p _ => ?_
   by_cases h : p.1 < p.2
-  · simp only [h, if_true, wvec]
+  · simp only [h, ite_true, wvec]
     rw [inner_mulVecE_left, Matrix.conjTranspose_conjTranspose]
   · simp [h, wvec]
 
@@ -166,7 +166,7 @@ theorem sum_smul_wvec (A : ι → Matrix W W ℂ) (e : Fin s → EuclideanSpace 
   rw [Fintype.sum_prod_type, Finset.sum_comm, Tsyn, Edges_def, Finset.sum_filter]
   refine Finset.sum_congr rfl fun p _ => ?_
   by_cases h : p.1 < p.2
-  · simp only [wvec, h, if_true]
+  · simp only [wvec, h, ite_true]
     rw [← sum_smul_placeT A c p, sum_mulVecE]
     exact Finset.sum_congr rfl fun f _ => (smul_mulVecE _ _ _).symm
   · simp [wvec, h]

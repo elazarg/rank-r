@@ -40,6 +40,8 @@ theorem matrixSingularValue_pos
     finrank_range_toEuclideanLin]
   exact i.isLt
 
+set_option maxRecDepth 2048 in
+set_option maxHeartbeats 1000000 in
 /-- The exact-rank family of right singular vectors is orthonormal. -/
 theorem orthonormal_rightSingularVector (C : Matrix W W ℂ) :
     Orthonormal ℂ (rightSingularVector C) := by
@@ -77,6 +79,8 @@ theorem norm_sq_mulVecE_singularEigenvector
       rw [inner_smul_right, inner_self_eq_norm_sq_to_K, b.norm_eq_one]
       simp
 
+set_option maxRecDepth 2048 in
+set_option maxHeartbeats 1000000 in
 /-- Images of distinct right singular vectors are orthogonal, with squared
 norm equal to the squared singular value. -/
 theorem inner_mulVecE_rightSingularVector
@@ -112,7 +116,7 @@ theorem inner_mulVecE_rightSingularVector
     rfl
   · have hfij : fi i ≠ fi j :=
       fun h => hij (Fin.castLE_injective (Matrix.rank_le_card_width C) h)
-    rw [hb.2 hfij, mul_zero, if_neg hij]
+    rw [hb.2 hfij, mul_zero, ite_eq_right hij]
 
 /-- The normalized left singular vector. -/
 noncomputable def leftSingularVector
@@ -132,7 +136,7 @@ theorem orthonormal_leftSingularVector (C : Matrix W W ℂ) :
   · subst j
     have hσ : (matrixSingularValue C i : ℂ) ≠ 0 := by
       exact_mod_cast (matrixSingularValue_pos C i).ne'
-    simp only [if_true, map_inv₀, Complex.conj_ofReal]
+    simp only [ite_true, map_inv₀, Complex.conj_ofReal]
     field_simp
   · simp [hij]
 
@@ -167,6 +171,8 @@ theorem mulVecE_singularEigenvector_eq_zero
       ((Matrix.toEuclideanLin C).isSymmetric_adjoint_comp_self.eigenvectorBasis
         finrank_euclideanSpace i))]
 
+set_option maxRecDepth 2048 in
+set_option maxHeartbeats 1000000 in
 /-- The singular expansion restricted to the positive singular spectrum. -/
 theorem rankFactor_singularImageVector (C : Matrix W W ℂ) :
     C = rankFactor (singularImageVector C) (rightSingularVector C) := by
@@ -174,7 +180,8 @@ theorem rankFactor_singularImageVector (C : Matrix W W ℂ) :
   let hS := T.isSymmetric_adjoint_comp_self
   let b := hS.eigenvectorBasis finrank_euclideanSpace
   have hdim : C.rank ≤ Fintype.card W := Matrix.rank_le_card_width C
-  ext p q
+  apply Matrix.ext
+  intro p q
   let x : EuclideanSpace ℂ W := EuclideanSpace.single q 1
   have hfull :
       T x = ∑ i : Fin (Fintype.card W), inner ℂ (b i) x • T (b i) := by
@@ -182,59 +189,39 @@ theorem rankFactor_singularImageVector (C : Matrix W W ℂ) :
       T x = T (∑ i, inner ℂ (b i) x • b i) :=
         congrArg T (b.sum_repr' x).symm
       _ = _ := by simp
-  have hrestrict :
-      (∑ i : Fin (Fintype.card W), inner ℂ (b i) x • T (b i)) =
-        ∑ i : Fin C.rank,
-          inner ℂ (b (Fin.castLE hdim i)) x •
-            T (b (Fin.castLE hdim i)) := by
-    rw [Finset.sum_fin_eq_sum_range, Finset.sum_fin_eq_sum_range]
+  let f (i : Fin (Fintype.card W)) : EuclideanSpace ℂ W :=
+    inner ℂ (b i) x • T (b i)
+  let embed : Fin C.rank ↪ Fin (Fintype.card W) :=
+    ⟨Fin.castLE hdim, Fin.castLE_injective hdim⟩
+  have hrestrict : (∑ i, f i) = ∑ i : Fin C.rank, f (embed i) := by
+    rw [← Finset.sum_map]
     symm
-    calc
-      (∑ i ∈ Finset.range C.rank,
-          if hi : i < C.rank then
-            inner ℂ (b (Fin.castLE hdim ⟨i, hi⟩)) x •
-              T (b (Fin.castLE hdim ⟨i, hi⟩))
-          else 0) =
-          ∑ i ∈ Finset.range C.rank,
-            if hi : i < Fintype.card W then
-              inner ℂ (b ⟨i, hi⟩) x • T (b ⟨i, hi⟩)
-            else 0 := by
-              apply Finset.sum_congr rfl
-              intro i hi
-              have hiq := Finset.mem_range.mp hi
-              have hiW := hiq.trans_le hdim
-              rw [dif_pos hiq, dif_pos hiW]
-              have hfin :
-                  Fin.castLE hdim ⟨i, hiq⟩ = (⟨i, hiW⟩ : Fin (Fintype.card W)) :=
-                Fin.ext rfl
-              rw [hfin]
-      _ = ∑ i ∈ Finset.range (Fintype.card W),
-            if hi : i < Fintype.card W then
-              inner ℂ (b ⟨i, hi⟩) x • T (b ⟨i, hi⟩)
-            else 0 := by
-              apply Finset.sum_subset (Finset.range_mono hdim)
-              intro i hiW hiq
-              have hirank : C.rank ≤ i := by
-                simpa [Finset.mem_range] using hiq
-              rw [dif_pos (Finset.mem_range.mp hiW)]
-              have hz := mulVecE_singularEigenvector_eq_zero C
-                ⟨i, Finset.mem_range.mp hiW⟩ hirank
-              change T (b ⟨i, Finset.mem_range.mp hiW⟩) = 0 at hz
-              rw [hz, smul_zero]
+    apply Finset.sum_subset (Finset.subset_univ _)
+    intro i _ hi
+    have hirank : C.rank ≤ i.val := by
+      apply Nat.le_of_not_gt
+      intro h
+      apply hi
+      exact Finset.mem_map.mpr ⟨⟨i.val, h⟩, Finset.mem_univ _, Fin.ext rfl⟩
+    have hz : T (b i) = 0 := mulVecE_singularEigenvector_eq_zero C i hirank
+    change inner ℂ (b i) x • T (b i) = 0
+    rw [hz, smul_zero]
+  change T x = ∑ i, f i at hfull
   rw [hrestrict] at hfull
   change mulVecE C x =
-    ∑ i : Fin C.rank,
-      inner ℂ (b (Fin.castLE hdim i)) x •
-        mulVecE C (b (Fin.castLE hdim i)) at hfull
+    ∑ i : Fin C.rank, inner ℂ (rightSingularVector C i) x • singularImageVector C i at hfull
   have hp := congrArg (fun z : EuclideanSpace ℂ W => z p) hfull
   have hleft : (mulVecE C x) p = C p q := by
     simp [mulVecE_apply, x, PiLp.single_apply]
+  change (mulVecE C x) p = _ at hp
   rw [hleft] at hp
-  rw [rankFactor_apply]
-  simpa only [b, x, singularImageVector, rightSingularVector,
-    EuclideanSpace.inner_single_right, one_mul, WithLp.ofLp_sum,
-    Finset.sum_apply, WithLp.ofLp_smul, Pi.smul_apply, smul_eq_mul,
-    mul_comm] using hp
+  calc
+    C p q = ∑ i : Fin C.rank, conj (rightSingularVector C i q) * singularImageVector C i p := by
+      simpa only [x, EuclideanSpace.inner_single_right, one_mul, WithLp.ofLp_sum,
+        Finset.sum_apply, WithLp.ofLp_smul, Pi.smul_apply, smul_eq_mul] using hp
+    _ = rankFactor (singularImageVector C) (rightSingularVector C) p q := by
+      rw [rankFactor_apply]
+      exact Finset.sum_congr rfl fun i _ => mul_comm _ _
 
 /-- Square-root scaling of the normalized left singular vectors. -/
 noncomputable def balancedSingularLeft
@@ -260,7 +247,7 @@ theorem inner_balancedSingularLeft
   rw [orthonormal_iff_ite.mp horth i j]
   by_cases hij : i = j
   · subst j
-    simp only [if_true, Complex.conj_ofReal]
+    simp only [ite_true, Complex.conj_ofReal]
     norm_cast
     nlinarith [Real.sq_sqrt (le_of_lt (matrixSingularValue_pos C i))]
   · simp [hij]
@@ -276,7 +263,7 @@ theorem inner_balancedSingularRight
   rw [orthonormal_iff_ite.mp horth i j]
   by_cases hij : i = j
   · subst j
-    simp only [if_true, Complex.conj_ofReal]
+    simp only [ite_true, Complex.conj_ofReal]
     norm_cast
     nlinarith [Real.sq_sqrt (le_of_lt (matrixSingularValue_pos C i))]
   · simp [hij]
