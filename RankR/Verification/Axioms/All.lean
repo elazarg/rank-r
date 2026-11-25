@@ -926,6 +926,18 @@ guards do not claim the conjectured matching upper bound. -/
 #guard_msgs in
 #print axioms quarter_lt_correlatedSkew_levelOne_ratio
 
+/-- info: 'RankR.choiKAttained_Qm_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiKAttained_Qm_one
+
+/-- info: 'RankR.choiKBound_Qm_one_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiKBound_Qm_one_iff
+
+/-- info: 'RankR.choiKBound_four_smul_Qm_one_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms choiKBound_four_smul_Qm_one_iff
+
 /-! ## The graph two-layer compression and inclusion
 
 The concrete graph and two-layer coefficient spaces, exact layer action,

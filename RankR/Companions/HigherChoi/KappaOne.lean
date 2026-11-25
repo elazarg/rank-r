@@ -1,5 +1,5 @@
 /-
-The explicit level-one lower-bound witness from the higher Choi note.
+The exact level-one Choi constant and the correlated skew witness.
 
 For a finite coordinate type `T`, the correlated sum of an orthonormal basis
 of `so(T)` is
@@ -11,6 +11,8 @@ two tensor factors.  The unnormalized diagonal vector used below turns
 `d |ω⟩⟨ω|` into `singleOmegaChoi`.
 -/
 import RankR.Companions.HigherChoi.Sharp
+import RankR.Core.DoubleSkew.Extend
+import RankR.Core.PartialTrace.Crossed
 import RankR.Library.Quantum.MaximallyEntangled
 
 namespace RankR
@@ -353,8 +355,7 @@ theorem correlatedSkew_mem_doubleSkew :
 
 /-- The exact level-one ratio attained by the correlated skew witness.  This
 is the witness identity underlying the manuscript's lower bound
-`κ₁ ≥ (d-1)/(2d)`; this development does not define the supremum `κ₁` itself,
-and no upper bound is asserted. -/
+`κ₁ ≥ (d-1)/(2d)`. The exact constant is expressed below as a Choi bound. -/
 theorem correlatedSkew_levelOne_ratio
     (hT : 2 ≤ Fintype.card T) :
     ‖mulVecE (correlatedSkew (T := T)) singleOmegaVec‖ ^ 2
@@ -398,5 +399,98 @@ theorem quarter_lt_correlatedSkew_levelOne_ratio
   nlinarith
 
 end Computations
+
+
+section ExactConstant
+
+private theorem ptraceU_rankOne_singleOmegaVec {T : Type*} [Fintype T] [DecidableEq T] :
+    ptraceU (rankOne (singleOmegaVec (T := T)) singleOmegaVec) = 1 := by
+  ext b c
+  by_cases h : b = c
+  · subst c
+    simp [rankOne, singleOmegaVec_apply]
+  · simp [rankOne, singleOmegaVec_apply, h, Ne.symm h]
+
+private theorem singleOmegaVec_bar {T : Type*} [DecidableEq T] :
+    bar (singleOmegaVec (T := T)) = singleOmegaVec := by
+  ext p
+  simp [singleOmegaVec_apply, apply_ite]
+
+private theorem qform_Qm_singleOmega_levelOne {T : Type*}
+    [Fintype T] [DecidableEq T] [Nonempty T] :
+    let C := rankOne (singleOmegaVec (T := T)) singleOmegaVec
+    C ≠ 0 ∧ (qform Qm (vec C)).re =
+      doubleSkewRankOneConstant (Fintype.card T) * hsNormSq C := by
+  dsimp only
+  constructor
+  · intro h
+    let t : T := Classical.choice ‹Nonempty T›
+    have hz := congrArg (fun M : Matrix (T × T) (T × T) ℂ => M (t, t) (t, t)) h
+    simp [rankOne, singleOmegaVec_apply] at hz
+  · have h := qform_Qm_rankOne_bar_self (singleOmegaVec (T := T))
+    rw [singleOmegaVec_bar, norm_sq_singleOmegaVec, ptraceU_rankOne_singleOmegaVec,
+      hsNormSq_one] at h
+    rw [h, hsNormSq_rankOne, norm_sq_singleOmegaVec, doubleSkewRankOneConstant]
+    have hn : (Fintype.card T : ℝ) ≠ 0 := by positivity
+    field_simp
+
+variable {U V : Type*} [Fintype U] [Fintype V] [DecidableEq U] [DecidableEq V]
+  [Nonempty U] [Nonempty V]
+
+/-- The rank-one constant is attained on a diagonal tester supported on a
+square of side equal to the smaller local dimension. -/
+theorem choiKAttained_Qm_one :
+    ChoiKAttained (Qm (U := U) (V := V)) 1
+      (doubleSkewRankOneConstant (min (Fintype.card U) (Fintype.card V))) := by
+  let m := min (Fintype.card U) (Fintype.card V)
+  have hm : 0 < m := lt_min Fintype.card_pos Fintype.card_pos
+  let : Nonempty (Fin m) := ⟨⟨0, hm⟩⟩
+  obtain ⟨f⟩ : Nonempty (Fin m ↪ U) :=
+    Function.Embedding.nonempty_of_card_le (by simp [m])
+  obtain ⟨g⟩ : Nonempty (Fin m ↪ V) :=
+    Function.Embedding.nonempty_of_card_le (by simp [m])
+  let z := singleOmegaVec (T := Fin m)
+  obtain ⟨hne, heq⟩ := qform_Qm_singleOmega_levelOne (T := Fin m)
+  refine ⟨fun _ => extV f g z, fun _ => extV f g z, ?_, ?_⟩
+  · rw [Fin.sum_univ_one, ← extM_rankOne]
+    intro h
+    have hn := hsNormSq_extM f g (rankOne z z)
+    rw [h] at hn
+    have hz : hsNormSq (0 : Matrix (U × V) (U × V) ℂ) = 0 := by simp [hsNormSq]
+    rw [hz] at hn
+    exact (ne_of_gt (hsNormSq_pos hne)) hn.symm
+  · rw [Fin.sum_univ_one, ← extM_rankOne, qform_Qm_vec_extM, hsNormSq_extM]
+    simpa [m] using heq
+
+/-- The exact rank-one constant of the double antisymmetrizer. -/
+theorem choiKBound_Qm_one_iff {β : ℝ} :
+    ChoiKBound (Qm (U := U) (V := V)) 1 β ↔
+      doubleSkewRankOneConstant (min (Fintype.card U) (Fintype.card V)) ≤ β := by
+  constructor
+  · exact le_of_choiKAttained (by decide) choiKAttained_Qm_one
+  · intro h u v
+    simp only [Fin.sum_univ_one, Nat.cast_one, one_mul]
+    exact (qform_Qm_rankOne_le (u 0) (v 0)).trans
+      (mul_le_mul_of_nonneg_right h (hsNormSq_nonneg _))
+
+/-- The rank-one constant is attained in the manuscript's Choi normalization. -/
+theorem choiKAttained_four_smul_Qm_one :
+    ChoiKAttained ((4 : ℂ) • Qm (U := U) (V := V)) 1
+      (4 * doubleSkewRankOneConstant (min (Fintype.card U) (Fintype.card V))) := by
+  simpa using choiKAttained_smul (t := 4)
+    (choiKAttained_Qm_one (U := U) (V := V))
+
+/-- The exact rank-one constant in the manuscript's Choi normalization. -/
+theorem choiKBound_four_smul_Qm_one_iff {β : ℝ} :
+    ChoiKBound ((4 : ℂ) • Qm (U := U) (V := V)) 1 β ↔
+      4 * doubleSkewRankOneConstant (min (Fintype.card U) (Fintype.card V)) ≤ β := by
+  constructor
+  · exact le_of_choiKAttained (by decide) choiKAttained_four_smul_Qm_one
+  · intro h
+    exact choiKBound_mono
+      (choiKBound_smul (t := 4) (by norm_num)
+        ((choiKBound_Qm_one_iff (U := U) (V := V)).mpr le_rfl)) h
+
+end ExactConstant
 
 end RankR

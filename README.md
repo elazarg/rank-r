@@ -113,6 +113,14 @@ Schmidt-number staircase. Some companion endpoints remain conditional or open;
 the exact boundary is maintained in the
 [formalization ledger](docs/FORMALIZATION.md).
 
+The rank-one conjecture for the double-skew space is resolved. If $m$ is the
+smaller local dimension and $m \ge 2$, the largest squared singular value can
+account for exactly $(m-1)/(2m)$ of the squared Frobenius norm. Lean checks the
+exact constant and its attainment in the equivalent level-one Choi form.
+[Lean proof](RankR/Companions/HigherChoi/KappaOne.lean) ·
+[Companion note](paper/derivation-beta-k.tex) ·
+[Prior antisymmetric-projector result](https://arxiv.org/abs/1002.2511)
+
 Lean statements use matrices indexed by finite types. The transport from
 abstract finite-dimensional Hilbert spaces to chosen coordinates is not
 packaged as a theorem. Within those coordinates, the headline development

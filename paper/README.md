@@ -6,7 +6,7 @@ sections or appendices of the main paper.
 
 | Source | Role | Relation to the main paper | Formal status |
 | --- | --- | --- | --- |
-| `derivation-beta-k.tex` | Higher Choi constants of the double-skew space | Extends the local constant beyond the level-two input used in the paper | Exact for every level at least two; the level-one lower bound is checked and the matching upper bound is conjectural |
+| `derivation-beta-k.tex` | Higher Choi constants of the double-skew space | Extends the local constant beyond the level-two input used in the paper | Exact at every positive level in the equivalent Choi formulation |
 | `derivation-graph-inclusion.tex` | Free-spectrahedral and operator-system form of the graph construction | The main paper already contains the exact local constant, clique sharpness, and the one-layer/two-layer warning; the compressed inclusion and rook-graph results remain here | The basis-free finite-level inclusion is checked; choosing the displayed monic-pencil basis remains a presentation interface |
 | `derivation-higher-arity.tex` | Exterior and hypergraph amplification | A genuine extension of the complete-graph estimate, not another route to the paper's $r$-positive map | The amplification theorem and double-skew specialization are checked; the explanatory spectral no-go is not separately formalized |
 | `derivation-schmidt-staircase.tex` | Schmidt-number application of the protected witness | Uses the main lift and map identity but addresses a separate mixed-state problem | The lower-bound direction is checked; the exact upper direction remains conditional on the product-isotropic seed and twirl inputs |

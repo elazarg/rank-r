@@ -16,7 +16,6 @@
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{conjecture}[theorem]{Conjecture}
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
 
@@ -43,10 +42,9 @@ $\kappa_k=\max\{\sum_{j\le k}s_j(K)^2:\norm K_F=1\}$, equivalently the
 Johnston--Kribs $S(k)$-norms of the orthogonal projection onto it, equivalently
 the Ky Fan thresholds $a_k$ of M\l ynik--Osaka--Marciniak for that space.  We
 show $\kappa_k=\min\{k,4\}/4$ for every $k\ge2$, so that the associated Choi
-constant is $\beta_k=\min\{1,4/k\}$; and we show that this formula
-\emph{fails} at $k=1$, by exhibiting an explicit element attaining
-$\kappa_1\ge(m-1)/2m$ where $m=\min\{\dim U,\dim V\}$.  Numerically that value
-is exact.
+constant is $\beta_k=\min\{1,4/k\}$. At level one the exact values are
+$\kappa_1=(m-1)/(2m)$ and $\beta_1=2(m-1)/m$, where
+$m=\min\{\dim U,\dim V\}$.
 \end{abstract}
 \maketitle
 
@@ -216,24 +214,48 @@ only enlarge $\mathcal A$, so the bound persists with $m=\min\{\dim U,\dim V\}$.
 \begin{remark}[Formalization status]
 The equal-dimension closed form \eqref{eq:Km}, its action on all three spectral
 sectors, its Hilbert--Schmidt norm, the attained ratio, and the strict
-comparison with $1/4$ are machine-checked in finite coordinates.  The sector
-dimension and multiplicity counts and the unequal-dimension embedding sentence
-are not separately formalized, and the matching upper bound remains
-conjectural.
+comparison with $1/4$ are machine-checked in finite coordinates. The sector
+dimension and multiplicity counts remain outside the Lean development.
 \end{remark}
 
-\begin{conjecture}
-\label{conj:k1}
-$\kappa_1=(m-1)/2m$, so that $\beta_1=2(m-1)/m$.
-\end{conjecture}
+\begin{theorem}
+\label{thm:k1-exact}
+For $m=\min\{\dim U,\dim V\}$, one has
+$\kappa_1=(m-1)/(2m)$ and $\beta_1=2(m-1)/m$.
+\end{theorem}
+\begin{proof}
+For rank-one testers use the complex bilinear map
+$B(x,y)=\Pi(xy^T)$. Since the simultaneous exchange of both local pairs acts
+as the identity on the image of $\Pi$, $B$ is symmetric. If
+$D=\sup_{\norm z=1}\norm{B(z,z)}_F$, then for unit $x,y$,
+\[
+  \norm{B(x,y)}_F
+  \le \frac{D}{4}\bigl(\norm{x+y}^2+\norm{x-y}^2\bigr)=D.
+\]
+Thus the supremum over rank-one testers is attained on the diagonal.
 
-Alternating maximization of $\norm{\Pi(M)}_F^2$ over rank-one $M$ agrees to five
-decimals at
-$(\dim U,\dim V)\in\{(2,2),(3,2),(5,2),(3,3),(4,3),(5,3),(4,4),(5,5),(6,6)\}$,
-in each case reproducing $(m-1)/2m$ with $m=\min\{\dim U,\dim V\}$.  Only the
-upper bound is open: \cref{eq:pair} applied to a pair $(1,b)$ with $s_b=0$ gives
-$\kappa_1\le\frac12$, and $(m-1)/2m\to\frac12$, so that estimate is
-asymptotically sharp.
+Reshape a unit $z$ as a matrix $X$ with Frobenius norm one. The four entries
+indexed by the two orderings of each row and column pair in $\Pi(zz^T)$ are
+the corresponding $2\times2$ minor divided by two, with signs. Their total
+squared norm is the squared modulus of that minor. Summing all minors and
+writing $p_i$ for the squared singular values of $X$ gives
+\[
+  \norm{B(z,z)}_F^2=\sum_{i<j}p_i p_j
+  =\frac12\Bigl(1-\sum_{i=1}^m p_i^2\Bigr)\le\frac{m-1}{2m}.
+\]
+The sum-of-minors identity follows by taking the squared Frobenius norm
+of the induced map on second exterior powers. A rectangular diagonal
+matrix with $m$ entries $1/\sqrt m$ attains the bound. The Choi coefficient
+then follows from \eqref{eq:beta-kappa}.
+\end{proof}
+
+The same projector overlap appears in the two-party specialization of
+Zhu, Chen, and Hayashi, \emph{Additivity and non-additivity of multipartite
+entanglement measures} (2010), \href{https://arxiv.org/abs/1002.2511}{equations
+(66) and (71)}, including unequal dimensions. Lean checks the exact
+coefficient and attainment in the homogeneous Choi formulation. Its proof
+uses the equivalent purity identity for the two partial traces and the
+trace-rank inequality to bound the purity.
 
 \begin{remark}[Why the extremizer changes]
 An elementary tensor $L\otimes M$ has four \emph{equal} singular values, which
@@ -249,8 +271,8 @@ turn \cref{eq:pair} into $\kappa_1\le\frac14$.  It fails from $m=3$.
 For $u=a\otimes b$ and $v=c\otimes d$ one has
 $\Pi(\ketbra uv)=P_\wedge(\ketbra ac)\otimes P_\wedge(\ketbra bd)$ with
 $P_\wedge(X)=\frac12(X-X^T)$, and the resulting ratio never exceeds $\frac14$.
-So the extremizers of \cref{thm:k1} are necessarily entangled across the
-$U:V$ cut, and $m=2$ is exactly the case where product testers suffice.
+For $m\ge3$, an extremizing tester must therefore involve entanglement across
+the $U:V$ cut. Product testers attain the bound at $m=2$.
 \end{remark}
 
 \end{document}

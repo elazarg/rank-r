@@ -155,7 +155,7 @@ unrelated extended-real-infimum layer.
 | attainment and exact equality `κ_k = min(k,4)/4` for all `k ≥ 2` | **Checked in the equivalent low-rank Choi form** | `qform_Qm_sharpWitThree` supplies the exceptional rank-three truncation; `choiKAttained_Qm_of_four_le` uses a full elementary tensor from rank four onward; the literal singular-value packaging is not independently defined |
 | resulting concrete `beta_k(Λ_U ⊗ Λ_V)` formula | **Checked exactly** | `choiKAttained_four_smul_Qm_min` proves attainment and `choiKBound_four_smul_Qm_iff` characterizes all valid constants as `beta ≥ min(1,4/k)` |
 | `K_m = (m|ω><ω| - F)/2` and the equal-dimension `κ_1` lower-bound witness | **Checked** in finite coordinates | `correlatedSkew_eq` and `correlatedSkew_spectral_actions` prove the closed form and all three sector actions; `hsNormSq_correlatedSkew` and `correlatedSkew_levelOne_ratio` prove the norm and attained ratio; `quarter_lt_correlatedSkew_levelOne_ratio` proves the strict comparison for `m ≥ 3`. Sector dimensions/multiplicities, a supremum-valued definition of `κ_1`, and the unequal-dimension embedding argument are not formalized. |
-| exact `κ_1` formula | **Conjecture** | only a lower bound and numerical evidence are claimed |
+| exact `κ_1 = (m-1)/(2m)` formula | **Checked in the equivalent level-one Choi form** | `qform_Qm_rankOne_le` proves the upper bound. `choiKAttained_Qm_one` attains it by zero-extending a square diagonal tester to either local dimension. `choiKBound_Qm_one_iff` characterizes all valid constants, and `choiKBound_four_smul_Qm_one_iff` gives the manuscript normalization. |
 
 ## Exterior-amplification note
 
